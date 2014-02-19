@@ -1,8 +1,14 @@
 # -*- coding:utf-8 -*-
 
-#+TITLE: MyFleetGirls
 #+AUTHOR: ポンコツ戦艦山本
 #+EMAIL: web@ponkotuy.com
 #+OPTIONS: toc:nil num:nil author:nil creator:nil
 #+STYLE: <link rel="stylesheet" type="text/css" href="org.css"></link>
 #+LANGUAGE: ja
+
+* MyFleetGirls
+  開発中の艦これProxyツールっぽい？
+
+  将来的には俺の艦娘サーバで艦これプレイデータを公開できるようになるっぽい。
+
+  頑張って開発しなきゃ！
