@@ -1,0 +1,8 @@
+# -*- coding:utf-8 -*-
+
+#+TITLE: MyFleetGirls
+#+AUTHOR: ポンコツ戦艦山本
+#+EMAIL: web@ponkotuy.com
+#+OPTIONS: toc:nil num:nil author:nil creator:nil
+#+STYLE: <link rel="stylesheet" type="text/css" href="org.css"></link>
+#+LANGUAGE: ja
