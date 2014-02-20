@@ -1,7 +1,10 @@
 package com.ponkotuy.data
 
-import org.json4s.JsonAST.JValue
-import org.json4s.DefaultFormats
+import org.json4s.{JValue, DefaultFormats}
+import scala.concurrent.Future
+import scalikejdbc.async._
+import scalikejdbc.SQLInterpolation._
+
 
 /**
  *
@@ -16,8 +19,14 @@ import org.json4s.DefaultFormats
  * @author ponkotuy
  * Date: 14/02/20
  */
-case class Basic(lv: Int, experience: Int, rank: Int, maxChara: Int, fCoin: Int, stWin: WinLose, msWin: WinLose, ptWin: WinLose)
-object Basic {
+case class Basic(
+    lv: Int, experience: Int, rank: Int,
+    maxChara: Int, fCoin: Int,
+    stWin: WinLose, msWin: WinLose, ptWin: WinLose) extends ShortenedNames {
+  def save()(implicit session: AsyncDBSession = AsyncDB.sharedSession, ctx: EC = ECGlobal): Future[Basic] =
+    Basic.save(this)
+}
+object Basic extends SQLSyntaxSupport[Basic] with ShortenedNames {
   implicit val formats = DefaultFormats
 
   def fromJSON(json: JValue): Basic = {
@@ -34,23 +43,20 @@ object Basic {
     val ptWin = WinLose(json \ "api_pt_win", json \ "api_pt_lose")
     Basic(lv, experience, rank, maxChara, fCoin, stWin, msWin, ptWin)
   }
+
+  def save(b: Basic)(
+      implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Basic] = withSQL {
+    update(Basic).set(
+      column.lv -> b.lv, column.experience -> b.experience, column.rank -> b.rank,
+      column.maxChara -> b.maxChara, column.fCoin -> b.fCoin,
+      column.stWin -> b.stWin.win, column.stLose -> b.stWin.lose,
+      column.msWin -> b.msWin.win, column.msLose -> b.msWin.lose,
+      column.ptWin -> b.ptWin.win, column.ptLose -> b.ptWin.lose
+    )
+  }.update().future.map(_ => b)
 }
 
 case class WinLose(win: Int, lose: Int)
 
-/** このツール内でログイン代わりに使うパラメータ
-  *
-  * @param id nick name id
-  * @param startTime ゲーム開始時間っぽいけど暗号代わりに
- */
-case class Auth(id: Long, nickname: String, startTime: Long)
-object Auth {
-  implicit val formats = DefaultFormats
 
-  def fromJSON(json: JValue): Auth = {
-    val id = (json \ "api_nickname_id").extract[String]
-    val nickname = (json \ "api_nickname").extract[String]
-    val startTime = (json \ "api_starttime").extract[Long]
-    Auth(id.toLong, nickname, startTime)
-  }
-}
+
