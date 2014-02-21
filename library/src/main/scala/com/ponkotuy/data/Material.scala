@@ -13,7 +13,8 @@ import scalikejdbc.SQLInterpolation._
  */
 case class Material(
     fuel: Int, ammo: Int, steel: Int, bauxite: Int,
-    instant: Int, bucket: Int, develop: Int) extends ShortenedNames {
+    instant: Int, bucket: Int, develop: Int,
+    created: Long = System.currentTimeMillis()) extends ShortenedNames {
   def save()(implicit session: AsyncDBSession = AsyncDB.sharedSession, ctx: EC = ECGlobal): Future[Material] =
     Material.save(this)
 }
