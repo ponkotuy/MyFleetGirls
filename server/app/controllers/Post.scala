@@ -1,11 +1,12 @@
 package controllers
 
 import org.json4s._
-import org.json4s.native.JsonMethods._
-import play.api.mvc.{Action, Controller}
+import org.json4s.native.{ JsonMethods => J }
+import play.api.mvc.{AnyContent, Action, Controller, Request}
 import com.ponkotuy.data.{Basic, Auth, Material}
 import scala.concurrent.Future
-import play.api.mvc.Request
+import scala.concurrent.ExecutionContext.Implicits._
+import scalikejdbc.async.{AsyncDB, AsyncConnectionPool}
 
 /**
  *
@@ -15,14 +16,15 @@ import play.api.mvc.Request
 object Post extends Controller {
   implicit val formats = DefaultFormats
 
-  private def authentication(f: => Unit)(implicit request: Request) = {
+  private def authentication(request: Request[AnyContent])(f: => Unit) = {
     val optFutureResult = for {
-      json <- request.getQueryString("auth")
-      auth <- parse(json).extractOpt[Auth]
+      json <- reqHead(request)("auth")
+      auth <- J.parse(json).extractOpt[Auth]
     } yield {
-      Auth.find(auth.id).map {
-        case Some(old) => auth.startTime == old.startTime
-        case _ => auth.save()
+      println(auth)
+      models.Auth.find(auth.id).map {
+        case Some(old) => auth.nickname == old.nickname
+        case _ => models.Auth.create(auth)
           true
       }
     }
@@ -34,25 +36,33 @@ object Post extends Controller {
     }
   }
 
-  private def withData[T](f: T => Unit)(implicit request: Request): Unit = {
+  private def withData[T](request: Request[AnyContent])(f: T => Unit)(implicit mf: Manifest[T]): Unit = {
     for {
-      json <- request.getQueryString("data")
-      data <- parse(json).extractOpt[T]
+      json <- reqHead(request)("data")
+      data <- J.parse(json).extractOpt[T]
     } { f(data) }
   }
 
-  def basic = Action.async { implicit request =>
-    authentication {
-      withData[Basic] { basic =>
-        basic.save
+  private def reqHead(request: Request[AnyContent])(key: String): Option[String] = {
+    for {
+      form <- request.body.asFormUrlEncoded
+      results <- form.get(key)
+      one <- results.headOption
+    } yield one
+  }
+
+  def basic = Action.async { request =>
+    authentication(request) {
+      withData[Basic](request) { basic =>
+        models.Basic.create(basic)
       }
     }
   }
 
-  def material = Action.async { implicit request =>
-    authentication {
-      withData[Material] { material =>
-        material.save
+  def material = Action.async { request =>
+    authentication(request) {
+      withData[Material](request) { material =>
+        models.Material.create(material)
       }
     }
   }

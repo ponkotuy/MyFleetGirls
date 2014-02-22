@@ -1,9 +1,6 @@
 package com.ponkotuy.data
 
 import org.json4s.{JValue, DefaultFormats}
-import scala.concurrent.Future
-import scalikejdbc.async._
-import scalikejdbc.SQLInterpolation._
 
 /**
  *
@@ -21,12 +18,9 @@ import scalikejdbc.SQLInterpolation._
 case class Basic(
     lv: Int, experience: Int, rank: Int,
     maxChara: Int, fCoin: Int,
-    stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int,
-    created: Long = System.currentTimeMillis()) extends ShortenedNames {
-  def save()(implicit session: AsyncDBSession = AsyncDB.sharedSession, ctx: EC = ECGlobal): Future[Basic] =
-    Basic.save(this)
-}
-object Basic extends SQLSyntaxSupport[Basic] with ShortenedNames {
+    stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int)
+
+object Basic {
   implicit val formats = DefaultFormats
 
   def fromJSON(json: JValue): Basic = {
@@ -44,15 +38,4 @@ object Basic extends SQLSyntaxSupport[Basic] with ShortenedNames {
     val ptLose: Int = json \ "api_pt_lose"
     Basic(lv, experience, rank, maxChara, fCoin, stWin, stLose, msCount, msSuccess, ptWin, ptLose)
   }
-
-  def save(b: Basic)(
-      implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Basic] = withSQL {
-    update(Basic).set(
-      column.lv -> b.lv, column.experience -> b.experience, column.rank -> b.rank,
-      column.maxChara -> b.maxChara, column.fCoin -> b.fCoin,
-      column.stWin -> b.stWin, column.stLose -> b.stLose,
-      column.msCount -> b.msCount, column.msSuccess -> b.msSuccess,
-      column.ptWin -> b.ptWin, column.ptLose -> b.ptLose
-    )
-  }.update().future.map(_ => b)
 }
