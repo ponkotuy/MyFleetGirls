@@ -29,7 +29,6 @@ case class Basic(
 }
 
 object Basic extends SQLSyntaxSupport[Basic] with ShortenedNames {
-  override val tableName = "Basic"
   def save(b: Basic)(
     implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Basic] = withSQL {
     update(Basic).set(

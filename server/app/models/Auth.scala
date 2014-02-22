@@ -17,7 +17,6 @@ case class Auth(id: Long, nickname: String, created: Long) extends ShortenedName
 }
 
 object Auth extends SQLSyntaxSupport[Auth] with ShortenedNames {
-  override val tableName = "Auth"
   def apply(x: SyntaxProvider[Auth])(rs: WrappedResultSet): Auth = apply(x.resultName)(rs)
   def apply(x: ResultName[Auth])(rs: WrappedResultSet): Auth = new Auth(
     rs.long(x.id),

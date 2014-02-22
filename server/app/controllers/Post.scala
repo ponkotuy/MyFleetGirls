@@ -6,7 +6,6 @@ import play.api.mvc.{AnyContent, Action, Controller, Request}
 import com.ponkotuy.data.{Basic, Auth, Material}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
-import scalikejdbc.async.{AsyncDB, AsyncConnectionPool}
 
 /**
  *
@@ -21,7 +20,6 @@ object Post extends Controller {
       json <- reqHead(request)("auth")
       auth <- J.parse(json).extractOpt[Auth]
     } yield {
-      println(auth)
       models.Auth.find(auth.id).map {
         case Some(old) => auth.nickname == old.nickname
         case _ => models.Auth.create(auth)

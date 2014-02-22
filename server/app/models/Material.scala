@@ -21,7 +21,6 @@ case class Material(id: Long,
 }
 
 object Material extends SQLSyntaxSupport[Material] with ShortenedNames {
-  override val tableName = "Material"
   def save(m: Material)(
     implicit session: AsyncDBSession = AsyncDB.sharedSession, ctx: EC = ECGlobal): Future[Material] = withSQL {
     update(Material).set(

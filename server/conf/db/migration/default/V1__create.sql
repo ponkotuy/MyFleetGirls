@@ -1,5 +1,5 @@
 
-create table Basic(
+create table basic(
         id bigint not null auto_increment unique,
         lv smallint not null,
         experience int not null,
@@ -15,13 +15,13 @@ create table Basic(
         created bigint not null
 ) default charset=utf8;
 
-create table Auth(
+create table auth(
         id bigint not null unique,
         nickname tinytext not null,
         created bigint not null
 ) default charset=utf8;
 
-create table Material(
+create table material(
         id bigint not null auto_increment unique,
         fuel int not null,
         ammo int not null,
