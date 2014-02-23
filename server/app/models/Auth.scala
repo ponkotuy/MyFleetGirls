@@ -27,11 +27,20 @@ object Auth extends SQLSyntaxSupport[Auth] with ShortenedNames {
   lazy val auth = Auth.syntax("auth")
 
   def find(id: Long)(
-    implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Option[Auth]] = {
+      implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Option[Auth]] = {
     println(session)
     withSQL {
       select.from(Auth as auth).where.eq(auth.id, id)
     }.map(Auth(auth))
+  }
+
+  def findAllByUser(userId: Long)(
+      implicit session: AsyncDBSession = AsyncDB.sharedSession, ctx: EC = ECGlobal): Future[List[Auth]] = {
+    withSQL {
+      select.from(Auth as auth)
+        .where.eq(auth.id, userId)
+        .orderBy(auth.created).desc
+    }.map(Auth(auth)).list().future
   }
 
   def save(a: Auth)(

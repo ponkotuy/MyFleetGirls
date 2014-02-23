@@ -6,19 +6,20 @@ object MyFleetGirlsBuild extends Build {
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .aggregate(server, client, library)
 
+  lazy val rootSettings = Defaults.defaultSettings ++ settings ++ Seq(
+    commands ++= Seq(proxy, run)
+  )
+
   lazy val server = Project(id = "server", base = file("server"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .dependsOn(library)
+
   lazy val client = Project(id = "client", base = file("client"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .dependsOn(library)
 
   lazy val library = Project(id = "library", base = file("library"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
-
-  lazy val rootSettings = Defaults.defaultSettings ++ settings ++ Seq(
-    commands ++= Seq(proxy, run)
-  )
 
   override lazy val settings = super.settings ++ Seq(
     scalaVersion := "2.10.3",

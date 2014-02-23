@@ -2,10 +2,11 @@ package controllers
 
 import org.json4s._
 import org.json4s.native.{ JsonMethods => J }
-import play.api.mvc.{AnyContent, Action, Controller, Request}
+import play.api.mvc._
 import com.ponkotuy.data.{Basic, Auth, Material}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
+import scala.util.control.ControlThrowable
 
 /**
  *
@@ -15,24 +16,25 @@ import scala.concurrent.ExecutionContext.Implicits._
 object Post extends Controller {
   implicit val formats = DefaultFormats
 
-  private def authentication(request: Request[AnyContent])(f: => Unit) = {
-    val optFutureResult = for {
+  private def authentication(request: Request[AnyContent])(f: (models.Auth) => Unit): Future[SimpleResult] = {
+    val optFutureResult: Option[Future[models.Auth]] = for {
       json <- reqHead(request)("auth")
       auth <- J.parse(json).extractOpt[Auth]
     } yield {
-      models.Auth.find(auth.id).map {
-        case Some(old) => auth.nickname == old.nickname
+      models.Auth.find(auth.id).flatMap {
+        case Some(old) if auth.nickname == old.nickname => Future(old)
+        case Some(_) => authFail
         case _ => models.Auth.create(auth)
-          true
       }
     }
-    optFutureResult.getOrElse(Future(false)).map {
-      case true =>
-        f
-        Ok("Success")
-      case false => Unauthorized("Authentication Failure")
+    optFutureResult.getOrElse(authFail).map { auth =>
+      f(auth)
+      Ok("Success")
     }
   }
+
+  class AuthenticationException extends ControlThrowable
+  private def authFail[T]: Future[T] = Future.failed[T](new AuthenticationException)
 
   private def withData[T](request: Request[AnyContent])(f: T => Unit)(implicit mf: Manifest[T]): Unit = {
     for {
@@ -50,17 +52,17 @@ object Post extends Controller {
   }
 
   def basic = Action.async { request =>
-    authentication(request) {
+    authentication(request) { auth =>
       withData[Basic](request) { basic =>
-        models.Basic.create(basic)
+        models.Basic.create(basic, auth.id)
       }
     }
   }
 
   def material = Action.async { request =>
-    authentication(request) {
+    authentication(request) { auth =>
       withData[Material](request) { material =>
-        models.Material.create(material)
+        models.Material.create(material, auth.id)
       }
     }
   }
