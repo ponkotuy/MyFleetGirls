@@ -1,7 +1,21 @@
-@(message: String)
+@(auth: Auth, basic: Basic)
 
-@main("Welcome to Play") {
+@main {
+<title>@{auth.nickname}提督の艦これ情報</title>
+<script src="https://www.google.com/jsapi"></script>
+<script src=@routes.Assets.at("javascript/material.js")></script>
+} {
+<input type="text" id="userid" value=@auth.id hidden="hidden" />
+<div class="container theme-showcase" role="main">
+  <div class="jumbotron">
+    <h1>@{auth.nickname}提督</h1>
+    <p>Lv@{basic.lv} Rank@{basic.rank}</p>
+  </div>
 
-    @play20.welcome(message)
+  <div class="page-header">
+    <h1>Materials</h1>
+  </div>
 
+  <div id="material_chart" style="width: 1440px; height: 900px;"></div>
+</div>
 }

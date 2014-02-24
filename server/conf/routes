@@ -2,15 +2,17 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET     /                           controllers.Application.index
-
 # Post
 POST    /post/v1/basic              controllers.Post.basic
 POST    /post/v1/material           controllers.Post.material
 
 # Rest
 GET     /rest/v1/:userId/materials  controllers.Rest.materials(userId: Long)
+GET     /rest/v1/:userId/basics     controllers.Rest.basics(userId: Long)
+
+# View
+GET     /u/:user                    controllers.View.name(user: String)
+GET     /user/:userId               controllers.View.index(userId: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

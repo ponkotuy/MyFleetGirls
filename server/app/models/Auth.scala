@@ -1,22 +1,19 @@
 package models
 
-import scalikejdbc.async._
-import scalikejdbc.async.FutureImplicits._
 import scalikejdbc.SQLInterpolation._
-import scalikejdbc.WrappedResultSet
-import scala.concurrent.Future
+import scalikejdbc.{DBSession, WrappedResultSet}
 import com.ponkotuy.data
 
 /** このツール内でログイン代わりに使うパラメータ
   *
   * @param id nick name id
   */
-case class Auth(id: Long, nickname: String, created: Long) extends ShortenedNames {
-  def save()(implicit session: AsyncDBSession = AsyncDB.sharedSession, ctx: EC = ECGlobal): Future[Auth] =
+case class Auth(id: Long, nickname: String, created: Long) {
+  def save()(implicit session: DBSession = Auth.autoSession): Auth =
     Auth.save(this)
 }
 
-object Auth extends SQLSyntaxSupport[Auth] with ShortenedNames {
+object Auth extends SQLSyntaxSupport[Auth] {
   def apply(x: SyntaxProvider[Auth])(rs: WrappedResultSet): Auth = apply(x.resultName)(rs)
   def apply(x: ResultName[Auth])(rs: WrappedResultSet): Auth = new Auth(
     rs.long(x.id),
@@ -26,38 +23,42 @@ object Auth extends SQLSyntaxSupport[Auth] with ShortenedNames {
 
   lazy val auth = Auth.syntax("auth")
 
-  def find(id: Long)(
-      implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Option[Auth]] = {
-    println(session)
+  def find(id: Long)(implicit session: DBSession = Auth.autoSession): Option[Auth] = {
     withSQL {
       select.from(Auth as auth).where.eq(auth.id, id)
-    }.map(Auth(auth))
+    }.map(Auth(auth)).toOption().apply()
   }
 
-  def findAllByUser(userId: Long)(
-      implicit session: AsyncDBSession = AsyncDB.sharedSession, ctx: EC = ECGlobal): Future[List[Auth]] = {
+  def findByName(name: String)(implicit session: DBSession = Auth.autoSession): Option[Auth] = {
+    withSQL {
+      select.from(Auth as auth).where.eq(auth.nickname, name).limit(1)
+    }.map(Auth(auth)).toOption().apply()
+  }
+
+  def findAllByUser(userId: Long)(implicit session: DBSession = Auth.autoSession): List[Auth] = {
     withSQL {
       select.from(Auth as auth)
         .where.eq(auth.id, userId)
         .orderBy(auth.created).desc
-    }.map(Auth(auth)).list().future
+    }.map(Auth(auth)).list().apply()
   }
 
-  def save(a: Auth)(
-    implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Auth] = withSQL {
-    update(Auth).set(column.id -> a.id, column.nickname -> a.nickname)
-      .where.eq(column.id, a.id)
-  }.update().future.map(_ => a)
+  def save(a: Auth)(implicit session: DBSession = Auth.autoSession): Auth = {
+    withSQL {
+      update(Auth).set(column.id -> a.id, column.nickname -> a.nickname)
+        .where.eq(column.id, a.id)
+    }.update()
+    a
+  }
 
-  def create(a: data.Auth)(
-      implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Auth] = {
+  def create(a: data.Auth)(implicit session: DBSession = Auth.autoSession): Auth = {
     val created = System.currentTimeMillis()
+    println(created)
     withSQL {
       insert.into(Auth).namedValues(
         column.id -> a.id, column.nickname -> a.nickname, column.created -> created
       )
-    }.update().future().map { _ =>
-      Auth(a.id, a.nickname, created)
-    }
+    }.update().apply()
+    Auth(a.id, a.nickname, created)
   }
 }

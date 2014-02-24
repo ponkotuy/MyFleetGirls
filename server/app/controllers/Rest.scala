@@ -5,6 +5,7 @@ import org.json4s._
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
 import scala.concurrent.ExecutionContext.Implicits._
+import scala.concurrent.Future
 
 /**
  *
@@ -14,7 +15,15 @@ import scala.concurrent.ExecutionContext.Implicits._
 object Rest extends Controller {
   implicit val formats = Serialization.formats(NoTypeHints)
   def materials(userId: Long) = Action.async { request =>
-    models.Material.findAllByUser(userId).map { results =>
+    Future {
+      val results = models.Material.findAllByUser(userId)
+      Ok(write(results))
+    }
+  }
+
+  def basics(userId: Long) = Action.async { request =>
+    Future {
+      val results = models.Basic.findAllByUser(userId)
       Ok(write(results))
     }
   }

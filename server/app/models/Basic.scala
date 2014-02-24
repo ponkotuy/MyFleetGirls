@@ -1,10 +1,8 @@
 package models
 
-import scala.concurrent.Future
-import scalikejdbc.async._
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data
-import scalikejdbc.WrappedResultSet
+import scalikejdbc.{DBSession, WrappedResultSet}
 
 /**
  *
@@ -24,12 +22,11 @@ case class Basic(
     lv: Int, experience: Int, rank: Int,
     maxChara: Int, fCoin: Int,
     stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int,
-    created: Long) extends ShortenedNames {
-  def save()(implicit session: AsyncDBSession = AsyncDB.sharedSession, ctx: EC = ECGlobal): Future[Basic] =
-    Basic.save(this)
+    created: Long) {
+  def save()(implicit session: DBSession = Basic.autoSession): Basic = Basic.save(this)
 }
 
-object Basic extends SQLSyntaxSupport[Basic] with ShortenedNames {
+object Basic extends SQLSyntaxSupport[Basic] {
   lazy val b = Basic.syntax("b")
 
   def apply(b: SyntaxProvider[Basic])(rs: WrappedResultSet): Basic = apply(b.resultName)(rs)
@@ -43,21 +40,23 @@ object Basic extends SQLSyntaxSupport[Basic] with ShortenedNames {
     created = rs.long(b.created)
   )
 
-  def save(b: Basic)(
-    implicit session: AsyncDBSession = AsyncDB.sharedSession, cxt: EC = ECGlobal): Future[Basic] = withSQL {
-    update(Basic).set(
-      column.userId -> b.userId,
-      column.lv -> b.lv, column.experience -> b.experience, column.rank -> b.rank,
-      column.maxChara -> b.maxChara, column.fCoin -> b.fCoin,
-      column.stWin -> b.stWin, column.stLose -> b.stLose,
-      column.msCount -> b.msCount, column.msSuccess -> b.msSuccess,
-      column.ptWin -> b.ptWin, column.ptLose -> b.ptLose
-    )
-  }.update().future.map(_ => b)
+  def save(b: Basic)(implicit session: DBSession = Basic.autoSession): Basic = {
+    withSQL {
+      update(Basic).set(
+        column.userId -> b.userId,
+        column.lv -> b.lv, column.experience -> b.experience, column.rank -> b.rank,
+        column.maxChara -> b.maxChara, column.fCoin -> b.fCoin,
+        column.stWin -> b.stWin, column.stLose -> b.stLose,
+        column.msCount -> b.msCount, column.msSuccess -> b.msSuccess,
+        column.ptWin -> b.ptWin, column.ptLose -> b.ptLose
+      )
+    }.update()
+    b
+  }
 
-  def create(b: data.Basic, userId: Long)(implicit session: AsyncDBSession = AsyncDB.sharedSession, ctx: EC = ECGlobal): Future[Basic] = {
+  def create(b: data.Basic, userId: Long)(implicit session: DBSession = Basic.autoSession): Basic = {
     val created = System.currentTimeMillis()
-    val futureId = withSQL {
+    val id = withSQL {
       insert.into(Basic).namedValues(
         column.userId -> userId,
         column.lv -> b.lv, column.experience -> b.experience, column.rank -> b.rank,
@@ -67,18 +66,24 @@ object Basic extends SQLSyntaxSupport[Basic] with ShortenedNames {
         column.ptWin -> b.ptWin, column.ptLose -> b.ptLose,
         column.created -> created
       )
-    }.updateAndReturnGeneratedKey().future()
-    futureId.map { id =>
-      Basic(id, userId,
-        b.lv, b.experience, b.rank, b.maxChara, b.fCoin, b.stWin, b.stLose, b.msCount, b.msSuccess, b.ptWin, b.ptLose,
-        created)
-    }
+    }.updateAndReturnGeneratedKey().apply()
+    Basic(id, userId,
+      b.lv, b.experience, b.rank, b.maxChara, b.fCoin, b.stWin, b.stLose, b.msCount, b.msSuccess, b.ptWin, b.ptLose,
+      created)
   }
 
-  def findAllByUser(userId: Long)(
-      implicit session: AsyncDBSession = AsyncDB.sharedSession, ctx: EC = ECGlobal): Future[List[Basic]] = withSQL {
+  /** 特定ユーザの最新1件を取得
+   */
+  def findByUser(userId: Long)(implicit session: DBSession = Basic.autoSession): Option[Basic] = withSQL {
     select.from(Basic as b)
-//      .where.eq(b.userId, userId)
+      .where.eq(b.userId, userId)
       .orderBy(b.created).desc
-  }.map(Basic(b)).list().future
+      .limit(1)
+  }.map(Basic(b)).headOption().apply()
+
+  def findAllByUser(userId: Long)(implicit session: DBSession = Basic.autoSession): List[Basic] = withSQL {
+    select.from(Basic as b)
+      .where.eq(b.userId, userId)
+      .orderBy(b.created).desc
+  }.map(Basic(b)).list().apply()
 }
