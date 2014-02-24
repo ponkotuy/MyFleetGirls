@@ -4,6 +4,12 @@
 <title>@{auth.nickname}提督の艦これ情報</title>
 <script src="https://www.google.com/jsapi"></script>
 <script src=@routes.Assets.at("javascript/material.js")></script>
+<style>
+  div.chart {
+    width: 900px;
+    height: 640px;
+  };
+</style>
 } {
 <input type="text" id="userid" value=@auth.id hidden="hidden" />
 <div class="container theme-showcase" role="main">
@@ -13,9 +19,13 @@
   </div>
 
   <div class="page-header">
-    <h1>Materials</h1>
+    <h1>4資源</h1>
   </div>
+  <div id="material_chart" class="chart"></div>
 
-  <div id="material_chart" style="width: 1440px; height: 900px;"></div>
+  <div class="page-header">
+    <h1>その他資源</h1>
+  </div>
+  <div id="otherm_chart" class="chart"></div>
 </div>
 }
