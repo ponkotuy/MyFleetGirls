@@ -1,9 +1,14 @@
-@(auth: Auth, basic: Basic, ships: Seq[Ship])
+@(auth: Auth, basic: Basic, ships: Seq[(Ship, MasterShip)])
 
 @main {
 <title>@{auth.nickname}提督の艦これ情報</title>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/css/base/jquery-ui.css" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.bootstrap.css" />
 <script src="https://www.google.com/jsapi"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.widgets.min.js"></script>
 <script src=@routes.Assets.at("javascript/material.js")></script>
+<script src=@routes.Assets.at("javascript/ship.js")></script>
 <style>
   div.chart {
     width: 900px;
@@ -40,23 +45,29 @@
       <div class="page-header">
         <h1>艦娘一覧</h1>
       </div>
-      <table class="table table-striped table-condensed">
+      <table class="table table-striped table-condensed" id="ship_table">
+      <!-- <table id="ship_table"> -->
         <thead>
           <tr>
-            <th>ID</th><th>Name</th><th>Lv</th><th>HP</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th></tr>
+            <th>ID</th><th>名前</th><th>Lv</th><th>HP</th><th>Cond</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th><th>回避</th><th>対潜</th><th>索敵</th><th>運</th></tr>
           </tr>
         </thead>
         <tbody>
-          @ships.map { ship =>
+          @ships.map { case (ship, master) =>
             <tr>
               <td>@ship.id</td>
-              <td>@ship.shipId</td>
+              <td>@master.name</td>
               <td>@ship.lv</td>
               <td>@ship.nowhp</td>
+              <td>@ship.cond</td>
               <td>@ship.karyoku</td>
               <td>@ship.raisou</td>
               <td>@ship.taiku</td>
               <td>@ship.soukou</td>
+              <td>@ship.kaihi</td>
+              <td>@ship.taisen</td>
+              <td>@ship.sakuteki</td>
+              <td>@ship.lucky</td>
             </tr>
           }
         </tbody>

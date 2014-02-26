@@ -44,11 +44,20 @@ object Ship extends SQLSyntaxSupport[Ship] {
   )
 
   lazy val s = Ship.syntax("s")
+  lazy val ms = MasterShip.syntax("ms")
 
   def findAllByUser(userId: Long)(implicit session: DBSession = Ship.autoSession): List[Ship] = withSQL {
     select.from(Ship as s)
       .where.eq(s.userId, userId)
   }.map(Ship(s)).toList().apply()
+
+  def findAllByUserWithMaster(userId: Long)(implicit session: DBSession = Ship.autoSession): List[(Ship, MasterShip)] = {
+    withSQL {
+      select.from(Ship as s)
+        .innerJoin(MasterShip as ms).on(s.shipId, ms.id)
+        .where.eq(s.userId, userId)
+    }.map { rs => (Ship(s)(rs), MasterShip(ms)(rs)) }.toList().apply()
+  }
 
   def create(s: data.Ship, userId: Long)(implicit session: DBSession = Ship.autoSession): Ship = {
     val created = System.currentTimeMillis()

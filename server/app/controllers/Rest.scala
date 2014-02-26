@@ -2,6 +2,7 @@ package controllers
 
 import play.api.mvc.{Action, Controller}
 import org.json4s._
+import org.json4s.JsonDSL._
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
 import scala.concurrent.ExecutionContext.Implicits._
@@ -30,8 +31,15 @@ object Rest extends Controller {
 
   def ships(userId: Long) = Action.async { request =>
     Future {
-      val results = models.Ship.findAllByUser(userId)
-      Ok(write(results))
+      Ok(write(getShipWithMaster(userId)))
     }
+  }
+
+  def getShipWithMaster(userId: Long): JArray = {
+    val results = models.Ship.findAllByUserWithMaster(userId)
+    val listObj = results.map { case (ship, master) =>
+      ("ship" -> Extraction.decompose(ship)) ~ ("master" -> Extraction.decompose(master))
+    }
+    JArray(listObj)
   }
 }
