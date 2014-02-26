@@ -53,7 +53,6 @@ object Auth extends SQLSyntaxSupport[Auth] {
 
   def create(a: data.Auth)(implicit session: DBSession = Auth.autoSession): Auth = {
     val created = System.currentTimeMillis()
-    println(created)
     withSQL {
       insert.into(Auth).namedValues(
         column.id -> a.id, column.nickname -> a.nickname, column.created -> created

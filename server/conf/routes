@@ -5,6 +5,8 @@
 # Post
 POST    /post/v1/basic              controllers.Post.basic
 POST    /post/v1/material           controllers.Post.material
+POST    /post/v1/ship               controllers.Post.ship
+POST    /post/v1/master/ship        controllers.PostMaster.ship
 
 # Rest
 GET     /rest/v1/:userId/materials  controllers.Rest.materials(userId: Long)

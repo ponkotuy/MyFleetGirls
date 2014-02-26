@@ -10,7 +10,6 @@ import com.ponkotuy.data
 import com.ponkotuy.util.Log
 import com.ponkotuy.data.Auth
 import com.ponkotuy.config.ClientConfig
-import java.nio.charset.Charset
 
 /**
  *
@@ -23,7 +22,9 @@ sealed abstract class ResType(val path: String) {
 
 object ResType extends Log {
   implicit val formats = Serialization.formats(NoTypeHints)
+  val Ponkotu = 110136878L
 
+  val GetMaster = "/kcsapi/api_get_master"
   val GetMember = "/kcsapi/api_get_member"
   private[this] var auth: Option[Auth] = None
 
@@ -32,7 +33,6 @@ object ResType extends Log {
       val xs: Seq[Int] = (obj \\ "api_value").children.map(_.extract[Int])
       val material = data.Material.fromSeq(xs)
       post("/material", write(material))
-      info(material)
     }
   }
 
@@ -41,11 +41,26 @@ object ResType extends Log {
       auth = Some(data.Auth.fromJSON(obj))
       val basic = data.Basic.fromJSON(obj)
       post("/basic", write(basic))
-      info(basic, auth)
     }
   }
 
-  val values = Set(Material, Basic)
+  case object Ship3 extends ResType(s"$GetMember/ship3") {
+    override def run(reqHeaders: Map[String, String], obj: JValue): Unit = {
+      val ship = data.Ship.fromJson(obj \ "api_ship_data")
+      post("/ship", write(ship))
+    }
+  }
+
+  case object MasterShip extends ResType(s"$GetMaster/ship") {
+    override def run(reqHeaders: Map[String, String], obj: JValue): Unit = {
+      if(auth.map(_.id) == Some(Ponkotu)) {
+        val ships = data.MasterShip.fromJson(obj)
+        post("/master/ship", write(ships))
+      }
+    }
+  }
+
+  val values = Set(Material, Basic, Ship3, MasterShip)
 
   def post(uStr: String, data: String) = {
     Http(url(ClientConfig.postUrl + uStr) << Map("auth" -> write(auth), "data" -> data)).either.foreach {
