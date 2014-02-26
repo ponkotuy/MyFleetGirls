@@ -1,4 +1,4 @@
-@(auth: Auth, basic: Basic)
+@(auth: Auth, basic: Basic, ships: Seq[Ship])
 
 @main {
 <title>@{auth.nickname}提督の艦これ情報</title>
@@ -18,14 +18,50 @@
     <p>Lv@{basic.lv} Rank@{basic.rank}</p>
   </div>
 
-  <div class="page-header">
-    <h1>4資源</h1>
-  </div>
-  <div id="material_chart" class="chart"></div>
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#material" data-toggle="tab">資源</a></li>
+    <li><a href="#ship" data-toggle="tab">艦娘</a></li>
+  </ul>
 
-  <div class="page-header">
-    <h1>その他資源</h1>
+  <div class="tab-content">
+    <div class="tab-pane in active" id="material">
+      <div class="page-header">
+        <h1>4資源</h1>
+      </div>
+      <div id="material_chart" class="chart"></div>
+
+      <div class="page-header">
+        <h1>その他資源</h1>
+      </div>
+      <div id="otherm_chart" class="chart"></div>
+    </div>
+
+    <div class="tab-pane" id="ship">
+      <div class="page-header">
+        <h1>艦娘一覧</h1>
+      </div>
+      <table class="table table-striped table-condensed">
+        <thead>
+          <tr>
+            <th>ID</th><th>Name</th><th>Lv</th><th>HP</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th></tr>
+          </tr>
+        </thead>
+        <tbody>
+          @ships.map { ship =>
+            <tr>
+              <td>@ship.id</td>
+              <td>@ship.shipId</td>
+              <td>@ship.lv</td>
+              <td>@ship.nowhp</td>
+              <td>@ship.karyoku</td>
+              <td>@ship.raisou</td>
+              <td>@ship.taiku</td>
+              <td>@ship.soukou</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   </div>
-  <div id="otherm_chart" class="chart"></div>
 </div>
 }

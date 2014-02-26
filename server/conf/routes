@@ -11,6 +11,7 @@ POST    /post/v1/master/ship        controllers.PostMaster.ship
 # Rest
 GET     /rest/v1/:userId/materials  controllers.Rest.materials(userId: Long)
 GET     /rest/v1/:userId/basics     controllers.Rest.basics(userId: Long)
+GET     /rest/v1/:userId/ships      controllers.Rest.ships(userId: Long)
 
 # View
 GET     /u/:user                    controllers.View.name(user: String)

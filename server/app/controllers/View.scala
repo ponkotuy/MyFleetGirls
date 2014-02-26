@@ -25,8 +25,9 @@ object View extends Controller {
         auth <- models.Auth.find(userId)
         basic <- models.Basic.findByUser(userId)
       } yield (auth, basic)
+      val ships = models.Ship.findAllByUser(userId)
       user match {
-        case Some((auth, basic)) => Ok(views.html.index(auth, basic))
+        case Some((auth, basic)) => Ok(views.html.index(auth, basic, ships))
         case _ => NotFound("ユーザが見つかりませんでした")
       }
     }

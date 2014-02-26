@@ -27,4 +27,11 @@ object Rest extends Controller {
       Ok(write(results))
     }
   }
+
+  def ships(userId: Long) = Action.async { request =>
+    Future {
+      val results = models.Ship.findAllByUser(userId)
+      Ok(write(results))
+    }
+  }
 }
