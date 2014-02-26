@@ -68,9 +68,6 @@ object Ship extends SQLSyntaxSupport[Ship] {
     )
   }
 
-  def deleteAllByUser(userId: Long)(implicit session: DBSession = Ship.autoSession): Unit = {
-    // でできる筈なんだけどscalikejdbcのバグっぽい？
-    // applyUpdate { delete.from(Ship as s).where.eq(s.userId, userId) }
-    sql"""delete from ship where user_id = $userId""".update().apply()
-  }
+  def deleteAllByUser(userId: Long)(implicit session: DBSession = Ship.autoSession): Unit =
+    applyUpdate { delete.from(Ship).where.eq(Ship.column.userId, userId) }
 }
