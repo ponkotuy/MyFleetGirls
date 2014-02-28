@@ -10,15 +10,13 @@ import com.ponkotuy.data.MasterShip
  * Date: 14/02/25
  */
 object PostMaster extends Controller {
-  def ship = Action.async { request =>
-    checkPonkotu(request) {
-      withData[List[MasterShip]](request) { ships =>
-        if(ships.size.toLong != models.MasterShip.count()) {
-          models.MasterShip.deleteAll()
-          ships.foreach { s => models.MasterShip.create(s) }
-          println("Master Ship All Cleared")
-        }
-      }
+  def ship = checkPonkotuAndParse[List[MasterShip]] { ships =>
+    if(ships.size.toLong != models.MasterShip.count()) {
+      models.MasterShip.deleteAll()
+      ships.foreach { s => models.MasterShip.create(s) }
+      Ok("Master Ship All Cleared")
+    } else {
+      Ok("No Change")
     }
   }
 }

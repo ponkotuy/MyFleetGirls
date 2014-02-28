@@ -12,7 +12,7 @@ import scalikejdbc.{DBSession, WrappedResultSet}
  * @param maxChara 艦娘保有上限
  * @param fCoin 家具コイン
  * @param stWin stLose 出撃勝敗
- * @param msCount msSuccess 遠征回数/勝数
+ * @param msCount msSuccess 遠征回数/成功数
  * @param ptWin ptLose 演習勝敗
  * @author ponkotuy
  * Date: 14/02/20
@@ -24,6 +24,24 @@ case class Basic(
     stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int,
     created: Long) {
   def save()(implicit session: DBSession = Basic.autoSession): Basic = Basic.save(this)
+
+  /**
+   * 新規挿入の判断等に使う差分情報
+   */
+  def diff(x: data.Basic): Double = {
+    import util.DiffCalc._
+    Iterator(
+      neq(lv, x.lv),
+      ratio(experience, x.experience),
+      neq(rank, x.rank),
+      ratio(fCoin, x.fCoin),
+      ratio(stWin, x.stWin),
+      ratio(stLose, x.stLose),
+      ratio(msCount, x.msCount),
+      ratio(ptWin, x.ptWin),
+      ratio(ptLose, x.ptLose)
+    ).max
+  }
 }
 
 object Basic extends SQLSyntaxSupport[Basic] {

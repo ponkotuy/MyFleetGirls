@@ -18,6 +18,19 @@ case class Material(
     created: Long) {
   def save()(implicit session: DBSession = Material.autoSession): Material =
     Material.save(this)
+
+  def diff(x: data.Material): Double = {
+    import util.DiffCalc._
+    Iterator(
+      ratio(fuel, x.fuel),
+      ratio(ammo, x.ammo),
+      ratio(steel, x.steel),
+      ratio(bauxite, x.bauxite),
+      ratio(instant, x.instant),
+      ratio(bucket, x.bucket),
+      ratio(develop, x.develop)
+    ).max
+  }
 }
 
 object Material extends SQLSyntaxSupport[Material] {
@@ -61,6 +74,15 @@ object Material extends SQLSyntaxSupport[Material] {
     }.updateAndReturnGeneratedKey().apply()
     Material(id, userId, m.fuel, m.ammo, m.steel, m.bauxite, m.instant, m.bucket, m.develop, created)
   }
+
+  /** 指定ユーザの最新1件を取ってくる
+    */
+  def findByUser(userId: Long)(implicit session: DBSession = Material.autoSession): Option[Material] = withSQL {
+    select.from(Material as m)
+      .where.eq(m.userId, userId)
+      .orderBy(m.created).desc
+      .limit(1)
+  }.map(Material(m)).toOption().apply()
 
   def findAllByUser(userId: Long)(implicit session: DBSession = Material.autoSession): List[Material] = withSQL {
     select.from(Material as m)

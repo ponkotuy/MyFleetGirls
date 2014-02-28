@@ -16,7 +16,28 @@ object Common extends Controller {
   implicit val formats = DefaultFormats
 
   val Ponkotu = 110136878L
-  def authentication(request: Request[AnyContent])(f: (models.Auth) => Unit): Future[SimpleResult] = {
+
+  def authAndParse[T](f: (models.Auth, T) => SimpleResult)(implicit mf: Manifest[T]): Action[AnyContent] = {
+    Action.async { request =>
+      authentication(request) { auth =>
+        withData[T](request) { data =>
+          f(auth, data)
+        }
+      }
+    }
+  }
+
+  def checkPonkotuAndParse[T](f: (T) => SimpleResult)(implicit mf: Manifest[T]): Action[AnyContent] = {
+    Action.async { request =>
+      checkPonkotu(request) {
+        withData[T](request) { data =>
+          f(data)
+        }
+      }
+    }
+  }
+
+  def authentication(request: Request[AnyContent])(f: (models.Auth) => SimpleResult): Future[SimpleResult] = {
     Future {
       val optoptResult = for {
         json <- reqHead(request)("auth")
@@ -29,15 +50,13 @@ object Common extends Controller {
         }
       }
       optoptResult.getOrElse(None) match {
-        case Some(auth) =>
-          f(auth)
-          Ok("Success")
+        case Some(auth) => f(auth)
         case _ => Unauthorized("Failed Authorization")
       }
     }
   }
 
-  def checkPonkotu(request: Request[AnyContent])(f: => Unit): Future[SimpleResult] = {
+  def checkPonkotu(request: Request[AnyContent])(f: => SimpleResult): Future[SimpleResult] = {
     Future {
       val optResult = for {
         json <- reqHead(request)("auth")
@@ -53,11 +72,12 @@ object Common extends Controller {
     }
   }
 
-  def withData[T](request: Request[AnyContent])(f: T => Unit)(implicit mf: Manifest[T]): Unit = {
-    for {
+  def withData[T](request: Request[AnyContent])(f: T => SimpleResult)(implicit mf: Manifest[T]): SimpleResult = {
+    val result = for {
       json <- reqHead(request)("data")
       data <- J.parse(json).extractOpt[T]
-    } { f(data) }
+    } yield { f(data) }
+    result.getOrElse(BadRequest("Request Error(JSON Parse Error? Header?)"))
   }
 
   private def reqHead(request: Request[AnyContent])(key: String): Option[String] = {
