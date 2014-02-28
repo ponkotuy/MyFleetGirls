@@ -34,4 +34,4 @@ translate = (data) ->
   develop = { data: transElem(data, 'develop'), label: '開発資材', yaxis: 2 }
   [fuel, ammo, steel, bauxite, instant, bucket, develop]
 
-transElem = (data, elem) -> data.map (x) -> [x['created']/1000, x[elem]]
+transElem = (data, elem) -> data.map (x) -> [x['created'], x[elem]]
