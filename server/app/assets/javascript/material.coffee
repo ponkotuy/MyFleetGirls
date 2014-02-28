@@ -1,32 +1,37 @@
-google.load('visualization', '1', {packages: ['corechart']})
+chart = '#material_chart'
+overview = '#material_overview'
 
 $(document).ready ->
   userid = $('#userid').val()
-  google.setOnLoadCallback ->
-  $.get "/rest/v1/#{userid}/materials", (data) ->
-    options =
-      title: 'Material Transitional'
-      hAxis: {title: 'Datetime(sec)'}
-      lineWidth: 1
+  $.getJSON "/rest/v1/#{userid}/materials", (data) ->
+    table = translate(data)
 
-    table1 = google.visualization.arrayToDataTable(translate1(data))
-    elem1 = document.getElementById('material_chart')
-    chart1 = new google.visualization.ScatterChart(elem1)
-    chart1.draw(table1, options)
+    option =
+      xaxis: { mode: 'time' }
+      yaxes: [{}, { alignTicksWithAxis: 1, position: 'right' }]
+      selection: { mode: 'x' }
+    plot = $.plot(chart, table, option)
+    $(chart).bind 'plotselected', (event, ranges) ->
+      newOpt = $.extend true, {}, option,
+        xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
+      plot = $.plot(chart, table, newOpt)
 
-    table2 = google.visualization.arrayToDataTable(translate2(data))
-    elem2 = document.getElementById('otherm_chart')
-    chart2 = new google.visualization.ScatterChart(elem2)
-    chart2.draw(table2, options)
+    optionO =
+      series: { lines: { show: true, lineWidth: 1 }, shadowSize: 0 }
+      xaxis: { ticks: [], mode: 'time' }
+      yaxes: [{ ticks: [] }, { ticks: [] }]
+      selection: { mode: 'x' }
+    plotO = $.plot(overview, table, optionO)
+    $(overview).bind('plotselected', (event, ranges) -> plot.setSelection(ranges))
 
-translate1 = (data) ->
-  [['Datetime', '燃料', '弾薬', '鉄鋼', 'ボーキサイト']].concat(
-    JSON.parse(data).map (x) ->
-      [x['created']/1000, x['fuel'], x['ammo'], x['steel'], x['bauxite']]
-  )
+translate = (data) ->
+  fuel = { data: transElem(data, 'fuel'), label: '燃料', yaxis: 1 }
+  ammo = { data: transElem(data, 'ammo'), label: '弾薬' , yaxis: 1 }
+  steel = { data: transElem(data, 'steel'), label: '鉄鋼', yaxis: 1 }
+  bauxite = { data: transElem(data, 'bauxite'), label: 'ボーキサイト', yaxis: 1 }
+  instant = { data: transElem(data, 'instant'), label: '高速建造材', yaxis: 2 }
+  bucket = { data: transElem(data, 'bucket'), label: '高速修復材', yaxis: 2 }
+  develop = { data: transElem(data, 'develop'), label: '開発資材', yaxis: 2 }
+  [fuel, ammo, steel, bauxite, instant, bucket, develop]
 
-translate2 = (data) ->
-  [['Datetime', '高速建造材', '高速修理材', '開発資材']].concat(
-    JSON.parse(data).map (x) ->
-      [x['created']/1000, x['instant'], x['bucket'], x['develop']]
-  )
+transElem = (data, elem) -> data.map (x) -> [x['created']/1000, x[elem]]
