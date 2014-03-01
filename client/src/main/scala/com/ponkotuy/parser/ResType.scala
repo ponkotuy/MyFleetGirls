@@ -53,7 +53,7 @@ object ResType extends Log {
   case object NDock extends ResType(s"$GetMember/ndock") {
     def run(reqHeaders: Map[String, String], obj: JValue): Unit = {
       val docks = data.NDock.fromJson(obj)
-      info(docks)
+      post("/ndock", write(docks))
     }
   }
 

@@ -1,7 +1,7 @@
 package controllers
 
 import play.api.mvc._
-import com.ponkotuy.data.{Ship, Basic, Material}
+import com.ponkotuy.data.{NDock, Ship, Basic, Material}
 import Common._
 
 /**
@@ -32,7 +32,13 @@ object Post extends Controller {
 
   def ship = authAndParse[List[Ship]] { case (auth, ships) =>
     models.Ship.deleteAllByUser(auth.id)
-    ships.foreach(ship => models.Ship.create(ship))
+    ships.foreach(ship => models.Ship.create(ship, auth.id))
+    Ok("Success")
+  }
+
+  def ndock = authAndParse[List[NDock]] { case (auth, docks) =>
+    models.NDock.deleteAllByUser(auth.id)
+    docks.foreach(dock => models.NDock.create(dock))
     Ok("Success")
   }
 }

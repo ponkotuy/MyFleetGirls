@@ -59,12 +59,12 @@ object Ship extends SQLSyntaxSupport[Ship] {
     }.map { rs => (Ship(s)(rs), MasterShip(ms)(rs)) }.toList().apply()
   }
 
-  def create(s: data.Ship)(implicit session: DBSession = Ship.autoSession): Ship = {
+  def create(s: data.Ship, memberId: Long)(implicit session: DBSession = Ship.autoSession): Ship = {
     val created = System.currentTimeMillis()
     val slot = s.slot.mkString(",")
     withSQL {
       insert.into(Ship).namedValues(
-        column.id -> s.id, column.shipId -> s.shipId, column.memberId -> s.memberId,
+        column.id -> s.id, column.shipId -> s.shipId, column.memberId -> memberId,
         column.lv -> s.lv, column.exp -> s.exp, column.nowhp -> s.nowhp, column.slot -> slot,
         column.fuel -> s.fuel, column.bull -> s.bull, column.dockTime -> s.dockTime, column.cond -> s.cond,
         column.karyoku -> s.karyoku, column.raisou -> s.raisou, column.taiku -> s.taiku, column.soukou -> s.soukou,
@@ -72,7 +72,7 @@ object Ship extends SQLSyntaxSupport[Ship] {
         column.locked -> s.locked, column.created -> created
       )
     }.update().apply()
-    Ship(s.id, s.shipId, s.memberId, s.lv, s.exp, s.nowhp, s.slot, s.fuel, s.bull, s.dockTime, s.cond,
+    Ship(s.id, s.shipId, memberId, s.lv, s.exp, s.nowhp, s.slot, s.fuel, s.bull, s.dockTime, s.cond,
       s.karyoku, s.raisou, s.taiku, s.soukou, s.kaihi, s.taisen, s.sakuteki, s.lucky, s.locked, created
     )
   }

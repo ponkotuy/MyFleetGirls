@@ -25,7 +25,7 @@ object Basic {
 
   def fromJSON(json: JValue): Basic = {
     implicit def toInt(json: JValue) = json.extract[Int]
-    val JInt(memberId) = json \ "api_member_id"
+    val JString(memberId) = json \ "api_member_id"
     val lv = json \ "api_level"
     val experience = json \ "api_experience"
     val rank = json \ "api_rank"

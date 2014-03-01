@@ -6,6 +6,7 @@
 POST    /post/v1/basic              controllers.Post.basic
 POST    /post/v1/material           controllers.Post.material
 POST    /post/v1/ship               controllers.Post.ship
+POST    /post/v1/ndock              controllers.Post.ndock
 POST    /post/v1/master/ship        controllers.PostMaster.ship
 
 # Rest

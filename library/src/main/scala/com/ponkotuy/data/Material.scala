@@ -1,8 +1,6 @@
 package com.ponkotuy.data
 
 import org.json4s._
-import org.json4s.JsonDSL._
-import org.json4s.native.JsonMethods._
 
 /**
  *
@@ -18,7 +16,7 @@ object Material {
   def fromJson(obj: JValue): Material = {
     implicit def jint2int(jint: JValue) = jint.asInstanceOf[JInt].values.toInt
     val JArray(xs) = obj \ "api_value"
-    val JInt(memberId) = obj \ "api_member_id"
+    val JArray(JInt(memberId) :: _) = obj \ "api_member_id"
     Material(memberId.toLong, xs(0), xs(1), xs(2), xs(3), xs(4), xs(5), xs(6))
   }
 }
