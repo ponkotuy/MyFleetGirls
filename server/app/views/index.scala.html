@@ -1,7 +1,7 @@
 @(auth: Auth, basic: Basic, ships: Seq[(Ship, MasterShip)])
 
 @main {
-<title>@{auth.nickname}提督の艦これ情報</title>
+<title>@{auth.nickname}提督 -MyFleetGirls-</title>
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/css/base/jquery-ui.css" />
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.bootstrap.css" />
 <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
@@ -9,6 +9,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.selection.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.widgets.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
 <script src=@routes.Assets.at("javascript/material.js")></script>
 <script src=@routes.Assets.at("javascript/ship.js")></script>
 <style>
@@ -42,6 +43,12 @@
       </div>
       <div id="material_chart" class="chart"></div>
       <div id="material_overview" class="overview"></div>
+      <div class="btn-group">
+        <button type="button" class="btn btn-default" id="whole">全体</button>
+        <button type="button" class="btn btn-default" id="month">1ヶ月</button>
+        <button type="button" class="btn btn-default" id="week">1週間</button>
+        <button type="button" class="btn btn-default" id="day">1日</button>
+      </div>
     </div>
 
     <div class="tab-pane" id="ship">

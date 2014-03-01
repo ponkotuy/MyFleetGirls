@@ -1,26 +1,29 @@
 chart = '#material_chart'
 overview = '#material_overview'
 
+option =
+  xaxis: { mode: 'time', timezone: 'browser' }
+  yaxes: [{}, { alignTicksWithAxis: 1, position: 'right' }]
+  selection: { mode: 'x' }
+optionO =
+  series: { lines: { show: true, lineWidth: 1 }, shadowSize: 0 }
+  xaxis: { mode: 'time', timezone: 'browser' }
+  yaxes: [{}, { alignTicksWithAxis: 1, position: 'right' }]
+  selection: { mode: 'x' }
+
+plot = null
+table = []
+
 $(document).ready ->
   userid = $('#userid').val()
+  button()
   $.getJSON "/rest/v1/#{userid}/materials", (data) ->
     table = translate(data)
 
-    option =
-      xaxis: { mode: 'time' }
-      yaxes: [{}, { alignTicksWithAxis: 1, position: 'right' }]
-      selection: { mode: 'x' }
-    plot = $.plot(chart, table, option)
+    mainPlot()
     $(chart).bind 'plotselected', (event, ranges) ->
-      newOpt = $.extend true, {}, option,
-        xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
-      plot = $.plot(chart, table, newOpt)
+      mainPlot(ranges.xaxis.from, ranges.xaxis.to)
 
-    optionO =
-      series: { lines: { show: true, lineWidth: 1 }, shadowSize: 0 }
-      xaxis: { ticks: [], mode: 'time' }
-      yaxes: [{ ticks: [] }, { ticks: [] }]
-      selection: { mode: 'x' }
     plotO = $.plot(overview, table, optionO)
     $(overview).bind('plotselected', (event, ranges) -> plot.setSelection(ranges))
 
@@ -35,3 +38,21 @@ translate = (data) ->
   [fuel, ammo, steel, bauxite, instant, bucket, develop]
 
 transElem = (data, elem) -> data.map (x) -> [x['created'], x[elem]]
+
+mainPlot = (min, max = moment().valueOf()) ->
+  if min?
+    newOpt = $.extend true, {}, option,
+      xaxis: { min: min, max: max }
+    plot = $.plot(chart, table, newOpt)
+  else
+    plot = $.plot(chart, table, option)
+
+button = ->
+  $('#whole').click ->
+    mainPlot()
+  $('#month').click ->
+    mainPlot moment().subtract('months', 1).valueOf()
+  $('#week').click ->
+    mainPlot moment().subtract('weeks', 1).valueOf()
+  $('#day').click ->
+    mainPlot moment().subtract('days', 1).valueOf()
