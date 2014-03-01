@@ -8,11 +8,13 @@ import com.ponkotuy.data
   *
   * @param id nick name id
   */
+@deprecated("Use Admiral", "0.1-SNAPSHOT")
 case class Auth(id: Long, nickname: String, created: Long) {
   def save()(implicit session: DBSession = Auth.autoSession): Auth =
     Auth.save(this)
 }
 
+@deprecated("Use Admiral", "0.1-SNAPSHOT")
 object Auth extends SQLSyntaxSupport[Auth] {
   def apply(x: SyntaxProvider[Auth])(rs: WrappedResultSet): Auth = apply(x.resultName)(rs)
   def apply(x: ResultName[Auth])(rs: WrappedResultSet): Auth = new Auth(

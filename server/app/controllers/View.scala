@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits._
 object View extends Controller {
   def name(user: String) = Action.async {
     Future {
-      models.Auth.findByName(user) match {
+      models.Admiral.findByName(user) match {
         case Some(auth) => Redirect(routes.View.index(auth.id))
         case _ => NotFound("ユーザが見つかりませんでした")
       }
@@ -22,7 +22,7 @@ object View extends Controller {
   def index(userId: Long) = Action.async {
     Future {
       val user = for {
-        auth <- models.Auth.find(userId)
+        auth <- models.Admiral.find(userId)
         basic <- models.Basic.findByUser(userId)
       } yield (auth, basic)
       val ships = models.Ship.findAllByUserWithMaster(userId)

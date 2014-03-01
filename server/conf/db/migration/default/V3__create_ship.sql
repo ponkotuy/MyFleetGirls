@@ -1,8 +1,8 @@
 
 create table ship(
-        user_id bigint not null,
         id int not null,
         ship_id int not null,
+        member_id bigint not null,
         lv smallint not null,
         exp int not null,
         nowhp smallint not null,
@@ -21,5 +21,5 @@ create table ship(
         lucky smallint not null,
         locked boolean not null,
         created bigint not null,
-        unique(user_id, id)
-) default charset=utf8;
+        primary key(member_id, id)
+) engine = ARIA, default charset=utf8;

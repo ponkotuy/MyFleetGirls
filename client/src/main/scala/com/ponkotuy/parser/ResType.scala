@@ -30,8 +30,7 @@ object ResType extends Log {
 
   case object Material extends ResType(s"$GetMember/material") {
     override def run(reqHeaders: Map[String, String], obj: JValue): Unit = {
-      val xs: Seq[Int] = (obj \\ "api_value").children.map(_.extract[Int])
-      val material = data.Material.fromSeq(xs)
+      val material = data.Material.fromJson(obj)
       post("/material", write(material))
     }
   }
@@ -51,6 +50,13 @@ object ResType extends Log {
     }
   }
 
+  case object NDock extends ResType(s"$GetMember/ndock") {
+    def run(reqHeaders: Map[String, String], obj: JValue): Unit = {
+      val docks = data.NDock.fromJson(obj)
+      info(docks)
+    }
+  }
+
   case object MasterShip extends ResType(s"$GetMaster/ship") {
     override def run(reqHeaders: Map[String, String], obj: JValue): Unit = {
       if(auth.map(_.id) == Some(Ponkotu)) {
@@ -60,7 +66,7 @@ object ResType extends Log {
     }
   }
 
-  val values = Set(Material, Basic, Ship3, MasterShip)
+  val values = Set(Material, Basic, Ship3, NDock, MasterShip)
 
   def post(uStr: String, data: String) = {
     Http(url(ClientConfig.postUrl + uStr) << Map("auth" -> write(auth), "data" -> data)).either.foreach {

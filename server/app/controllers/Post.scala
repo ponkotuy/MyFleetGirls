@@ -13,7 +13,7 @@ object Post extends Controller {
   def basic = authAndParse[Basic] { case (auth, basic) =>
     val isChange = models.Basic.findByUser(auth.id).exists(_.diff(basic) > 0.1)
     if(isChange) {
-      models.Basic.create(basic, auth.id)
+      models.Basic.create(basic)
       Ok("Success")
     } else {
       Ok("No Change")
@@ -23,7 +23,7 @@ object Post extends Controller {
   def material = authAndParse[Material] { case (auth, material) =>
     val isChange = models.Material.findByUser(auth.id).exists(_.diff(material) > 0.01)
     if(isChange) {
-      models.Material.create(material, auth.id)
+      models.Material.create(material)
       Ok("Success")
     } else {
       Ok("No Change")
@@ -32,7 +32,7 @@ object Post extends Controller {
 
   def ship = authAndParse[List[Ship]] { case (auth, ships) =>
     models.Ship.deleteAllByUser(auth.id)
-    ships.foreach(ship => models.Ship.create(ship, auth.id))
+    ships.foreach(ship => models.Ship.create(ship))
     Ok("Success")
   }
 }

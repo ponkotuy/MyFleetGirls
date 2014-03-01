@@ -18,7 +18,7 @@ import scalikejdbc.{DBSession, WrappedResultSet}
  * Date: 14/02/20
  */
 case class Basic(
-    id: Long, userId: Long,
+    id: Long, memberId: Long,
     lv: Int, experience: Int, rank: Int,
     maxChara: Int, fCoin: Int,
     stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int,
@@ -49,7 +49,7 @@ object Basic extends SQLSyntaxSupport[Basic] {
 
   def apply(b: SyntaxProvider[Basic])(rs: WrappedResultSet): Basic = apply(b.resultName)(rs)
   def apply(b: ResultName[Basic])(rs: WrappedResultSet): Basic = new Basic(
-    id = rs.long(b.id), userId = rs.long(b.userId),
+    id = rs.long(b.id), memberId = rs.long(b.memberId),
     lv = rs.int(b.lv), experience = rs.int(b.experience), rank = rs.int(b.rank),
     maxChara = rs.int(b.maxChara), fCoin = rs.int(b.fCoin),
     stWin = rs.int(b.stWin), stLose = rs.int(b.stLose),
@@ -61,7 +61,7 @@ object Basic extends SQLSyntaxSupport[Basic] {
   def save(b: Basic)(implicit session: DBSession = Basic.autoSession): Basic = {
     withSQL {
       update(Basic).set(
-        column.userId -> b.userId,
+        column.memberId -> b.memberId,
         column.lv -> b.lv, column.experience -> b.experience, column.rank -> b.rank,
         column.maxChara -> b.maxChara, column.fCoin -> b.fCoin,
         column.stWin -> b.stWin, column.stLose -> b.stLose,
@@ -72,11 +72,11 @@ object Basic extends SQLSyntaxSupport[Basic] {
     b
   }
 
-  def create(b: data.Basic, userId: Long)(implicit session: DBSession = Basic.autoSession): Basic = {
+  def create(b: data.Basic)(implicit session: DBSession = Basic.autoSession): Basic = {
     val created = System.currentTimeMillis()
     val id = withSQL {
       insert.into(Basic).namedValues(
-        column.userId -> userId,
+        column.memberId -> b.memberId,
         column.lv -> b.lv, column.experience -> b.experience, column.rank -> b.rank,
         column.maxChara -> b.maxChara, column.fCoin -> b.fCoin,
         column.stWin -> b.stWin, column.stLose -> b.stLose,
@@ -85,23 +85,23 @@ object Basic extends SQLSyntaxSupport[Basic] {
         column.created -> created
       )
     }.updateAndReturnGeneratedKey().apply()
-    Basic(id, userId,
+    Basic(id, b.memberId,
       b.lv, b.experience, b.rank, b.maxChara, b.fCoin, b.stWin, b.stLose, b.msCount, b.msSuccess, b.ptWin, b.ptLose,
       created)
   }
 
   /** 特定ユーザの最新1件を取得
    */
-  def findByUser(userId: Long)(implicit session: DBSession = Basic.autoSession): Option[Basic] = withSQL {
+  def findByUser(memberId: Long)(implicit session: DBSession = Basic.autoSession): Option[Basic] = withSQL {
     select.from(Basic as b)
-      .where.eq(b.userId, userId)
+      .where.eq(b.memberId, memberId)
       .orderBy(b.created).desc
       .limit(1)
   }.map(Basic(b)).headOption().apply()
 
-  def findAllByUser(userId: Long)(implicit session: DBSession = Basic.autoSession): List[Basic] = withSQL {
+  def findAllByUser(memberId: Long)(implicit session: DBSession = Basic.autoSession): List[Basic] = withSQL {
     select.from(Basic as b)
-      .where.eq(b.userId, userId)
+      .where.eq(b.memberId, memberId)
       .orderBy(b.created).desc
   }.map(Basic(b)).list().apply()
 }

@@ -1,6 +1,6 @@
 
 create table master_ship(
-        id int not null unique,
+        id int not null primary key,
         `name` tinytext not null,
         yomi tinytext not null
-) default charset=utf8;
+) engine = ARIA, default charset=utf8;

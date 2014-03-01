@@ -6,6 +6,7 @@ import org.json4s.native.{ JsonMethods => J }
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
 import com.ponkotuy.data.Auth
+import models.Admiral
 
 /**
  *
@@ -17,7 +18,7 @@ object Common extends Controller {
 
   val Ponkotu = 110136878L
 
-  def authAndParse[T](f: (models.Auth, T) => SimpleResult)(implicit mf: Manifest[T]): Action[AnyContent] = {
+  def authAndParse[T](f: (models.Admiral, T) => SimpleResult)(implicit mf: Manifest[T]): Action[AnyContent] = {
     Action.async { request =>
       authentication(request) { auth =>
         withData[T](request) { data =>
@@ -37,20 +38,20 @@ object Common extends Controller {
     }
   }
 
-  def authentication(request: Request[AnyContent])(f: (models.Auth) => SimpleResult): Future[SimpleResult] = {
+  def authentication(request: Request[AnyContent])(f: (models.Admiral) => SimpleResult): Future[SimpleResult] = {
     Future {
-      val optoptResult = for {
+      val optoptResult:Option[Option[models.Admiral]] = for {
         json <- reqHead(request)("auth")
         auth <- J.parse(json).extractOpt[Auth]
       } yield {
-        models.Auth.find(auth.id) match {
-          case Some(old) if auth.nickname == old.nickname => Some(old)
-          case Some(_) => None
-          case _ => Some(models.Auth.create(auth))
+        models.Admiral.find(auth.memberId) match {
+          case Some(old: models.Admiral) if old.authentication(auth) => Some(old)
+          case Some(_) => None: Option[Admiral]
+          case _ => Some(models.Admiral.create(auth))
         }
       }
       optoptResult.getOrElse(None) match {
-        case Some(auth) => f(auth)
+        case Some(admiral) => f(admiral)
         case _ => Unauthorized("Failed Authorization")
       }
     }

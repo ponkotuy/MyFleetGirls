@@ -1,6 +1,6 @@
 package com.ponkotuy.data
 
-import org.json4s.{JValue, DefaultFormats}
+import org.json4s._
 
 /**
  *
@@ -16,7 +16,7 @@ import org.json4s.{JValue, DefaultFormats}
  * Date: 14/02/20
  */
 case class Basic(
-    lv: Int, experience: Int, rank: Int,
+    memberId: Long, lv: Int, experience: Int, rank: Int,
     maxChara: Int, fCoin: Int,
     stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int)
 
@@ -25,6 +25,7 @@ object Basic {
 
   def fromJSON(json: JValue): Basic = {
     implicit def toInt(json: JValue) = json.extract[Int]
+    val JInt(memberId) = json \ "api_member_id"
     val lv = json \ "api_level"
     val experience = json \ "api_experience"
     val rank = json \ "api_rank"
@@ -36,6 +37,7 @@ object Basic {
     val msSuccess = json \ "api_ms_success"
     val ptWin = json \ "api_pt_win"
     val ptLose: Int = json \ "api_pt_lose"
-    Basic(lv, experience, rank, maxChara, fCoin, stWin, stLose, msCount, msSuccess, ptWin, ptLose)
+    Basic(memberId.toLong,
+      lv, experience, rank, maxChara, fCoin, stWin, stLose, msCount, msSuccess, ptWin, ptLose)
   }
 }
