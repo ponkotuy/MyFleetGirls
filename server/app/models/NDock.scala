@@ -22,11 +22,26 @@ object NDock extends SQLSyntaxSupport[NDock] {
   )
 
   lazy val nd = NDock.syntax("nd")
+  lazy val s = Ship.syntax("s")
+  lazy val ms = MasterShip.syntax("ms")
 
   def findAllByUser(memberId: Long)(implicit session: DBSession = NDock.autoSession): List[NDock] = withSQL {
     select.from(NDock as nd)
       .where.eq(nd.memberId, memberId)
   }.map(NDock(nd)).toList().apply()
+
+  def fineAllByUserWithName(memberId: Long)(implicit session: DBSession = NDock.autoSession): List[NDockWithName] = {
+    val result = withSQL {
+      select(nd.id, nd.shipId, nd.completeTime, ms.name).from(NDock as nd)
+        .innerJoin(Ship as s).on(nd.shipId, s.id)
+        .innerJoin(MasterShip as ms).on(s.shipId, ms.id)
+        .where.eq(nd.memberId, memberId)
+        .orderBy(nd.id)
+    }.map { rs =>
+      NDockWithName(rs.int(nd.id), rs.int(nd.shipId), rs.long(nd.completeTime), rs.string(ms.name))
+    }.toList().apply()
+    result
+  }
 
   def create(nd: data.NDock)(implicit session: DBSession = NDock.autoSession): NDock = {
     val created = System.currentTimeMillis()
@@ -45,3 +60,5 @@ object NDock extends SQLSyntaxSupport[NDock] {
   def deleteAllByUser(memberId: Long)(implicit session: DBSession = NDock.autoSession): Unit =
     applyUpdate { delete.from(NDock).where.eq(NDock.column.memberId, memberId) }
 }
+
+case class NDockWithName(id: Int, shipId: Int, completeTime: Long, name: String)

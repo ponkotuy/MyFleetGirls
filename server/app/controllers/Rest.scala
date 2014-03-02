@@ -35,7 +35,14 @@ object Rest extends Controller {
     }
   }
 
-  def getShipWithMaster(userId: Long): JArray = {
+  def docks(memberId: Long) = Action.async { request =>
+    Future {
+      val results = models.NDock.findAllByUser(memberId)
+      Ok(write(results))
+    }
+  }
+
+  private def getShipWithMaster(userId: Long): JArray = {
     val results = models.Ship.findAllByUserWithMaster(userId)
     val listObj = results.map { case (ship, master) =>
       ("ship" -> Extraction.decompose(ship)) ~ ("master" -> Extraction.decompose(master))

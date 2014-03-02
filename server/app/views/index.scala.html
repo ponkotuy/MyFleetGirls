@@ -1,4 +1,12 @@
-@(auth: Admiral, basic: Basic, ships: Seq[(Ship, MasterShip)])
+@(auth: Admiral, basic: Basic, ships: Seq[(Ship, MasterShip)], docks: Seq[NDockWithName])
+
+@rank(r: Int) = {
+  @Map(
+    1 -> "元帥", 2 -> "大将", 3 -> "中将", 4 -> "少将",
+    5 -> "大佐", 6 -> "中佐", 7 -> "新米中佐",
+    8 -> "少佐", 9 -> "中堅少佐", 10 -> "新米少佐"
+  )(r)
+}
 
 @main {
 <title>@{auth.nickname}提督 -MyFleetGirls-</title>
@@ -9,9 +17,10 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.selection.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.widgets.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment-with-langs.min.js"></script>
 <script src=@routes.Assets.at("javascript/material.js")></script>
 <script src=@routes.Assets.at("javascript/ship.js")></script>
+<script src=@routes.Assets.at("javascript/time.js")></script>
 <style>
   div.chart {
     width: 900px;
@@ -27,13 +36,13 @@
 <input type="text" id="userid" value=@auth.id hidden="hidden" />
 <div class="container theme-showcase" role="main">
   <div class="jumbotron">
-    <h1>@{auth.nickname}提督</h1>
-    <p>Lv@{basic.lv} Rank@{basic.rank}</p>
+    <h1>@{auth.nickname}@rank(basic.rank)<small>Lv@{basic.lv}</small></h1>
   </div>
 
   <ul class="nav nav-tabs">
     <li class="active"><a href="#material" data-toggle="tab">資源</a></li>
     <li><a href="#ship" data-toggle="tab">艦娘</a></li>
+    <li><a href="#dock" data-toggle="tab">入渠</a></li>
   </ul>
 
   <div class="tab-content">
@@ -58,7 +67,7 @@
       <table class="table table-striped table-condensed" id="ship_table">
         <thead>
           <tr>
-            <th>ID</th><th>名前</th><th>Lv</th><th>HP</th><th>Cond</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th><th>回避</th><th>対潜</th><th>索敵</th><th>運</th></tr>
+            <th>ID</th><th>名前</th><th>Lv</th><th>HP</th><th>Cond</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th><th>回避</th><th>対潜</th><th>索敵</th><th>運</th>
           </tr>
         </thead>
         <tbody>
@@ -77,6 +86,27 @@
               <td>@ship.taisen</td>
               <td>@ship.sakuteki</td>
               <td>@ship.lucky</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tab-pane" id="dock">
+      <div class="page-header">
+        <h1>時間</h1>
+      </div>
+      <table class="table table-striped">
+        <thead>
+          <th>DockID</th><th>ShipID</th><th>名前</th><th>時間</th>
+        </thead>
+        <tbody>
+          @docks.map { dock =>
+            <tr>
+              <td>@dock.id</td>
+              <td>@dock.shipId</td>
+              <td>@dock.name</td>
+              <td class="viewTime" data-time="@dock.completeTime"></td>
             </tr>
           }
         </tbody>

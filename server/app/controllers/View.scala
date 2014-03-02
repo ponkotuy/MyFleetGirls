@@ -19,15 +19,17 @@ object View extends Controller {
     }
   }
 
-  def index(userId: Long) = Action.async {
+  def index(memberId: Long) = Action.async {
     Future {
       val user = for {
-        auth <- models.Admiral.find(userId)
-        basic <- models.Basic.findByUser(userId)
+        auth <- models.Admiral.find(memberId)
+        basic <- models.Basic.findByUser(memberId)
       } yield (auth, basic)
-      val ships = models.Ship.findAllByUserWithMaster(userId)
+      val ships = models.Ship.findAllByUserWithMaster(memberId)
+      val docks = models.NDock.fineAllByUserWithName(memberId)
+      println(docks)
       user match {
-        case Some((auth, basic)) => Ok(views.html.index(auth, basic, ships))
+        case Some((auth, basic)) => Ok(views.html.index(auth, basic, ships, docks))
         case _ => NotFound("ユーザが見つかりませんでした")
       }
     }
