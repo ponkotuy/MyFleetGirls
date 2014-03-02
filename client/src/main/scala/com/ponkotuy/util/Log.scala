@@ -3,6 +3,7 @@ package com.ponkotuy.util
 import com.twitter.logging.{LoggerFactory, Logger}
 import org.json4s._
 import org.json4s.native.JsonMethods._
+import scala.util.Try
 
 /** Log Trait
   *
@@ -13,10 +14,13 @@ import org.json4s.native.JsonMethods._
   */
 trait Log {
   private lazy val factory = new LoggerFactory(node = getClass.toString, level = Some(Logger.DEBUG))
-  protected lazy val logger: Logger = factory()
+  lazy val logger: Logger = factory()
 
-  protected def debug(obj: Any): Unit = logger.debug(obj.toString)
-  protected def info(obj: Any): Unit = logger.info(obj.toString)
-  protected def jsoninfo(json: JValue): Unit =  logger.info(pretty(render(json)))
+  protected def debug(obj: Any): Unit = logger.debug(obj.toString.take(1000))
+  protected def info(obj: Any): Unit = logger.info(obj.toString.take(1000))
+  protected def jsoninfo(json: JValue): Unit = logger.info {
+    Try { pretty(render(json)).take(1000) }.getOrElse("JSONParseError")
+  }
   protected def error(obj: Any): Unit = logger.error(obj.toString)
+  protected def fatal(obj: Any): Unit = logger.fatal(obj.toString)
 }

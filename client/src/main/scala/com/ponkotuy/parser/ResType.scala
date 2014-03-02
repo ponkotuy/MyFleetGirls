@@ -1,79 +1,34 @@
 package com.ponkotuy.parser
 
-import scala.concurrent.ExecutionContext.Implicits._
 import com.github.theon.uri.Uri
-import org.json4s._
-import org.json4s.native.Serialization
-import org.json4s.native.Serialization.write
-import dispatch._
-import com.ponkotuy.data
 import com.ponkotuy.util.Log
-import com.ponkotuy.data.Auth
-import com.ponkotuy.config.ClientConfig
 
 /**
  *
  * @author ponkotuy
  * Date: 14/02/19.
  */
-sealed abstract class ResType(val path: String) {
-  def run(reqHeaders: Map[String, String], obj: JValue): Unit
-}
+sealed abstract class ResType(val path: String)
 
 object ResType extends Log {
-  implicit val formats = Serialization.formats(NoTypeHints)
-  val Ponkotu = 110136878L
+  val Api = "/kcsapi"
+  val GetMaster = s"$Api/api_get_master"
+  val GetMember = s"$Api/api_get_member"
+  val ReqKousyou = s"$Api/api_req_kousyou"
 
-  val GetMaster = "/kcsapi/api_get_master"
-  val GetMember = "/kcsapi/api_get_member"
-  private[this] var auth: Option[Auth] = None
+  case object Material extends ResType(s"$GetMember/material")
+  case object Basic extends ResType(s"$GetMember/basic")
+  case object Ship3 extends ResType(s"$GetMember/ship3")
+  case object NDock extends ResType(s"$GetMember/ndock")
+  case object KDock extends ResType(s"$GetMember/kdock")
+  case object DeckPort extends ResType(s"$GetMember/deck_port")
+  case object Record extends ResType(s"$GetMember/record") // Basicの綺麗版
+  case object CreateShip extends ResType(s"$ReqKousyou/createship")
+  case object GetShip extends ResType(s"$ReqKousyou/getship") // IDとshipIDのみ
+  case object CreateItem extends ResType(s"$ReqKousyou/createitem")
+  case object MasterShip extends ResType(s"$GetMaster/ship")
 
-  case object Material extends ResType(s"$GetMember/material") {
-    override def run(reqHeaders: Map[String, String], obj: JValue): Unit = {
-      val material = data.Material.fromJson(obj)
-      post("/material", write(material))
-    }
-  }
-
-  case object Basic extends ResType(s"$GetMember/basic") {
-    override def run(reqHeaders: Map[String, String], obj: JValue): Unit = {
-      auth = Some(data.Auth.fromJSON(obj))
-      val basic = data.Basic.fromJSON(obj)
-      post("/basic", write(basic))
-    }
-  }
-
-  case object Ship3 extends ResType(s"$GetMember/ship3") {
-    override def run(reqHeaders: Map[String, String], obj: JValue): Unit = {
-      val ship = data.Ship.fromJson(obj \ "api_ship_data")
-      post("/ship", write(ship))
-    }
-  }
-
-  case object NDock extends ResType(s"$GetMember/ndock") {
-    def run(reqHeaders: Map[String, String], obj: JValue): Unit = {
-      val docks = data.NDock.fromJson(obj)
-      post("/ndock", write(docks))
-    }
-  }
-
-  case object MasterShip extends ResType(s"$GetMaster/ship") {
-    override def run(reqHeaders: Map[String, String], obj: JValue): Unit = {
-      if(auth.map(_.id) == Some(Ponkotu)) {
-        val ships = data.MasterShip.fromJson(obj)
-        post("/master/ship", write(ships))
-      }
-    }
-  }
-
-  val values = Set(Material, Basic, Ship3, NDock, MasterShip)
-
-  def post(uStr: String, data: String) = {
-    Http(url(ClientConfig.postUrl + uStr) << Map("auth" -> write(auth), "data" -> data)).either.foreach {
-      case Left(e) => error("POST Error"); error(e)
-      case Right(res) => info(s"POST Success: ($uStr, $data)\n${res.getResponseBody("UTF-8")}")
-    }
-  }
+  val values = Set(Material, Basic, Ship3, NDock, KDock, DeckPort, Record, CreateShip, GetShip, CreateItem, MasterShip)
 
   def fromUri(uri: String): Option[ResType] = {
     val path = Uri.parseUri(uri).pathRaw

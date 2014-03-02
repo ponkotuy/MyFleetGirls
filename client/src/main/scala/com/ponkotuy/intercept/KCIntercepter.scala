@@ -2,7 +2,7 @@ package com.ponkotuy.intercept
 
 import scala.collection.JavaConverters._
 import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
-import com.ponkotuy.parser.{KCJson, ResType}
+import com.ponkotuy.parser.{PostResponse, KCJson, ResType}
 import java.nio.charset.Charset
 
 /**
@@ -12,6 +12,8 @@ import java.nio.charset.Charset
  */
 class KCIntercepter extends Intercepter {
   import KCIntercepter._
+
+  val post = new PostResponse
   override def input(req: HttpRequest, res: HttpResponse): Unit = {
     val restype = ResType.fromUri(req.getUri)
     for {
@@ -19,7 +21,7 @@ class KCIntercepter extends Intercepter {
       headers = entries4s(req.headers().entries())
       json <- KCJson.toAst(res.getContent.toString(Charset.forName("UTF-8")))
     } {
-      typ.run(headers, json)
+      post.parseAndPost(typ, headers, json)
     }
   }
 }
