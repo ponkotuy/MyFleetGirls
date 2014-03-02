@@ -37,6 +37,10 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
     }.map(Admiral(a)).toOption().apply()
   }
 
+  def findAll()(implicit session: DBSession = Admiral.autoSession): List[Admiral] = withSQL {
+    select.from(Admiral as a)
+  }.map(Admiral(a)).list().apply()
+
   def findAllByUser(userId: Long)(implicit session: DBSession = Admiral.autoSession): List[Admiral] = {
     withSQL {
       select.from(Admiral as a)

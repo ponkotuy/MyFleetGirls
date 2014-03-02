@@ -15,8 +15,9 @@ GET     /rest/v1/:userId/basics     controllers.Rest.basics(userId: Long)
 GET     /rest/v1/:userId/ships      controllers.Rest.ships(userId: Long)
 
 # View
+GET     /                           controllers.View.index
 GET     /u/:user                    controllers.View.name(user: String)
-GET     /user/:userId               controllers.View.index(userId: Long)
+GET     /user/:userId               controllers.View.user(userId: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
