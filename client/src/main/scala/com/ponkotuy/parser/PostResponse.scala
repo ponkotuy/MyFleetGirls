@@ -24,7 +24,7 @@ class PostResponse extends Log {
 
   private[this] var auth: Option[Auth] = None
 
-  def parseAndPost(typ: ResType, reqHeaders: Map[String, String], obj: JValue): Unit = {
+  def parseAndPost(typ: ResType, req: Map[String, String], obj: JValue): Unit = {
     typ match {
       case Material =>
         val material = data.Material.fromJson(obj)
@@ -45,7 +45,11 @@ class PostResponse extends Log {
       case DeckPort =>
         val decks = data.DeckPort.fromJson(obj)
         info(s"No Send: $decks")
-      case Record => // No Need
+      case CreateShip =>
+        println(req)
+        val createShip = data.CreateShip.fromMap(req)
+        info(s"No Send: $createShip")
+      case LoginCheck | Record | GetShip | Charge | HenseiChange | MissionStart | GetOthersDeck => // No Need
       case MasterShip =>
         if(auth.map(_.id) == Some(Ponkotu)) {
           val ships = data.MasterShip.fromJson(obj)
@@ -53,7 +57,7 @@ class PostResponse extends Log {
         }
       case _ =>
         info(s"ResType: $typ")
-        info(s"Headers: $reqHeaders")
+        info(s"Req: $req")
         jsoninfo(obj)
     }
   }

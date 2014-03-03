@@ -4,6 +4,7 @@ import scala.collection.JavaConverters._
 import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
 import com.ponkotuy.parser.{PostResponse, KCJson, ResType}
 import java.nio.charset.Charset
+import com.twitter.util.Try
 
 /**
  *
@@ -18,15 +19,26 @@ class KCIntercepter extends Intercepter {
     val restype = ResType.fromUri(req.getUri)
     for {
       typ <- restype
-      headers = entries4s(req.headers().entries())
-      json <- KCJson.toAst(res.getContent.toString(Charset.forName("UTF-8")))
+      json <- KCJson.toAst(res.getContent.toString(Charset.forName(UTF8)))
     } {
-      post.parseAndPost(typ, headers, json)
+      val reqCont = req.getContent.toString(Charset.forName(UTF8))
+      post.parseAndPost(typ, parseKeyValue(reqCont), json)
     }
   }
 }
 
 object KCIntercepter {
+  val UTF8 = "UTF-8"
+  val Underbar = """\%5F""".r
+
   def entries4s[K, V](entries: java.util.List[java.util.Map.Entry[K, V]]): Map[K, V] =
     entries.asScala.map { entry => entry.getKey -> entry.getValue }.toMap
+
+  def parseKeyValue(str: String): Map[String, String] =
+    Try {
+      Underbar.replaceAllIn(str, "_").split('&').map { elem =>
+        val Array(key, value) = elem.split('=')
+        key -> value
+      }.toMap
+    }.getOrElse(Map())
 }
