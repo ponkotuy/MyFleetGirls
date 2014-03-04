@@ -9,6 +9,7 @@ import com.ponkotuy.util.Log
 import com.ponkotuy.data
 import com.ponkotuy.data.Auth
 import com.ponkotuy.config.ClientConfig
+import scala.collection.mutable
 
 /**
  *
@@ -23,6 +24,8 @@ class PostResponse extends Log {
   val Ponkotu = 110136878L
 
   private[this] var auth: Option[Auth] = None
+  // KDock + CreateShipのデータが欲しいのでKDockIDをKeyに溜めておく
+  private[this] val createShips: mutable.Map[Int, data.CreateShip] = mutable.Map()
 
   def parseAndPost(typ: ResType, req: Map[String, String], obj: JValue): Unit = {
     typ match {
@@ -46,9 +49,8 @@ class PostResponse extends Log {
         val decks = data.DeckPort.fromJson(obj)
         info(s"No Send: $decks")
       case CreateShip =>
-        println(req)
         val createShip = data.CreateShip.fromMap(req)
-        info(s"No Send: $createShip")
+        createShips(createShip.kDock) = createShip
       case LoginCheck | Record | GetShip | Charge | HenseiChange | MissionStart | GetOthersDeck => // No Need
       case MasterShip =>
         if(auth.map(_.id) == Some(Ponkotu)) {

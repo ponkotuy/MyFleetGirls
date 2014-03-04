@@ -7,7 +7,11 @@ package com.ponkotuy.data
  */
 case class CreateShip(
     fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int,
-    kDock: Int, highspeed: Boolean, largeFlag: Boolean)
+    kDock: Int, highspeed: Boolean, largeFlag: Boolean) {
+
+  def equalKDock(kd: KDock): Boolean =
+    fuel == kd.fuel && ammo == kd.ammo && steel == kd.steel && bauxite == kd.bauxite && kDock == kd.id
+}
 
 object CreateShip {
   def fromMap(map: Map[String, String]): CreateShip = {
