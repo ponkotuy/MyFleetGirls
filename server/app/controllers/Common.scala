@@ -16,7 +16,7 @@ import models.Admiral
 object Common extends Controller {
   implicit val formats = DefaultFormats
 
-  val Ponkotu = 110136878L
+  val Ponkotu = 10007732L
 
   def authAndParse[T](f: (models.Admiral, T) => SimpleResult)(implicit mf: Manifest[T]): Action[AnyContent] = {
     Action.async { request =>

@@ -4,7 +4,7 @@ import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data
 import scalikejdbc.{WrappedResultSet, DBSession}
 
-/** 建造ログ(data.CreateShipとは微妙に異なる)
+/** 建造ログ(data.CreateShipとはかなり異なる)
   *
   * data.KDockのデータを用いて補完する必要がある
   *

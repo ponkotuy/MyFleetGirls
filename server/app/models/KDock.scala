@@ -25,7 +25,7 @@ object KDock extends SQLSyntaxSupport[KDock] {
     rs.int(x.fuel),
     rs.int(x.ammo),
     rs.int(x.steel),
-    rs.int(x.baxuite),
+    rs.int(x.bauxite),
     rs.long(x.created)
   )
 
