@@ -32,7 +32,7 @@ object Post extends Controller {
 
   def ship = authAndParse[List[Ship]] { case (auth, ships) =>
     models.Ship.deleteAllByUser(auth.id)
-    ships.foreach(ship => models.Ship.create(ship, auth.id))
+    models.Ship.bulkInsert(ships, auth.id)
     Ok("Success")
   }
 
@@ -42,9 +42,13 @@ object Post extends Controller {
     Ok("Success")
   }
 
-  case class CreateShipAndDock(createShip: CreateShip, kDock: KDock)
   def createShip = authAndParse[CreateShipAndDock] { case (auth, CreateShipAndDock(ship, dock)) =>
-    models.CreateShip.create(ship, dock)
+    try {
+      models.CreateShip.create(ship, dock)
+    } catch {
+      case e: Throwable =>
+        Ok("Duplicate Entry")
+    }
     Ok("Success")
   }
 
@@ -54,7 +58,8 @@ object Post extends Controller {
   }
 
   def deckPort = authAndParse[List[DeckPort]] { case (auth, decks) =>
-    decks.foreach(models.DeckPort.create)
+    models.DeckPort.deleteByUser(auth.id)
+    models.DeckPort.bulkInsert(decks)
     Ok("Success")
   }
 }

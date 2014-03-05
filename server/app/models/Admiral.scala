@@ -28,7 +28,9 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
   def find(id: Long)(implicit session: DBSession = Admiral.autoSession): Option[Admiral] = {
     withSQL {
       select.from(Admiral as a).where.eq(a.id, id)
-    }.map(Admiral(a)).toOption().apply()
+    }.map(Admiral(a))
+      .toOption()
+      .apply()
   }
 
   def findByName(name: String)(implicit session: DBSession = Admiral.autoSession): Option[Admiral] = {

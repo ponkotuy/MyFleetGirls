@@ -7,7 +7,7 @@ import org.json4s.native.Serialization.write
 import dispatch._
 import com.ponkotuy.util.Log
 import com.ponkotuy.data
-import com.ponkotuy.data.Auth
+import com.ponkotuy.data.{CreateShipAndDock, Auth}
 import com.ponkotuy.config.ClientConfig
 import scala.collection.mutable
 
@@ -24,7 +24,7 @@ class PostResponse extends Log {
   val Ponkotu = 110136878L
 
   private[this] var auth: Option[Auth] = None
-  // KDock + CreateShipのデータが欲しいのでKDockIDをKeyに溜めておく
+  // KDock + CreateShipのデータが欲しいのでKDockIDをKeyにCreateShipを溜めておく
   private[this] val createShips: mutable.Map[Int, data.CreateShip] = mutable.Map()
 
   def parseAndPost(typ: ResType, req: Map[String, String], obj: JValue): Unit = {
@@ -44,14 +44,20 @@ class PostResponse extends Log {
         post("/ndock", write(docks))
       case KDock =>
         val docks = data.KDock.fromJson(obj)
-        info(s"No Send: $docks")
+        post("/kdock", write(docks))
+        docks.foreach { dock =>
+          createShips.get(dock.id).foreach { cShip =>
+            val dat = CreateShipAndDock(cShip, dock)
+            post("/createship", write(dat))
+          }
+        }
       case DeckPort =>
         val decks = data.DeckPort.fromJson(obj)
-        info(s"No Send: $decks")
+        post("/deckport", write(decks))
       case CreateShip =>
         val createShip = data.CreateShip.fromMap(req)
         createShips(createShip.kDock) = createShip
-      case LoginCheck | Record | GetShip | Charge | HenseiChange | MissionStart | GetOthersDeck => // No Need
+      case LoginCheck | Ship2 | Deck | Record | GetShip | Charge | HenseiChange | MissionStart | GetOthersDeck => // No Need
       case MasterShip =>
         if(auth.map(_.id) == Some(Ponkotu)) {
           val ships = data.MasterShip.fromJson(obj)
@@ -64,10 +70,12 @@ class PostResponse extends Log {
     }
   }
 
-  def post(uStr: String, data: String) = {
+  def post(uStr: String, data: String): Unit = {
     Http(url(ClientConfig.postUrl + uStr) << Map("auth" -> write(auth), "data" -> data)).either.foreach {
       case Left(e) => error("POST Error"); error(e)
-      case Right(res) => info(s"POST Success: ($uStr, $data)\n${res.getResponseBody("UTF-8")}")
+      case Right(res) =>
+        info(s"POST Success: ($uStr, $data)")
+        if(res.getStatusCode >= 400) error(s"Error Response\n${res.getResponseBody("UTF-8")}")
     }
   }
 

@@ -3,6 +3,7 @@ package models
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data
 import scalikejdbc.{WrappedResultSet, DBSession}
+import util.scalikejdbc.BulkInsert._
 
 /**
  *
@@ -75,6 +76,36 @@ object Ship extends SQLSyntaxSupport[Ship] {
     Ship(s.id, s.shipId, memberId, s.lv, s.exp, s.nowhp, s.slot, s.fuel, s.bull, s.dockTime, s.cond,
       s.karyoku, s.raisou, s.taiku, s.soukou, s.kaihi, s.taisen, s.sakuteki, s.lucky, s.locked, created
     )
+  }
+
+  def bulkInsert(ss: Seq[data.Ship], memberId: Long)(
+      implicit session: DBSession = Ship.autoSession): Seq[Ship] = {
+    val created = System.currentTimeMillis()
+    val slots = ss.map(_.slot.mkString(","))
+    applyUpdate {
+      insert.into(Ship).columns(
+        column.id, column.shipId, column.memberId,
+        column.lv, column.exp, column.nowhp, column.slot,
+        column.fuel, column.bull, column.dockTime, column.cond,
+        column.karyoku, column.raisou, column.taiku, column.soukou,
+        column.kaihi, column.taisen, column.sakuteki, column.lucky,
+        column.locked, column.created
+      ).multiValues(
+          ss.map(_.id), ss.map(_.shipId), Seq.fill(ss.size)(memberId),
+          ss.map(_.lv), ss.map(_.exp), ss.map(_.nowhp), slots,
+          ss.map(_.fuel), ss.map(_.bull), ss.map(_.dockTime), ss.map(_.cond),
+          ss.map(_.karyoku), ss.map(_.raisou), ss.map(_.taiku), ss.map(_.soukou),
+          ss.map(_.kaihi), ss.map(_.taisen), ss.map(_.sakuteki), ss.map(_.lucky),
+          ss.map(_.locked), Seq.fill(ss.size)(created)
+        )
+    }
+    ss.map { s =>
+      Ship(
+        s.id, s.shipId, memberId, s.lv, s.exp, s.nowhp, s.slot,
+        s.fuel, s.bull, s.dockTime, s.cond, s.karyoku, s.raisou, s.taiku, s.soukou,
+        s.kaihi, s.taisen, s.sakuteki, s.lucky, s.locked, created
+      )
+    }
   }
 
   def deleteAllByUser(memberId: Long)(implicit session: DBSession = Ship.autoSession): Unit =

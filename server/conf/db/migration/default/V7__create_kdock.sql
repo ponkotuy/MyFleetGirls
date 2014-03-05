@@ -9,6 +9,6 @@ create table k_dock(
         ammo int not null,
         steel int not null,
         bauxite int not null,
-        created bigint not null
+        created bigint not null,
         primary key(member_id, id)
 ) engine = ARIA, default charset=utf8;

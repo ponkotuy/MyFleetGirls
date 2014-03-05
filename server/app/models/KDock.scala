@@ -39,7 +39,7 @@ object KDock extends SQLSyntaxSupport[KDock] {
 
   def create(kd: data.KDock)(implicit session: DBSession = KDock.autoSession): KDock = {
     val created = System.currentTimeMillis()
-    withSQL {
+    applyUpdate {
       insert.into(KDock).namedValues(
         column.id -> kd.id, column.memberId -> kd.memberId, column.shipId -> kd.shipId,
         column.state -> kd.state, column.completeTime -> kd.completeTime,

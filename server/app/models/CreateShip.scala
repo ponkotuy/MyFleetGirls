@@ -45,14 +45,14 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       implicit session: DBSession = CreateShip.autoSession): CreateShip = {
     require(cs.equalKDock(kd))
     val created = System.currentTimeMillis()
-    withSQL {
+    applyUpdate {
       insert.into(CreateShip).namedValues(
         column.memberId -> kd.memberId, column.resultShip -> kd.shipId,
         column.fuel -> cs.fuel, column.ammo -> cs.ammo, column.steel -> cs.steel, column.bauxite -> cs.bauxite,
         column.develop -> cs.develop, column.kDock -> cs.kDock, column.highspeed -> cs.highspeed,
         column.largeFlag -> cs.largeFlag, column.completeTime -> kd.completeTime, column.created -> created
       )
-    }.updateAndReturnGeneratedKey().apply()
+    }
     CreateShip(
       kd.memberId, kd.shipId,
       cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop,

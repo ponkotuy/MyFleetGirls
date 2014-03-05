@@ -24,6 +24,7 @@ object ResType extends Log {
   val ReqMember = s"$Api/api_req_member"
   val ReqMap = s"$Api/api_req_map"
   val ReqSortie = s"$Api/api_req_sortie"
+  val ReqQuest
 
   case object LoginCheck extends ResType(s"$AuthMember/logincheck") // 取るべきではない
   case object Material extends ResType(s"$GetMember/material")
@@ -33,7 +34,7 @@ object ResType extends Log {
   case object Ship3 extends ResType(s"$GetMember/ship3")
   case object NDock extends ResType(s"$GetMember/ndock")
   case object KDock extends ResType(s"$GetMember/kdock")
-  case object Deck extends ResType(s"$GetMember/deck")
+  case object Deck extends ResType(s"$GetMember/deck") // DeckPortと何が違うのこあ分からなくて困っている
   case object DeckPort extends ResType(s"$GetMember/deck_port")
   case object CreateShip extends ResType(s"$ReqKousyou/createship")
   case object GetShip extends ResType(s"$ReqKousyou/getship") // IDとshipIDのみ
@@ -44,11 +45,12 @@ object ResType extends Log {
   case object KaisouPowerup extends ResType(s"$ReqKaisou/powerup")
   case object PracticeBattle extends ResType(s"$ReqPractice/battle")
   case object PracticeBattleResult extends ResType(s"$ReqPractice/battle_result")
-  case object GetOthersDeck extends ResType(s"$ReqMember/getothersdeck") // 取るべきではない
+  case object GetOthersDeck extends ResType(s"$ReqMember/getothersdeck") // 演習相手。取るべきではない
   case object MapStart extends ResType(s"$ReqMap/start")
   case object MapNext extends ResType(s"$ReqMap/next")
   case object SortieBattle extends ResType(s"$ReqSortie/battle")
   case object SortieBattleResult extends ResType(s"$ReqSortie/battleresult")
+  case object ClearItemGet extends ResType(s"$ReqQuest/clearitemget")
   case object MasterShip extends ResType(s"$GetMaster/ship")
   case object MasterPractice extends ResType(s"$GetMaster/mission")
 
