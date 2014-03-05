@@ -3,6 +3,7 @@ package models
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data
 import scalikejdbc.{WrappedResultSet, DBSession}
+import util.scalikejdbc.BulkInsert._
 
 /**
  *
@@ -30,12 +31,26 @@ object KDock extends SQLSyntaxSupport[KDock] {
   )
 
   lazy val kd = KDock.syntax("kd")
+  lazy val ms = MasterShip.syntax("ms")
 
   def findAllByUser(memberId: Long)(implicit session: DBSession = KDock.autoSession): List[KDock] = withSQL {
     select.from(KDock as kd)
       .where.eq(kd.memberId, memberId)
       .orderBy(kd.id)
   }.map(KDock(kd)).toList().apply()
+
+  def findAllByUserWithName(memberId: Long)(
+      implicit session: DBSession = KDock.autoSession): List[KDockWithName] = withSQL {
+    select(kd.id, kd.completeTime, kd.fuel, kd.ammo, kd.steel, kd.bauxite, ms.name)
+      .from(KDock as kd)
+      .innerJoin(MasterShip as ms).on(kd.shipId, ms.id)
+      .where.eq(kd.memberId, memberId)
+      .orderBy(kd.id)
+  }.map { rs =>
+    KDockWithName(
+      rs.int(kd.id), rs.long(kd.completeTime),
+      rs.int(kd.fuel), rs.int(kd.ammo), rs.int(kd.steel), rs.int(kd.bauxite), rs.string(ms.name))
+  }.toList().apply()
 
   def create(kd: data.KDock)(implicit session: DBSession = KDock.autoSession): KDock = {
     val created = System.currentTimeMillis()
@@ -49,4 +64,28 @@ object KDock extends SQLSyntaxSupport[KDock] {
     }
     KDock(kd.id, kd.memberId, kd.shipId, kd.state, kd.completeTime, kd.fuel, kd.ammo, kd.steel, kd.bauxite, created)
   }
+
+  def bulkInsert(kds: Seq[data.KDock])(implicit session: DBSession = KDock.autoSession): Seq[KDock] = {
+    val created = System.currentTimeMillis()
+    applyUpdate {
+      insert.into(KDock).columns(
+        column.id, column.memberId, column.shipId, column.state, column.completeTime,
+        column.fuel, column.ammo, column.steel, column.bauxite, column.created
+      ).multiValues(
+          kds.map(_.id), kds.map(_.memberId), kds.map(_.shipId), kds.map(_.state), kds.map(_.completeTime),
+          kds.map(_.fuel), kds.map(_.ammo), kds.map(_.steel), kds.map(_.bauxite), Seq.fill(kds.size)(created)
+        )
+    }
+    kds.map { k =>
+      KDock(k.id, k.memberId, k.shipId, k.state, k.completeTime, k.fuel, k.ammo, k.steel, k.bauxite, created)
+    }
+  }
+
+  def deleteByUser(memberId: Long)(implicit session: DBSession = KDock.autoSession): Unit = applyUpdate {
+    delete.from(KDock).where.eq(KDock.column.memberId, memberId)
+  }
 }
+
+case class KDockWithName(
+    id: Int, completeTime: Long,
+    fuel: Int, ammo: Int, steel: Int, bauxite: Int, name: String)

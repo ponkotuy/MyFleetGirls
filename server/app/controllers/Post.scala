@@ -53,7 +53,8 @@ object Post extends Controller {
   }
 
   def kdock = authAndParse[List[KDock]] { case (auth, docks) =>
-    docks.foreach(models.KDock.create)
+    models.KDock.deleteByUser(auth.id)
+    models.KDock.bulkInsert(docks)
     Ok("Success")
   }
 

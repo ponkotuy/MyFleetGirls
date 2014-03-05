@@ -1,4 +1,4 @@
-@(auth: Admiral, basic: Basic, ships: Seq[(Ship, MasterShip)], docks: Seq[NDockWithName])
+@(auth: Admiral, basic: Basic, ships: Seq[(Ship, MasterShip)], ndocks: Seq[NDockWithName], kdocks: Seq[KDockWithName])
 
 @rank(r: Int) = {
   @Map(
@@ -42,7 +42,7 @@
   <ul class="nav nav-tabs">
     <li class="active"><a href="#material" data-toggle="tab">資源</a></li>
     <li><a href="#ship" data-toggle="tab">艦娘</a></li>
-    <li><a href="#dock" data-toggle="tab">入渠</a></li>
+    <li><a href="#dock" data-toggle="tab">ドック</a></li>
   </ul>
 
   <div class="tab-content">
@@ -94,19 +94,41 @@
 
     <div class="tab-pane" id="dock">
       <div class="page-header">
-        <h1>時間</h1>
+        <h1>入渠</h1>
       </div>
       <table class="table table-striped">
         <thead>
           <th>DockID</th><th>ShipID</th><th>名前</th><th>時間</th>
         </thead>
         <tbody>
-          @docks.map { dock =>
+          @ndocks.map { dock =>
             <tr>
               <td>@dock.id</td>
               <td>@dock.shipId</td>
               <td>@dock.name</td>
-              <td class="viewTime" data-time="@dock.completeTime"></td>
+              <td class="viewTime" data-time="@dock.completeTime" data-end-mes="修復完了"></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="page-header">
+        <h1>建造</h1>
+      </div>
+      <table class="table table-striped">
+        <thead>
+          <th>DockID</th><th>名前</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>時間</th>
+        </thead>
+        <tbody>
+          @kdocks.map { dock =>
+            <tr>
+              <td>@dock.id</td>
+              <td>@dock.name</td>
+              <td>@dock.fuel</td>
+              <td>@dock.ammo</td>
+              <td>@dock.steel</td>
+              <td>@dock.bauxite</td>
+              <td class="viewTime" data-time="@dock.completeTime" data-end-mes="建造完了"></td>
             </tr>
           }
         </tbody>
