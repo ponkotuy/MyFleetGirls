@@ -34,12 +34,21 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
   )
 
   lazy val cs = CreateShip.syntax("cs")
+  lazy val ms = MasterShip.syntax("ms")
 
   def findAllByUser(memberId: Long)(implicit session: DBSession = CreateShip.autoSession): List[CreateShip] = withSQL {
     select.from(CreateShip as cs)
       .where.eq(cs.memberId, memberId)
       .orderBy(cs.kDock)
   }.map(CreateShip(cs)).toList().apply()
+
+  def findAllByUserWithName(memberId: Long)(
+      implicit session: DBSession = CreateShip.autoSession): List[CreateShipWithName] = withSQL {
+    select(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop, cs.largeFlag, cs.created, ms.name)
+      .from(CreateShip as cs)
+      .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
+      .orderBy(cs.created).desc
+  }.map(CreateShipWithName(cs, ms)).toList().apply()
 
   def create(cs: data.CreateShip, kd: data.KDock)(
       implicit session: DBSession = CreateShip.autoSession): CreateShip = {
@@ -58,4 +67,23 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop,
       cs.kDock, cs.highspeed, cs.largeFlag, kd.completeTime, created)
   }
+}
+
+case class CreateShipWithName(
+    fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int,
+    largeFlag: Boolean, created: Long, name: String)
+
+object CreateShipWithName {
+  def apply(cs: SyntaxProvider[CreateShip], ms: SyntaxProvider[MasterShip])(
+      rs: WrappedResultSet): CreateShipWithName =
+    new CreateShipWithName(
+      rs.int(cs.fuel),
+      rs.int(cs.ammo),
+      rs.int(cs.steel),
+      rs.int(cs.bauxite),
+      rs.int(cs.develop),
+      rs.boolean(cs.largeFlag),
+      rs.long(cs.created),
+      rs.string(ms.name)
+    )
 }
