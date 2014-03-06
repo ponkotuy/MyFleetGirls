@@ -14,8 +14,8 @@ object KCJson {
   implicit val formats = Serialization.formats(NoTypeHints)
 
   def toAst(content: String): Option[JValue] = {
-    val ast = parse(content.replaceFirst("svdata=", ""))
     Try {
+      val ast = parse(content.replaceFirst("svdata=", ""))
       assert((ast \ "api_result").extract[Int] == 1)
       ast \ "api_data"
     }.toOption

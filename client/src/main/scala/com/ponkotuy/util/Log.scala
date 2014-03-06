@@ -1,6 +1,6 @@
 package com.ponkotuy.util
 
-import com.twitter.logging.Logger
+import com.twitter.logging.{LoggerFactory, Logger}
 import org.json4s._
 import org.json4s.native.JsonMethods._
 import scala.util.Try

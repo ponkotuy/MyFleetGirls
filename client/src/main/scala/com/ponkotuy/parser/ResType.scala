@@ -24,7 +24,7 @@ object ResType extends Log {
   val ReqMember = s"$Api/api_req_member"
   val ReqMap = s"$Api/api_req_map"
   val ReqSortie = s"$Api/api_req_sortie"
-  val ReqQuest
+  val ReqQuest = s"$Api/api_req_quest"
 
   case object LoginCheck extends ResType(s"$AuthMember/logincheck") // 取るべきではない
   case object Material extends ResType(s"$GetMember/material")
@@ -34,8 +34,9 @@ object ResType extends Log {
   case object Ship3 extends ResType(s"$GetMember/ship3")
   case object NDock extends ResType(s"$GetMember/ndock")
   case object KDock extends ResType(s"$GetMember/kdock")
-  case object Deck extends ResType(s"$GetMember/deck") // DeckPortと何が違うのこあ分からなくて困っている
+  case object Deck extends ResType(s"$GetMember/deck") // DeckPortと何が違うのか分からなくて困っている
   case object DeckPort extends ResType(s"$GetMember/deck_port")
+  case object Practice extends ResType(s"$GetMember/practice") // 演習相手。取るべきではない
   case object CreateShip extends ResType(s"$ReqKousyou/createship")
   case object GetShip extends ResType(s"$ReqKousyou/getship") // IDとshipIDのみ
   case object CreateItem extends ResType(s"$ReqKousyou/createitem")
@@ -56,9 +57,9 @@ object ResType extends Log {
 
   val values = Set(
     LoginCheck, Material, Basic, Record, Ship2, Ship3, NDock, KDock,
-    Deck, DeckPort, CreateShip, GetShip, CreateItem,
+    Deck, DeckPort, Practice, CreateShip, GetShip, CreateItem,
     Charge, HenseiChange, MissionStart, KaisouPowerup, PracticeBattle, PracticeBattleResult, GetOthersDeck,
-    MapStart, SortieBattle,
+    MapStart, SortieBattle, SortieBattleResult, ClearItemGet,
     MasterShip, MasterPractice
   )
 

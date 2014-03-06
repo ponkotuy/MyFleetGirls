@@ -57,7 +57,8 @@ class PostResponse extends Log {
       case CreateShip =>
         val createShip = data.CreateShip.fromMap(req)
         createShips(createShip.kDock) = createShip
-      case LoginCheck | Ship2 | Deck | Record | GetShip | Charge | HenseiChange | MissionStart | GetOthersDeck => // No Need
+      case LoginCheck | Ship2 | Deck | Practice | Record | GetShip | Charge | HenseiChange | MissionStart => // No Need
+      case GetOthersDeck => // No Need
       case MasterShip =>
         if(auth.map(_.id) == Some(Ponkotu)) {
           val ships = data.MasterShip.fromJson(obj)
