@@ -47,6 +47,7 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
     select(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop, cs.largeFlag, cs.created, ms.name)
       .from(CreateShip as cs)
       .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
+      .where.eq(cs.memberId, memberId)
       .orderBy(cs.created).desc
   }.map(CreateShipWithName(cs, ms)).toList().apply()
 
