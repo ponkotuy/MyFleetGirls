@@ -9,10 +9,11 @@ import com.ponkotuy.intercept.{Intercepter, PassThrough}
 
 /** Proxy by Finagle
   *
-  * @param hosts: Require Port Number(hostname:80 etc...)
+  * @param hosts: Hosts. Require Port Number(hostname:80 etc...)
+  * @param port: Server Port.
   * @param inter: com.ponkotuy.intercept.Intercepter
   */
-class FinagleProxy(hosts: String, inter: Intercepter = new PassThrough) {
+class FinagleProxy(hosts: String, port: Int, inter: Intercepter = new PassThrough) {
   val client = ClientBuilder()
     .codec(http.Http())
     .hosts(hosts)
@@ -31,7 +32,7 @@ class FinagleProxy(hosts: String, inter: Intercepter = new PassThrough) {
       res
     }
   }
-  val server = Http.serve(":8080", service)
+  val server = Http.serve(s":$port", service)
 
   def start(): Unit = {
     Await.ready(server)

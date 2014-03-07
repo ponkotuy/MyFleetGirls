@@ -11,7 +11,7 @@ import Common._
  */
 object Post extends Controller {
   def basic = authAndParse[Basic] { case (auth, basic) =>
-    val isChange = models.Basic.findByUser(auth.id).exists(_.diff(basic) > 0.1)
+    val isChange = !models.Basic.findByUser(auth.id).exists(_.diff(basic) < 0.01)
     if(isChange) {
       models.Basic.create(basic)
       Ok("Success")
@@ -21,7 +21,7 @@ object Post extends Controller {
   }
 
   def material = authAndParse[Material] { case (auth, material) =>
-    val isChange = models.Material.findByUser(auth.id).exists(_.diff(material) > 0.01)
+    val isChange = !models.Material.findByUser(auth.id).exists(_.diff(material) < 0.01)
     if(isChange) {
       models.Material.create(material)
       Ok("Success")

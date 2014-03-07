@@ -1,4 +1,6 @@
 
+import AssemblyKeys._ // put this at the top of the file
+
 name := "MyFleetGirls"
 
 version := "0.0.1-SNAPSHOT"
@@ -14,3 +16,7 @@ libraryDependencies ++= Seq(
 )
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions")
+
+assemblySettings
+
+mainClass in assembly := Some("com.ponkotuy.run.Main")

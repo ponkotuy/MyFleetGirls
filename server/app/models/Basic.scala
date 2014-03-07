@@ -30,7 +30,7 @@ case class Basic(
    */
   def diff(x: data.Basic): Double = {
     import util.DiffCalc._
-    Iterator(
+    val result = Iterator(
       neq(lv, x.lv),
       ratio(experience, x.experience),
       neq(rank, x.rank),
@@ -41,6 +41,8 @@ case class Basic(
       ratio(ptWin, x.ptWin),
       ratio(ptLose, x.ptLose)
     ).max
+    println(result)
+    result
   }
 }
 

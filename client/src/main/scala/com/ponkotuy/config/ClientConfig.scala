@@ -13,4 +13,5 @@ object ClientConfig {
 
   val kcUrl = config.getString("url.kc")
   val postUrl = config.getString("url.post") + "/post/v1"
+  val proxyPort = config.getInt("proxy.port")
 }

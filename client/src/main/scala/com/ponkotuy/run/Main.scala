@@ -10,5 +10,5 @@ import com.ponkotuy.config.ClientConfig
  * Date: 14/02/18.
  */
 object Main extends App {
-  new FinagleProxy(ClientConfig.kcUrl, new KCIntercepter).start()
+  new FinagleProxy(ClientConfig.kcUrl, ClientConfig.proxyPort, new KCIntercepter).start()
 }
