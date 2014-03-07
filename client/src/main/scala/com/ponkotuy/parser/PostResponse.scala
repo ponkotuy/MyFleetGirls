@@ -43,7 +43,7 @@ class PostResponse extends Log {
         val docks = data.NDock.fromJson(obj)
         post("/ndock", write(docks))
       case KDock =>
-        val docks = data.KDock.fromJson(obj)
+        val docks = data.KDock.fromJson(obj).filterNot(_.completeTime == 0)
         post("/kdock", write(docks))
         docks.foreach { dock =>
           createShips.get(dock.id).foreach { cShip =>

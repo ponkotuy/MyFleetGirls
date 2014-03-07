@@ -54,7 +54,7 @@ object Post extends Controller {
 
   def kdock = authAndParse[List[KDock]] { case (auth, docks) =>
     models.KDock.deleteByUser(auth.id)
-    models.KDock.bulkInsert(docks)
+    models.KDock.bulkInsert(docks.filterNot(_.completeTime == 0))
     Ok("Success")
   }
 
