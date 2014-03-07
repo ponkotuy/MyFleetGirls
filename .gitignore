@@ -14,8 +14,5 @@ project/plugins/project/
 .idea/
 .idea_modules/
 
-# Settings
-client/application.conf
-
 # Others
 *~

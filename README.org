@@ -7,8 +7,20 @@
 #+LANGUAGE: ja
 
 * MyFleetGirls
-  開発中の艦これProxyツールっぽい？
+  艦これのデータをProxy経由で取得し、サーバに送って、
 
-  将来的には俺の艦娘サーバで艦これプレイデータを公開できるようになるっぽい。
+  [[http://myfleet.ponkotuy.com/]]
 
-  頑張って開発しなきゃ！
+  こんな感じで見れるようにするツールです。
+
+** Getting Started
+   sbtのみで動かせます
+
+*** Client
+    Proxy部分です。このプロジェクトをgitなどでcloneし、sbt proxyで実行できます。
+
+*** Server
+    Clientからの通信待ち受け、表示とかをします。MariaDBで動かしてますがMySQLでも動くでしょう。
+    PlayとScaliikeJDBCで動かしています。
+
+    sbt runで動かせますがまぁ色々設定が必要です。

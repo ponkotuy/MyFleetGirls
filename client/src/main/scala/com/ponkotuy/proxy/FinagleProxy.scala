@@ -15,7 +15,7 @@ import com.ponkotuy.intercept.{Intercepter, PassThrough}
 class FinagleProxy(hosts: String, inter: Intercepter = new PassThrough) {
   val client = ClientBuilder()
     .codec(http.Http())
-    .hosts("125.6.189.39:80")
+    .hosts(hosts)
     .hostConnectionLimit(4).build()
 
   val service = new Service[HttpRequest, HttpResponse] {
