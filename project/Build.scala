@@ -7,7 +7,7 @@ object MyFleetGirlsBuild extends Build {
     .aggregate(server, client, library)
 
   lazy val rootSettings = Defaults.defaultSettings ++ settings ++ Seq(
-    commands ++= Seq(proxy, run)
+    commands ++= Seq(proxy, assembl, run, stage, start)
   )
 
   lazy val server = Project(id = "server", base = file("server"))
@@ -47,6 +47,12 @@ object MyFleetGirlsBuild extends Build {
   def stage = Command.command("stage") { state =>
     val subState = Command.process("project server", state)
     Command.process("stage", subState)
+    state
+  }
+
+  def start = Command.command("start") { state =>
+    val subState = Command.process("project server", state)
+    Command.process("start", subState)
     state
   }
 }
