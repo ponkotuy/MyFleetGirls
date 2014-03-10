@@ -1,1 +1,2 @@
-java -jar MyFleetGirls*.jar
+java -jar MyFleetGirls-assembly.jar
+pause
