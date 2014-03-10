@@ -33,7 +33,7 @@ object NDock extends SQLSyntaxSupport[NDock] {
   def fineAllByUserWithName(memberId: Long)(implicit session: DBSession = NDock.autoSession): List[NDockWithName] = {
     val result = withSQL {
       select(nd.id, nd.shipId, nd.completeTime, ms.name).from(NDock as nd)
-        .innerJoin(Ship as s).on(nd.shipId, s.id)
+        .innerJoin(Ship as s).on(sqls"${nd.memberId} = ${s.memberId} and ${nd.shipId} = ${s.id})")
         .innerJoin(MasterShip as ms).on(s.shipId, ms.id)
         .where.eq(nd.memberId, memberId)
         .orderBy(nd.id)

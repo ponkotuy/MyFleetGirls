@@ -32,9 +32,21 @@ object MyFleetGirlsBuild extends Build {
     state
   }
 
+  def assembl = Command.command("assembly") { state =>
+    val subState = Command.process("project client", state)
+    Command.process("assembly", subState)
+    state
+  }
+
   def run = Command.command("run") { state =>
     val subState = Command.process("project server", state)
     Command.process("run", subState)
+    state
+  }
+
+  def stage = Command.command("stage") { state =>
+    val subState = Command.process("project server", state)
+    Command.process("stage", subState)
     state
   }
 }
