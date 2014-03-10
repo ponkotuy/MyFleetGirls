@@ -1,5 +1,6 @@
+import AssemblyKeys._
 
-import AssemblyKeys._ // put this at the top of the file
+// put this at the top of the file
 
 name := "MyFleetGirls"
 
@@ -11,7 +12,7 @@ libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.2.0",
   "com.twitter" %% "finagle-http" % "6.10.0",
   "com.github.theon" %% "scala-uri" % "0.3.6",
-  "org.json4s" %% "json4s-native" % "3.2.6",
+  "org.json4s" %% "json4s-native" % "3.2.7",
   "net.databinder.dispatch" %% "dispatch-core" % "0.11.0"
 )
 

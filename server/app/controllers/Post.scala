@@ -59,8 +59,12 @@ object Post extends Controller {
   }
 
   def deckPort = authAndParse[List[DeckPort]] { case (auth, decks) =>
-    models.DeckPort.deleteByUser(auth.id)
-    models.DeckPort.bulkInsert(decks)
+    try {
+      models.DeckPort.deleteByUser(auth.id)
+      models.DeckPort.bulkInsert(decks)
+    } catch {
+      case e: Exception => e.printStackTrace()
+    }
     Ok("Success")
   }
 }

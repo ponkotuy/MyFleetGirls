@@ -15,7 +15,8 @@ object KCJson {
 
   def toAst(content: String): Option[JValue] = {
     Try {
-      val ast = parse(content.replaceFirst("svdata=", ""))
+      val extracted = content.dropWhile(_ != '{')
+      val ast = parse(extracted)
       assert((ast \ "api_result").extract[Int] == 1)
       ast \ "api_data"
     }.toOption

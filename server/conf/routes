@@ -11,6 +11,7 @@ POST    /post/v1/createship         controllers.Post.createShip
 POST    /post/v1/kdock              controllers.Post.kdock
 POST    /post/v1/deckport           controllers.Post.deckPort
 POST    /post/v1/master/ship        controllers.PostMaster.ship
+POST    /post/v1/master/mission     controllers.PostMaster.mission
 
 # Rest
 GET     /rest/v1/:userId/materials  controllers.Rest.materials(userId: Long)

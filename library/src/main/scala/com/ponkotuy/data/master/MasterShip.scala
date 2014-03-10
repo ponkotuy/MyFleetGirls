@@ -1,4 +1,4 @@
-package com.ponkotuy.data
+package com.ponkotuy.data.master
 
 import org.json4s._
 

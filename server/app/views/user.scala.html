@@ -4,7 +4,8 @@
   ships: Seq[(Ship, MasterShip)],
   ndocks: Seq[NDockWithName],
   kdocks: Seq[KDockWithName],
-  cShips: Seq[CreateShipWithName]
+  cShips: Seq[CreateShipWithName],
+  missions: Seq[MissionWithName]
 )
 
 @rank(r: Int) = {
@@ -107,7 +108,7 @@
       </div>
       <table class="table table-striped">
         <thead>
-          <th>DockID</th><th>ShipID</th><th>名前</th><th>時間</th>
+          <tr><th>DockID</th><th>ShipID</th><th>名前</th><th>時間</th></tr>
         </thead>
         <tbody>
           @ndocks.map { dock =>
@@ -126,7 +127,7 @@
       </div>
       <table class="table table-striped">
         <thead>
-          <th>DockID</th><th>名前</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>時間</th>
+          <tr><th>DockID</th><th>名前</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>時間</th></tr>
         </thead>
         <tbody>
           @kdocks.map { dock =>
@@ -138,6 +139,25 @@
               <td>@dock.steel</td>
               <td>@dock.bauxite</td>
               <td class="viewTimeBefore" data-time="@dock.completeTime" data-end-mes="建造完了"></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="mission">
+        <h1>遠征</h1>
+      </div>
+      <table class="table table-striped">
+        <thread>
+          <tr><th>艦隊ID</th><th>艦隊名</th><th>遠征先</th><th>残り時間</th></tr>
+        </thread>
+        <tbody>
+          @missions.map { mission =>
+            <tr>
+              <td>@mission.deckId</td>
+              <td>@mission.deckName</td>
+              <td>@mission.missionName</td>
+              <td class="viewTimeBefore" data-time="@mission.completeTime" data-end-mes="帰投"></td>
             </tr>
           }
         </tbody>
@@ -156,14 +176,14 @@
         </thead>
         <tbody>
           @cShips.filterNot(_.largeFlag).map { ship =>
-            <tr>
-              <td>@ship.name</td>
-              <td>@ship.fuel</td>
-              <td>@ship.ammo</td>
-              <td>@ship.steel</td>
-              <td>@ship.bauxite</td>
-              <td class="viewTime" data-time="@ship.created">@ship.created</td>
-            </tr>
+          <tr>
+            <td>@ship.name</td>
+            <td>@ship.fuel</td>
+            <td>@ship.ammo</td>
+            <td>@ship.steel</td>
+            <td>@ship.bauxite</td>
+            <td class="viewTime" data-time="@ship.created">@ship.created</td>
+          </tr>
           }
         </tbody>
       </table>
@@ -179,15 +199,15 @@
         </thead>
         <tbody>
           @cShips.filter(_.largeFlag).map { ship =>
-            <tr>
-              <td>@ship.name</td>
-              <td>@ship.fuel</td>
-              <td>@ship.ammo</td>
-              <td>@ship.steel</td>
-              <td>@ship.bauxite</td>
-              <td>@ship.develop</td>
-              <td class="viewTime" data-time="@ship.created">@ship.created</td>
-            </tr>
+          <tr>
+            <td>@ship.name</td>
+            <td>@ship.fuel</td>
+            <td>@ship.ammo</td>
+            <td>@ship.steel</td>
+            <td>@ship.bauxite</td>
+            <td>@ship.develop</td>
+            <td class="viewTime" data-time="@ship.created">@ship.created</td>
+          </tr>
           }
         </tbody>
       </table>

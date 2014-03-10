@@ -1,6 +1,6 @@
 package com.ponkotuy.run
 
-import com.ponkotuy.intercept.{KCIntercepter, PrintContent}
+import com.ponkotuy.intercept.KCIntercepter
 import com.ponkotuy.proxy.FinagleProxy
 import com.ponkotuy.config.ClientConfig
 

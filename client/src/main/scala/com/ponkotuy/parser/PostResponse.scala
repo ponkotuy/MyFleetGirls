@@ -7,7 +7,7 @@ import org.json4s.native.Serialization.write
 import dispatch._
 import com.ponkotuy.util.Log
 import com.ponkotuy.data
-import com.ponkotuy.data.{CreateShipAndDock, Auth}
+import com.ponkotuy.data.{master, CreateShipAndDock, Auth}
 import com.ponkotuy.config.ClientConfig
 import scala.collection.mutable
 
@@ -53,16 +53,22 @@ class PostResponse extends Log {
         }
       case DeckPort =>
         val decks = data.DeckPort.fromJson(obj)
-        post("/deckport", write(decks))
+        if(decks.nonEmpty) post("/deckport", write(decks))
       case CreateShip =>
         val createShip = data.CreateShip.fromMap(req)
         createShips(createShip.kDock) = createShip
       case LoginCheck | Ship2 | Deck | Practice | Record | GetShip | Charge | HenseiChange | MissionStart => // No Need
       case GetOthersDeck => // No Need
+      case MasterMapArea | MasterSType | MasterUseItem | MasterFurniture => // No Need
       case MasterShip =>
-        if(auth.map(_.id) == Some(Ponkotu)) {
-          val ships = data.MasterShip.fromJson(obj)
+        if(checkPonkotu) {
+          val ships = master.MasterShip.fromJson(obj)
           post("/master/ship", write(ships))
+        }
+      case MasterMission =>
+        if(checkPonkotu) {
+          val missions = master.MasterMission.fromJson(obj)
+          post("/master/mission", write(missions))
         }
       case _ =>
         info(s"ResType: $typ")
@@ -71,7 +77,7 @@ class PostResponse extends Log {
     }
   }
 
-  def post(uStr: String, data: String): Unit = {
+  private def post(uStr: String, data: String): Unit = {
     Http(url(ClientConfig.postUrl + uStr) << Map("auth" -> write(auth), "data" -> data)).either.foreach {
       case Left(e) => error("POST Error"); error(e)
       case Right(res) =>
@@ -80,4 +86,5 @@ class PostResponse extends Log {
     }
   }
 
+  private def checkPonkotu: Boolean = auth.map(_.id) == Some(Ponkotu)
 }

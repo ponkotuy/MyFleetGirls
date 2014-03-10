@@ -25,6 +25,7 @@ object ResType extends Log {
   val ReqMap = s"$Api/api_req_map"
   val ReqSortie = s"$Api/api_req_sortie"
   val ReqQuest = s"$Api/api_req_quest"
+  val ReqNyukyo = s"$Api/api_req_nyukyo"
 
   case object LoginCheck extends ResType(s"$AuthMember/logincheck") // 取るべきではない
   case object Material extends ResType(s"$GetMember/material")
@@ -52,15 +53,22 @@ object ResType extends Log {
   case object SortieBattle extends ResType(s"$ReqSortie/battle")
   case object SortieBattleResult extends ResType(s"$ReqSortie/battleresult")
   case object ClearItemGet extends ResType(s"$ReqQuest/clearitemget")
+  case object NyukyoStart extends ResType(s"$ReqNyukyo/start")
   case object MasterShip extends ResType(s"$GetMaster/ship")
-  case object MasterPractice extends ResType(s"$GetMaster/mission")
+  case object MasterPractice extends ResType(s"$GetMaster/practice")
+  case object MasterUseItem extends ResType(s"$GetMaster/useitem") // 高速修復材とかの説明
+  case object MasterFurniture extends ResType(s"$GetMaster/furniture") // 家具の説明
+  case object MasterSlotItem extends ResType(s"$GetMaster/slotitm")
+  case object MasterMapArea extends ResType(s"$GetMaster/maparea") // 鎮守府海域・南西諸島海域など
+  case object MasterSType extends ResType(s"$GetMaster/stype")
+  case object MasterMission extends ResType(s"$GetMaster/mission")
 
   val values = Set(
     LoginCheck, Material, Basic, Record, Ship2, Ship3, NDock, KDock,
     Deck, DeckPort, Practice, CreateShip, GetShip, CreateItem,
     Charge, HenseiChange, MissionStart, KaisouPowerup, PracticeBattle, PracticeBattleResult, GetOthersDeck,
     MapStart, SortieBattle, SortieBattleResult, ClearItemGet,
-    MasterShip, MasterPractice
+    MasterShip, MasterPractice, MasterUseItem, MasterFurniture, MasterSlotItem, MasterMapArea, MasterSType, MasterMission
   )
 
   def fromUri(uri: String): Option[ResType] = {

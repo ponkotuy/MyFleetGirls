@@ -62,7 +62,7 @@ object Common extends Controller {
       val optResult = for {
         json <- reqHead(request)("auth")
         auth <- J.parse(json).extractOpt[Auth]
-        if auth.id == Ponkotu
+        if auth.memberId == Ponkotu
       } yield true
       optResult match {
         case Some(true) =>

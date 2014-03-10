@@ -66,6 +66,7 @@ object KDock extends SQLSyntaxSupport[KDock] {
   }
 
   def bulkInsert(kds: Seq[data.KDock])(implicit session: DBSession = KDock.autoSession): Seq[KDock] = {
+    if(kds.isEmpty) return Nil
     val created = System.currentTimeMillis()
     applyUpdate {
       insert.into(KDock).columns(

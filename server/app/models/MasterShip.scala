@@ -1,8 +1,8 @@
 package models
 
 import scalikejdbc.SQLInterpolation._
-import com.ponkotuy.data
 import scalikejdbc.{WrappedResultSet, DBSession}
+import com.ponkotuy.data.master
 
 /**
  *
@@ -29,7 +29,7 @@ object MasterShip extends SQLSyntaxSupport[MasterShip] {
     select(sqls"count(1)").from(MasterShip as ms)
   }.map(rs => rs.long(1)).single().apply().get
 
-  def create(ms: data.MasterShip)(implicit session: DBSession = MasterShip.autoSession): MasterShip = {
+  def create(ms: master.MasterShip)(implicit session: DBSession = MasterShip.autoSession): MasterShip = {
     withSQL {
       insert.into(MasterShip).namedValues(
         column.id -> ms.id, column.name -> ms.name, column.yomi -> ms.yomi
@@ -38,6 +38,6 @@ object MasterShip extends SQLSyntaxSupport[MasterShip] {
     MasterShip(ms.id, ms.name, ms.yomi)
   }
 
-  def deleteAll()(implicit session: DBSession = Auth.autoSession): Unit =
+  def deleteAll()(implicit session: DBSession = MasterShip.autoSession): Unit =
     withSQL { delete.from(MasterShip) }.update().apply()
 }
