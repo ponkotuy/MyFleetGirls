@@ -6,6 +6,7 @@ import com.twitter.finagle.{http, Service, Http}
 import com.twitter.util.{Future, Await}
 import org.jboss.netty.handler.codec.http.{HttpMethod, HttpResponse, HttpRequest}
 import com.ponkotuy.intercept.{Intercepter, PassThrough}
+import com.twitter.conversions.storage._
 
 /** Proxy by Finagle
   *
@@ -15,7 +16,8 @@ import com.ponkotuy.intercept.{Intercepter, PassThrough}
   */
 class FinagleProxy(hosts: String, port: Int, inter: Intercepter = new PassThrough) {
   val client = ClientBuilder()
-    .codec(http.Http())
+    .codec(http.Http().maxRequestSize(128.megabytes))
+    .codec(http.Http().maxResponseSize(128.megabytes))
     .hosts(hosts)
     .hostConnectionLimit(4).build()
 
