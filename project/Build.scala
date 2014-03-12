@@ -1,5 +1,8 @@
 import sbt._
 import Keys._
+import sbtassembly.Plugin._
+import AssemblyKeys._
+import scala.sys.{process => p}
 
 object MyFleetGirlsBuild extends Build {
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
@@ -7,7 +10,7 @@ object MyFleetGirlsBuild extends Build {
     .aggregate(server, client, library)
 
   lazy val rootSettings = Defaults.defaultSettings ++ settings ++ Seq(
-    commands ++= Seq(proxy, assembl, run, stage, start)
+    commands ++= Seq(proxy, assembl, run, stage, start, zip)
   )
 
   lazy val server = Project(id = "server", base = file("server"))
@@ -23,7 +26,8 @@ object MyFleetGirlsBuild extends Build {
 
   override lazy val settings = super.settings ++ Seq(
     scalaVersion := "2.10.3",
-    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions")
+    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions"),
+    jarName in assembly := "MyFleetGirls.jar"
   )
 
   def proxy = Command.command("proxy") { state =>
@@ -53,6 +57,12 @@ object MyFleetGirlsBuild extends Build {
   def start = Command.command("start") { state =>
     val subState = Command.process("project server", state)
     Command.process("start", subState)
+    state
+  }
+
+  def zip = Command.command("zip") { state =>
+    Command.process("assembly", state)
+    p.Process("""zip -j MyFleetGirls.zip client/target/scala-2.10/MyFleetGirls.jar application.conf MyFleetGirls.bat MyFleetGirls.sh""").run
     state
   }
 }
