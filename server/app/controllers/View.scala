@@ -39,8 +39,11 @@ object View extends Controller {
 
   def index = Action.async {
     Future {
-      val admirals = models.Admiral.findAll()
-      Ok(views.html.index(admirals))
+      val newest = models.Admiral.findAll().sortBy(_.created).reverse
+      val lvTops = models.Admiral.findAllLvTop()
+      Ok(views.html.index(newest, lvTops))
     }
   }
+
+  def about = Action { Ok(views.html.about()) }
 }

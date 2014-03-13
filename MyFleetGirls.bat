@@ -1,2 +1,2 @@
-java -jar MyFleetGirls-assembly.jar
+java -jar MyFleetGirls.jar
 pause

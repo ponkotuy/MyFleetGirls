@@ -1,0 +1,52 @@
+@()
+
+@main {
+<title>About MyFleetGirls</title>
+} {
+@navbar("about")
+
+<div class="container theme-showcase" role="main">
+  <div class="jumbotron">
+    <h1>MyFleetGirls とは</h1>
+    <ul>
+      <li><a href=@routes.Assets.at("zip/MyFleetGirls.zip")>Proxy Server Download</a></li>
+      <li><a href="https://github.com/ponkotuy/MyFleetGirls">GitHub(ponkotuy/MyFleetGirls)</a></li>
+      <li><a href="https://mobislenotes.com/preview/0f70fa89801b7bb075e2">TODOリスト</a></li>
+      <li><a href="http://d.hatena.ne.jp/ponkotuy/20140312/1394647735">Hatena::Diary</a></li>
+      <li><a href="https://twitter.com/ponkotuy/">作者のTwitter(@@ponkotuy)</a></li>
+  </div>
+
+  <section>
+    <h2>なにこれ</h2>
+    <p>自分の艦これデータをこのサーバに送って公開できるツールです。</p>
+    <p>艦これやってて「艦これの進捗、他人にサッと見せれたら便利だなー」と思って作りました。</p>
+    <p>一応他の艦これツールにありがちな遠征時間などのチェック機能も付いてます。</p>
+  </section>
+
+  <section>
+    <h2>インストール・使い方</h2>
+    <ol>
+      <li>JavaVM（JRE）がインストールされてない場合はする</li>
+      <li><a href=@routes.Assets.at("zip/MyFleetGirls.zip")>Proxy Server Download</a></li>
+      <li>ZIPファイルを解凍</li>
+      <li>application.confをテキストエディタで開き、自分の艦これサーバのIPアドレスを設定。初期設定はブイン基地になってます</li>
+      <li>ブラウザのProxy設定</li>
+      <ol>
+        <li>特定アドレスへの通信にProxyを設定するaddon等をインストール。ChromeならAuto SwichySharp、FirefoxならFoxyProxyで動作確認済</li>
+        <li>前に設定した艦これサーバのIPアドレスのアクセスをlocalhost:8080へ転送する</li>
+      </ol>
+      <li>MyFleetGirls.shかMyFleetGirls.batかMyFleetGirls.jarを実行する</li>
+      <li>先程設定したブラウザで艦これのFlashを起動する</li>
+      <li>http://myfleet.ponkotuy.com/u/{ユーザ名} にアクセスすると閲覧できる</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>注意事項</h2>
+    <ul>
+      <li>艦これのデータはぽんこつさんや他の人に丸見えになります。（パスワード類は除く）</li>
+      <li>Token等認証系の情報はこちらの鯖に送らないように気をつけましたが、技術的には全然できてしまうので、ぽんこつさんを信用するか、コード読める人じゃない限りやめましょう</li>
+    </ul>
+  </section>
+</div>
+}

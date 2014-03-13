@@ -20,6 +20,7 @@ GET     /rest/v1/:userId/ships      controllers.Rest.ships(userId: Long)
 
 # View
 GET     /                           controllers.View.index
+GET     /entire/about               controllers.View.about
 GET     /u/:user                    controllers.View.name(user: String)
 GET     /user/:userId               controllers.View.user(userId: Long)
 

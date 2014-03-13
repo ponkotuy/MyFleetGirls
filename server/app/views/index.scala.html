@@ -1,22 +1,33 @@
-@(newest: Seq[Admiral])
+@(newest: Seq[Admiral], highLv: Seq[AdmiralWithLv])
 
 @main {
 <title>MyFleetGirls</title>
 } {
+@navbar("top")
+
 <div class="container theme-showcase" role="main">
   <div class="jumbotron">
-    <h1>MyFleetGirls</h1>
-    <p>自分の艦娘を自慢したい提督に送る艦これ可視化ツール</p>
-    <p>現在テスト中です、一般公開までお待ち下さい</p>
+    <h1>MyFleetGirls<small>俺の艦娘</small></h1>
+    <p>自分の艦娘を自慢したい提督に送る艦これ公開ツール</p>
   </div>
 
-  <div class="page-hdeader">
-    <h1>New!</h1>
+  <div class="row">
+    <div class="col-md-4">
+      <h2>New</h2>
+      <ul>
+        @newest.map { a =>
+          <li><a href="/user/@a.id">@a.nickname</a></li>
+        }
+      </ul>
+    </div>
+    <div class="col-md-4">
+      <h2>提督Lv順</h2>
+      <ul>
+        @highLv.map { a =>
+          <li><a href="/user/@a.id">@a.nickname</a><small>Lv@a.lv</small></li>
+        }
+      </ul>
+    </div>
   </div>
-  <ul>
-    @newest.map { a =>
-      <li><a href="/user/@a.id">@a.nickname</a></li>
-    }
-  </ul>
 </div>
 }

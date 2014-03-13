@@ -24,6 +24,8 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
   )
 
   lazy val a = Admiral.syntax("a")
+  lazy val b = Basic.syntax("b")
+  lazy val x = SubQuery.syntax("x", b.resultName)
 
   def find(id: Long)(implicit session: DBSession = Admiral.autoSession): Option[Admiral] = {
     withSQL {
@@ -43,13 +45,12 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
     select.from(Admiral as a)
   }.map(Admiral(a)).list().apply()
 
-  def findAllByUser(userId: Long)(implicit session: DBSession = Admiral.autoSession): List[Admiral] = {
-    withSQL {
-      select.from(Admiral as a)
-        .where.eq(a.id, userId)
-        .orderBy(a.created).desc
-    }.map(Admiral(a)).list().apply()
-  }
+  def findAllLvTop()(implicit session: DBSession = Admiral.autoSession): List[AdmiralWithLv] = withSQL {
+    select(a.id, a.nickname, a.created, b.lv).from(Admiral as a)
+      .innerJoin(Basic as b).on(a.id, b.memberId)
+      .where.eq(b.created, sqls"(select MAX(${b.created}) from ${Basic.table} as b where ${a.id} = ${b.memberId})")
+      .orderBy(b.lv).desc
+  }.map(AdmiralWithLv(a, b)).list().apply()
 
   def save(a: Admiral)(implicit session: DBSession = Admiral.autoSession): Admiral = {
     withSQL {
@@ -69,4 +70,15 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
     }.update().apply()
     Admiral(a.memberId, a.id, a.nickname, created)
   }
+}
+
+case class AdmiralWithLv(id: Long, nickname: String, created: Long, lv: Int)
+
+object AdmiralWithLv {
+  def apply(a: SyntaxProvider[Admiral], b: SyntaxProvider[Basic])(rs: WrappedResultSet): AdmiralWithLv = new AdmiralWithLv(
+    rs.long(a.id),
+    rs.string(a.nickname),
+    rs.long(a.created),
+    rs.int(b.lv)
+  )
 }

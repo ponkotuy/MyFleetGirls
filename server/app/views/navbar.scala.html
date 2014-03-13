@@ -1,0 +1,19 @@
+@(active: String)
+<div class="navbar navbar-inverse" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse"></button>
+      <a class="navbar-brand" href=@routes.View.index>MyFleetGirls</a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="@if(active == "top") {active}">
+          <a href=@routes.View.index>Top</a>
+        </li>
+        <li class="@if(active == "about") {active}">
+          <a href=@routes.View.about>About</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
