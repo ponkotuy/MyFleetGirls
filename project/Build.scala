@@ -1,16 +1,18 @@
+import scala.sys.{process => p}
 import sbt._
 import Keys._
 import sbtassembly.Plugin._
 import AssemblyKeys._
-import scala.sys.{process => p}
+import sbtrelease.ReleasePlugin._
 
 object MyFleetGirlsBuild extends Build {
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .aggregate(server, client, library)
 
-  lazy val rootSettings = Defaults.defaultSettings ++ settings ++ Seq(
-    commands ++= Seq(proxy, assembl, run, stage, start, zip)
+  lazy val rootSettings = Defaults.defaultSettings ++ settings ++ releaseSettings ++ Seq(
+    commands ++= Seq(proxy, assembl, run, stage, start, zip),
+    publishTo := None
   )
 
   lazy val server = Project(id = "server", base = file("server"))
