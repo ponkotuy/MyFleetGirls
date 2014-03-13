@@ -1,8 +1,6 @@
 
 name := "MyFleetGirlsServer"
 
-version := "1.0-SNAPSHOT"
-
 libraryDependencies ++= Seq(
   "org.scalikejdbc" %% "scalikejdbc" % "1.7.4",
   "org.scalikejdbc" %% "scalikejdbc-config" % "1.7.4",
