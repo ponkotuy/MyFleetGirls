@@ -12,3 +12,11 @@ libraryDependencies ++= Seq(
 )
 
 play.Project.playScalaSettings
+
+buildInfoSettings
+
+sourceGenerators in Compile <+= buildInfo
+
+buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
+
+buildInfoPackage := "build"

@@ -3,6 +3,7 @@ package controllers
 import play.api.mvc._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
+import build.BuildInfo
 
 /**
  *
@@ -41,7 +42,7 @@ object View extends Controller {
     Future {
       val newest = models.Admiral.findAll().sortBy(_.created).reverse
       val lvTops = models.Admiral.findAllLvTop()
-      Ok(views.html.index(newest, lvTops))
+      Ok(views.html.index(BuildInfo.version, newest, lvTops))
     }
   }
 

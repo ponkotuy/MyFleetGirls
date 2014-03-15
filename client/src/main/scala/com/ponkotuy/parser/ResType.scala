@@ -43,6 +43,7 @@ object ResType extends Log {
   case object CreateItem extends ResType(s"$ReqKousyou/createitem")
   case object Charge extends ResType(s"$ReqHokyu/charge") // 特に要らない
   case object HenseiChange extends ResType(s"$ReqHensei/change") // 特に要らない
+  case object HenseiLock extends ResType(s"$ReqHensei/lock")
   case object MissionStart extends ResType(s"$ReqMission/start") // 特に要らない
   case object KaisouPowerup extends ResType(s"$ReqKaisou/powerup")
   case object PracticeBattle extends ResType(s"$ReqPractice/battle")
@@ -66,8 +67,8 @@ object ResType extends Log {
   val values = Set(
     LoginCheck, Material, Basic, Record, Ship2, Ship3, NDock, KDock,
     Deck, DeckPort, Practice, CreateShip, GetShip, CreateItem,
-    Charge, HenseiChange, MissionStart, KaisouPowerup, PracticeBattle, PracticeBattleResult, GetOthersDeck,
-    MapStart, SortieBattle, SortieBattleResult, ClearItemGet,
+    Charge, HenseiChange, HenseiLock, MissionStart, KaisouPowerup, PracticeBattle, PracticeBattleResult, GetOthersDeck,
+    MapStart, SortieBattle, SortieBattleResult, ClearItemGet, NyukyoStart,
     MasterShip, MasterPractice, MasterUseItem, MasterFurniture, MasterSlotItem, MasterMapArea, MasterSType, MasterMission
   )
 

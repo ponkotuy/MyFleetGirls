@@ -3,19 +3,22 @@ import sbt._
 import Keys._
 import sbtassembly.Plugin._
 import AssemblyKeys._
-import sbtrelease.ReleasePlugin._
+import sbtbuildinfo.Plugin._
 
 object MyFleetGirlsBuild extends Build {
+
+  val ver = "0.2.0"
+
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .aggregate(server, client, library)
 
-  lazy val rootSettings = Defaults.defaultSettings ++ settings ++ releaseSettings ++ Seq(
-    commands ++= Seq(proxy, assembl, run, stage, start, zip),
-    publishTo := None
+  lazy val rootSettings = Defaults.defaultSettings ++ settings ++ Seq(
+    commands ++= Seq(proxy, assembl, run, stage, start, zip)
   )
 
   lazy val server = Project(id = "server", base = file("server"))
+    .settings(biSettings:_*)
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .dependsOn(library)
 
@@ -27,10 +30,18 @@ object MyFleetGirlsBuild extends Build {
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
 
   override lazy val settings = super.settings ++ Seq(
+    version := ver,
     scalaVersion := "2.10.3",
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions"),
     jarName in assembly := "MyFleetGirls.jar"
   )
+
+  lazy val biSettings = buildInfoSettings ++ Seq(
+    sourceGenerators in Compile <+= buildInfo,
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion),
+    buildInfoPackage := "com.ponkotuy.build"
+  )
+
 
   def proxy = Command.command("proxy") { state =>
     val subState = Command.process("project client", state)
