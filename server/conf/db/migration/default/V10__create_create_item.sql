@@ -11,5 +11,6 @@ create table create_item(
         create_flag boolean not null,
         shizai_flag boolean not null,
         flagship int not null,
+        created bigint not null,
         unique(member_id, item_id)
 ) engine = ARIA, default charset=utf8;

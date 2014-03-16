@@ -15,7 +15,8 @@ case class CreateItem(
   bauxite: Int, 
   createFlag: Boolean, 
   shizaiFlag: Boolean, 
-  flagship: Int) {
+  flagship: Int,
+  created: Long) {
 
   def save()(implicit session: DBSession = CreateItem.autoSession): CreateItem = CreateItem.save(this)(session)
 
@@ -28,7 +29,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
 
   override val tableName = "create_item"
 
-  override val columns = Seq("member_id", "id", "item_id", "slotitem_id", "fuel", "ammo", "steel", "bauxite", "create_flag", "shizai_flag", "flagship")
+  override val columns = Seq("member_id", "id", "item_id", "slotitem_id", "fuel", "ammo", "steel", "bauxite", "create_flag", "shizai_flag", "flagship", "created")
 
   def apply(ci: ResultName[CreateItem])(rs: WrappedResultSet): CreateItem = new CreateItem(
     memberId = rs.long(ci.memberId),
@@ -41,10 +42,13 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
     bauxite = rs.int(ci.bauxite),
     createFlag = rs.boolean(ci.createFlag),
     shizaiFlag = rs.boolean(ci.shizaiFlag),
-    flagship = rs.int(ci.flagship)
+    flagship = rs.int(ci.flagship),
+    created = rs.long(ci.created)
   )
       
   val ci = CreateItem.syntax("ci")
+  val mi = MasterSlotItem.syntax("mi")
+  val ms = MasterShip.syntax("ms")
 
   override val autoSession = AutoSession
 
@@ -67,15 +71,31 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
       select.from(CreateItem as ci).where.append(sqls"${where}")
     }.map(CreateItem(ci.resultName)).list().apply()
   }
-      
+
+  def findAllByUserWithName(memberId: Long)(implicit sesson: DBSession = autoSession): List[CreateItemWithName] = {
+    withSQL {
+      select(ci.slotitemId, ci.fuel, ci.ammo, ci.steel, ci.bauxite, ci.shizaiFlag, ci.flagship, ci.created, mi.name, ms.name)
+        .from(CreateItem as ci)
+        .leftJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
+        .leftJoin(MasterShip as ms).on(ci.flagship, ms.id)
+        .where.eq(ci.memberId, memberId)
+        .orderBy(ci.created).desc
+    }.map(CreateItemWithName(ci, mi, ms)).list().apply()
+  }
+
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(CreateItem as ci).where.append(sqls"${where}")
     }.map(_.long(1)).single().apply().get
   }
 
-  def create(ci: data.CreateItem, memberId: Long)(implicit session: DBSession = autoSession): CreateItem =
-    createOrig(memberId, ci.id, ci.slotitemId, ci.fuel, ci.ammo, ci.steel, ci.bauxite, ci.createFlag, ci.shizaiFlag, ci.flagship)
+  def create(ci: data.CreateItem, memberId: Long)(implicit session: DBSession = autoSession): CreateItem = {
+    val now = System.currentTimeMillis()
+    createOrig(
+      memberId, ci.id,
+      ci.slotitemId, ci.fuel, ci.ammo, ci.steel, ci.bauxite, ci.createFlag, ci.shizaiFlag, ci.flagship, now
+    )
+  }
 
   def createOrig(
     memberId: Long,
@@ -87,7 +107,8 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
     bauxite: Int,
     createFlag: Boolean,
     shizaiFlag: Boolean,
-    flagship: Int)(implicit session: DBSession = autoSession): CreateItem = {
+    flagship: Int,
+    created: Long)(implicit session: DBSession = autoSession): CreateItem = {
     val generatedKey = withSQL {
       insert.into(CreateItem).columns(
         column.memberId,
@@ -99,7 +120,8 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
         column.bauxite,
         column.createFlag,
         column.shizaiFlag,
-        column.flagship
+        column.flagship,
+        column.created
       ).values(
           memberId,
           itemId,
@@ -110,7 +132,8 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
           bauxite,
           createFlag,
           shizaiFlag,
-          flagship
+          flagship,
+          created
         )
     }.updateAndReturnGeneratedKey().apply()
 
@@ -125,7 +148,9 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
       bauxite = bauxite,
       createFlag = createFlag,
       shizaiFlag = shizaiFlag,
-      flagship = flagship)
+      flagship = flagship,
+      created = created
+    )
   }
 
   def save(entity: CreateItem)(implicit session: DBSession = autoSession): CreateItem = {
@@ -141,7 +166,8 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
         column.bauxite -> entity.bauxite,
         column.createFlag -> entity.createFlag,
         column.shizaiFlag -> entity.shizaiFlag,
-        column.flagship -> entity.flagship
+        column.flagship -> entity.flagship,
+        column.created -> entity.created
       ).where.eq(column.id, entity.id)
     }.update().apply()
     entity 
@@ -153,4 +179,25 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
     }.update().apply()
   }
         
+}
+
+case class CreateItemWithName(
+    slotitemId: Option[Int], fuel: Int, ammo: Int, steel: Int, bauxite: Int,
+    shizaiFlag: Boolean, flagshipId: Int, created: Long, name: String, flagshipName: String)
+
+object CreateItemWithName {
+  def apply(ci: SyntaxProvider[CreateItem], mi: SyntaxProvider[MasterSlotItem], ms: SyntaxProvider[MasterShip])(
+      rs: WrappedResultSet): CreateItemWithName =
+    new CreateItemWithName(
+      rs.intOpt(ci.slotitemId),
+      rs.int(ci.fuel),
+      rs.int(ci.ammo),
+      rs.int(ci.steel),
+      rs.int(ci.bauxite),
+      rs.boolean(ci.shizaiFlag),
+      rs.int(ci.flagship),
+      rs.long(ci.created),
+      rs.stringOpt(mi.name).getOrElse("失敗"),
+      rs.string(ms.name)
+    )
 }

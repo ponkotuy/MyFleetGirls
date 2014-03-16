@@ -30,9 +30,10 @@ object View extends Controller {
       val ndocks = models.NDock.fineAllByUserWithName(memberId)
       val kdocks = models.KDock.findAllByUserWithName(memberId)
       val cShips = models.CreateShip.findAllByUserWithName(memberId)
+      val cItems = models.CreateItem.findAllByUserWithName(memberId)
       val missions = models.Mission.findByUserWithName(memberId)
       user match {
-        case Some((auth, basic)) => Ok(views.html.user(auth, basic, ships, ndocks, kdocks, cShips, missions))
+        case Some((auth, basic)) => Ok(views.html.user(auth, basic, ships, ndocks, kdocks, cShips, cItems, missions))
         case _ => NotFound("ユーザが見つかりませんでした")
       }
     }
