@@ -14,12 +14,13 @@ import models.Admiral
  * Date: 14/02/25
  */
 object Common extends Controller {
+  type Req = Map[String, Seq[String]]
   implicit val formats = DefaultFormats
 
   val Ponkotu = 10007732L
 
-  def authAndParse[T](f: (models.Admiral, T) => SimpleResult)(implicit mf: Manifest[T]): Action[AnyContent] = {
-    Action.async { request =>
+  def authAndParse[T](f: (models.Admiral, T) => SimpleResult)(implicit mf: Manifest[T]): Action[Req] = {
+    Action.async(parse.urlFormEncoded) { request =>
       authentication(request) { auth =>
         withData[T](request) { data =>
           f(auth, data)
@@ -28,8 +29,8 @@ object Common extends Controller {
     }
   }
 
-  def checkPonkotuAndParse[T](f: (T) => SimpleResult)(implicit mf: Manifest[T]): Action[AnyContent] = {
-    Action.async { request =>
+  def checkPonkotuAndParse[T](f: (T) => SimpleResult)(implicit mf: Manifest[T]): Action[Req] = {
+    Action.async(parse.urlFormEncoded(1024*1024*2)) { request =>
       checkPonkotu(request) {
         withData[T](request) { data =>
           f(data)
@@ -38,7 +39,7 @@ object Common extends Controller {
     }
   }
 
-  def authentication(request: Request[AnyContent])(f: (models.Admiral) => SimpleResult): Future[SimpleResult] = {
+  def authentication(request: Request[Req])(f: (models.Admiral) => SimpleResult): Future[SimpleResult] = {
     Future {
       val optoptResult:Option[Option[models.Admiral]] = for {
         json <- reqHead(request)("auth")
@@ -57,7 +58,7 @@ object Common extends Controller {
     }
   }
 
-  def checkPonkotu(request: Request[AnyContent])(f: => SimpleResult): Future[SimpleResult] = {
+  def checkPonkotu(request: Request[Req])(f: => SimpleResult): Future[SimpleResult] = {
     Future {
       val optResult = for {
         json <- reqHead(request)("auth")
@@ -73,7 +74,7 @@ object Common extends Controller {
     }
   }
 
-  def withData[T](request: Request[AnyContent])(f: T => SimpleResult)(implicit mf: Manifest[T]): SimpleResult = {
+  def withData[T](request: Request[Req])(f: T => SimpleResult)(implicit mf: Manifest[T]): SimpleResult = {
     val result = for {
       json <- reqHead(request)("data")
       data <- J.parse(json).extractOpt[T]
@@ -81,10 +82,9 @@ object Common extends Controller {
     result.getOrElse(BadRequest("Request Error(JSON Parse Error? Header?)"))
   }
 
-  private def reqHead(request: Request[AnyContent])(key: String): Option[String] = {
+  private def reqHead(request: Request[Req])(key: String): Option[String] = {
     for {
-      form <- request.body.asFormUrlEncoded
-      results <- form.get(key)
+      results <- request.body.get(key)
       one <- results.headOption
     } yield one
   }

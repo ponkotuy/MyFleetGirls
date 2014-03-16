@@ -2,7 +2,7 @@ package controllers
 
 import play.api.mvc._
 import Common._
-import com.ponkotuy.data.master.{MasterMission, MasterShip}
+import com.ponkotuy.data.master.{MasterMission, MasterShip, MasterSlotItem}
 
 /**
  *
@@ -25,6 +25,16 @@ object PostMaster extends Controller {
       models.MasterMission.deleteByMapArea(missions.head.mapArea)
       models.MasterMission.bulkInsert(missions)
       Ok("Master Mission All Replaced")
+    } else {
+      Ok("No Change")
+    }
+  }
+
+  def slotitem = checkPonkotuAndParse[List[MasterSlotItem]] { items =>
+    if(items.size.toLong != models.MasterSlotItem.countAll()) {
+      models.MasterSlotItem.deleteAll()
+      models.MasterSlotItem.bulkInsert(items)
+      Ok("Master SlotItem All Replaced")
     } else {
       Ok("No Change")
     }

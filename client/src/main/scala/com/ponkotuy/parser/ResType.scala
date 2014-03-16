@@ -59,7 +59,7 @@ object ResType extends Log {
   case object MasterPractice extends ResType(s"$GetMaster/practice")
   case object MasterUseItem extends ResType(s"$GetMaster/useitem") // 高速修復材とかの説明
   case object MasterFurniture extends ResType(s"$GetMaster/furniture") // 家具の説明
-  case object MasterSlotItem extends ResType(s"$GetMaster/slotitm")
+  case object MasterSlotItem extends ResType(s"$GetMaster/slotitem")
   case object MasterMapArea extends ResType(s"$GetMaster/maparea") // 鎮守府海域・南西諸島海域など
   case object MasterSType extends ResType(s"$GetMaster/stype")
   case object MasterMission extends ResType(s"$GetMaster/mission")

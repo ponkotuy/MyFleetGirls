@@ -26,6 +26,8 @@ class PostResponse extends Log {
   private[this] var auth: Option[Auth] = None
   // KDock + CreateShipのデータが欲しいのでKDockIDをKeyにCreateShipを溜めておく
   private[this] val createShips: mutable.Map[Int, data.CreateShip] = mutable.Map()
+  // 旗艦データが必要（CreateItemとか）なので溜めておく
+  private[this] var flagship: Option[Int] = None
 
   def parseAndPost(typ: ResType, req: Map[String, String], obj: JValue): Unit = {
     typ match {
@@ -53,10 +55,16 @@ class PostResponse extends Log {
         }
       case DeckPort =>
         val decks = data.DeckPort.fromJson(obj)
+        flagship = decks.find(_.id == 1).flatMap(_.ships.headOption)
         if(decks.nonEmpty) post("/deckport", write(decks))
       case CreateShip =>
         val createShip = data.CreateShip.fromMap(req)
         createShips(createShip.kDock) = createShip
+      case CreateItem =>
+        flagship.foreach { flag =>
+          val createItem = data.CreateItem.from(req, obj, flag)
+          post("/createitem", write(createItem))
+        }
       case LoginCheck | Ship2 | Deck | Practice | Record | GetShip | Charge | MissionStart => // No Need
       case HenseiChange | HenseiLock | GetOthersDeck => // No Need
       case MasterMapArea | MasterSType | MasterUseItem | MasterFurniture => // No Need
@@ -70,10 +78,15 @@ class PostResponse extends Log {
           val missions = master.MasterMission.fromJson(obj)
           post("/master/mission", write(missions))
         }
+      case MasterSlotItem =>
+        if(checkPonkotu) {
+          val items = master.MasterSlotItem.fromJson(obj)
+          post("/master/slotitem", write(items))
+        }
       case _ =>
         info(s"ResType: $typ")
         info(s"Req: $req")
-        jsoninfo(obj)
+        jsonInfo(obj)
     }
   }
 
@@ -82,7 +95,8 @@ class PostResponse extends Log {
       case Left(e) => error("POST Error"); error(e)
       case Right(res) =>
         info(s"POST Success: ($uStr, $data)")
-        if(res.getStatusCode >= 400) error(s"Error Response\n${res.getResponseBody("UTF-8")}")
+        if(res.getStatusCode >= 400)
+          error(s"Error Response ${res.getStatusCode}\n${res.getStatusText}\n${res.getResponseBody("UTF-8")}")
     }
   }
 

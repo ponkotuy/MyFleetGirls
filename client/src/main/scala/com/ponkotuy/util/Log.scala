@@ -18,9 +18,15 @@ trait Log {
 
   protected def debug(obj: Any): Unit = logger.debug(obj.toString.take(1000))
   protected def info(obj: Any): Unit = logger.info(obj.toString.take(1000))
-  protected def jsoninfo(json: JValue): Unit = logger.info {
-    Try { pretty(render(json)).take(1000) }.getOrElse("JSONParseError")
+  protected def jsonInfo(json: JValue): Unit = logger.info {
+    prettyJson(json).map(_.take(1000)).getOrElse("JSONParseError")
+  }
+  protected def jsonAllInfo(json: JValue): Unit = logger.info {
+    prettyJson(json).getOrElse("JSONParseError")
   }
   protected def error(obj: Any): Unit = logger.error(obj.toString)
   protected def fatal(obj: Any): Unit = logger.fatal(obj.toString)
+
+  private def prettyJson(json: JValue): Try[String] = Try { pretty(render(json)) }
+
 }
