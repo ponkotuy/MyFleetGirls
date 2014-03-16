@@ -7,7 +7,7 @@ import sbtbuildinfo.Plugin._
 
 object MyFleetGirlsBuild extends Build {
 
-  val ver = "0.3.0"
+  val ver = "0.3.1"
 
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
@@ -81,8 +81,8 @@ object MyFleetGirlsBuild extends Build {
 
   def zip = Command.command("zip") { state =>
     Command.process("assembly", state)
-    p.Process("""zip -j server/public/zip/MyFleetGirls.zip client/target/scala-2.10/MyFleetGirls.jar application.conf MyFleetGirls.bat MyFleetGirls.sh""").run
-    Thread.sleep(1000L)
+    p.Process("""zip -j server/public/zip/MyFleetGirls.zip client/target/scala-2.10/MyFleetGirls.jar application.conf.sample MyFleetGirls.bat MyFleetGirls.sh""").run
+    Thread.sleep(10000L)
     state
   }
 }

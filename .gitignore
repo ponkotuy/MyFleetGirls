@@ -18,5 +18,9 @@ project/plugins/project/
 MyFleetGirls-assembly*
 MyFleetGirls*.zip
 
+# Settings
+application.conf
+server/conf/application.conf
+
 # Others
 *~
