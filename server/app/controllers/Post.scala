@@ -72,4 +72,14 @@ object Post extends Controller {
     }
     Ok("Success")
   }
+
+  def shipBook = authAndParse[List[ShipBook]] { case (auth, ships) =>
+    models.ShipBook.bulkUpsert(ships)
+    Ok("Success")
+  }
+
+  def itemBook = authAndParse[List[ItemBook]] { case (auth, items) =>
+    models.ItemBook.bulkUpsert(items)
+    Ok("Success")
+  }
 }

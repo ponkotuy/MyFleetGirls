@@ -7,9 +7,12 @@ import org.json4s.native.Serialization.write
 import dispatch._
 import com.ponkotuy.util.Log
 import com.ponkotuy.data
-import com.ponkotuy.data.{master, CreateShipAndDock, Auth}
+import com.ponkotuy.data._
 import com.ponkotuy.config.ClientConfig
 import scala.collection.mutable
+import com.ponkotuy.data.CreateShipAndDock
+import scala.Some
+import com.ponkotuy.data.ItemBook
 
 /**
  *
@@ -57,6 +60,13 @@ class PostResponse extends Log {
         val decks = data.DeckPort.fromJson(obj)
         flagship = decks.find(_.id == 1).flatMap(_.ships.headOption)
         if(decks.nonEmpty) post("/deckport", write(decks))
+      case Book2 =>
+        val books = data.Book.fromJson(obj)
+        if(books.isEmpty) return
+        books.head match {
+          case _: ShipBook => post("/book/ship", write(books))
+          case _: ItemBook => post("/book/item", write(books))
+        }
       case CreateShip =>
         val createShip = data.CreateShip.fromMap(req)
         createShips(createShip.kDock) = createShip
