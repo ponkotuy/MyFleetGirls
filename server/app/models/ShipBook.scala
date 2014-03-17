@@ -33,6 +33,7 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
   )
 
   val sb = ShipBook.syntax("sb")
+  val ms = MasterShip.syntax("ms")
 
   override val autoSession = AutoSession
 
@@ -54,6 +55,15 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
     withSQL {
       select.from(ShipBook as sb).where.append(sqls"${where}")
     }.map(ShipBook(sb.resultName)).list().apply()
+  }
+
+  def findByUserWithName(memberId: Long)(implicit session: DBSession = autoSession): List[ShipBookWithName] = {
+    withSQL {
+      select(sb.id, sb.indexNo, sb.isDameged, sb.updated, ms.name).from(ShipBook as sb)
+        .innerJoin(MasterShip as ms).on(sb.id, ms.id)
+        .where.eq(sb.memberId, memberId)
+        .orderBy(sb.indexNo)
+    }.map(ShipBookWithName(sb, ms)).list().apply()
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
@@ -120,4 +130,18 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
     }.update().apply()
   }
 
+}
+
+case class ShipBookWithName(id: Int, indexNo: Int, isDameged: Boolean, updated: Long, name: String)
+
+object ShipBookWithName {
+  def apply(ib: SyntaxProvider[ShipBook], ms: SyntaxProvider[MasterShip])(
+    rs: WrappedResultSet): ShipBookWithName =
+    new ShipBookWithName(
+      rs.int(ib.id),
+      rs.int(ib.indexNo),
+      rs.boolean(ib.isDameged),
+      rs.long(ib.updated),
+      rs.string(ms.name)
+    )
 }

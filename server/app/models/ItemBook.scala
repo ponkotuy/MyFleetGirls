@@ -31,6 +31,7 @@ object ItemBook extends SQLSyntaxSupport[ItemBook] {
   )
 
   val ib = ItemBook.syntax("ib")
+  val ms = MasterSlotItem.syntax("ms")
 
   override val autoSession = AutoSession
 
@@ -52,6 +53,15 @@ object ItemBook extends SQLSyntaxSupport[ItemBook] {
     withSQL {
       select.from(ItemBook as ib).where.append(sqls"${where}")
     }.map(ItemBook(ib.resultName)).list().apply()
+  }
+
+  def findByUserWithName(memberId: Long)(implicit session: DBSession = autoSession): List[ItemBookWithName] = {
+    withSQL {
+      select(ib.id, ib.indexNo, ib.updated, ms.name).from(ItemBook as ib)
+        .innerJoin(MasterSlotItem as ms).on(ib.id, ms.id)
+        .where.eq(ib.memberId, memberId)
+        .orderBy(ib.indexNo)
+    }.map(ItemBookWithName(ib, ms)).list().apply()
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
@@ -112,4 +122,17 @@ object ItemBook extends SQLSyntaxSupport[ItemBook] {
     }.update().apply()
   }
 
+}
+
+case class ItemBookWithName(id: Int, indexNo: Int, updated: Long, name: String)
+
+object ItemBookWithName {
+  def apply(ib: SyntaxProvider[ItemBook], ms: SyntaxProvider[MasterSlotItem])(
+      rs: WrappedResultSet): ItemBookWithName =
+    new ItemBookWithName(
+      rs.int(ib.id),
+      rs.int(ib.indexNo),
+      rs.long(ib.updated),
+      rs.string(ms.name)
+    )
 }
