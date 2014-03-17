@@ -8,6 +8,7 @@ case class ItemBook(
   memberId: Long,
   id: Int,
   indexNo: Int,
+  name: String,
   updated: Long) {
 
   def save()(implicit session: DBSession = ItemBook.autoSession): ItemBook = ItemBook.save(this)(session)
@@ -21,17 +22,17 @@ object ItemBook extends SQLSyntaxSupport[ItemBook] {
 
   override val tableName = "item_book"
 
-  override val columns = Seq("member_id", "id", "index_no", "updated")
+  override val columns = Seq("member_id", "id", "index_no", "name", "updated")
 
   def apply(ib: ResultName[ItemBook])(rs: WrappedResultSet): ItemBook = new ItemBook(
     memberId = rs.long(ib.memberId),
     id = rs.int(ib.id),
     indexNo = rs.int(ib.indexNo),
+    name = rs.string(ib.name),
     updated = rs.long(ib.updated)
   )
 
   val ib = ItemBook.syntax("ib")
-  val ms = MasterSlotItem.syntax("ms")
 
   override val autoSession = AutoSession
 
@@ -55,15 +56,6 @@ object ItemBook extends SQLSyntaxSupport[ItemBook] {
     }.map(ItemBook(ib.resultName)).list().apply()
   }
 
-  def findByUserWithName(memberId: Long)(implicit session: DBSession = autoSession): List[ItemBookWithName] = {
-    withSQL {
-      select(ib.id, ib.indexNo, ib.updated, ms.name).from(ItemBook as ib)
-        .innerJoin(MasterSlotItem as ms).on(ib.id, ms.id)
-        .where.eq(ib.memberId, memberId)
-        .orderBy(ib.indexNo)
-    }.map(ItemBookWithName(ib, ms)).list().apply()
-  }
-
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(ItemBook as ib).where.append(sqls"${where}")
@@ -74,17 +66,20 @@ object ItemBook extends SQLSyntaxSupport[ItemBook] {
     memberId: Long,
     id: Int,
     indexNo: Int,
+    name: String,
     updated: Long)(implicit session: DBSession = autoSession): ItemBook = {
     withSQL {
       insert.into(ItemBook).columns(
         column.memberId,
         column.id,
         column.indexNo,
+        column.name,
         column.updated
       ).values(
           memberId,
           id,
           indexNo,
+          name,
           updated
         )
     }.update().apply()
@@ -93,15 +88,16 @@ object ItemBook extends SQLSyntaxSupport[ItemBook] {
       memberId = memberId,
       id = id,
       indexNo = indexNo,
+      name = name,
       updated = updated)
   }
 
   def bulkUpsert(xs: Seq[data.ItemBook])(implicit session: DBSession = autoSession): Seq[ItemBook] = {
     val now = System.currentTimeMillis()
-    val params = xs.map { x => Seq(x.memberId, x.id, x.indexNo, now) }
-    sql"""replace into item_book (member_id, id, index_no, updated)
-          values (?, ?, ?, ?)""".batch(params:_*).apply()
-    xs.map { x => ItemBook(x.memberId, x.id, x.indexNo, now) }
+    val params = xs.map { x => Seq(x.memberId, x.id, x.indexNo, x.name, now) }
+    sql"""replace into item_book (member_id, id, index_no, name, updated)
+          values (?, ?, ?, ?, ?)""".batch(params:_*).apply()
+    xs.map { x => ItemBook(x.memberId, x.id, x.indexNo, x.name, now) }
   }
 
   def save(entity: ItemBook)(implicit session: DBSession = autoSession): ItemBook = {
@@ -110,6 +106,7 @@ object ItemBook extends SQLSyntaxSupport[ItemBook] {
         column.memberId -> entity.memberId,
         column.id -> entity.id,
         column.indexNo -> entity.indexNo,
+        column.name -> entity.name,
         column.updated -> entity.updated
       ).where.eq(column.indexNo, entity.indexNo).and.eq(column.memberId, entity.memberId)
     }.update().apply()
@@ -122,17 +119,4 @@ object ItemBook extends SQLSyntaxSupport[ItemBook] {
     }.update().apply()
   }
 
-}
-
-case class ItemBookWithName(id: Int, indexNo: Int, updated: Long, name: String)
-
-object ItemBookWithName {
-  def apply(ib: SyntaxProvider[ItemBook], ms: SyntaxProvider[MasterSlotItem])(
-      rs: WrappedResultSet): ItemBookWithName =
-    new ItemBookWithName(
-      rs.int(ib.id),
-      rs.int(ib.indexNo),
-      rs.long(ib.updated),
-      rs.string(ms.name)
-    )
 }

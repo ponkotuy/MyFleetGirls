@@ -9,6 +9,7 @@ case class ShipBook(
   id: Int,
   indexNo: Int,
   isDameged: Boolean,
+  name: String,
   updated: Long) {
 
   def save()(implicit session: DBSession = ShipBook.autoSession): ShipBook = ShipBook.save(this)(session)
@@ -22,13 +23,14 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
 
   override val tableName = "ship_book"
 
-  override val columns = Seq("member_id", "id", "index_no", "is_dameged", "updated")
+  override val columns = Seq("member_id", "id", "index_no", "is_dameged", "name", "updated")
 
   def apply(sb: ResultName[ShipBook])(rs: WrappedResultSet): ShipBook = new ShipBook(
     memberId = rs.long(sb.memberId),
     id = rs.int(sb.id),
     indexNo = rs.int(sb.indexNo),
     isDameged = rs.boolean(sb.isDameged),
+    name = rs.string(sb.name),
     updated = rs.long(sb.updated)
   )
 
@@ -57,15 +59,6 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
     }.map(ShipBook(sb.resultName)).list().apply()
   }
 
-  def findByUserWithName(memberId: Long)(implicit session: DBSession = autoSession): List[ShipBookWithName] = {
-    withSQL {
-      select(sb.id, sb.indexNo, sb.isDameged, sb.updated, ms.name).from(ShipBook as sb)
-        .innerJoin(MasterShip as ms).on(sb.id, ms.id)
-        .where.eq(sb.memberId, memberId)
-        .orderBy(sb.indexNo)
-    }.map(ShipBookWithName(sb, ms)).list().apply()
-  }
-
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(ShipBook as sb).where.append(sqls"${where}")
@@ -77,6 +70,7 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
     id: Int,
     indexNo: Int,
     isDameged: Boolean,
+    name: String,
     updated: Long)(implicit session: DBSession = autoSession): ShipBook = {
     withSQL {
       insert.into(ShipBook).columns(
@@ -84,12 +78,14 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
         column.id,
         column.indexNo,
         column.isDameged,
+        column.name,
         column.updated
       ).values(
           memberId,
           id,
           indexNo,
           isDameged,
+          name,
           updated
         )
     }.update().apply()
@@ -99,16 +95,18 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
       id = id,
       indexNo = indexNo,
       isDameged = isDameged,
+      name = name,
       updated = updated)
   }
 
   def bulkUpsert(xs: Seq[data.ShipBook])(implicit session: DBSession = autoSession): Seq[ShipBook] = {
     val now = System.currentTimeMillis()
     val params = xs.map { x =>
-      Seq(x.memberId, x.id, x.indexNo, x.isDamaged, now)
+      Seq(x.memberId, x.id, x.indexNo, x.isDamaged, x.name, now)
     }
-    sql"replace into ship_book (member_id, id, index_no, is_dameged, updated) values (?, ?, ?, ?, ?)".batch(params:_*).apply()
-    xs.map { x => ShipBook(x.memberId, x.id, x.indexNo, x.isDamaged, now) }
+    sql"replace into ship_book (member_id, id, index_no, is_dameged, name, updated) values (?, ?, ?, ?, ?, ?)"
+      .batch(params:_*).apply()
+    xs.map { x => ShipBook(x.memberId, x.id, x.indexNo, x.isDamaged, x.name, now) }
   }
 
   def save(entity: ShipBook)(implicit session: DBSession = autoSession): ShipBook = {
@@ -118,6 +116,7 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
         column.id -> entity.id,
         column.indexNo -> entity.indexNo,
         column.isDameged -> entity.isDameged,
+        column.name -> entity.name,
         column.updated -> entity.updated
       ).where.eq(column.indexNo, entity.indexNo).and.eq(column.memberId, entity.memberId)
     }.update().apply()
@@ -130,18 +129,4 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
     }.update().apply()
   }
 
-}
-
-case class ShipBookWithName(id: Int, indexNo: Int, isDameged: Boolean, updated: Long, name: String)
-
-object ShipBookWithName {
-  def apply(ib: SyntaxProvider[ShipBook], ms: SyntaxProvider[MasterShip])(
-    rs: WrappedResultSet): ShipBookWithName =
-    new ShipBookWithName(
-      rs.int(ib.id),
-      rs.int(ib.indexNo),
-      rs.boolean(ib.isDameged),
-      rs.long(ib.updated),
-      rs.string(ms.name)
-    )
 }

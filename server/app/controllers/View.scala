@@ -3,6 +3,7 @@ package controllers
 import play.api.mvc._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
+import scalikejdbc.SQLInterpolation._
 import build.BuildInfo
 
 /**
@@ -32,8 +33,8 @@ object View extends Controller {
       val cShips = models.CreateShip.findAllByUserWithName(memberId)
       val cItems = models.CreateItem.findAllByUserWithName(memberId)
       val missions = models.Mission.findByUserWithName(memberId)
-      val sBooks = models.ShipBook.findByUserWithName(memberId)
-      val iBooks = models.ItemBook.findByUserWithName(memberId)
+      val sBooks = models.ShipBook.findAllBy(sqls"member_id = ${memberId}").sortBy(_.indexNo)
+      val iBooks = models.ItemBook.findAllBy(sqls"member_id = ${memberId}").sortBy(_.indexNo)
       user match {
         case Some((auth, basic)) => Ok(views.html.user(auth, basic, ships, ndocks, kdocks, cShips, cItems, missions, sBooks, iBooks))
         case _ => NotFound("ユーザが見つかりませんでした")

@@ -11,6 +11,7 @@ abstract class Book {
   def memberId: Long
   def id: Int
   def indexNo: Int
+  def name: String
 }
 
 object Book {
@@ -25,10 +26,11 @@ object Book {
           val id = (x \ "api_id").extractOpt[Int].getOrElse(-1)
           if(id != -1) {
             val indexNo = (x \ "api_index_no").extract[Int]
+            val JString(name) = x \ "api_name"
             val JArray(statess) = x \ "api_state"
             val JArray(states) = statess.head
             val isDameged = states(1).extract[Int] != 0
-            Some(ShipBook(memberId, id, indexNo, isDameged))
+            Some(ShipBook(memberId, id, indexNo, isDameged, name))
           } else None
         }
       case 2 =>
@@ -36,7 +38,8 @@ object Book {
           val id = (x \ "api_id").extractOpt[Int].getOrElse(-1)
           if(id != -1) {
             val indexNo = (x \ "api_index_no").extract[Int]
-            Some(ItemBook(memberId, id, indexNo))
+            val JString(name) = x \ "api_name"
+            Some(ItemBook(memberId, id, indexNo, name))
           } else None
         }
       case _ => Nil
@@ -44,6 +47,6 @@ object Book {
   }
 }
 
-case class ShipBook(memberId: Long, id: Int, indexNo: Int, isDamaged: Boolean) extends Book
+case class ShipBook(memberId: Long, id: Int, indexNo: Int, isDamaged: Boolean, name: String) extends Book
 
-case class ItemBook(memberId: Long, id: Int, indexNo: Int) extends Book
+case class ItemBook(memberId: Long, id: Int, indexNo: Int, name: String) extends Book
