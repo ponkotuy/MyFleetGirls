@@ -5,16 +5,16 @@ import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data
 
 case class CreateItem(
-  memberId: Long, 
-  id: Long, 
-  itemId: Option[Int] = None, 
-  slotitemId: Option[Int] = None, 
-  fuel: Int, 
-  ammo: Int, 
-  steel: Int, 
-  bauxite: Int, 
-  createFlag: Boolean, 
-  shizaiFlag: Boolean, 
+  memberId: Long,
+  id: Long,
+  itemId: Option[Int] = None,
+  slotitemId: Option[Int] = None,
+  fuel: Int,
+  ammo: Int,
+  steel: Int,
+  bauxite: Int,
+  createFlag: Boolean,
+  shizaiFlag: Boolean,
   flagship: Int,
   created: Long) {
 
@@ -23,7 +23,7 @@ case class CreateItem(
   def destroy()(implicit session: DBSession = CreateItem.autoSession): Unit = CreateItem.destroy(this)(session)
 
 }
-      
+
 
 object CreateItem extends SQLSyntaxSupport[CreateItem] {
 
@@ -45,9 +45,10 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
     flagship = rs.int(ci.flagship),
     created = rs.long(ci.created)
   )
-      
+
   val ci = CreateItem.syntax("ci")
   val mi = MasterSlotItem.syntax("mi")
+  val s = Ship.syntax("s")
   val ms = MasterShip.syntax("ms")
 
   override val autoSession = AutoSession
@@ -57,15 +58,15 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
       select.from(CreateItem as ci).where.eq(ci.id, id)
     }.map(CreateItem(ci.resultName)).single().apply()
   }
-          
+
   def findAll()(implicit session: DBSession = autoSession): List[CreateItem] = {
     withSQL(select.from(CreateItem as ci)).map(CreateItem(ci.resultName)).list().apply()
   }
-          
+
   def countAll()(implicit session: DBSession = autoSession): Long = {
     withSQL(select(sqls"count(1)").from(CreateItem as ci)).map(rs => rs.long(1)).single().apply().get
   }
-          
+
   def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[CreateItem] = {
     withSQL {
       select.from(CreateItem as ci).where.append(sqls"${where}")
@@ -77,8 +78,9 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
       select(ci.slotitemId, ci.fuel, ci.ammo, ci.steel, ci.bauxite, ci.shizaiFlag, ci.flagship, ci.created, mi.name, ms.name)
         .from(CreateItem as ci)
         .leftJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
-        .leftJoin(MasterShip as ms).on(ci.flagship, ms.id)
-        .where.eq(ci.memberId, memberId)
+        .leftJoin(Ship as s).on(ci.flagship, s.id)
+        .leftJoin(MasterShip as ms).on(s.shipId, ms.id)
+        .where.eq(ci.memberId, memberId).and.eq(s.memberId, memberId)
         .orderBy(ci.created).desc
     }.map(CreateItemWithName(ci, mi, ms)).list().apply()
   }
@@ -138,7 +140,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
     }.updateAndReturnGeneratedKey().apply()
 
     CreateItem(
-      id = generatedKey, 
+      id = generatedKey,
       memberId = memberId,
       itemId = itemId,
       slotitemId = slotitemId,
@@ -170,15 +172,15 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
         column.created -> entity.created
       ).where.eq(column.id, entity.id)
     }.update().apply()
-    entity 
+    entity
   }
-        
+
   def destroy(entity: CreateItem)(implicit session: DBSession = autoSession): Unit = {
     withSQL {
       delete.from(CreateItem).where.eq(column.id, entity.id)
     }.update().apply()
   }
-        
+
 }
 
 case class CreateItemWithName(
