@@ -17,33 +17,46 @@ abstract class Book {
 object Book {
   implicit val formats = DefaultFormats
   def fromJson(json: JValue): List[Book] = {
-    val memberId = (json \ "api_member_id").extract[Int]
+    val memberId = (json \ "api_member_id").extract[Long]
     val dispType = (json \ "api_disp_type").extract[Int]
     val JArray(xs) = json \ "api_list"
     dispType match {
       case 1 =>
-        xs.flatMap { x =>
-          val id = (x \ "api_id").extractOpt[Int].getOrElse(-1)
-          if(id != -1) {
-            val indexNo = (x \ "api_index_no").extract[Int]
-            val JString(name) = x \ "api_name"
-            val JArray(statess) = x \ "api_state"
-            val JArray(states) = statess.head
-            val isDameged = states(1).extract[Int] != 0
-            Some(ShipBook(memberId, id, indexNo, isDameged, name))
-          } else None
-        }
+        xs.flatMap(parseShipBook(memberId))
       case 2 =>
-        xs.flatMap { x =>
-          val id = (x \ "api_id").extractOpt[Int].getOrElse(-1)
-          if(id != -1) {
-            val indexNo = (x \ "api_index_no").extract[Int]
-            val JString(name) = x \ "api_name"
-            Some(ItemBook(memberId, id, indexNo, name))
-          } else None
-        }
+        xs.flatMap(parseItemBook(memberId))
       case _ => Nil
     }
+  }
+
+  def parseShipBook(memberId: Long)(json: JValue): Seq[ShipBook] = {
+    val id = (json \ "api_id").extractOpt[Int].getOrElse(-1)
+    if(id != -1) {
+      val JString(name) = json \ "api_name"
+      val JArray(statess) = json \ "api_state"
+      val indexNo = (json \ "api_index_no").extract[Int]
+      (0 until statess.size).flatMap { i =>
+        val states = statess(i)
+        val JArray(st) = states
+        val exist = st(0).extract[Int] != 0
+        val isDameged = st(1).extract[Int] != 0
+        if(exist) i match {
+          case 0 => Some(ShipBook(memberId, id, indexNo, isDameged, name))
+          case 1 => Some(ShipBook(memberId, id, indexNo + 100000, isDameged, name + "改"))
+          case 2 => Some(ShipBook(memberId, id, indexNo + 200000, isDameged, name + "改二"))
+          case _ => None
+        } else None
+      }
+    } else Nil
+  }
+
+  def parseItemBook(memberId: Long)(json: JValue): Option[ItemBook] = {
+    val id = (json \ "api_id").extractOpt[Int].getOrElse(-1)
+    if(id != -1) {
+      val indexNo = (json \ "api_index_no").extract[Int]
+      val JString(name) = json \ "api_name"
+      Some(ItemBook(memberId, id, indexNo, name))
+    } else None
   }
 }
 

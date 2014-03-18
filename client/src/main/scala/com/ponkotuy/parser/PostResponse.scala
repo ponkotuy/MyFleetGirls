@@ -101,7 +101,7 @@ class PostResponse extends Log {
   }
 
   private def post(uStr: String, data: String): Unit = {
-    if(auth.isEmpty) info(s"Not Authorized: $uStr"); return
+    if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return }
     Http(url(ClientConfig.postUrl + uStr) << Map("auth" -> write(auth), "data" -> data)).either.foreach {
       case Left(e) => error("POST Error"); error(e)
       case Right(res) =>
