@@ -248,13 +248,14 @@
       <table class="table table-striped table-condensed" id="create_item">
         <thread>
           <tr>
-            <th>名前</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキサイト</th><th>資材消費</th><th>日時</th>
+            <th>名前</th><th>旗艦</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキサイト</th><th>資材消費</th><th>日時</th>
           </tr>
         </thread>
         <tbody>
           @cItems.map { item =>
           <tr>
             <td>@item.name</td>
+            <td>@item.flagshipName</td>
             <td>@item.fuel</td>
             <td>@item.ammo</td>
             <td>@item.steel</td>
