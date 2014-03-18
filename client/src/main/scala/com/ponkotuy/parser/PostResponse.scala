@@ -13,6 +13,7 @@ import scala.collection.mutable
 import com.ponkotuy.data.CreateShipAndDock
 import scala.Some
 import com.ponkotuy.data.ItemBook
+import com.ponkotuy.value.Global
 
 /**
  *
@@ -24,8 +25,7 @@ class PostResponse extends Log {
 
   implicit val formats = Serialization.formats(NoTypeHints)
 
-  val Ponkotu = 110136878L
-
+  // データ転送に毎回必要
   private[this] var auth: Option[Auth] = None
   // KDock + CreateShipのデータが欲しいのでKDockIDをKeyにCreateShipを溜めておく
   private[this] val createShips: mutable.Map[Int, data.CreateShip] = mutable.Map()
@@ -101,6 +101,7 @@ class PostResponse extends Log {
   }
 
   private def post(uStr: String, data: String): Unit = {
+    if(auth.isEmpty) info(s"Not Authorized: $uStr"); return
     Http(url(ClientConfig.postUrl + uStr) << Map("auth" -> write(auth), "data" -> data)).either.foreach {
       case Left(e) => error("POST Error"); error(e)
       case Right(res) =>
@@ -110,5 +111,5 @@ class PostResponse extends Log {
     }
   }
 
-  private def checkPonkotu: Boolean = auth.map(_.id) == Some(Ponkotu)
+  private def checkPonkotu: Boolean = auth.exists(u => Global.Admin.contains(u.memberId))
 }

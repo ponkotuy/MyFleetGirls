@@ -7,6 +7,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
 import com.ponkotuy.data.Auth
 import models.Admiral
+import com.ponkotuy.value.Global
 
 /**
  *
@@ -17,7 +18,6 @@ object Common extends Controller {
   type Req = Map[String, Seq[String]]
   implicit val formats = DefaultFormats
 
-  val Ponkotu = 10007732L
 
   def authAndParse[T](f: (models.Admiral, T) => SimpleResult)(implicit mf: Manifest[T]): Action[Req] = {
     Action.async(parse.urlFormEncoded) { request =>
@@ -63,7 +63,7 @@ object Common extends Controller {
       val optResult = for {
         json <- reqHead(request)("auth")
         auth <- J.parse(json).extractOpt[Auth]
-        if auth.memberId == Ponkotu
+        if Global.Admin.contains(auth.memberId)
       } yield true
       optResult match {
         case Some(true) =>

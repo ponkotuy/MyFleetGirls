@@ -123,7 +123,10 @@
               <tr>
                 <td>@book.indexNo</td>
                 <td>@book.name</td>
-                <td>@book.isDameged</td>
+                <td>@if(book.isDameged){
+                    <span class="glyphicon glyphicon-ok"></span>
+                  }
+                </td>
               </tr>
               }
             </tbody>
@@ -245,7 +248,7 @@
       <table class="table table-striped table-condensed" id="create_item">
         <thread>
           <tr>
-            <th>名前</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキサイト</th><th>資材</th><th>日時</th>
+            <th>名前</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキサイト</th><th>資材消費</th><th>日時</th>
           </tr>
         </thread>
         <tbody>
@@ -256,7 +259,10 @@
             <td>@item.ammo</td>
             <td>@item.steel</td>
             <td>@item.bauxite</td>
-            <td>@item.shizaiFlag</td>
+            <td>@if(item.shizaiFlag){
+              <span class="glyphicon glyphicon-ok"></span>
+            }
+            </td>
             <td class="viewTime" data-time="@item.created">@item.created</td>
           </tr>
           }
