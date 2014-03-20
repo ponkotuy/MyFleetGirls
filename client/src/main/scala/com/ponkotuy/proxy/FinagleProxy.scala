@@ -19,6 +19,7 @@ class FinagleProxy(hosts: String, port: Int, inter: Intercepter = new PassThroug
   val client = ClientBuilder()
     .codec(http.Http().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
     .timeout(30.seconds)
+    .tcpConnectTimeout(10.seconds)
     .hosts(hosts)
     .hostConnectionLimit(4).build()
 
