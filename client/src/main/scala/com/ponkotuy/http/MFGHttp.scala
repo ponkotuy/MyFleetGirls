@@ -78,7 +78,7 @@ object MFGHttp extends Log {
   }
 
   def existsImage(id: Int): Boolean =
-    head(s"/image/ship/$id").getStatusLine.getStatusCode == 200
+    head(s"/image/ship/$id.jpg").getStatusLine.getStatusCode == 200
 
   private def head(uStr: String) = {
     val http = httpBuilder.build()

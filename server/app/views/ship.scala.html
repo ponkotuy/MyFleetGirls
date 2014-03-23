@@ -1,4 +1,4 @@
-@(user: util.User, ships: Seq[(Ship, MasterShip)])
+@(user: util.User, ships: Seq[ShipWithName])
 
 @main {
   <title>@{user.admiral.nickname}提督 -艦娘-</title>
@@ -19,10 +19,10 @@
           </tr>
         </thead>
         <tbody>
-          @ships.map { case (ship, master) =>
+          @ships.map { ship =>
           <tr>
             <td>@ship.id</td>
-            <td>@master.name</td>
+            <td>@ship.name</td>
             <td>@ship.lv</td>
             <td>@ship.exp%</td>
             <td>@ship.nowhp</td>

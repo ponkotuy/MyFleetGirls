@@ -1,9 +1,11 @@
 package models
 
 import scalikejdbc.SQLInterpolation._
-import com.ponkotuy.data
 import scalikejdbc.{WrappedResultSet, DBSession}
+import com.ponkotuy.data
 import util.scalikejdbc.BulkInsert._
+import org.json4s.JsonDSL._
+import org.json4s.native.JsonMethods._
 
 /**
  *
@@ -46,18 +48,28 @@ object Ship extends SQLSyntaxSupport[Ship] {
 
   lazy val s = Ship.syntax("s")
   lazy val ms = MasterShip.syntax("ms")
+  lazy val ds = DeckShip.syntax("ds")
+
+  def findByUserMaxLvWithName(memberId: Long)(implicit session: DBSession = autoSession): Option[ShipWithName] = {
+    withSQL {
+      select.from(Ship as s)
+        .leftJoin(MasterShip as ms).on(s.shipId, ms.id)
+        .where.eq(s.memberId, memberId).and.eq(s.lv, sqls"(SELECT MAX(${s.lv}) FROM ${Ship.table})")
+    }.map { rs => ShipWithName(Ship(s)(rs), MasterShip(ms)(rs)) }
+      .first().apply()
+  }
 
   def findAllByUser(memberId: Long)(implicit session: DBSession = Ship.autoSession): List[Ship] = withSQL {
     select.from(Ship as s)
       .where.eq(s.memberId, memberId)
   }.map(Ship(s)).toList().apply()
 
-  def findAllByUserWithMaster(memberId: Long)(implicit session: DBSession = Ship.autoSession): List[(Ship, MasterShip)] = {
+  def findAllByUserWithName(memberId: Long)(implicit session: DBSession = Ship.autoSession): List[ShipWithName] = {
     withSQL {
       select.from(Ship as s)
-        .innerJoin(MasterShip as ms).on(s.shipId, ms.id)
+        .leftJoin(MasterShip as ms).on(s.shipId, ms.id)
         .where.eq(s.memberId, memberId)
-    }.map { rs => (Ship(s)(rs), MasterShip(ms)(rs)) }.toList().apply()
+    }.map { rs => ShipWithName(Ship(s)(rs), MasterShip(ms)(rs)) }.toList().apply()
   }
 
   def create(s: data.Ship, memberId: Long)(implicit session: DBSession = Ship.autoSession): Ship = {
@@ -110,4 +122,44 @@ object Ship extends SQLSyntaxSupport[Ship] {
 
   def deleteAllByUser(memberId: Long)(implicit session: DBSession = Ship.autoSession): Unit =
     applyUpdate { delete.from(Ship).where.eq(Ship.column.memberId, memberId) }
+}
+
+case class ShipWithName(ship: Ship, master: MasterShip) {
+  def id = ship.id
+  def shipId = ship.shipId
+  def memberId = ship.memberId
+  def lv = ship.lv
+  def exp = ship.exp
+  def nowhp = ship.nowhp
+  def slot = ship.slot
+  def fuel = ship.fuel
+  def bull = ship.bull
+  def dockTime = ship.dockTime
+  def cond = ship.cond
+  def karyoku = ship.karyoku
+  def raisou = ship.raisou
+  def taiku = ship.taiku
+  def soukou = ship.soukou
+  def kaihi = ship.kaihi
+  def taisen = ship.taisen
+  def sakuteki = ship.sakuteki
+  def lucky = ship.lucky
+  def locked = ship.locked
+  def created = ship.created
+  def name = master.name
+  def yomi = master.yomi
+
+  def toJson: String = {
+    val seq = Seq(
+      Seq(0, karyoku / 150.0),
+      Seq(1, raisou / 130.0),
+      Seq(2, taiku / 80.0),
+      Seq(3, soukou / 100.0),
+      Seq(4, kaihi / 80.0),
+      Seq(5, taisen / 80.0),
+      Seq(6, sakuteki / 70.0),
+      Seq(7, lucky / 40.0)
+    )
+    compact(render(seq))
+  }
 }

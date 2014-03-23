@@ -21,6 +21,18 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
   )
 
   lazy val ds = DeckShip.syntax("ds")
+  lazy val s = Ship.syntax("s")
+  lazy val ms = MasterShip.syntax("ms")
+
+  def findFlagshipByUserWishShipName(memberId: Long)(implicit session: DBSession = autoSession): Option[ShipWithName] = {
+    withSQL {
+      select.from(DeckShip as ds)
+        .innerJoin(Ship as s).on(ds.shipId, s.id)
+        .innerJoin(MasterShip as ms).on(s.shipId, ms.id)
+        .where.eq(ds.memberId, memberId).and.eq(s.memberId, memberId).and.eq(ds.deckId, 1).and.eq(ds.num, 0)
+    }.map { rs => ShipWithName(Ship(s)(rs), MasterShip(ms)(rs)) }
+      .first().apply()
+  }
 
   def create(deckId: Int, num: Int, memberId: Long, shipId: Int)(
     implicit session: DBSession = DeckShip.autoSession): DeckShip = {

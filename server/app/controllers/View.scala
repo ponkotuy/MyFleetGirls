@@ -27,7 +27,14 @@ object View extends Controller {
   }
 
   def top(memberId: Long) = userView(memberId) { user =>
-    Ok(views.html.user(user))
+    models.Ship.findByUserMaxLvWithName(memberId) match {
+      case Some(best) =>
+        models.DeckShip.findFlagshipByUserWishShipName(memberId) match {
+          case Some(flagship) => Ok(views.html.user(user, best, flagship))
+          case _ => NotFound("旗艦を登録していません")
+        }
+      case _ => NotFound("艦娘を登録していません")
+    }
   }
 
   def material(memberId: Long) = userView(memberId) { user =>
@@ -35,7 +42,7 @@ object View extends Controller {
   }
 
   def ship(memberId: Long) = userView(memberId) { user =>
-    val ships = models.Ship.findAllByUserWithMaster(memberId)
+    val ships = models.Ship.findAllByUserWithName(memberId)
     Ok(views.html.ship(user, ships))
   }
 
