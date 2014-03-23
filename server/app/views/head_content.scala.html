@@ -1,0 +1,17 @@
+@(user: util.User)(body: Html)
+
+@rank(r: Int) = {
+  @Map(
+    1 -> "元帥", 2 -> "大将", 3 -> "中将", 4 -> "少将",
+    5 -> "大佐", 6 -> "中佐", 7 -> "新米中佐",
+    8 -> "少佐", 9 -> "中堅少佐", 10 -> "新米少佐"
+  )(r)
+}
+<input type="text" id="userid" value=@user.admiral.id hidden="hidden" />
+<div class="container theme-showcase" role="main">
+  <div class="jumbotron">
+    <h1>@{user.admiral.nickname}@rank(user.basic.rank)<small>Lv@{user.basic.lv}</small></h1>
+  </div>
+
+  @body
+</div>

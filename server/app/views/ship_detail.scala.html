@@ -1,0 +1,13 @@
+@(ship: ShipWithName)
+
+<!-- Require jQueryUI, Flot, Flot mouse, Flot Spider, JUMFlot and rader.js -->
+
+<div class="row">
+  <div style="float:left">
+    <h3>@ship.name</h4>
+    <div style="width:360px;height:300px" class="ship_rader" data-json=@ship.toJson></div>
+  </div>
+  <div>
+    <img src=@routes.RestImage.ship(ship.shipId) alt=@ship.name class="img-rounded" />
+  </div>
+</div>

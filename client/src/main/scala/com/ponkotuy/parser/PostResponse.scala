@@ -1,19 +1,18 @@
 package com.ponkotuy.parser
 
-import scala.concurrent.ExecutionContext.Implicits._
+import scala.collection.mutable
+import scala.util.Try
+import java.io._
 import org.json4s._
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
-import dispatch._
 import com.ponkotuy.util.Log
 import com.ponkotuy.data
-import com.ponkotuy.data._
-import com.ponkotuy.config.ClientConfig
-import scala.collection.mutable
-import com.ponkotuy.data.CreateShipAndDock
-import scala.Some
-import com.ponkotuy.data.ItemBook
+import com.ponkotuy.data.master
 import com.ponkotuy.value.Global
+import org.jboss.netty.buffer.ChannelBuffer
+import com.github.theon.uri.Uri
+import com.ponkotuy.tool.TempFileTool
 
 /**
  *
@@ -22,50 +21,54 @@ import com.ponkotuy.value.Global
  */
 class PostResponse extends Log {
   import com.ponkotuy.parser.ResType._
+  import com.ponkotuy.http._
 
   implicit val formats = Serialization.formats(NoTypeHints)
 
   // データ転送に毎回必要
-  private[this] var auth: Option[Auth] = None
+  private[this] implicit var auth: Option[data.Auth] = None
   // KDock + CreateShipのデータが欲しいのでKDockIDをKeyにCreateShipを溜めておく
   private[this] val createShips: mutable.Map[Int, data.CreateShip] = mutable.Map()
   // 旗艦データが必要（CreateItemとか）なので溜めておく
   private[this] var flagship: Option[Int] = None
 
-  def parseAndPost(typ: ResType, req: Map[String, String], obj: JValue): Unit = {
+  def post(q: Query): Unit = {
+    val typ = q.resType.get
+    lazy val req = q.reqMap
+    lazy val obj = q.resJson.get
     typ match {
       case Material =>
         val material = data.Material.fromJson(obj)
-        post("/material", write(material))
+        MFGHttp.post("/material", write(material))
       case Basic =>
         auth = Some(data.Auth.fromJSON(obj))
         val basic = data.Basic.fromJSON(obj)
-        post("/basic", write(basic))
+        MFGHttp.post("/basic", write(basic))
       case Ship3 =>
         val ship = data.Ship.fromJson(obj \ "api_ship_data")
-        post("/ship", write(ship))
+        MFGHttp.post("/ship", write(ship))
       case NDock =>
         val docks = data.NDock.fromJson(obj)
-        post("/ndock", write(docks))
+        MFGHttp.post("/ndock", write(docks))
       case KDock =>
         val docks = data.KDock.fromJson(obj).filterNot(_.completeTime == 0)
-        post("/kdock", write(docks))
+        MFGHttp.post("/kdock", write(docks))
         docks.foreach { dock =>
           createShips.get(dock.id).foreach { cShip =>
-            val dat = CreateShipAndDock(cShip, dock)
-            post("/createship", write(dat))
+            val dat = data.CreateShipAndDock(cShip, dock)
+            MFGHttp.post("/createship", write(dat))
           }
         }
       case DeckPort =>
         val decks = data.DeckPort.fromJson(obj)
         flagship = decks.find(_.id == 1).flatMap(_.ships.headOption)
-        if(decks.nonEmpty) post("/deckport", write(decks))
+        if(decks.nonEmpty) MFGHttp.post("/deckport", write(decks))
       case Book2 =>
         val books = data.Book.fromJson(obj)
         if(books.isEmpty) return
         books.head match {
-          case _: ShipBook => post("/book/ship", write(books))
-          case _: ItemBook => post("/book/item", write(books))
+          case _: data.ShipBook => MFGHttp.post("/book/ship", write(books))
+          case _: data.ItemBook => MFGHttp.post("/book/item", write(books))
         }
       case CreateShip =>
         val createShip = data.CreateShip.fromMap(req)
@@ -73,7 +76,7 @@ class PostResponse extends Log {
       case CreateItem =>
         flagship.foreach { flag =>
           val createItem = data.CreateItem.from(req, obj, flag)
-          post("/createitem", write(createItem))
+          MFGHttp.post("/createitem", write(createItem))
         }
       case LoginCheck | Ship2 | Deck | Practice | Record | GetShip | Charge | MissionStart => // No Need
       case HenseiChange | HenseiLock | GetOthersDeck => // No Need
@@ -81,17 +84,23 @@ class PostResponse extends Log {
       case MasterShip =>
         if(checkPonkotu) {
           val ships = master.MasterShip.fromJson(obj)
-          post("/master/ship", write(ships))
+          MFGHttp.post("/master/ship", write(ships))
         }
       case MasterMission =>
         if(checkPonkotu) {
           val missions = master.MasterMission.fromJson(obj)
-          post("/master/mission", write(missions))
+          MFGHttp.post("/master/mission", write(missions))
         }
       case MasterSlotItem =>
         if(checkPonkotu) {
           val items = master.MasterSlotItem.fromJson(obj)
-          post("/master/slotitem", write(items))
+          MFGHttp.post("/master/slotitem", write(items))
+        }
+      case ShipSWF =>
+        parseId(q.uri).filterNot(MFGHttp.existsImage).foreach { id =>
+          val swf = allRead(q.res.getContent)
+          val file = TempFileTool.save(swf, "swf")
+          MFGHttp.postFile("/swf/ship/" + id)(file)
         }
       case _ =>
         info(s"ResType: $typ")
@@ -100,16 +109,18 @@ class PostResponse extends Log {
     }
   }
 
-  private def post(uStr: String, data: String): Unit = {
-    if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return }
-    Http(url(ClientConfig.postUrl + uStr) << Map("auth" -> write(auth), "data" -> data)).either.foreach {
-      case Left(e) => error("POST Error"); error(e)
-      case Right(res) =>
-        info(s"POST Success: ($uStr, $data)")
-        if(res.getStatusCode >= 400)
-          error(s"Error Response ${res.getStatusCode}\n${res.getStatusText}\n${res.getResponseBody("UTF-8")}")
-    }
-  }
-
   private def checkPonkotu: Boolean = auth.exists(u => Global.Admin.contains(u.memberId))
+
+  private def parseId(str: String): Option[Int] =
+    Try {
+      val uri = Uri.parseUri(str)
+      val filename = uri.pathParts.last
+      filename.takeWhile(_ != '.').toInt
+    }.toOption
+
+  def allRead(cb: ChannelBuffer): Array[Byte] = {
+    val baos = new ByteArrayOutputStream()
+    cb.getBytes(0, baos, cb.readableBytes())
+    baos.toByteArray
+  }
 }

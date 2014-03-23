@@ -16,7 +16,7 @@
       <h2>New</h2>
       <ul>
         @newest.map { a =>
-          <li><a href="/user/@a.id">@a.nickname</a></li>
+          <li><a href=@routes.View.user(a.id)>@a.nickname</a></li>
         }
       </ul>
     </div>
@@ -24,7 +24,7 @@
       <h2>提督Lv順</h2>
       <ul>
         @highLv.map { a =>
-          <li><a href="/user/@a.id">@a.nickname</a><small>Lv@a.lv</small></li>
+          <li><a href=@routes.View.user(a.id)>@a.nickname</a><small>Lv@a.lv</small></li>
         }
       </ul>
     </div>
