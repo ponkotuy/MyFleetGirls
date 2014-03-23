@@ -18,11 +18,10 @@ object Common extends Controller {
   type Req = Map[String, Seq[String]]
   implicit val formats = DefaultFormats
 
-
   def authAndParse[T](f: (models.Admiral, T) => SimpleResult)(implicit mf: Manifest[T]): Action[Req] = {
     Action.async(parse.urlFormEncoded) { request =>
-      authentication(request) { auth =>
-        withData[T](request) { data =>
+      authentication(request.body) { auth =>
+        withData[T](request.body) { data =>
           f(auth, data)
         }
       }
@@ -31,15 +30,15 @@ object Common extends Controller {
 
   def checkPonkotuAndParse[T](f: (T) => SimpleResult)(implicit mf: Manifest[T]): Action[Req] = {
     Action.async(parse.urlFormEncoded(1024*1024*2)) { request =>
-      checkPonkotu(request) {
-        withData[T](request) { data =>
+      checkPonkotu(request.body) {
+        withData[T](request.body) { data =>
           f(data)
         }
       }
     }
   }
 
-  def authentication(request: Request[Req])(f: (models.Admiral) => SimpleResult): Future[SimpleResult] = {
+  def authentication(request: Req)(f: (models.Admiral) => SimpleResult): Future[SimpleResult] = {
     Future {
       val optoptResult:Option[Option[models.Admiral]] = for {
         json <- reqHead(request)("auth")
@@ -58,7 +57,7 @@ object Common extends Controller {
     }
   }
 
-  def checkPonkotu(request: Request[Req])(f: => SimpleResult): Future[SimpleResult] = {
+  def checkPonkotu(request: Req)(f: => SimpleResult): Future[SimpleResult] = {
     Future {
       val optResult = for {
         json <- reqHead(request)("auth")
@@ -74,7 +73,7 @@ object Common extends Controller {
     }
   }
 
-  def withData[T](request: Request[Req])(f: T => SimpleResult)(implicit mf: Manifest[T]): SimpleResult = {
+  def withData[T](request: Req)(f: T => SimpleResult)(implicit mf: Manifest[T]): SimpleResult = {
     val result = for {
       json <- reqHead(request)("data")
       data <- J.parse(json).extractOpt[T]
@@ -82,9 +81,9 @@ object Common extends Controller {
     result.getOrElse(BadRequest("Request Error(JSON Parse Error? Header?)"))
   }
 
-  private def reqHead(request: Request[Req])(key: String): Option[String] = {
+  def reqHead(request: Req)(key: String): Option[String] = {
     for {
-      results <- request.body.get(key)
+      results <- request.get(key)
       one <- results.headOption
     } yield one
   }

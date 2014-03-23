@@ -35,8 +35,8 @@ application.langs="en"
 #
 db.default.driver="com.mysql.jdbc.Driver"
 db.default.url="jdbc:mysql://localhost:3306/myfleet"
-db.default.user="myfleet"
-db.default.password="myfleet"
+db.default.user=
+db.default.password=
 db.default.migration.auto=true
 
 # Evolutions

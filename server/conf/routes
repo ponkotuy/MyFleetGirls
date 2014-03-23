@@ -16,11 +16,13 @@ POST    /post/v1/book/item          controllers.Post.itemBook
 POST    /post/v1/master/ship        controllers.PostMaster.ship
 POST    /post/v1/master/mission     controllers.PostMaster.mission
 POST    /post/v1/master/slotitem    controllers.PostMaster.slotitem
+POST    /post/v1/image/ship/:shipId controllers.PostImage.ship(shipId: Int)
 
 # Rest
 GET     /rest/v1/:userId/materials  controllers.Rest.materials(userId: Long)
 GET     /rest/v1/:userId/basics     controllers.Rest.basics(userId: Long)
 GET     /rest/v1/:userId/ships      controllers.Rest.ships(userId: Long)
+GET     /rest/v1/image/ship/:shipId.jpg controllers.RestImage.ship(shipId: Int)
 
 # View
 GET     /                           controllers.View.index
