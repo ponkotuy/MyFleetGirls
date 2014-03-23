@@ -8,6 +8,7 @@ import scala.concurrent.ExecutionContext.Implicits._
 import com.ponkotuy.data.Auth
 import models.Admiral
 import com.ponkotuy.value.Global
+import util.User
 
 /**
  *
@@ -81,10 +82,27 @@ object Common extends Controller {
     result.getOrElse(BadRequest("Request Error(JSON Parse Error? Header?)"))
   }
 
+  def userView(memberId: Long)(f: User => SimpleResult): Action[AnyContent] = Action.async {
+    Future {
+      getUser(memberId) match {
+        case Some(user) => f(user)
+        case _ => NotFound("ユーザが見つかりませんでした")
+      }
+    }
+  }
+
   def reqHead(request: Req)(key: String): Option[String] = {
     for {
       results <- request.get(key)
       one <- results.headOption
     } yield one
   }
+
+  private def getUser(memberId: Long): Option[User] = {
+    for {
+      auth <- models.Admiral.find(memberId)
+      basic <- models.Basic.findByUser(memberId)
+    } yield User(auth, basic)
+  }
+
 }

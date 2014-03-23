@@ -1,5 +1,4 @@
 url {
-    #post: "http://localhost:9000"
     post: "http://myfleet.ponkotuy.com/"
     # kc: "203.104.105.167:80" # 横須賀鎮守府
     # kc: "125.6.184.15:80" # 呉鎮守府

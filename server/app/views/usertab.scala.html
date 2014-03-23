@@ -1,0 +1,25 @@
+@(active: String)(body: Html)
+  <ul class="nav nav-tabs">
+    <li class="@if(active=="top"){active}">
+      <a href="top">Top</a>
+    </li>
+    <li class="@if(active=="material"){active}">
+      <a href="material">資源</a>
+    </li>
+    <li class="@if(active=="ship"){active}">
+      <a href="ship">艦娘</a>
+    </li>
+    <li class="@if(active=="book"){active}">
+      <a href="book">図鑑</a>
+    </li>
+    <li class="@if(active=="dock"){active}">
+      <a href="dock">ドック</a>
+    </li>
+    <li class="@if(active=="create"){active}">
+      <a href="create">建造履歴</a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    @body
+  </div>

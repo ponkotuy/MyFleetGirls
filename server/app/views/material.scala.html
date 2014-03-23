@@ -1,0 +1,38 @@
+@(user: util.User)
+
+@main {
+  <title>@{user.admiral.nickname}提督 -資源-</title>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/css/base/jquery-ui.css" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.time.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.selection.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment-with-langs.min.js"></script>
+  <script src=@routes.Assets.at("javascript/material.js")></script>
+  <style>
+    div.chart {
+      width: 900px;
+      height: 500px;
+    }
+
+    div.overview {
+      width: 900px;
+      height: 200px;
+    }
+  </style>
+} {
+  @head_content(user) {
+    @usertab("material") {
+      <div class="page-header">
+        <h1>資源</h1>
+      </div>
+      <div id="material_chart" class="chart"></div>
+      <div id="material_overview" class="overview"></div>
+      <div class="btn-group">
+        <button type="button" class="btn btn-default" id="whole">全体</button>
+        <button type="button" class="btn btn-default" id="month">1ヶ月</button>
+        <button type="button" class="btn btn-default" id="week">1週間</button>
+        <button type="button" class="btn btn-default" id="day">1日</button>
+      </div>
+    }
+  }
+}
