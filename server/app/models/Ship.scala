@@ -54,7 +54,7 @@ object Ship extends SQLSyntaxSupport[Ship] {
     withSQL {
       select.from(Ship as s)
         .leftJoin(MasterShip as ms).on(s.shipId, ms.id)
-        .where.eq(s.memberId, memberId).and.eq(s.lv, sqls"(SELECT MAX(${s.lv}) FROM ${Ship.table})")
+        .where.eq(s.memberId, memberId).and.eq(s.lv, sqls"(SELECT MAX(${s.lv}) FROM ${Ship.table} WHERE ${s.memberId} = ${memberId})")
     }.map { rs => ShipWithName(Ship(s)(rs), MasterShip(ms)(rs)) }
       .first().apply()
   }

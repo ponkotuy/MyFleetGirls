@@ -1,5 +1,5 @@
 url {
-    post: "http://myfleet.ponkotuy.com/"
+    post: "http://ponkotuy.com:9003"
     # kc: "203.104.105.167:80" # 横須賀鎮守府
     # kc: "125.6.184.15:80" # 呉鎮守府
     # kc: "125.6.184.16:80" # 佐世保鎮守府

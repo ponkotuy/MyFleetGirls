@@ -63,7 +63,7 @@ object MFGHttp extends Log {
       val res = http.execute(post)
       alertResult(res)
     } catch {
-      case e: Throwable => error(e.getStackTrace.mkString("\n"))
+      case e: Throwable => error((e.getMessage :+ e.getStackTrace).mkString("\n"))
     }
   }
 
