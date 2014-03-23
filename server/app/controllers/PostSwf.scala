@@ -3,22 +3,28 @@ package controllers
 import play.api.mvc._
 import Common._
 import java.io.{ByteArrayOutputStream, InputStream, FileInputStream, File}
+import tool.SWFTool
 
 /**
  *
  * @author ponkotuy
  * Date: 14/03/22.
  */
-object PostImage extends Controller {
+object PostSwf extends Controller {
   def ship(shipId: Int) = Action.async(parse.multipartFormData) { request =>
     val form = request.body.asFormUrlEncoded
     authentication(form) { auth =>
       request.body.file("image").map { ref =>
-        val file = ref.ref.file
-        val image = readAll(new FileInputStream(file))
-        models.ShipImage.create(shipId, image)
+        val swfFile = ref.ref.file
+        val imageFile = SWFTool.extractJPG(swfFile, 5)
+        val image = readAll(new FileInputStream(imageFile))
+        try {
+          models.ShipImage.create(shipId, image)
+        } catch {
+          case e: Throwable => Ok("Already Exists")
+        }
       } match {
-        case Some(_) => Ok("Success")
+        case Some(_) => Accepted("Success")
         case _ => BadRequest("Need Image")
       }
     }

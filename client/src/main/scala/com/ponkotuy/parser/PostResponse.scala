@@ -12,6 +12,7 @@ import com.ponkotuy.data.master
 import com.ponkotuy.value.Global
 import org.jboss.netty.buffer.ChannelBuffer
 import com.github.theon.uri.Uri
+import com.ponkotuy.tool.TempFileTool
 
 /**
  *
@@ -97,8 +98,9 @@ class PostResponse extends Log {
         }
       case ShipSWF =>
         parseId(q.uri).filterNot(MFGHttp.existsImage).foreach { id =>
-          val image = allRead(q.res.getContent)
-          SWFTool.extractJPG(image, 5)(MFGHttp.postFile("/image/ship/" + id))
+          val swf = allRead(q.res.getContent)
+          val file = TempFileTool.save(swf, "swf")
+          MFGHttp.postFile("/swf/ship/" + id)(file)
         }
       case _ =>
         info(s"ResType: $typ")

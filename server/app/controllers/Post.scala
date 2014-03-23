@@ -3,7 +3,6 @@ package controllers
 import play.api.mvc._
 import com.ponkotuy.data._
 import Common._
-import java.lang.Throwable
 import scala.Throwable
 
 /**
