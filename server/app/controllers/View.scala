@@ -26,6 +26,10 @@ object View extends Controller {
     Future { Redirect(routes.View.top(memberId)) }
   }
 
+  def user2(memberId: Long) = Action.async {
+    Future { Redirect(routes.View.top(memberId)) }
+  }
+
   def top(memberId: Long) = userView(memberId) { user =>
     models.Ship.findByUserMaxLvWithName(memberId) match {
       case Some(best) =>

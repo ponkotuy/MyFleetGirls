@@ -83,4 +83,10 @@ object Post extends Controller {
     models.ItemBook.bulkUpsert(items)
     Ok("Success")
   }
+
+  def mapInfo = authAndParse[List[MapInfo]] { case (auth, maps) =>
+    models.MapInfo.deleteAllByUser(auth.id)
+    models.MapInfo.bulkInsert(maps, auth.id)
+    Ok("Success")
+  }
 }

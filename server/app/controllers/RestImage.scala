@@ -18,4 +18,13 @@ object RestImage extends Controller {
       }
     }
   }
+
+  def shipHead(shipId: Int) = Action.async {
+    Future {
+      models.ShipImage.find(shipId) match {
+        case Some(record) => Ok(record.image).as("image/jpeg")
+        case _ => NotFound(s"Not Found Image (id=$shipId)")
+      }
+    }
+  }
 }

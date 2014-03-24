@@ -5,8 +5,8 @@ import org.json4s._
 import org.json4s.native.{ JsonMethods => J }
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
+import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data.Auth
-import models.Admiral
 import com.ponkotuy.value.Global
 import util.User
 
@@ -47,7 +47,7 @@ object Common extends Controller {
       } yield {
         models.Admiral.find(auth.memberId) match {
           case Some(old: models.Admiral) if old.authentication(auth) => Some(old)
-          case Some(_) => None: Option[Admiral]
+          case Some(_) => None: Option[models.Admiral]
           case _ => Some(models.Admiral.create(auth))
         }
       }
@@ -102,7 +102,15 @@ object Common extends Controller {
     for {
       auth <- models.Admiral.find(memberId)
       basic <- models.Basic.findByUser(memberId)
-    } yield User(auth, basic)
+    } yield {
+      val notClear = models.MapInfo.findAllBy(sqls"member_id = ${memberId} and cleared = false")
+      val nextMapView = if(notClear.isEmpty) {
+        if(models.MapInfo.find(54, memberId).isDefined) "全海域クリア" else "海域進捗未登録"
+      } else {
+        notClear.map(_.abbr).mkString("", ", ", "海域の攻略中")
+      }
+      User(auth, basic, nextMapView)
+    }
   }
 
 }
