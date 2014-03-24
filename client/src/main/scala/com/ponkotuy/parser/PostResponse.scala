@@ -70,6 +70,9 @@ class PostResponse extends Log {
           case _: data.ShipBook => MFGHttp.post("/book/ship", write(books))
           case _: data.ItemBook => MFGHttp.post("/book/item", write(books))
         }
+      case MapInfo =>
+        val maps = data.MapInfo.fromJson(obj)
+        MFGHttp.post("/mapinfo", write(maps))
       case CreateShip =>
         val createShip = data.CreateShip.fromMap(req)
         createShips(createShip.kDock) = createShip

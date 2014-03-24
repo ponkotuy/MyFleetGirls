@@ -13,6 +13,7 @@ POST    /post/v1/kdock              controllers.Post.kdock
 POST    /post/v1/deckport           controllers.Post.deckPort
 POST    /post/v1/book/ship          controllers.Post.shipBook
 POST    /post/v1/book/item          controllers.Post.itemBook
+POST    /post/v1/mapinfo            controllers.Post.mapInfo
 POST    /post/v1/master/ship        controllers.PostMaster.ship
 POST    /post/v1/master/mission     controllers.PostMaster.mission
 POST    /post/v1/master/slotitem    controllers.PostMaster.slotitem
@@ -22,12 +23,13 @@ POST    /post/v1/swf/ship/:shipId   controllers.PostSwf.ship(shipId: Int)
 GET     /rest/v1/:userId/materials  controllers.Rest.materials(userId: Long)
 GET     /rest/v1/:userId/basics     controllers.Rest.basics(userId: Long)
 GET     /rest/v1/image/ship/:shipId.jpg controllers.RestImage.ship(shipId: Int)
-HEAD    /rest/v1/image/ship/:shipId.jpg controllers.RestImage.ship(shipId: Int)
+HEAD    /rest/v1/image/ship/:shipId.jpg controllers.RestImage.shipHead(shipId: Int)
 
 # View
 GET     /                           controllers.View.index
 GET     /entire/about               controllers.View.about
 GET     /u/:user                    controllers.View.name(user: String)
+GET     /user/:userId               controllers.View.user2(userId: Long)
 GET     /user/:userId/              controllers.View.user(userId: Long)
 GET     /user/:userId/top           controllers.View.top(userId: Long)
 GET     /user/:userId/material      controllers.View.material(userId: Long)
