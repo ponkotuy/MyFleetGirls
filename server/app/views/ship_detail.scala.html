@@ -1,13 +1,25 @@
-@(ship: ShipWithName)
+@(ship: ShipWithName, imageLeft: Boolean = false)
 
 <!-- Require jQueryUI, Flot, Flot mouse, Flot Spider, JUMFlot and rader.js -->
 
-<div class="row">
-  <div style="float:left">
+@graph() = {
+  <div style="float:left" class="col-md-4">
     <h3>@ship.name<small>Lv@ship.lv</small></h3>
     <div style="width:360px;height:300px" class="ship_rader" data-json=@ship.toJson></div>
   </div>
-  <div>
+}
+
+@image() = {
+  <div style="float:left" class="col-md-3">
     <img src=@routes.RestImage.ship(ship.shipId) alt=@ship.name class="img-rounded" />
+    <ul>
+      @ship.slotNames.map { slot =>
+        <li>@slot</li>
+      }
+    </ul>
   </div>
+}
+
+<div class="row">
+  @if(imageLeft) {@image() @graph()} else {@graph() @image()}
 </div>
