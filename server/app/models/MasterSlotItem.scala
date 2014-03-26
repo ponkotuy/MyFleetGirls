@@ -6,18 +6,18 @@ import com.ponkotuy.data.master
 import util.scalikejdbc.BulkInsert._
 
 case class MasterSlotItem(
-  id: Int, 
-  name: String, 
-  typ: String, 
-  power: Int, 
-  torpedo: Int, 
-  bomb: Int, 
-  antiair: Int, 
-  antisub: Int, 
-  search: Int, 
-  hit: Int, 
-  length: Int, 
-  rare: Int, 
+  id: Int,
+  name: String,
+  typ: String,
+  power: Int,
+  torpedo: Int,
+  bomb: Int,
+  antiair: Int,
+  antisub: Int,
+  search: Int,
+  hit: Int,
+  length: Int,
+  rare: Int,
   info: String) {
 
   def save()(implicit session: DBSession = MasterSlotItem.autoSession): MasterSlotItem = MasterSlotItem.save(this)(session)
@@ -25,7 +25,7 @@ case class MasterSlotItem(
   def destroy()(implicit session: DBSession = MasterSlotItem.autoSession): Unit = MasterSlotItem.destroy(this)(session)
 
 }
-      
+
 
 object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
 
@@ -48,7 +48,7 @@ object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
     rare = rs.int(msi.rare),
     info = rs.string(msi.info)
   )
-      
+
   val msi = MasterSlotItem.syntax("msi")
 
   override val autoSession = AutoSession
@@ -58,27 +58,27 @@ object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
       select.from(MasterSlotItem as msi).where.eq(msi.id, id)
     }.map(MasterSlotItem(msi.resultName)).single().apply()
   }
-          
+
   def findAll()(implicit session: DBSession = autoSession): List[MasterSlotItem] = {
     withSQL(select.from(MasterSlotItem as msi)).map(MasterSlotItem(msi.resultName)).list().apply()
   }
-          
+
   def countAll()(implicit session: DBSession = autoSession): Long = {
     withSQL(select(sqls"count(1)").from(MasterSlotItem as msi)).map(rs => rs.long(1)).single().apply().get
   }
-          
+
   def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[MasterSlotItem] = {
     withSQL {
       select.from(MasterSlotItem as msi).where.append(sqls"${where}")
     }.map(MasterSlotItem(msi.resultName)).list().apply()
   }
-      
+
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(MasterSlotItem as msi).where.append(sqls"${where}")
     }.map(_.long(1)).single().apply().get
   }
-      
+
   def create(
     id: Int,
     name: String,
@@ -175,9 +175,9 @@ object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
         column.info -> entity.info
       ).where.eq(column.id, entity.id)
     }.update().apply()
-    entity 
+    entity
   }
-        
+
   def destroy(entity: MasterSlotItem)(implicit session: DBSession = autoSession): Unit = {
     withSQL {
       delete.from(MasterSlotItem).where.eq(column.id, entity.id)
@@ -187,5 +187,5 @@ object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
   def deleteAll()(implicit session: DBSession = autoSession): Unit = applyUpdate {
     delete.from(MasterSlotItem)
   }
-        
+
 }

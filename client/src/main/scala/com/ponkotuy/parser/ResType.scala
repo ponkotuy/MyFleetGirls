@@ -38,6 +38,8 @@ object ResType extends Log {
   case object KDock extends ResType(s"\\A$GetMember/kdock\\z".r)
   case object Deck extends ResType(s"\\A$GetMember/deck\\z".r) // DeckPortと何が違うのか分からなくて困っている
   case object DeckPort extends ResType(s"\\A$GetMember/deck_port\\z".r)
+  case object UseItem extends ResType(s"\\A$GetMember/useitem\\z".r) // 家具箱とか
+  case object SlotItem extends ResType(s"\\A$GetMember/slotitem\\z".r)
   case object Practice extends ResType(s"\\A$GetMember/practice\\z".r) // 演習相手。取るべきではない
   case object Book2 extends ResType(s"\\A$GetMember/book2\\z".r)
   case object MapInfo extends ResType(s"\\A$GetMember/mapinfo\\z".r)
@@ -70,7 +72,7 @@ object ResType extends Log {
 
   val values = Set(
     LoginCheck, Material, Basic, Record, Ship2, Ship3, NDock, KDock,
-    Deck, DeckPort, Practice, Book2, MapInfo, CreateShip, GetShip, CreateItem,
+    Deck, DeckPort, UseItem, SlotItem, Practice, Book2, MapInfo, CreateShip, GetShip, CreateItem,
     Charge, HenseiChange, HenseiLock, MissionStart, KaisouPowerup, PracticeBattle, PracticeBattleResult, GetOthersDeck,
     MapStart, SortieBattle, SortieBattleResult, ClearItemGet, NyukyoStart,
     MasterShip, MasterPractice, MasterUseItem, MasterFurniture, MasterSlotItem, MasterMapArea, MasterSType, MasterMission,
