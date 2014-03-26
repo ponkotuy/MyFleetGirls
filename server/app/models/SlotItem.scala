@@ -41,6 +41,13 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
     }.map(SlotItem(si.resultName)).single().apply()
   }
 
+  def findIn(xs: Seq[Int], memberId: Long)(implicit session: DBSession = autoSession): List[SlotItem] = {
+    withSQL {
+      select.from(SlotItem as si)
+        .where.in((si.memberId, si.id), xs.map(x => (memberId, x)))
+    }.map(SlotItem(si.resultName)).list().apply()
+  }
+
   def findAll()(implicit session: DBSession = autoSession): List[SlotItem] = {
     withSQL(select.from(SlotItem as si)).map(SlotItem(si.resultName)).list().apply()
   }

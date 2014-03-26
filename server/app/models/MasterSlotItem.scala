@@ -73,13 +73,6 @@ object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
     }.map(MasterSlotItem(msi.resultName)).list().apply()
   }
 
-  def names(ids: Seq[Int])(implicit session: DBSession = autoSession): List[String] = {
-    withSQL {
-      select(msi.name).from(MasterSlotItem as msi)
-        .where.in(msi.id, ids)
-    }.map(_.string(1)).toList().apply()
-  }
-
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(MasterSlotItem as msi).where.append(sqls"${where}")

@@ -149,7 +149,7 @@ case class ShipWithName(ship: Ship, master: MasterShip) {
   def name = master.name
   def yomi = master.yomi
 
-  def slotNames: List[String] = MasterSlotItem.names(slot)
+  def slotNames: List[String] = SlotItem.findIn(slot, memberId).map(_.name)
 
   def toJson: String = {
     val seq = Seq(
