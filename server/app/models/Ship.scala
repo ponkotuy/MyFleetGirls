@@ -152,8 +152,6 @@ case class ShipWithName(ship: Ship, master: MasterShip) {
   def slotNames: List[String] = MasterSlotItem.names(slot)
 
   def toJson: String = {
-    println(slot)
-    println(slotNames)
     val seq = Seq(
       Seq(0, karyoku / 150.0),
       Seq(1, raisou / 130.0),

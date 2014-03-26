@@ -63,6 +63,9 @@ class PostResponse extends Log {
         val decks = data.DeckPort.fromJson(obj)
         flagship = decks.find(_.id == 1).flatMap(_.ships.headOption)
         if(decks.nonEmpty) MFGHttp.post("/deckport", write(decks))
+      case SlotItem =>
+        val items = data.SlotItem.fromJson(obj)
+        MFGHttp.post("/slotitem", write(items))
       case Book2 =>
         val books = data.Book.fromJson(obj)
         if(books.isEmpty) return
@@ -81,7 +84,7 @@ class PostResponse extends Log {
           val createItem = data.CreateItem.from(req, obj, flag)
           MFGHttp.post("/createitem", write(createItem))
         }
-      case LoginCheck | Ship2 | Deck | Practice | Record | GetShip | Charge | MissionStart => // No Need
+      case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | GetShip | Charge | MissionStart => // No Need
       case HenseiChange | HenseiLock | GetOthersDeck => // No Need
       case MasterMapArea | MasterSType | MasterUseItem | MasterFurniture => // No Need
       case MasterShip =>
