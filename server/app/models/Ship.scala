@@ -55,8 +55,16 @@ object Ship extends SQLSyntaxSupport[Ship] {
       select.from(Ship as s)
         .leftJoin(MasterShip as ms).on(s.shipId, ms.id)
         .where.eq(s.memberId, memberId).and.eq(s.lv, sqls"(SELECT MAX(${s.lv}) FROM ${Ship.table} s WHERE ${s.memberId} = ${memberId})")
-    }.map { rs => ShipWithName(Ship(s)(rs), MasterShip(ms)(rs)) }
-      .first().apply()
+    }.map { rs => ShipWithName(Ship(s)(rs), MasterShip(ms)(rs)) }.first().apply()
+  }
+
+  def findByIDWithName(memberId: Long, sid: Int)(
+      implicit session: DBSession = autoSession): Option[ShipWithName] = {
+    withSQL {
+      select.from(Ship as s)
+        .leftJoin(MasterShip as ms).on(s.shipId, ms.id)
+        .where.eq(s.memberId, memberId).and.eq(s.id, sid)
+    }.map { rs => ShipWithName(Ship(s)(rs), MasterShip(ms)(rs)) }.first().apply()
   }
 
   def findAllByUser(memberId: Long)(implicit session: DBSession = Ship.autoSession): List[Ship] = withSQL {

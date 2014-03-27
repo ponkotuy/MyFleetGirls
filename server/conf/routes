@@ -38,6 +38,7 @@ GET     /user/:userId/ship          controllers.View.ship(userId: Long)
 GET     /user/:userId/book          controllers.View.book(userId: Long)
 GET     /user/:userId/dock          controllers.View.dock(userId: Long)
 GET     /user/:userId/create        controllers.View.create(userId: Long)
+GET     /user/:userId/aship/:shipId controllers.View.aship(userId: Long, shipId: Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

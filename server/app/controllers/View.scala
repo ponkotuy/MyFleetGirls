@@ -69,6 +69,14 @@ object View extends Controller {
     Ok(views.html.create(user, cShips, cItems))
   }
 
+  def aship(memberId: Long, shipId: Int) = userView(memberId) {
+    user =>
+      models.Ship.findByIDWithName(memberId, shipId) match {
+        case Some(ship) => Ok(views.html.ship_detail(ship, false))
+        case _ => NotFound("艦娘が見つかりませんでした")
+      }
+  }
+
   def index = Action.async {
     Future {
       val newest = models.Admiral.findAll().sortBy(_.created).reverse
