@@ -5,6 +5,12 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.bootstrap.css" />
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.widgets.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
+  <script src=@routes.Assets.at("javascript/lib/jquery.flot.mouse.js")></script>
+  <script src=@routes.Assets.at("javascript/lib/jquery.flot.spider.js")></script>
+  <script src=@routes.Assets.at("javascript/lib/JUMFlot.min.js")></script>
+  <script src=@routes.Assets.at("javascript/rader.js")></script>
+
   <script src=@routes.Assets.at("javascript/ship.js")></script>
 } {
   @head_content(user) {
@@ -22,7 +28,7 @@
           @ships.map { ship =>
           <tr>
             <td>@ship.id</td>
-            <td>@ship.name</td>
+            <td><a data-toggle="modal" href="aship/@ship.id" class="modal_link" data-target="#modal">@ship.name</a></td>
             <td>@ship.lv</td>
             <td>@ship.exp%</td>
             <td>@ship.nowhp</td>
@@ -39,7 +45,11 @@
           }
         </tbody>
       </table>
-    </div>
+      <div class="modal fade bs-example-modal-lg" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content"></div>
+        </div>
+      </div>
     }
   }
 }
