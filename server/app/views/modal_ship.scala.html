@@ -1,0 +1,28 @@
+@(ship: ShipWithName)
+
+<!-- Require jQueryUI, Flot, Flot mouse, Flot Spider and JUMFlot -->
+
+<script src=@routes.Assets.at("javascript/rader.js")></script>
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+  <h3 class="modal-title">@ship.name<small>Lv@ship.lv</small></h3>
+</div>
+<div class="modal-body">
+  <table align="center">
+    <tr>
+      <td>
+        <div style="width:360px;height:300px" class="ship_rader" data-json=@ship.toJson></div>
+      </td>
+      <td>
+        <div>
+          <img src=@routes.RestImage.ship(ship.shipId) alt=@ship.name class="img-rounded" />
+          <ul>
+            @ship.slotNames.map { slot =>
+              <li>@slot</li>
+            }
+          </ul>
+        </div>
+      </div>
+    </tr>
+  </table>
+</div>

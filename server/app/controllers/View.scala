@@ -72,7 +72,7 @@ object View extends Controller {
   def aship(memberId: Long, shipId: Int) = userView(memberId) {
     user =>
       models.Ship.findByIDWithName(memberId, shipId) match {
-        case Some(ship) => Ok(views.html.ship_detail(ship, false))
+        case Some(ship) => Ok(views.html.modal_ship(ship))
         case _ => NotFound("艦娘が見つかりませんでした")
       }
   }
