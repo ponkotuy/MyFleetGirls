@@ -42,14 +42,20 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       .orderBy(cs.kDock)
   }.map(CreateShip(cs)).toList().apply()
 
-  def findAllByUserWithName(memberId: Long)(
+  def findAllByUserWithName(memberId: Long, large: Boolean, limit: Int = Int.MaxValue, offset: Int = 0)(
       implicit session: DBSession = CreateShip.autoSession): List[CreateShipWithName] = withSQL {
     select(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop, cs.largeFlag, cs.created, ms.name)
       .from(CreateShip as cs)
       .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
-      .where.eq(cs.memberId, memberId)
+      .where.eq(cs.memberId, memberId).and.eq(cs.largeFlag, large)
       .orderBy(cs.created).desc
+      .limit(limit).offset(offset)
   }.map(CreateShipWithName(cs, ms)).toList().apply()
+
+  def countByUser(memberId: Long, large: Boolean)(implicit session: DBSession = autoSession): Long = withSQL {
+    select(sqls"count(*)").from(CreateShip as cs)
+      .where.eq(cs.memberId, memberId).and.eq(cs.largeFlag, large)
+  }.map(_.long(1)).single().apply().get
 
   def create(cs: data.CreateShip, kd: data.KDock)(
       implicit session: DBSession = CreateShip.autoSession): CreateShip = {

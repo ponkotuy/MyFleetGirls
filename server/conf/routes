@@ -23,6 +23,10 @@ POST    /post/v1/swf/ship/:shipId   controllers.PostSwf.ship(shipId: Int)
 # Rest
 GET     /rest/v1/:userId/materials  controllers.Rest.materials(userId: Long)
 GET     /rest/v1/:userId/basics     controllers.Rest.basics(userId: Long)
+GET     /rest/v1/:userId/create_ships controllers.Rest.createShips(userId: Long, limit: Int ?= 10, offset: Int ?= 0, large: Boolean ?= false)
+GET     /rest/v1/:userId/create_ship_count controllers.Rest.createShipCount(userId: Long, large: Boolean ?= false)
+GET     /rest/v1/:userId/create_items controllers.Rest.createItems(userId: Long, limit: Int ?= 10, offset: Int ?= 0)
+GET     /rest/v1/:userId/create_item_count controllers.Rest.createItemCount(userId: Long)
 GET     /rest/v1/image/ship/:shipId.jpg controllers.RestImage.ship(shipId: Int)
 HEAD    /rest/v1/image/ship/:shipId.jpg controllers.RestImage.shipHead(shipId: Int)
 
