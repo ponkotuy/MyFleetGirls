@@ -1,9 +1,16 @@
-@(counts: Map[models.Mat, Long])
+@(counts: Seq[(models.Mat, Long)])
 
 @main {
   <title>統計 -建造開発-</title>
   <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.pie.min.js"></script>
+  <script>
+    $(function(){
+      $('#modal').on('hidden.bs.modal', function(){
+        $(this).removeData('bs.modal');
+      });
+    });
+  </script>
 } {
   @navbar("statistics")
   <div class="container theme-showcase" role="main">
