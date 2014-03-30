@@ -52,25 +52,26 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       .limit(limit).offset(offset)
   }.map(CreateShipWithName(cs, ms)).toList().apply()
 
-  def countByMat(m: Mat)(implicit session: DBSession = autoSession): Map[MiniShip, Long] = withSQL {
-    select(cs.resultShip, ms.name, sqls"count(*)").from(CreateShip as cs)
+  def countByMat(m: Mat)(implicit session: DBSession = autoSession): List[(MiniShip, Long)] = withSQL {
+    select(cs.resultShip, ms.name, sqls"count(*) as count").from(CreateShip as cs)
       .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
       .where.eq(cs.fuel, m.fuel).and.eq(cs.ammo, m.ammo).and.eq(cs.steel, m.steel).and.eq(cs.bauxite, m.bauxite)
       .and.eq(cs.develop, m.develop)
       .groupBy(cs.resultShip)
-  }.map { rs => (MiniShip(rs.int(1), rs.string(2)), rs.long(3)) }.toList().apply().toMap
+      .orderBy(sqls"count")
+  }.map { rs => (MiniShip(rs.int(1), rs.string(2)), rs.long(3)) }.toList().apply()
 
   def countByUser(memberId: Long, large: Boolean)(implicit session: DBSession = autoSession): Long = withSQL {
     select(sqls"count(*)").from(CreateShip as cs)
       .where.eq(cs.memberId, memberId).and.eq(cs.largeFlag, large)
   }.map(_.long(1)).single().apply().get
 
-  def materialCount()(implicit session: DBSession = autoSession): Map[Mat, Long] = withSQL {
-    select(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop, sqls"count(*)")
+  def materialCount()(implicit session: DBSession = autoSession): List[(Mat, Long)] = withSQL {
+    select(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop, sqls"count(*) as count")
       .from(CreateShip as cs)
       .groupBy(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop)
-      .orderBy(sqls"count(*)")
-  }.map(rs => (Mat(cs)(rs), rs.long(6))).toList().apply().toMap
+      .orderBy(sqls"count")
+  }.map(rs => (Mat(cs)(rs), rs.long(6))).toList().apply()
 
   def create(cs: data.CreateShip, kd: data.KDock)(
       implicit session: DBSession = CreateShip.autoSession): CreateShip = {
