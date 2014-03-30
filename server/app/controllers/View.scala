@@ -93,7 +93,7 @@ object View extends Controller {
   def statistics = Action.async {
     Future {
       val sCounts = models.CreateShip.materialCount()
-      Ok(views.html.statistics(sCounts))
+      Ok(views.html.statistics(sCounts.reverse))
     }
   }
 
@@ -104,7 +104,7 @@ object View extends Controller {
         Map("label" -> mship.name, "data" -> count)
       }
       val title = s"$fuel/$ammo/$steel/$bauxite/$develop"
-      Ok(views.html.cship(title, write(counts)))
+      Ok(views.html.cship(title, write(counts.reverse)))
     }
   }
 }
