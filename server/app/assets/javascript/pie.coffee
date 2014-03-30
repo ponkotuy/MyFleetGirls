@@ -1,9 +1,7 @@
 $(document).ready ->
   $('div.pie').each ->
     json = $(this).attr('data-json')
-    raw = JSON.parse(json)
-    data = for k, v of raw
-      {label: k, data: v}
+    data = JSON.parse(json)
     option =
       series:
         pie:

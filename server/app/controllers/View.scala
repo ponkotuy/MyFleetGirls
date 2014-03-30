@@ -101,7 +101,7 @@ object View extends Controller {
     Future {
       val m = Mat(fuel, ammo, steel, bauxite, develop)
       val counts = models.CreateShip.countByMat(m).map { case (mship, count) =>
-        mship.name -> count
+        Map("label" -> mship.name, "data" -> count)
       }
       val title = s"$fuel/$ammo/$steel/$bauxite/$develop"
       Ok(views.html.cship(title, write(counts)))
