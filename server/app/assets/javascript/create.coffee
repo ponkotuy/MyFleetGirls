@@ -1,26 +1,28 @@
 $( ->
-  userId = $('#userid').val()
-
-  shipCreateVue = new Vue
-    el: '#ship_create'
+  pagingVue = (el, dataUrl, countUrl) -> new Vue
+    el: el
     data:
       count: 10
       allCount: 0
       page: 0
-      ships: []
+      data: []
     methods:
       setPage: (page) ->
         @page = page
-      getShips: (dat, f) ->
-        $.getJSON "/rest/v1/#{userId}/create_ships", dat, (ret) =>
-          @ships = ret
+      getData: (dat, f) ->
+        $.getJSON dataUrl, dat, (ret) =>
+          @data = ret
       timeToStr: (millis) ->
         moment(millis).format('YYYY-MM-DD HH:mm')
-      maxPage: -> Math.ceil(@allCount / @count)
+      maxPage: -> Math.min(Math.ceil(@allCount / @count), 10)
       pages: -> [0..(@maxPage() - 1)]
     created: ->
-      $.getJSON "/rest/v1/#{userId}/create_ship_count", {}, (ret) =>
+      $.getJSON countUrl, {}, (ret) =>
         @allCount = ret
       @$watch 'page', (page) ->
-        @getShips({limit: @count, offset: page*@count})
+        @getData({limit: @count, offset: page*@count})
+
+  userId = $('#userid').val()
+  pagingVue('#ship_create', "/rest/v1/#{userId}/create_ships", "/rest/v1/#{userId}/create_ship_count")
+  pagingVue('#item_create', "/rest/v1/#{userId}/create_items", "/rest/v1/#{userId}/create_item_count")
 )

@@ -65,8 +65,7 @@ object View extends Controller {
 
   def create(memberId: Long) = userView(memberId) { user =>
     val cShips = models.CreateShip.findAllByUserWithName(memberId, large = true)
-    val cItems = models.CreateItem.findAllByUserWithName(memberId)
-    Ok(views.html.create(user, cShips, cItems))
+    Ok(views.html.create(user, cShips))
   }
 
   def aship(memberId: Long, shipId: Int) = userView(memberId) {

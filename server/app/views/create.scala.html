@@ -1,4 +1,4 @@
-@(user: util.User, ships: Seq[CreateShipWithName], items: Seq[CreateItemWithName])
+@(user: util.User, ships: Seq[CreateShipWithName])
 
 @main {
   <title>@{user.admiral.nickname}提督 -建造履歴-</title>
@@ -20,7 +20,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-repeat="ship: ships">
+            <tr v-repeat="ship: data">
               <td>{{ship.name}}</td>
               <td>{{ship.fuel}}</td>
               <td>{{ship.ammo}}</td>
@@ -31,41 +31,55 @@
           </tbody>
         </table>
         <ul class="pagination" v-if="allCount > count">
-          <li v-show="page != 0"><a href="#" v-on="click: setPage(page - 1)">&laquo;</a></li>
-          <li v-repeat="p: pages()" v-attr="class: (p == page ? 'active' : '')">
-            <a v-on="click: setPage(p)" href="#">{{p + 1}}</a>
+          <li v-show="page != 0">
+            <a href="#" v-on="click: setPage(page - 1)" onclick="return false;">&laquo;</a>
           </li>
-          <li v-show="(page + 1) != maxPage()"><a href="#" v-on="click: setPage(page + 1)">&raquo;</a></li>
+          <li v-repeat="p: pages()" v-attr="class: (p == page ? 'active' : '')">
+            <a v-on="click: setPage(p)" href="#" onclick="return false;">{{p + 1}}</a>
+          </li>
+          <li v-show="(page + 1) != maxPage()">
+            <a href="#" v-on="click: setPage(page + 1)" onclick="return false;">&raquo;</a>
+          </li>
         </ul>
       </div>
 
       <div class="page-header">
         <h1>装備開発履歴</h1>
       </div>
-      <table class="table table-striped table-condensed" id="create_item">
-        <thread>
-          <tr>
-            <th>名前</th><th>旗艦</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキサイト</th><th>資材消費</th><th>日時</th>
-          </tr>
-        </thread>
-        <tbody>
-          @items.map { item =>
-          <tr>
-            <td>@item.name</td>
-            <td>@item.flagshipName</td>
-            <td>@item.fuel</td>
-            <td>@item.ammo</td>
-            <td>@item.steel</td>
-            <td>@item.bauxite</td>
-            <td>@if(item.shizaiFlag){
-              <span class="glyphicon glyphicon-ok"></span>
-            }
-            </td>
-            <td class="viewTime" data-time="@item.created">@item.created</td>
-          </tr>
-          }
-        </tbody>
-      </table>
+      <div id="item_create">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th>名前</th><th>旗艦</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキサイト</th><th>資材消費</th><th>日時</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-repeat="item: data">
+              <td>{{item.name}}</td>
+              <td>{{item.flagshipName}}</td>
+              <td>{{item.fuel}}</td>
+              <td>{{item.ammo}}</td>
+              <td>{{item.steel}}</td>
+              <td>{{item.bauxite}}</td>
+              <td>
+                <span v-if="item.shizaiFlag" class="glyphicon glyphicon-ok"></span>
+              </td>
+              <td>{{timeToStr(item.created)}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <ul class="pagination" v-if="allCount > count">
+          <li v-show="page != 0">
+            <a href="#" v-on="click: setPage(page - 1)" onclick="return false;">&laquo;</a>
+          </li>
+          <li v-repeat="p: pages()" v-attr="class: (p == page ? 'active' : '')">
+            <a v-on="click: setPage(p)" href="#" onclick="return false;">{{p + 1}}</a>
+          </li>
+          <li v-show="(page + 1) != maxPage()">
+            <a href="#" v-on="click: setPage(page + 1)" onclick="return false;">&raquo;</a>
+          </li>
+        </ul>
+      </div>
 
       <div class="page-header">
         <h1>大型艦建造履歴</h1>
@@ -77,7 +91,7 @@
           </tr>
         </thead>
         <tbody>
-          @ships.filter(_.largeFlag).map { ship =>
+          @ships.map { ship =>
           <tr>
             <td>@ship.name</td>
             <td>@ship.fuel</td>
