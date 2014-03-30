@@ -2,10 +2,11 @@ $(document).ready ->
   $('.ship_rader').each () ->
     data = JSON.parse($(this).attr('data-json'))
     radar = [
+      color: "green"
       data: data
       spider:
         show: true
-        lineWidth: 6
+        lineWidth: 5
     ]
     option =
       series:

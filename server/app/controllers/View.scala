@@ -4,8 +4,11 @@ import play.api.mvc._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
 import scalikejdbc.SQLInterpolation._
+import org.json4s._
+import org.json4s.native.Serialization.write
 import build.BuildInfo
 import Common._
+import models.Mat
 
 /**
  *
@@ -13,6 +16,7 @@ import Common._
  * Date 14/02/24
  */
 object View extends Controller {
+  implicit val formats = DefaultFormats
   def name(user: String) = Action.async {
     Future {
       models.Admiral.findByName(user) match {
@@ -64,9 +68,8 @@ object View extends Controller {
   }
 
   def create(memberId: Long) = userView(memberId) { user =>
-    val cShips = models.CreateShip.findAllByUserWithName(memberId)
-    val cItems = models.CreateItem.findAllByUserWithName(memberId)
-    Ok(views.html.create(user, cShips, cItems))
+    val cShips = models.CreateShip.findAllByUserWithName(memberId, large = true)
+    Ok(views.html.create(user, cShips))
   }
 
   def aship(memberId: Long, shipId: Int) = userView(memberId) {
@@ -86,4 +89,22 @@ object View extends Controller {
   }
 
   def about = Action { Ok(views.html.about()) }
+
+  def statistics = Action.async {
+    Future {
+      val sCounts = models.CreateShip.materialCount()
+      Ok(views.html.statistics(sCounts))
+    }
+  }
+
+  def cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int) = Action.async {
+    Future {
+      val m = Mat(fuel, ammo, steel, bauxite, develop)
+      val counts = models.CreateShip.countByMat(m).map { case (mship, count) =>
+        mship.name -> count
+      }
+      val title = s"$fuel/$ammo/$steel/$bauxite/$develop"
+      Ok(views.html.cship(title, write(counts)))
+    }
+  }
 }

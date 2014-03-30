@@ -11,13 +11,9 @@ import com.ponkotuy.data.master.{MasterMission, MasterShip, MasterSlotItem}
  */
 object PostMaster extends Controller {
   def ship = checkPonkotuAndParse[List[MasterShip]] { ships =>
-    if(ships.size.toLong != models.MasterShip.count()) {
-      models.MasterShip.deleteAll()
-      ships.foreach { s => models.MasterShip.create(s) }
-      Ok("Master Ship All Replaced")
-    } else {
-      Ok("No Change")
-    }
+    models.MasterShip.deleteAll()
+    ships.foreach { s => models.MasterShip.create(s) }
+    Ok("Master Ship All Replaced")
   }
 
   def mission = checkPonkotuAndParse[List[MasterMission]] { missions =>
@@ -31,12 +27,8 @@ object PostMaster extends Controller {
   }
 
   def slotitem = checkPonkotuAndParse[List[MasterSlotItem]] { items =>
-    if(items.size.toLong != models.MasterSlotItem.countAll()) {
-      models.MasterSlotItem.deleteAll()
-      models.MasterSlotItem.bulkInsert(items)
-      Ok("Master SlotItem All Replaced")
-    } else {
-      Ok("No Change")
-    }
+    models.MasterSlotItem.deleteAll()
+    models.MasterSlotItem.bulkInsert(items)
+    Ok("Master SlotItem All Replaced")
   }
 }

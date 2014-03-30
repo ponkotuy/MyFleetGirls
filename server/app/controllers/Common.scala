@@ -3,6 +3,7 @@ package controllers
 import play.api.mvc._
 import org.json4s._
 import org.json4s.native.{ JsonMethods => J }
+import org.json4s.native.Serialization.write
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
 import scalikejdbc.SQLInterpolation._
@@ -113,4 +114,15 @@ object Common extends Controller {
     }
   }
 
+  def returnJson[A <: AnyRef](f: => A) = Action.async {
+    Future {
+      Ok(write(f)).as("application/json")
+    }
+  }
+
+  def returnString[A](f: => A) = Action.async {
+    Future {
+      Ok(f.toString)
+    }
+  }
 }

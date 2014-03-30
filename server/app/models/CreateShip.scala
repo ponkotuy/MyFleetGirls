@@ -42,14 +42,35 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       .orderBy(cs.kDock)
   }.map(CreateShip(cs)).toList().apply()
 
-  def findAllByUserWithName(memberId: Long)(
+  def findAllByUserWithName(memberId: Long, large: Boolean, limit: Int = Int.MaxValue, offset: Int = 0)(
       implicit session: DBSession = CreateShip.autoSession): List[CreateShipWithName] = withSQL {
     select(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop, cs.largeFlag, cs.created, ms.name)
       .from(CreateShip as cs)
       .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
-      .where.eq(cs.memberId, memberId)
+      .where.eq(cs.memberId, memberId).and.eq(cs.largeFlag, large)
       .orderBy(cs.created).desc
+      .limit(limit).offset(offset)
   }.map(CreateShipWithName(cs, ms)).toList().apply()
+
+  def countByMat(m: Mat)(implicit session: DBSession = autoSession): Map[MiniShip, Long] = withSQL {
+    select(cs.resultShip, ms.name, sqls"count(*)").from(CreateShip as cs)
+      .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
+      .where.eq(cs.fuel, m.fuel).and.eq(cs.ammo, m.ammo).and.eq(cs.steel, m.steel).and.eq(cs.bauxite, m.bauxite)
+      .and.eq(cs.develop, m.develop)
+      .groupBy(cs.resultShip)
+  }.map { rs => (MiniShip(rs.int(1), rs.string(2)), rs.long(3)) }.toList().apply().toMap
+
+  def countByUser(memberId: Long, large: Boolean)(implicit session: DBSession = autoSession): Long = withSQL {
+    select(sqls"count(*)").from(CreateShip as cs)
+      .where.eq(cs.memberId, memberId).and.eq(cs.largeFlag, large)
+  }.map(_.long(1)).single().apply().get
+
+  def materialCount()(implicit session: DBSession = autoSession): Map[Mat, Long] = withSQL {
+    select(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop, sqls"count(*)")
+      .from(CreateShip as cs)
+      .groupBy(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop)
+      .orderBy(sqls"count(*)")
+  }.map(rs => (Mat(cs)(rs), rs.long(6))).toList().apply().toMap
 
   def create(cs: data.CreateShip, kd: data.KDock)(
       implicit session: DBSession = CreateShip.autoSession): CreateShip = {
@@ -88,3 +109,18 @@ object CreateShipWithName {
       rs.string(ms.name)
     )
 }
+
+case class Mat(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int)
+
+object Mat {
+  def apply(cs: SyntaxProvider[CreateShip])(rs: WrappedResultSet): Mat =
+    new Mat(
+      rs.int(cs.fuel),
+      rs.int(cs.ammo),
+      rs.int(cs.steel),
+      rs.int(cs.bauxite),
+      rs.int(cs.develop)
+    )
+}
+
+case class MiniShip(id: Int, name: String)

@@ -73,7 +73,8 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
     }.map(CreateItem(ci.resultName)).list().apply()
   }
 
-  def findAllByUserWithName(memberId: Long)(implicit sesson: DBSession = autoSession): List[CreateItemWithName] = {
+  def findAllByUserWithName(memberId: Long, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit sesson: DBSession = autoSession): List[CreateItemWithName] = {
     withSQL {
       select(ci.slotitemId, ci.fuel, ci.ammo, ci.steel, ci.bauxite, ci.shizaiFlag, ci.flagship, ci.created, mi.name, ms.name)
         .from(CreateItem as ci)
@@ -82,6 +83,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
         .leftJoin(MasterShip as ms).on(s.shipId, ms.id)
         .where.eq(ci.memberId, memberId).and.eq(s.memberId, memberId)
         .orderBy(ci.created).desc
+        .limit(limit).offset(offset)
     }.map(CreateItemWithName(ci, mi, ms)).list().apply()
   }
 
