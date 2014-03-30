@@ -8,6 +8,4 @@ $(document).ready ->
           show: true
       grid:
         hoverable: true
-    console.log(data)
-    console.log(option)
     $.plot($(this), data, option)
