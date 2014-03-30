@@ -1,8 +1,8 @@
 @(ship: ShipWithName)
 
-<!-- Require jQueryUI, Flot, Flot mouse, Flot Spider and JUMFlot -->
+<!-- Require Flot, Flot mouse, Flot Spider and JUMFlot -->
 
-<script src=@routes.Assets.at("javascript/rader.js")></script>
+<script src="@routes.Assets.at("javascript/rader.js")"></script>
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
   <h3 class="modal-title">@ship.name<small>Lv@ship.lv</small></h3>
@@ -15,7 +15,7 @@
       </td>
       <td>
         <div>
-          <img src=@routes.RestImage.ship(ship.shipId) alt=@ship.name class="img-rounded" />
+          <img src="@routes.RestImage.ship(ship.shipId)" alt="@ship.name" class="img-rounded" />
           <ul>
             @ship.slotNames.map { slot =>
               <li>@slot</li>

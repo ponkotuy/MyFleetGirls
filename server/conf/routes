@@ -33,6 +33,8 @@ HEAD    /rest/v1/image/ship/:shipId.jpg controllers.RestImage.shipHead(shipId: I
 # View
 GET     /                           controllers.View.index
 GET     /entire/about               controllers.View.about
+GET     /entire/statistics          controllers.View.statistics
+GET     /entire/sta/cship/:fuel/:ammo/:steel/:bauxite/:develop controllers.View.cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int)
 GET     /u/:user                    controllers.View.name(user: String)
 GET     /user/:userId               controllers.View.user2(userId: Long)
 GET     /user/:userId/              controllers.View.user(userId: Long)

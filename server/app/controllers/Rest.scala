@@ -1,11 +1,6 @@
 package controllers
 
-import play.api.mvc.{Action, Controller}
-import org.json4s._
-import org.json4s.native.Serialization
-import org.json4s.native.Serialization.write
-import scala.concurrent.ExecutionContext.Implicits._
-import scala.concurrent.Future
+import play.api.mvc.Controller
 import scalikejdbc.SQLInterpolation._
 
 /**
@@ -14,7 +9,8 @@ import scalikejdbc.SQLInterpolation._
  * Date: 14/02/23
  */
 object Rest extends Controller {
-  implicit val formats = Serialization.formats(NoTypeHints)
+  import Common._
+
   def materials(userId: Long) = returnJson(models.Material.findAllByUser(userId))
 
   def basics(userId: Long) = returnJson(models.Basic.findAllByUser(userId))
@@ -33,16 +29,4 @@ object Rest extends Controller {
   }
 
   def createItemCount(memberId: Long) = returnString(models.CreateItem.countBy(sqls"member_id = ${memberId}"))
-
-  private def returnJson[A <: AnyRef](f: => A) = Action.async {
-    Future {
-      Ok(write(f)).as("application/json")
-    }
-  }
-
-  private def returnString[A](f: => A) = Action.async {
-    Future {
-      Ok(f.toString)
-    }
-  }
 }
