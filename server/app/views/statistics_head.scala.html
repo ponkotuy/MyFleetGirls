@@ -1,0 +1,21 @@
+@(body: Html)
+
+@navbar("statistics")
+<div class="container theme-showcase" role="main">
+
+  <div class="jumbotron">
+    <h1>Statistics<small>統計</small></h1>
+    @tweet()
+  </div>
+
+  <ul class="nav nav-tabs">
+    <li class="active">
+      <a href="statistics">建造</a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    @body
+  </div>
+
+</div>

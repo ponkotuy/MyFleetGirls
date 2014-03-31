@@ -52,13 +52,24 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       .limit(limit).offset(offset)
   }.map(CreateShipWithName(cs, ms)).toList().apply()
 
+  def findAllByMatWithName(m: Mat, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session: DBSession = autoSession): List[CreateShipWithName2] = withSQL {
+    select(cs.memberId, cs.resultShip, cs.largeFlag, cs.created, ms.name)
+      .from(CreateShip as cs)
+      .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
+      .where.eq(cs.fuel, m.fuel).and.eq(cs.ammo, m.ammo).and.eq(cs.steel, m.steel)
+      .and.eq(cs.bauxite, m.bauxite).and.eq(cs.develop, m.develop)
+      .orderBy(cs.created).desc
+      .limit(limit).offset(offset)
+  }.map(CreateShipWithName2(cs, ms)).toList().apply()
+
   def countByMat(m: Mat)(implicit session: DBSession = autoSession): List[(MiniShip, Long)] = withSQL {
     select(cs.resultShip, ms.name, sqls"count(*) as count").from(CreateShip as cs)
       .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
       .where.eq(cs.fuel, m.fuel).and.eq(cs.ammo, m.ammo).and.eq(cs.steel, m.steel).and.eq(cs.bauxite, m.bauxite)
       .and.eq(cs.develop, m.develop)
       .groupBy(cs.resultShip)
-      .orderBy(sqls"count")
+      .orderBy(sqls"count").desc
   }.map { rs => (MiniShip(rs.int(1), rs.string(2)), rs.long(3)) }.toList().apply()
 
   def countByUser(memberId: Long, large: Boolean)(implicit session: DBSession = autoSession): Long = withSQL {
@@ -105,6 +116,20 @@ object CreateShipWithName {
       rs.int(cs.steel),
       rs.int(cs.bauxite),
       rs.int(cs.develop),
+      rs.boolean(cs.largeFlag),
+      rs.long(cs.created),
+      rs.string(ms.name)
+    )
+}
+
+case class CreateShipWithName2(memberId: Long, resultShip: Int, largeFlag: Boolean, created: Long, name: String)
+
+object CreateShipWithName2 {
+  def apply(cs: SyntaxProvider[CreateShip], ms: SyntaxProvider[MasterShip])(
+    rs: WrappedResultSet): CreateShipWithName2 =
+    new CreateShipWithName2(
+      rs.long(cs.memberId),
+      rs.int(cs.resultShip),
       rs.boolean(cs.largeFlag),
       rs.long(cs.created),
       rs.string(ms.name)
