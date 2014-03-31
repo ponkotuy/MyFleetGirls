@@ -99,12 +99,16 @@ object View extends Controller {
 
   def cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int) = Action.async {
     Future {
-      val m = Mat(fuel, ammo, steel, bauxite, develop)
-      val counts = models.CreateShip.countByMat(m).map { case (mship, count) =>
-        Map("label" -> mship.name, "data" -> count)
+      val mat = Mat(fuel, ammo, steel, bauxite, develop)
+      val cships = models.CreateShip.findAllByMatWithName(mat, limit = 100)
+      val counts = models.CreateShip.countByMat(mat)
+      val sum = counts.map(_._2).sum.toDouble
+      val withRate = counts.map { case (ship, count) => (ship.name, count, count/sum) }
+      val countJsonRaw = counts.map { case (ship, count) =>
+        Map("label" -> ship.name, "data" -> count)
       }
       val title = s"$fuel/$ammo/$steel/$bauxite/$develop"
-      Ok(views.html.cship(title, write(counts.reverse)))
+      Ok(views.html.cship(title, write(countJsonRaw), withRate, cships))
     }
   }
 }
