@@ -68,6 +68,14 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
     }.map(_.long(1)).single().apply().get
   }
 
+  def countItemBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[(String, Long)] = {
+    withSQL {
+      select(si.name, sqls"count(1) as count").from(SlotItem as si)
+        .where.append(sqls"${where}")
+        .groupBy(si.slotitemId)
+    }.map(rs => rs.string(1) -> rs.long(2)).toList().apply()
+  }
+
   def create(
     memberId: Long,
     id: Int,

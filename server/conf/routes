@@ -35,16 +35,17 @@ GET     /                           controllers.View.index
 GET     /entire/about               controllers.View.about
 GET     /entire/statistics          controllers.View.statistics
 GET     /entire/sta/cship/:fuel/:ammo/:steel/:bauxite/:develop controllers.View.cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int)
-GET     /u/:user                    controllers.View.name(user: String)
-GET     /user/:userId               controllers.View.user2(userId: Long)
-GET     /user/:userId/              controllers.View.user(userId: Long)
-GET     /user/:userId/top           controllers.View.top(userId: Long)
-GET     /user/:userId/material      controllers.View.material(userId: Long)
-GET     /user/:userId/ship          controllers.View.ship(userId: Long)
-GET     /user/:userId/book          controllers.View.book(userId: Long)
-GET     /user/:userId/dock          controllers.View.dock(userId: Long)
-GET     /user/:userId/create        controllers.View.create(userId: Long)
-GET     /user/:userId/aship/:shipId controllers.View.aship(userId: Long, shipId: Int)
+GET     /u/:user                    controllers.UserView.name(user: String)
+GET     /user/:userId               controllers.UserView.user2(userId: Long)
+GET     /user/:userId/              controllers.UserView.user(userId: Long)
+GET     /user/:userId/top           controllers.UserView.top(userId: Long)
+GET     /user/:userId/material      controllers.UserView.material(userId: Long)
+GET     /user/:userId/ship          controllers.UserView.ship(userId: Long)
+GET     /user/:userId/book          controllers.UserView.book(userId: Long)
+GET     /user/:userId/dock          controllers.UserView.dock(userId: Long)
+GET     /user/:userId/create        controllers.UserView.create(userId: Long)
+GET     /user/:userId/slotitem      controllers.UserView.slotitem(userId: Long)
+GET     /user/:userId/aship/:shipId controllers.UserView.aship(userId: Long, shipId: Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

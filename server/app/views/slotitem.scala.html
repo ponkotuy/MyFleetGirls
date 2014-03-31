@@ -1,0 +1,24 @@
+@(user: util.User, counts: Seq[(String, Long)])
+
+@main {
+  <title>@{user.admiral.nickname}提督 -装備-</title>
+} {
+  @head_content(user) {
+    @usertab("slotitem") {
+      <div class="page-header">
+        <h1>装備一覧</h1>
+      </div>
+
+      <table class="table table-striped table-condensed">
+        <thead>
+          <tr><th>名前</th><th>Count</th></tr>
+        </thead>
+        <tbody>
+          @counts.map { case (name, count) =>
+            <tr><td>@name</td><td>@count</td></tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+}
