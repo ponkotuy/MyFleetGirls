@@ -89,7 +89,6 @@ class PostResponse extends Log {
       case MasterMapArea | MasterSType | MasterUseItem | MasterFurniture => // No Need
       case MasterShip =>
         if(checkPonkotu) {
-          println("OK")
           val ships = master.MasterShip.fromJson(obj)
           MFGHttp.post("/master/ship", write(ships))
         }

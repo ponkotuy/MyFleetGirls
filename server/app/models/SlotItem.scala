@@ -32,6 +32,9 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
   )
 
   val si = SlotItem.syntax("si")
+  val ssi = ShipSlotItem.syntax("ssi")
+  val s = Ship.syntax("s")
+  val ms = MasterShip.syntax("ms")
 
   override val autoSession = AutoSession
 
@@ -42,10 +45,14 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
   }
 
   def findIn(xs: Seq[Int], memberId: Long)(implicit session: DBSession = autoSession): List[SlotItem] = {
-    withSQL {
-      select.from(SlotItem as si)
-        .where.in((si.memberId, si.id), xs.map(x => (memberId, x)))
-    }.map(SlotItem(si.resultName)).list().apply()
+    xs match {
+      case Seq() => Nil
+      case _ =>
+        withSQL {
+          select.from(SlotItem as si)
+            .where.in((si.memberId, si.id), xs.map(x => (memberId, x)))
+        }.map(SlotItem(si.resultName)).list().apply()
+    }
   }
 
   def findAll()(implicit session: DBSession = autoSession): List[SlotItem] = {
@@ -62,18 +69,30 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
     }.map(SlotItem(si.resultName)).list().apply()
   }
 
+  def findAllArmedShipBy(where: SQLSyntax)(implicit sessin: DBSession = autoSession): List[ShipWithName] = {
+    withSQL {
+      select.from(SlotItem as si)
+        .innerJoin(ShipSlotItem as ssi).on(sqls"${si.id} = ${ssi.slotitemId} and ${si.memberId} = ${ssi.memberId}")
+        .leftJoin(Ship as s).on(sqls"${ssi.shipId} = ${s.id} and ${ssi.memberId} = ${s.memberId}")
+        .leftJoin(MasterShip as ms).on(s.shipId, ms.id)
+        .where.append(where)
+    }.map { rs =>
+      ShipWithName(Ship(s)(rs), MasterShip(ms)(rs))
+    }.toList().apply()
+  }
+
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(SlotItem as si).where.append(sqls"${where}")
     }.map(_.long(1)).single().apply().get
   }
 
-  def countItemBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[(String, Long)] = {
+  def countItemBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[(MiniItem, Long)] = {
     withSQL {
-      select(si.name, sqls"count(1) as count").from(SlotItem as si)
+      select(si.slotitemId, si.name, sqls"count(1) as count").from(SlotItem as si)
         .where.append(sqls"${where}")
         .groupBy(si.slotitemId)
-    }.map(rs => rs.string(1) -> rs.long(2)).toList().apply()
+    }.map(rs => MiniItem(rs.int(1), rs.string(2)) -> rs.long(3)).toList().apply()
   }
 
   def create(
@@ -134,3 +153,5 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
   }
 
 }
+
+case class MiniItem(id: Int, name: String)

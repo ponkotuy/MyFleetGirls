@@ -1,7 +1,14 @@
-@(user: util.User, counts: Seq[(String, Long)])
+@(user: util.User, counts: Seq[(models.MiniItem, Long)])
 
 @main {
   <title>@{user.admiral.nickname}提督 -装備-</title>
+  <script>
+    $(function(){
+      $('#modal').on('hidden.bs.modal', function(){
+        $(this).removeData('bs.modal');
+      });
+    });
+  </script>
 } {
   @head_content(user) {
     @usertab("slotitem") {
@@ -14,11 +21,19 @@
           <tr><th>名前</th><th>Count</th></tr>
         </thead>
         <tbody>
-          @counts.map { case (name, count) =>
-            <tr><td>@name</td><td>@count</td></tr>
+          @counts.map { case (item, count) =>
+            <tr data-toggle="modal" href="@routes.UserView.shipslotitem(user.admiral.id, item.id)" data-target="#modal">
+              <td>@item.name</td><td>@count</td>
+            </tr>
           }
         </tbody>
       </table>
+
+      <div class="modal" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
+        <div class="modal-dialog">
+          <div class="modal-content"></div>
+        </div>
+      </div>
     }
   }
 }

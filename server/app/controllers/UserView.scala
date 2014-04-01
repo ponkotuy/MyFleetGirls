@@ -80,4 +80,16 @@ object UserView {
     val counts = models.SlotItem.countItemBy(sqls"member_id = ${memberId}")
     Ok(views.html.slotitem(user, counts))
   }
+
+  def shipslotitem(memberId: Long, itemId: Int) = Action.async {
+    Future {
+      models.MasterSlotItem.find(itemId) match {
+        case Some(item) =>
+          val slotItemIds = models.SlotItem.findAllBy(sqls"member_id = ${memberId} and slotitem_id = ${itemId}").map(_.id)
+          val ships = models.SlotItem.findAllArmedShipBy(sqls"si.member_id = ${memberId} and si.slotitem_id = ${itemId}")
+          Ok(views.html.shipslotitem(item, ships, slotItemIds.size))
+        case _ => NotFound("Itemが見つかりませんでした")
+      }
+    }
+  }
 }
