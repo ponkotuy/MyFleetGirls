@@ -41,15 +41,25 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
     }.map(Admiral(a)).toOption().apply()
   }
 
-  def findAll()(implicit session: DBSession = Admiral.autoSession): List[Admiral] = withSQL {
+  def findAll(limit: Int = Int.MaxValue, offset: Int = 0)(implicit session: DBSession = Admiral.autoSession): List[Admiral] = withSQL {
     select.from(Admiral as a)
+      .limit(limit).offset(offset)
   }.map(Admiral(a)).list().apply()
 
-  def findAllLvTop()(implicit session: DBSession = Admiral.autoSession): List[AdmiralWithLv] = withSQL {
+  def findAllByLike(q: String, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session:DBSession = Admiral.autoSession): List[AdmiralWithLv] = withSQL {
+    select(a.id, a.nickname, a.created, b.lv).from(Admiral as a)
+      .innerJoin(Basic as b).on(a.id, b.memberId)
+      .where.like(a.nickname, q)
+      .and.eq(b.created, sqls"(select MAX(${b.created}) from ${Basic.table} as b where ${a.id} = ${b.memberId})")
+  }.map(AdmiralWithLv(a, b)).list().apply()
+
+  def findAllLvTop(limit: Int = Int.MaxValue, offset: Int = 0)(implicit session: DBSession = Admiral.autoSession): List[AdmiralWithLv] = withSQL {
     select(a.id, a.nickname, a.created, b.lv).from(Admiral as a)
       .innerJoin(Basic as b).on(a.id, b.memberId)
       .where.eq(b.created, sqls"(select MAX(${b.created}) from ${Basic.table} as b where ${a.id} = ${b.memberId})")
       .orderBy(b.lv).desc
+      .limit(limit).offset(offset)
   }.map(AdmiralWithLv(a, b)).list().apply()
 
   def save(a: Admiral)(implicit session: DBSession = Admiral.autoSession): Admiral = {

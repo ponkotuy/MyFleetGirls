@@ -11,7 +11,7 @@
 
 @image() = {
   <div style="float:left" class="col-md-3">
-    <img src=@routes.RestImage.ship(ship.shipId) alt=@ship.name class="img-rounded" />
+    <img src="@routes.RestImage.ship(ship.shipId)" alt="@ship.name" class="img-rounded" />
     <ul>
       @ship.slotNames.map { slot =>
         <li>@slot</li>

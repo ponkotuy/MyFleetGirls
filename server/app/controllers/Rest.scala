@@ -11,6 +11,8 @@ import scalikejdbc.SQLInterpolation._
 object Rest extends Controller {
   import Common._
 
+  def searchUser(q: String) = returnJson(models.Admiral.findAllByLike(s"%$q%", limit = 20))
+
   def materials(userId: Long) = returnJson(models.Material.findAllByUser(userId))
 
   def basics(userId: Long) = returnJson(models.Basic.findAllByUser(userId))
