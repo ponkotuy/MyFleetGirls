@@ -21,6 +21,7 @@ POST    /post/v1/master/slotitem    controllers.PostMaster.slotitem
 POST    /post/v1/swf/ship/:shipId   controllers.PostSwf.ship(shipId: Int)
 
 # Rest
+GET     /rest/v1/search_user        controllers.Rest.searchUser(q: String)
 GET     /rest/v1/:userId/materials  controllers.Rest.materials(userId: Long)
 GET     /rest/v1/:userId/basics     controllers.Rest.basics(userId: Long)
 GET     /rest/v1/:userId/create_ships controllers.Rest.createShips(userId: Long, limit: Int ?= 10, offset: Int ?= 0, large: Boolean ?= false)

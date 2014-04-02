@@ -17,8 +17,8 @@ object View extends Controller {
   implicit val formats = DefaultFormats
   def index = Action.async {
     Future {
-      val newest = models.Admiral.findAll().sortBy(_.created).reverse
-      val lvTops = models.Admiral.findAllLvTop()
+      val newest = models.Admiral.findAll(limit = 20).sortBy(_.created).reverse
+      val lvTops = models.Admiral.findAllLvTop(limit = 20)
       Ok(views.html.index(BuildInfo.version, newest, lvTops))
     }
   }
