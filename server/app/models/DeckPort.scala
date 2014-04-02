@@ -23,6 +23,10 @@ object DeckPort extends SQLSyntaxSupport[DeckPort] {
 
   lazy val dp = DeckPort.syntax("dp")
 
+  def findAllByUser(memberId: Long)(implicit session: DBSession = autoSession): List[DeckPort] = withSQL {
+    select.from(DeckPort as dp).where.eq(dp.memberId, memberId)
+  }.map(DeckPort(dp)).list().apply()
+
   def create(dp: data.DeckPort)(
       implicit session: DBSession = DeckPort.autoSession): Unit = {
     val created = System.currentTimeMillis()
