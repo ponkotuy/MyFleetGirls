@@ -1,4 +1,4 @@
-@(user: util.User, ships: Seq[ShipWithName])
+@(user: util.User, ships: Seq[ShipWithName], decks: Seq[DeckShipWithName], deckports: Seq[DeckPort])
 
 @main {
   <title>@{user.admiral.nickname}提督 -艦娘-</title>
@@ -14,6 +14,21 @@
 } {
   @head_content(user) {
     @usertab("ship") {
+      <div class="row">
+        @deckports.map { deckport =>
+          <div class="col-md-3">
+            <h3>@deckport.name</h3>
+            <ol>
+              @decks.filter(_.deckId == deckport.id).map { ship =>
+                <li>
+                  <a data-toggle="modal" href="aship/@ship.shipId" class="modal_link" data-target="#modal">@ship.name</a><small>Lv@ship.lv</small>
+                </li>
+              }
+            </ol>
+          </div>
+        }
+      </div>
+
       <div class="page-header">
         <h1>艦娘一覧</h1>
       </div>

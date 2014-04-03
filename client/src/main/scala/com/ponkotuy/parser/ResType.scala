@@ -52,6 +52,7 @@ object ResType extends Log {
   case object MissionStart extends ResType(s"\\A$ReqMission/start\\z".r) // 特に要らない
   case object KaisouPowerup extends ResType(s"\\A$ReqKaisou/powerup\\z".r)
   case object PracticeBattle extends ResType(s"\\A$ReqPractice/battle\\z".r)
+  case object PracticeMidnightBattle extends ResType(s"\\A$ReqPractice/midnight_battle\\z".r)
   case object PracticeBattleResult extends ResType(s"\\A$ReqPractice/battle_result\\z".r)
   case object GetOthersDeck extends ResType(s"\\A$ReqMember/getothersdeck\\z".r) // 演習相手。取るべきではない
   case object MapStart extends ResType(s"\\A$ReqMap/start\\z".r)

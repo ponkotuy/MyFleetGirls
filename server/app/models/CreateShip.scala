@@ -3,6 +3,7 @@ package models
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data
 import scalikejdbc.{WrappedResultSet, DBSession}
+import sqls.distinct
 
 /** 建造ログ(data.CreateShipとはかなり異なる)
   *
@@ -63,6 +64,19 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       .limit(limit).offset(offset)
   }.map(CreateShipWithName2(cs, ms)).toList().apply()
 
+  def findAllShipByNameLike(q: String)(implicit session: DBSession = autoSession): List[MasterShip] = {
+    /*
+    sql"""select distinct ${ms.resultAll} from ${CreateShip.table} as cs
+      inner join ${MasterShip.table} as ms on ${cs.resultShip} = ${ms.id}
+      where ${ms.name} like ${q}
+    """*/
+    withSQL {
+      select(distinct(ms.resultAll)).from(CreateShip as cs)
+        .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
+        .where.like(ms.name, q)
+    }.map(MasterShip(ms)).toList().apply()
+  }
+
   def countByMat(m: Mat)(implicit session: DBSession = autoSession): List[(MiniShip, Long)] = withSQL {
     select(cs.resultShip, ms.name, sqls"count(*) as count").from(CreateShip as cs)
       .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
@@ -77,11 +91,12 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       .where.eq(cs.memberId, memberId).and.eq(cs.largeFlag, large)
   }.map(_.long(1)).single().apply().get
 
-  def materialCount()(implicit session: DBSession = autoSession): List[(Mat, Long)] = withSQL {
+  def materialCount(where: SQLSyntax = sqls"true")(implicit session: DBSession = autoSession): List[(Mat, Long)] = withSQL {
     select(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop, sqls"count(*) as count")
       .from(CreateShip as cs)
+      .where(where)
       .groupBy(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop)
-      .orderBy(sqls"count")
+      .orderBy(sqls"count").desc
   }.map(rs => (Mat(cs)(rs), rs.long(6))).toList().apply()
 
   def create(cs: data.CreateShip, kd: data.KDock)(

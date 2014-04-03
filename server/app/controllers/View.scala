@@ -15,6 +15,7 @@ import models.Mat
  */
 object View extends Controller {
   implicit val formats = DefaultFormats
+
   def index = Action.async {
     Future {
       val newest = models.Admiral.findAll(limit = 20).sortBy(_.created).reverse
@@ -28,7 +29,7 @@ object View extends Controller {
   def statistics = Action.async {
     Future {
       val sCounts = models.CreateShip.materialCount()
-      Ok(views.html.statistics(sCounts.reverse))
+      Ok(views.html.statistics(sCounts))
     }
   }
 
@@ -45,5 +46,9 @@ object View extends Controller {
       val title = s"$fuel/$ammo/$steel/$bauxite/$develop"
       Ok(views.html.cship(title, write(countJsonRaw), withRate, cships))
     }
+  }
+
+  def fromShip() = Action.async {
+    Future(Ok(views.html.from_ship()))
   }
 }

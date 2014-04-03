@@ -1,4 +1,4 @@
-@(body: Html)
+@(active: String)(body: Html)
 
 @navbar("statistics")
 <div class="container theme-showcase" role="main">
@@ -9,8 +9,11 @@
   </div>
 
   <ul class="nav nav-tabs">
-    <li class="active">
-      <a href="@routes.View.statistics">建造</a>
+    <li class="@if(active=="from_recipe"){active}">
+      <a href="@routes.View.statistics">レシピから</a>
+    </li>
+    <li class="@if(active=="from_ship"){active}">
+      <a href="@routes.View.fromShip">艦娘から</a>
     </li>
   </ul>
 

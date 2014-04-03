@@ -13,6 +13,16 @@ object Rest extends Controller {
 
   def searchUser(q: String) = returnJson(models.Admiral.findAllByLike(s"%$q%", limit = 20))
 
+  def searchMasterShip(q: String) = returnJson(models.CreateShip.findAllShipByNameLike(s"%$q%"))
+
+  def recipeFromShip(shipId: Int) = returnJson {
+    val allCounts = models.CreateShip.materialCount().toMap
+    val counts = models.CreateShip.materialCount(sqls"result_ship = ${shipId}")
+    counts.map { case (mat, count) =>
+      Map("mat" -> mat, "count" -> count, "sum" -> allCounts(mat))
+    }
+  }
+
   def materials(userId: Long) = returnJson(models.Material.findAllByUser(userId))
 
   def basics(userId: Long) = returnJson(models.Basic.findAllByUser(userId))

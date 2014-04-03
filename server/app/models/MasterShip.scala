@@ -25,6 +25,10 @@ object MasterShip extends SQLSyntaxSupport[MasterShip] {
     select.from(MasterShip as ms)
   }.map(MasterShip(ms)).toList().apply()
 
+  def findAllByLike(q: String)(implicit session: DBSession = autoSession): List[MasterShip] = withSQL {
+    select.from(MasterShip as ms).where.like(ms.name, q)
+  }.map(MasterShip(ms)).toList().apply()
+
   def count()(implicit session: DBSession = MasterShip.autoSession): Long = withSQL {
     select(sqls"count(1)").from(MasterShip as ms)
   }.map(rs => rs.long(1)).single().apply().get

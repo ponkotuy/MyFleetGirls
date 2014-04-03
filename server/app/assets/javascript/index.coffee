@@ -4,7 +4,7 @@ $(document).ready ->
   search = new Vue
     el: '#search_user'
     data:
-      query: ""
+      query: ''
       users: []
     methods:
       search: (that, q) ->

@@ -47,7 +47,9 @@ object UserView {
 
   def ship(memberId: Long) = userView(memberId) { user =>
     val ships = models.Ship.findAllByUserWithName(memberId)
-    Ok(views.html.ship(user, ships))
+    val decks = models.DeckShip.findAllByUserWithName(memberId)
+    val deckports = models.DeckPort.findAllByUser(memberId)
+    Ok(views.html.ship(user, ships, decks, deckports))
   }
 
   def book(memberId: Long) = userView(memberId) { user =>
