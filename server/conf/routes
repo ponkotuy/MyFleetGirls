@@ -22,6 +22,8 @@ POST    /post/v1/swf/ship/:shipId   controllers.PostSwf.ship(shipId: Int)
 
 # Rest
 GET     /rest/v1/search_user        controllers.Rest.searchUser(q: String)
+GET     /rest/v1/search_master_ship controllers.Rest.searchMasterShip(q: String)
+GET     /rest/v1/recipe/from_ship/:shipId controllers.Rest.recipeFromShip(shipId: Int)
 GET     /rest/v1/:userId/materials  controllers.Rest.materials(userId: Long)
 GET     /rest/v1/:userId/basics     controllers.Rest.basics(userId: Long)
 GET     /rest/v1/:userId/create_ships controllers.Rest.createShips(userId: Long, limit: Int ?= 10, offset: Int ?= 0, large: Boolean ?= false)
@@ -36,6 +38,7 @@ GET     /                           controllers.View.index
 GET     /entire/about               controllers.View.about
 GET     /entire/statistics          controllers.View.statistics
 GET     /entire/sta/cship/:fuel/:ammo/:steel/:bauxite/:develop controllers.View.cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int)
+GET     /entire/sta/from_ship        controllers.View.fromShip
 GET     /u/:user                    controllers.UserView.name(user: String)
 GET     /user/:userId               controllers.UserView.user2(userId: Long)
 GET     /user/:userId/              controllers.UserView.user(userId: Long)
