@@ -3,6 +3,7 @@ package models
 import scalikejdbc.SQLInterpolation._
 import scalikejdbc.{DBSession, WrappedResultSet}
 import util.scalikejdbc.BulkInsert._
+import models.ShipWithName.RGB
 
 /**
  *
@@ -26,7 +27,7 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
 
   def findAllByUserWithName(memberId: Long)(implicit session: DBSession = autoSession): List[DeckShipWithName] = {
     withSQL {
-      select(ds.deckId, ds.num, ds.memberId, ds.shipId, s.lv, ms.name)
+      select(ds.deckId, ds.num, ds.memberId, ds.shipId, s.lv, s.cond, ms.name)
         .from(DeckShip as ds)
         .innerJoin(Ship as s).on(sqls"${ds.shipId} = ${s.id} and ${ds.memberId} = ${s.memberId}")
         .innerJoin(MasterShip as ms).on(s.shipId, ms.id)
@@ -81,7 +82,9 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
   }
 }
 
-case class DeckShipWithName(deckId: Int, num: Int, memberId: Long, shipId: Int, lv: Int, name: String)
+case class DeckShipWithName(deckId: Int, num: Int, memberId: Long, shipId: Int, lv: Int, cond: Int, name: String) {
+  def rgb: RGB = ShipWithName.rgb(cond)
+}
 
 object DeckShipWithName {
   def apply(ds: SyntaxProvider[DeckShip], s: SyntaxProvider[Ship], ms: SyntaxProvider[MasterShip])(
@@ -92,6 +95,7 @@ object DeckShipWithName {
       rs.long(ds.memberId),
       rs.int(ds.shipId),
       rs.int(s.lv),
+      rs.int(s.cond),
       rs.string(ms.name)
     )
 }

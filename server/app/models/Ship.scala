@@ -168,6 +168,8 @@ object Ship extends SQLSyntaxSupport[Ship] {
 }
 
 case class ShipWithName(ship: Ship, master: MasterShip) {
+  import ShipWithName._
+
   def id = ship.id
   def shipId = ship.shipId
   def memberId = ship.memberId
@@ -206,5 +208,31 @@ case class ShipWithName(ship: Ship, master: MasterShip) {
       Seq(7, lucky / 40.0)
     )
     compact(render(seq))
+  }
+
+  /** Condition値による色の変化 */
+  def rgb: RGB = ShipWithName.rgb(cond)
+}
+
+object ShipWithName {
+  case class RGB(r: Int, g: Int, b: Int) {
+    def blend(other: RGB, rate: Double): RGB = {
+      def f(x: Int, y: Int, yrate: Double): Int = (x * (1 - yrate) + y * yrate).toInt
+      RGB(f(r, other.r, rate),
+        f(g, other.g, rate),
+        f(b, other.b, rate))
+    }
+
+    override def toString = f"#$r%2X$g%2X$b%2X"
+  }
+
+  val Red = RGB(242, 222, 222)
+  val Blue = RGB(217, 237, 247)
+  val White = RGB(255, 255, 255)
+
+
+  def rgb(cond: Int): RGB = {
+    if(cond > 49) White.blend(Blue, (cond - 50.0) / 50.0)
+    else White.blend(Red, (49.0 - cond) / 49.0)
   }
 }
