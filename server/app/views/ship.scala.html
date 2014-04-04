@@ -20,7 +20,7 @@
             <h3>@deckport.name</h3>
             <ol>
               @decks.filter(_.deckId == deckport.id).map { ship =>
-                <li>
+                <li style="background-color: @ship.rgb.toString">
                   <a data-toggle="modal" href="aship/@ship.shipId" class="modal_link" data-target="#modal">@ship.name</a><small>Lv@ship.lv</small>
                 </li>
               }
@@ -46,7 +46,7 @@
             <td>@ship.lv</td>
             <td>@ship.exp%</td>
             <td>@ship.nowhp</td>
-            <td>@ship.cond</td>
+            <td style="background-color: @ship.rgb.toString">@ship.cond</td>
             <td>@ship.karyoku</td>
             <td>@ship.raisou</td>
             <td>@ship.taiku</td>

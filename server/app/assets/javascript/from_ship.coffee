@@ -12,6 +12,8 @@ $(document).ready ->
         () ->
           $.getJSON '/rest/v1/search_master_ship', {q: q}, (ret) =>
             that.ships = ret
+            if ret.length == 1
+              that.shipId = ret[0].id
       selectShip: (sid) ->
         @shipId = sid
       getCounts: (sid) ->

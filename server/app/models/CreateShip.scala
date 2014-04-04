@@ -65,11 +65,6 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
   }.map(CreateShipWithName2(cs, ms)).toList().apply()
 
   def findAllShipByNameLike(q: String)(implicit session: DBSession = autoSession): List[MasterShip] = {
-    /*
-    sql"""select distinct ${ms.resultAll} from ${CreateShip.table} as cs
-      inner join ${MasterShip.table} as ms on ${cs.resultShip} = ${ms.id}
-      where ${ms.name} like ${q}
-    """*/
     withSQL {
       select(distinct(ms.resultAll)).from(CreateShip as cs)
         .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
