@@ -63,6 +63,11 @@ class PostResponse extends Log {
         val decks = data.DeckPort.fromJson(obj)
         flagship = decks.find(_.id == 1).flatMap(_.ships.headOption)
         if(decks.nonEmpty) MFGHttp.post("/deckport", write(decks))
+      case Deck =>
+        val decks = data.DeckPort.fromJson(obj)
+        flagship = decks.find(_.id == 1).flatMap(_.ships.headOption)
+        // DeckPortと同じだけど頻繁に更新する必要を感じないので送らない
+        // flagshipの更新だけは建造・開発で正しいデータを送るのに必要なので更新する
       case SlotItem =>
         val items = data.SlotItem.fromJson(obj)
         MFGHttp.post("/slotitem", write(items))
