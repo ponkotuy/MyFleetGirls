@@ -23,14 +23,14 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
 
   lazy val ds = DeckShip.syntax("ds")
   lazy val s = Ship.syntax("s")
-  lazy val ms = MasterShip.syntax("ms")
+  lazy val ms = MasterShipBase.syntax("ms")
 
   def findAllByUserWithName(memberId: Long)(implicit session: DBSession = autoSession): List[DeckShipWithName] = {
     withSQL {
       select(ds.deckId, ds.num, ds.memberId, ds.shipId, s.lv, s.cond, ms.name)
         .from(DeckShip as ds)
         .innerJoin(Ship as s).on(sqls"${ds.shipId} = ${s.id} and ${ds.memberId} = ${s.memberId}")
-        .innerJoin(MasterShip as ms).on(s.shipId, ms.id)
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .where.eq(ds.memberId, memberId)
     }.map(DeckShipWithName(ds, s, ms)).list().apply()
   }
@@ -39,9 +39,9 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
     withSQL {
       select.from(DeckShip as ds)
         .innerJoin(Ship as s).on(ds.shipId, s.id)
-        .innerJoin(MasterShip as ms).on(s.shipId, ms.id)
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .where.eq(ds.memberId, memberId).and.eq(s.memberId, memberId).and.eq(ds.deckId, 1).and.eq(ds.num, 0)
-    }.map { rs => ShipWithName(Ship(s)(rs), MasterShip(ms)(rs)) }
+    }.map { rs => ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs)) }
       .first().apply()
   }
 
@@ -87,7 +87,7 @@ case class DeckShipWithName(deckId: Int, num: Int, memberId: Long, shipId: Int, 
 }
 
 object DeckShipWithName {
-  def apply(ds: SyntaxProvider[DeckShip], s: SyntaxProvider[Ship], ms: SyntaxProvider[MasterShip])(
+  def apply(ds: SyntaxProvider[DeckShip], s: SyntaxProvider[Ship], ms: SyntaxProvider[MasterShipBase])(
       rs: WrappedResultSet): DeckShipWithName =
     new DeckShipWithName(
       rs.int(ds.deckId),

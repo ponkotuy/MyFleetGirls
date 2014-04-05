@@ -35,7 +35,7 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
   )
 
   val sb = ShipBook.syntax("sb")
-  val ms = MasterShip.syntax("ms")
+  val ms = MasterShipBase.syntax("ms")
 
   override val autoSession = AutoSession
 

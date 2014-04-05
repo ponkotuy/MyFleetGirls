@@ -35,7 +35,7 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
   )
 
   lazy val cs = CreateShip.syntax("cs")
-  lazy val ms = MasterShip.syntax("ms")
+  lazy val ms = MasterShipBase.syntax("ms")
 
   def findAllByUser(memberId: Long)(implicit session: DBSession = CreateShip.autoSession): List[CreateShip] = withSQL {
     select.from(CreateShip as cs)
@@ -47,7 +47,7 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       implicit session: DBSession = CreateShip.autoSession): List[CreateShipWithName] = withSQL {
     select(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop, cs.largeFlag, cs.created, ms.name)
       .from(CreateShip as cs)
-      .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
+      .innerJoin(MasterShipBase as ms).on(cs.resultShip, ms.id)
       .where.eq(cs.memberId, memberId).and.eq(cs.largeFlag, large)
       .orderBy(cs.created).desc
       .limit(limit).offset(offset)
@@ -57,24 +57,24 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       implicit session: DBSession = autoSession): List[CreateShipWithName2] = withSQL {
     select(cs.memberId, cs.resultShip, cs.largeFlag, cs.created, ms.name)
       .from(CreateShip as cs)
-      .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
+      .innerJoin(MasterShipBase as ms).on(cs.resultShip, ms.id)
       .where.eq(cs.fuel, m.fuel).and.eq(cs.ammo, m.ammo).and.eq(cs.steel, m.steel)
       .and.eq(cs.bauxite, m.bauxite).and.eq(cs.develop, m.develop)
       .orderBy(cs.created).desc
       .limit(limit).offset(offset)
   }.map(CreateShipWithName2(cs, ms)).toList().apply()
 
-  def findAllShipByNameLike(q: String)(implicit session: DBSession = autoSession): List[MasterShip] = {
+  def findAllShipByNameLike(q: String)(implicit session: DBSession = autoSession): List[MasterShipBase] = {
     withSQL {
       select(distinct(ms.resultAll)).from(CreateShip as cs)
-        .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
+        .innerJoin(MasterShipBase as ms).on(cs.resultShip, ms.id)
         .where.like(ms.name, q)
-    }.map(MasterShip(ms)).toList().apply()
+    }.map(MasterShipBase(ms)).toList().apply()
   }
 
   def countByMat(m: Mat)(implicit session: DBSession = autoSession): List[(MiniShip, Long)] = withSQL {
     select(cs.resultShip, ms.name, sqls"count(*) as count").from(CreateShip as cs)
-      .innerJoin(MasterShip as ms).on(cs.resultShip, ms.id)
+      .innerJoin(MasterShipBase as ms).on(cs.resultShip, ms.id)
       .where.eq(cs.fuel, m.fuel).and.eq(cs.ammo, m.ammo).and.eq(cs.steel, m.steel).and.eq(cs.bauxite, m.bauxite)
       .and.eq(cs.develop, m.develop)
       .groupBy(cs.resultShip)
@@ -118,7 +118,7 @@ case class CreateShipWithName(
     largeFlag: Boolean, created: Long, name: String)
 
 object CreateShipWithName {
-  def apply(cs: SyntaxProvider[CreateShip], ms: SyntaxProvider[MasterShip])(
+  def apply(cs: SyntaxProvider[CreateShip], ms: SyntaxProvider[MasterShipBase])(
       rs: WrappedResultSet): CreateShipWithName =
     new CreateShipWithName(
       rs.int(cs.fuel),
@@ -135,7 +135,7 @@ object CreateShipWithName {
 case class CreateShipWithName2(memberId: Long, resultShip: Int, largeFlag: Boolean, created: Long, name: String)
 
 object CreateShipWithName2 {
-  def apply(cs: SyntaxProvider[CreateShip], ms: SyntaxProvider[MasterShip])(
+  def apply(cs: SyntaxProvider[CreateShip], ms: SyntaxProvider[MasterShipBase])(
     rs: WrappedResultSet): CreateShipWithName2 =
     new CreateShipWithName2(
       rs.long(cs.memberId),

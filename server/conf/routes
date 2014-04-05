@@ -18,6 +18,7 @@ POST    /post/v1/slotitem           controllers.Post.slotItem
 POST    /post/v1/master/ship        controllers.PostMaster.ship
 POST    /post/v1/master/mission     controllers.PostMaster.mission
 POST    /post/v1/master/slotitem    controllers.PostMaster.slotitem
+POST    /post/v1/master/stype       controllers.PostMaster.stype
 POST    /post/v1/swf/ship/:shipId   controllers.PostSwf.ship(shipId: Int)
 
 # Rest

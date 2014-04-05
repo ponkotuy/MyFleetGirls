@@ -86,7 +86,7 @@ class PostResponse extends Log {
         }
       case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | GetShip | Charge | MissionStart => // No Need
       case HenseiChange | HenseiLock | GetOthersDeck => // No Need
-      case MasterMapArea | MasterSType | MasterUseItem | MasterFurniture => // No Need
+      case MasterMapArea | MasterUseItem | MasterFurniture => // No Need
       case MasterShip =>
         if(checkPonkotu) {
           val ships = master.MasterShip.fromJson(obj)
@@ -101,6 +101,11 @@ class PostResponse extends Log {
         if(checkPonkotu) {
           val items = master.MasterSlotItem.fromJson(obj)
           MFGHttp.post("/master/slotitem", write(items))
+        }
+      case MasterSType =>
+        if(checkPonkotu) {
+          val stype = master.MasterSType.fromJson(obj)
+          MFGHttp.post("/master/stype", write(stype))
         }
       case ShipSWF =>
         parseId(q.uri).filterNot(MFGHttp.existsImage).foreach { id =>
