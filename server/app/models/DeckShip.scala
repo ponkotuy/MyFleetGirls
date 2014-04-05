@@ -24,6 +24,7 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
   lazy val ds = DeckShip.syntax("ds")
   lazy val s = Ship.syntax("s")
   lazy val ms = MasterShipBase.syntax("ms")
+  lazy val mst = MasterStype.syntax("mst")
 
   def findAllByUserWithName(memberId: Long)(implicit session: DBSession = autoSession): List[DeckShipWithName] = {
     withSQL {
@@ -40,9 +41,11 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
       select.from(DeckShip as ds)
         .innerJoin(Ship as s).on(ds.shipId, s.id)
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where.eq(ds.memberId, memberId).and.eq(s.memberId, memberId).and.eq(ds.deckId, 1).and.eq(ds.num, 0)
-    }.map { rs => ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs)) }
-      .first().apply()
+    }.map { rs =>
+      ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+    }.first().apply()
   }
 
   def create(deckId: Int, num: Int, memberId: Long, shipId: Int)(

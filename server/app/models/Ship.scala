@@ -56,13 +56,18 @@ object Ship extends SQLSyntaxSupport[Ship] {
   lazy val ms = MasterShipBase.syntax("ms")
   lazy val ds = DeckShip.syntax("ds")
   lazy val ssi = ShipSlotItem.syntax("ssi")
+  lazy val mst = MasterStype.syntax("mst")
 
   def findByUserMaxLvWithName(memberId: Long)(implicit session: DBSession = autoSession): Option[ShipWithName] = {
     withSQL {
       select.from(Ship as s)
         .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .where.eq(s.memberId, memberId).and.eq(s.lv, sqls"(SELECT MAX(${s.lv}) FROM ${Ship.table} s WHERE ${s.memberId} = ${memberId})")
-    }.map { rs => ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs)) }.first().apply()
+        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .where.eq(s.memberId, memberId)
+        .and.eq(s.lv, sqls"(SELECT MAX(${s.lv}) FROM ${Ship.table} s WHERE ${s.memberId} = ${memberId})")
+    }.map { rs =>
+      ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+    }.first().apply()
   }
 
   def findByIDWithName(memberId: Long, sid: Int)(
@@ -70,9 +75,10 @@ object Ship extends SQLSyntaxSupport[Ship] {
     withSQL {
       select.from(Ship as s)
         .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where.eq(s.memberId, memberId).and.eq(s.id, sid)
     }.map { rs =>
-      ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs))
+      ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
     }.first().apply()
   }
 
@@ -83,9 +89,10 @@ object Ship extends SQLSyntaxSupport[Ship] {
         withSQL {
           select.from(Ship as s)
             .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+            .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
             .where.eq(s.memberId, memberId).and.in(s.id, ids)
         }.map { rs =>
-          ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs))
+          ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
         }.toList().apply()
     }
 
@@ -98,8 +105,11 @@ object Ship extends SQLSyntaxSupport[Ship] {
     withSQL {
       select.from(Ship as s)
         .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where.eq(s.memberId, memberId)
-    }.map { rs => ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs)) }.toList().apply()
+    }.map { rs =>
+      ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+    }.toList().apply()
   }
 
   def findSlot(memberId: Long, shipId: Int): List[Int] =
@@ -167,7 +177,7 @@ object Ship extends SQLSyntaxSupport[Ship] {
   }
 }
 
-case class ShipWithName(ship: Ship, master: MasterShipBase) {
+case class ShipWithName(ship: Ship, master: MasterShipBase, stype: MasterStype) {
   import ShipWithName._
 
   def id = ship.id
@@ -193,6 +203,7 @@ case class ShipWithName(ship: Ship, master: MasterShipBase) {
   def created = ship.created
   def name = master.name
   def yomi = master.yomi
+  def stName = stype.name
 
   def slotNames: List[String] = SlotItem.findIn(slot, memberId).map(_.name)
 

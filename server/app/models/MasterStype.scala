@@ -24,7 +24,7 @@ object MasterStype extends SQLSyntaxSupport[MasterStype] {
   override val tableName = "master_stype"
 
   override val columns = Seq("id", "sortno", "name", "scnt", "kcnt")
-
+  def apply(x: SyntaxProvider[MasterStype])(rs: WrappedResultSet): MasterStype = apply(x.resultName)(rs)
   def apply(ms: ResultName[MasterStype])(rs: WrappedResultSet): MasterStype = new MasterStype(
     id = rs.int(ms.id),
     sortno = rs.int(ms.sortno),

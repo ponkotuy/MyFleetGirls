@@ -34,13 +34,14 @@
       <table class="table table-striped table-condensed" id="ship_table">
         <thead>
           <tr>
-            <th>ID</th><th>名前</th><th>Lv</th><th>Exp</th><th>HP</th><th>Cond</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th><th>回避</th><th>対潜</th><th>索敵</th><th>運</th>
+            <th>ID</th><th>艦種</th><th>名前</th><th>Lv</th><th>Exp</th><th>HP</th><th>Cond</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th><th>回避</th><th>対潜</th><th>索敵</th><th>運</th>
           </tr>
         </thead>
         <tbody>
           @ships.map { ship =>
           <tr>
             <td>@ship.id</td>
+            <td>@ship.stName</td>
             <td><a data-toggle="modal" href="aship/@ship.id" class="modal_link" data-target="#modal">@ship.name</a></td>
             <td>@ship.lv</td>
             <td>@ship.exp%</td>
