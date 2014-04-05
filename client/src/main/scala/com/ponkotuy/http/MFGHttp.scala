@@ -29,11 +29,11 @@ object MFGHttp extends Log {
 
   implicit val formats = Serialization.formats(NoTypeHints)
 
-  def post(uStr: String, data: String)(implicit auth: Option[Auth]): Unit = {
+  def post(uStr: String, data: String, ver: Int = 1)(implicit auth: Option[Auth]): Unit = {
     if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return }
     try {
       val http = httpBuilder.build()
-      val post = new HttpPost(ClientConfig.postUrl + uStr)
+      val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
       val entity = createEntity(Map("auth" -> write(auth), "data" -> data))
       post.setEntity(entity)
       val res = http.execute(post)
@@ -50,11 +50,11 @@ object MFGHttp extends Log {
     new UrlEncodedFormEntity(nvps.asJava, UTF8)
   }
 
-  def postFile(uStr: String)(file: File)(implicit auth: Option[Auth]): Unit = {
+  def postFile(uStr: String, ver: Int = 1)(file: File)(implicit auth: Option[Auth]): Unit = {
     if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return }
     try {
       val http = httpBuilder.build()
-      val post = new HttpPost(ClientConfig.postUrl + uStr)
+      val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
       val entity = MultipartEntityBuilder.create()
       entity.setCharset(UTF8)
       entity.addTextBody("auth", write(auth), ContentType.APPLICATION_JSON)
@@ -80,9 +80,9 @@ object MFGHttp extends Log {
   def existsImage(id: Int): Boolean =
     head(s"/image/ship/$id.jpg").getStatusLine.getStatusCode == 200
 
-  private def head(uStr: String) = {
+  private def head(uStr: String, ver: Int = 1) = {
     val http = httpBuilder.build()
-    val head = new HttpHead(ClientConfig.getUrl + uStr)
+    val head = new HttpHead(ClientConfig.getUrl(ver) + uStr)
     http.execute(head)
   }
 

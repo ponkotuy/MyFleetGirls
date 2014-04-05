@@ -6,3 +6,5 @@ package com.ponkotuy.data
  * Date: 14/03/05.
  */
 case class CreateShipAndDock(createShip: CreateShip, kDock: KDock)
+
+case class CreateShipWithId(createShip: CreateShip, resultShip: Int)

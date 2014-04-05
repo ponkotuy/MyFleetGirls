@@ -5,7 +5,7 @@ import com.ponkotuy.data
 import scalikejdbc.{WrappedResultSet, DBSession}
 import sqls.distinct
 
-/** 建造ログ(data.CreateShipとはかなり異なる)
+/** 建造ログ
   *
   * data.KDockのデータを用いて補完する必要がある
   *
@@ -94,8 +94,8 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       .orderBy(sqls"count").desc
   }.map(rs => (Mat(cs)(rs), rs.long(6))).toList().apply()
 
-  def create(cs: data.CreateShip, kd: data.KDock)(
-      implicit session: DBSession = CreateShip.autoSession): CreateShip = {
+  def createFromKDock(cs: data.CreateShip, kd: data.KDock)(
+      implicit session: DBSession = CreateShip.autoSession): Unit = {
     require(cs.equalKDock(kd))
     val created = System.currentTimeMillis()
     applyUpdate {
@@ -106,10 +106,18 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
         column.largeFlag -> cs.largeFlag, column.completeTime -> kd.completeTime, column.created -> created
       )
     }
-    CreateShip(
-      kd.memberId, kd.shipId,
-      cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop,
-      cs.kDock, cs.highspeed, cs.largeFlag, kd.completeTime, created)
+  }
+
+  def create(cs: data.CreateShip, memberId: Long, resultShip: Int)(implicit session: DBSession = autoSession): Unit = {
+    val created = System.currentTimeMillis()
+    applyUpdate {
+      insert.into(CreateShip).namedValues(
+        column.memberId -> memberId, column.resultShip -> resultShip,
+        column.fuel -> cs.fuel, column.ammo -> cs.ammo, column.steel -> cs.steel, column.bauxite -> cs.bauxite,
+        column.develop -> cs.develop, column.kDock -> cs.kDock, column.highspeed -> cs.highspeed,
+        column.largeFlag -> cs.largeFlag, column.completeTime -> created, column.created -> created
+      )
+    }
   }
 }
 
