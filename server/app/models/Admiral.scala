@@ -46,6 +46,12 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
       .limit(limit).offset(offset)
   }.map(Admiral(a)).list().apply()
 
+  def findNewest(limit: Int = Int.MaxValue, offset: Int = 0)(implicit session: DBSession = Admiral.autoSession): List[Admiral] = withSQL {
+    select.from(Admiral as a)
+      .orderBy(a.created).desc
+      .limit(limit).offset(offset)
+  }.map(Admiral(a)).list().apply()
+
   def findAllByLike(q: String, limit: Int = Int.MaxValue, offset: Int = 0)(
       implicit session:DBSession = Admiral.autoSession): List[AdmiralWithLv] = withSQL {
     select(a.id, a.nickname, a.created, b.lv).from(Admiral as a)
