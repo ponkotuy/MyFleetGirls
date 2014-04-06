@@ -22,7 +22,7 @@ public class Main {
                 Path dst = Paths.get(url.getPath()).getFileName();
                 if(Files.exists(dst)) {
                     if (compareFileSize(url, dst)) {
-                        System.out.println(dst.getFileName() + "に変更ありません");
+                        System.out.println(dst.getFileName() + "に変更はありません");
                     } else {
                         System.out.println(dst.getFileName() + "の更新を見つけました。更新します");
                         Files.delete(dst);
