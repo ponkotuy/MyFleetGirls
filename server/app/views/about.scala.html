@@ -28,8 +28,8 @@
   <section>
     <h2>インストール・使い方</h2>
     <ol>
-      <li>JavaVM（JRE）がインストールされてない場合はする <a href="http://java.com/ja/download/">無料Javaのダウンロードってもっと良い日本語無かったんですか</a></li>
-      <li><a href=@routes.Assets.at("zip/MyFleetGirls.zip")>Proxy Server Download</a></li>
+      <li>Java7（JRE7）以降がインストールされてない場合はする <a href="http://java.com/ja/download/">JavaDownload</a></li>
+      <li><a href=@routes.Assets.at("zip/MyFleetGirls.zip")>DownloaderのDownload</a></li>
       <li>ZIPファイルを解凍</li>
       <li>application.conf.sampleをコピーしてapplication.confというファイルを作る</li>
       <li>application.confをテキストエディタで開き、自分の艦これサーバのIPアドレスを設定。初期設定はブイン基地になってます</li>
@@ -37,8 +37,9 @@
       <ol>
         <li>特定アドレスへの通信にProxyを設定するaddon等をインストール。Chromeなら<a href="https://chrome.google.com/webstore/detail/proxy-switchysharp/dpplabbmogkhghncfbfdeeokoefdjegm">Proxy SwichySharp</a>、Firefoxなら<a href="https://addons.mozilla.org/ja/firefox/addon/foxyproxy-standard/">FoxyProxy</a>で動作確認済</li>
         <li>前に設定した艦これサーバのIPアドレスのアクセスをlocalhost:8080へ転送する</li>
+        <li>Proxy SwichySharpの設定の詳細は<a href="http://d.hatena.ne.jp/ponkotuy/20140330/1396184917">HatenaDialy</a></li>
       </ol>
-      <li>MyFleetGirls.shかMyFleetGirls.batかMyFleetGirls.jarを実行する</li>
+      <li>MyFleetGirls.shかMyFleetGirls.batを起動する（ここで自動アップデートも走ります）</li>
       <li>先程設定したブラウザで艦これのFlashを起動する</li>
       <li>http://myfleet.ponkotuy.com/u/{ユーザ名} にアクセスすると閲覧できる</li>
     </ol>
@@ -60,6 +61,12 @@
       <li><span class="label label-primary">Common</span>は全体のバージョンアップで比較的大きい変更が多いです</li>
     </ul>
     <p>基本的にClientが変更されるとMajor Versionが1上がります。</p>
+    <h3>Ver0.9.1</h3>
+    <ul>
+      <li><span class="label label-warning">Client</span>ダウンローダサイズ圧縮（ダウンローダーが6MB→12KB）</li>
+      <li><span class="label label-warning">Client</span>ダウンローダ仕様変更（手動で再インストールが必要です）</li>
+      <li><span class="label label-info">Server</span>Material Viewの謎の表示を削除</li>
+    </ul>
     <h3>Ver0.9.0</h3>
     <ul>
       <li><span class="label label-primary">Common</span>Client自動アップデート機能を追加</li>

@@ -6,6 +6,8 @@ name := "MyFleetGirlsUpdate"
 
 crossPaths := false
 
+autoScalaLibrary := false
+
 libraryDependencies ++= Seq()
 
 assemblySettings
