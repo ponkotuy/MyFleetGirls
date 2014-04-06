@@ -50,9 +50,10 @@ public class Main {
     }
 
     public static List<String> getProperties(String fName) throws IOException {
-        Class c = Main.class;
+        FileSystem fs = FileSystems.getDefault();
+        Path path = fs.getPath(fName);
         Properties p = new Properties();
-        try(InputStream is = c.getResourceAsStream(fName)) {
+        try(InputStream is = Files.newInputStream(path, StandardOpenOption.READ)) {
             p.load(is);
         }
         List<String> result = new ArrayList<>(p.size());

@@ -87,8 +87,8 @@ object MyFleetGirlsBuild extends Build {
 
   def zip = Command.command("zip") { state =>
     Command.process("assembly", state)
-    p.Process("""rm server/public/zip/*""").run
-    p.Process("""zip -j server/public/zip/MyFleetGirls.zip update/target/update.jar LICENSE application.conf.sample MyFleetGirls.bat MyFleetGirls.sh""").run
+    p.Process("""rm server/public/zip/MyFleetGirls.zip""").run
+    p.Process("""zip -j server/public/zip/MyFleetGirls.zip update/target/update.jar LICENSE update/update.properties MyFleetGirls.bat MyFleetGirls.sh""").run
     p.Process("""cp client/target/scala-2.10/MyFleetGirls.jar LICENSE MyFleetGirls.bat MyFleetGirls.sh application.conf.sample server/public/client/""").run
     Thread.sleep(1000L)
     state
