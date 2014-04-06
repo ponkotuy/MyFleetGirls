@@ -29,6 +29,10 @@ object MyFleetGirlsBuild extends Build {
   lazy val library = Project(id = "library", base = file("library"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
 
+  lazy val update = Project(id = "update", base = file("update"))
+    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
+    .settings(jarName in assembly := "update.jar")
+
   override lazy val settings = super.settings ++ Seq(
     version := ver,
     scalaVersion := "2.10.3",
@@ -50,8 +54,10 @@ object MyFleetGirlsBuild extends Build {
   }
 
   def assembl = Command.command("assembly") { state =>
-    val subState = Command.process("project client", state)
-    Command.process("assembly", subState)
+    val updateState = Command.process("project update", state)
+    Command.process("assembly", updateState)
+    val clientState = Command.process("project client", state)
+    Command.process("assembly", clientState)
     state
   }
 
@@ -81,8 +87,10 @@ object MyFleetGirlsBuild extends Build {
 
   def zip = Command.command("zip") { state =>
     Command.process("assembly", state)
-    p.Process("""zip -j server/public/zip/MyFleetGirls.zip client/target/scala-2.10/MyFleetGirls.jar application.conf.sample MyFleetGirls.bat MyFleetGirls.sh""").run
-    Thread.sleep(10000L)
+    p.Process("""rm server/public/zip/*""").run
+    p.Process("""zip -j server/public/zip/MyFleetGirls.zip update/target/update.jar LICENSE application.conf.sample MyFleetGirls.bat MyFleetGirls.sh""").run
+    p.Process("""cp client/target/scala-2.10/MyFleetGirls.jar LICENSE MyFleetGirls.bat MyFleetGirls.sh application.conf.sample server/public/client/""").run
+    Thread.sleep(1000L)
     state
   }
 }

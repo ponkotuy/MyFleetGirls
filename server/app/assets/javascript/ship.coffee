@@ -6,7 +6,7 @@ $(document).ready ->
     sortDesc: 'icon-chevron-down glyphicon glyphicon-chevron-down'
 
   $('#ship_table').tablesorter
-    sortList: [[2, 1]]
+    sortList: [[3, 1]]
     theme: 'bootstrap'
     headerTemplate: '{content} {icon}'
     widgets: ["uitheme"]

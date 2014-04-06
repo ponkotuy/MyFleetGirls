@@ -17,6 +17,9 @@ project/plugins/project/
 # Deploy
 MyFleetGirls-assembly*
 MyFleetGirls*.zip
+server/public/client/LICENSE
+server/public/client/MyFleetGirls*
+server/public/client/application.conf.sample
 
 # Settings
 application.conf

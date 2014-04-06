@@ -31,10 +31,11 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
     name = rs.string(si.name)
   )
 
-  val si = SlotItem.syntax("si")
-  val ssi = ShipSlotItem.syntax("ssi")
-  val s = Ship.syntax("s")
-  val ms = MasterShip.syntax("ms")
+  lazy val si = SlotItem.syntax("si")
+  lazy val ssi = ShipSlotItem.syntax("ssi")
+  lazy val s = Ship.syntax("s")
+  lazy val ms = MasterShipBase.syntax("ms")
+  lazy val mst = MasterStype.syntax("mst")
 
   override val autoSession = AutoSession
 
@@ -74,10 +75,11 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
       select.from(SlotItem as si)
         .innerJoin(ShipSlotItem as ssi).on(sqls"${si.id} = ${ssi.slotitemId} and ${si.memberId} = ${ssi.memberId}")
         .leftJoin(Ship as s).on(sqls"${ssi.shipId} = ${s.id} and ${ssi.memberId} = ${s.memberId}")
-        .leftJoin(MasterShip as ms).on(s.shipId, ms.id)
+        .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where.append(where)
     }.map { rs =>
-      ShipWithName(Ship(s)(rs), MasterShip(ms)(rs))
+      ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
     }.toList().apply()
   }
 

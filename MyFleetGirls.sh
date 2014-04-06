@@ -1,3 +1,4 @@
 #!/bin/sh
 
-java -jar MyFleetGirls*.jar
+java -jar update.jar
+java -jar MyFleetGirls.jar

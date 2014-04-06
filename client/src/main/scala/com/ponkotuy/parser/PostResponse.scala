@@ -8,7 +8,7 @@ import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
 import com.ponkotuy.util.Log
 import com.ponkotuy.data
-import com.ponkotuy.data.master
+import com.ponkotuy.data.{CreateShipWithId, master}
 import com.ponkotuy.value.Global
 import org.jboss.netty.buffer.ChannelBuffer
 import com.github.theon.uri.Uri
@@ -57,12 +57,18 @@ class PostResponse extends Log {
           createShips.get(dock.id).foreach { cShip =>
             val dat = data.CreateShipAndDock(cShip, dock)
             MFGHttp.post("/createship", write(dat))
+            createShips.remove(dock.id)
           }
         }
       case DeckPort =>
         val decks = data.DeckPort.fromJson(obj)
         flagship = decks.find(_.id == 1).flatMap(_.ships.headOption)
         if(decks.nonEmpty) MFGHttp.post("/deckport", write(decks))
+      case Deck =>
+        val decks = data.DeckPort.fromJson(obj)
+        flagship = decks.find(_.id == 1).flatMap(_.ships.headOption)
+        // DeckPortと同じだけど頻繁に更新する必要を感じないので送らない
+        // flagshipの更新だけは建造・開発で正しいデータを送るのに必要なので更新する
       case SlotItem =>
         val items = data.SlotItem.fromJson(obj)
         MFGHttp.post("/slotitem", write(items))
@@ -79,14 +85,20 @@ class PostResponse extends Log {
       case CreateShip =>
         val createShip = data.CreateShip.fromMap(req)
         createShips(createShip.kDock) = createShip
+      case GetShip =>
+        val id = (obj \ "api_ship_id").extract[Int]
+        createShips.remove(req("api_kdock_id").toInt).foreach { cship =>
+          val withId = CreateShipWithId(cship, id)
+          MFGHttp.post("/createship", write(withId), 2)
+        }
       case CreateItem =>
         flagship.foreach { flag =>
           val createItem = data.CreateItem.from(req, obj, flag)
           MFGHttp.post("/createitem", write(createItem))
         }
-      case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | GetShip | Charge | MissionStart => // No Need
+      case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | Charge | MissionStart => // No Need
       case HenseiChange | HenseiLock | GetOthersDeck => // No Need
-      case MasterMapArea | MasterSType | MasterUseItem | MasterFurniture => // No Need
+      case MasterMapArea | MasterUseItem | MasterFurniture => // No Need
       case MasterShip =>
         if(checkPonkotu) {
           val ships = master.MasterShip.fromJson(obj)
@@ -101,6 +113,11 @@ class PostResponse extends Log {
         if(checkPonkotu) {
           val items = master.MasterSlotItem.fromJson(obj)
           MFGHttp.post("/master/slotitem", write(items))
+        }
+      case MasterSType =>
+        if(checkPonkotu) {
+          val stype = master.MasterSType.fromJson(obj)
+          MFGHttp.post("/master/stype", write(stype))
         }
       case ShipSWF =>
         parseId(q.uri).filterNot(MFGHttp.existsImage).foreach { id =>

@@ -23,7 +23,7 @@ object NDock extends SQLSyntaxSupport[NDock] {
 
   lazy val nd = NDock.syntax("nd")
   lazy val s = Ship.syntax("s")
-  lazy val ms = MasterShip.syntax("ms")
+  lazy val ms = MasterShipBase.syntax("ms")
 
   def findAllByUser(memberId: Long)(implicit session: DBSession = NDock.autoSession): List[NDock] = withSQL {
     select.from(NDock as nd)
@@ -34,7 +34,7 @@ object NDock extends SQLSyntaxSupport[NDock] {
     val result = withSQL {
       select(nd.id, nd.shipId, nd.completeTime, ms.name).from(NDock as nd)
         .innerJoin(Ship as s).on(sqls"${nd.memberId} = ${s.memberId} and ${nd.shipId} = ${s.id}")
-        .innerJoin(MasterShip as ms).on(s.shipId, ms.id)
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .where.eq(nd.memberId, memberId)
         .orderBy(nd.id)
     }.map { rs =>

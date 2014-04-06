@@ -49,7 +49,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
   val ci = CreateItem.syntax("ci")
   val mi = MasterSlotItem.syntax("mi")
   val s = Ship.syntax("s")
-  val ms = MasterShip.syntax("ms")
+  val ms = MasterShipBase.syntax("ms")
 
   override val autoSession = AutoSession
 
@@ -80,7 +80,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
         .from(CreateItem as ci)
         .leftJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
         .leftJoin(Ship as s).on(ci.flagship, s.id)
-        .leftJoin(MasterShip as ms).on(s.shipId, ms.id)
+        .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .where.eq(ci.memberId, memberId).and.eq(s.memberId, memberId)
         .orderBy(ci.created).desc
         .limit(limit).offset(offset)
@@ -190,7 +190,7 @@ case class CreateItemWithName(
     shizaiFlag: Boolean, flagshipId: Int, created: Long, name: String, flagshipName: String)
 
 object CreateItemWithName {
-  def apply(ci: SyntaxProvider[CreateItem], mi: SyntaxProvider[MasterSlotItem], ms: SyntaxProvider[MasterShip])(
+  def apply(ci: SyntaxProvider[CreateItem], mi: SyntaxProvider[MasterSlotItem], ms: SyntaxProvider[MasterShipBase])(
       rs: WrappedResultSet): CreateItemWithName =
     new CreateItemWithName(
       rs.intOpt(ci.slotitemId),

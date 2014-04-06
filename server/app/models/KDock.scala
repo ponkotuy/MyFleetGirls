@@ -31,7 +31,7 @@ object KDock extends SQLSyntaxSupport[KDock] {
   )
 
   lazy val kd = KDock.syntax("kd")
-  lazy val ms = MasterShip.syntax("ms")
+  lazy val ms = MasterShipBase.syntax("ms")
 
   def findAllByUser(memberId: Long)(implicit session: DBSession = KDock.autoSession): List[KDock] = withSQL {
     select.from(KDock as kd)
@@ -43,7 +43,7 @@ object KDock extends SQLSyntaxSupport[KDock] {
       implicit session: DBSession = KDock.autoSession): List[KDockWithName] = withSQL {
     select(kd.id, kd.completeTime, kd.fuel, kd.ammo, kd.steel, kd.bauxite, ms.name)
       .from(KDock as kd)
-      .innerJoin(MasterShip as ms).on(kd.shipId, ms.id)
+      .innerJoin(MasterShipBase as ms).on(kd.shipId, ms.id)
       .where.eq(kd.memberId, memberId)
       .orderBy(kd.id)
   }.map { rs =>
