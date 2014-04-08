@@ -46,10 +46,11 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
     created = rs.long(ci.created)
   )
 
-  val ci = CreateItem.syntax("ci")
-  val mi = MasterSlotItem.syntax("mi")
-  val s = Ship.syntax("s")
-  val ms = MasterShipBase.syntax("ms")
+  lazy val ci = CreateItem.syntax("ci")
+  lazy val mi = MasterSlotItem.syntax("mi")
+  lazy val s = Ship.syntax("s")
+  lazy val ms = MasterShipBase.syntax("ms")
+  lazy val mst = MasterStype.syntax("mst")
 
   override val autoSession = AutoSession
 
@@ -73,15 +74,15 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
     }.map(CreateItem(ci.resultName)).list().apply()
   }
 
-  def findAllByUserWithName(memberId: Long, limit: Int = Int.MaxValue, offset: Int = 0)(
+  def findAllByWithName(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
       implicit sesson: DBSession = autoSession): List[CreateItemWithName] = {
     withSQL {
       select(ci.slotitemId, ci.fuel, ci.ammo, ci.steel, ci.bauxite, ci.shizaiFlag, ci.flagship, ci.created, mi.name, ms.name)
         .from(CreateItem as ci)
         .leftJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
-        .leftJoin(Ship as s).on(ci.flagship, s.id)
+        .leftJoin(Ship as s).on(sqls"ci.flagship = s.id and ci.member_id = s.member_id")
         .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .where.eq(ci.memberId, memberId).and.eq(s.memberId, memberId)
+        .where(where)
         .orderBy(ci.created).desc
         .limit(limit).offset(offset)
     }.map(CreateItemWithName(ci, mi, ms)).list().apply()
@@ -92,6 +93,36 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
       select(sqls"count(1)").from(CreateItem as ci).where.append(sqls"${where}")
     }.map(_.long(1)).single().apply().get
   }
+
+  /**
+   *
+   * @param mat : sTypeNameは無視する
+   */
+  def countItemByMat(mat: ItemMat)(implicit session: DBSession = autoSession): List[(MiniItem, Long)] = {
+    withSQL {
+      select(ci.slotitemId, mi.name, sqls"count(*) as count").from(CreateItem as ci)
+        .innerJoin(Ship as s).on(sqls"ci.flagship = s.id and ci.member_id = s.member_id")
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .leftJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
+        .where(sqls"""ci.fuel = ${mat.fuel} and ci.ammo = ${mat.ammo} and ci.steel = ${mat.steel} and ci.bauxite = ${mat.bauxite} and ms.stype = ${mat.sType}""")
+        .groupBy(ci.slotitemId)
+        .orderBy(sqls"count").desc
+    }.map { rs => fromRStoMiniItem(rs) -> rs.long(3) }.list().apply()
+  }
+
+  def materialCount(where: SQLSyntax = sqls"true")(implicit session: DBSession = autoSession): List[(ItemMat, Long)] =
+    withSQL {
+      select(ci.fuel, ci.ammo, ci.steel, ci.bauxite, mst.id, mst.name, sqls"count(*) as count")
+        .from(CreateItem as ci)
+        .innerJoin(Ship as s).on(sqls"(ci.flagship = s.id and ci.member_id = s.member_id)")
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .where(where)
+        .groupBy(ci.fuel, ci.ammo, ci.steel, ci.bauxite, mst.id)
+        .orderBy(sqls"count").desc
+    }.map { rs =>
+      ItemMat(ci, mst)(rs) -> rs.long(7)
+    }.list().apply()
 
   def create(ci: data.CreateItem, memberId: Long)(implicit session: DBSession = autoSession): CreateItem = {
     val now = System.currentTimeMillis()
@@ -183,6 +214,15 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
     }.update().apply()
   }
 
+  def fromRStoMiniItem(rs: WrappedResultSet): MiniItem = {
+    rs.intOpt(1) match {
+      case Some(itemId) =>
+        val name = rs.string(2)
+        MiniItem(itemId, name)
+      case _ => MiniItem(-1, "失敗")
+    }
+  }
+
 }
 
 case class CreateItemWithName(
@@ -203,5 +243,19 @@ object CreateItemWithName {
       rs.long(ci.created),
       rs.stringOpt(mi.name).getOrElse("失敗"),
       rs.string(ms.name)
+    )
+}
+
+case class ItemMat(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: Int, sTypeName: String)
+
+object ItemMat {
+  def apply(ci: SyntaxProvider[CreateItem], mst: SyntaxProvider[MasterStype])(rs: WrappedResultSet): ItemMat =
+    new ItemMat(
+      rs.int(ci.fuel),
+      rs.int(ci.ammo),
+      rs.int(ci.steel),
+      rs.int(ci.bauxite),
+      rs.int(mst.id),
+      rs.string(mst.name)
     )
 }

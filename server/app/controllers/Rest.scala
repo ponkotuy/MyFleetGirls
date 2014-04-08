@@ -37,7 +37,7 @@ object Rest extends Controller {
     returnString(models.CreateShip.countByUser(memberId, large))
 
   def createItems(memberId: Long, limit: Int, offset: Int) = returnJson {
-    models.CreateItem.findAllByUserWithName(memberId, limit, offset)
+    models.CreateItem.findAllByWithName(sqls"ci.member_id = ${memberId}", limit, offset)
   }
 
   def createItemCount(memberId: Long) = returnString(models.CreateItem.countBy(sqls"member_id = ${memberId}"))

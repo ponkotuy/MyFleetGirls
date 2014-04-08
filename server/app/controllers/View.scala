@@ -5,6 +5,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
 import org.json4s._
 import org.json4s.native.Serialization.write
+import scalikejdbc.SQLInterpolation._
 import build.BuildInfo
 import models.Mat
 
@@ -28,8 +29,9 @@ object View extends Controller {
 
   def statistics = Action.async {
     Future {
-      val sCounts = models.CreateShip.materialCount()
-      Ok(views.html.sta.statistics(sCounts))
+      val sCounts = models.CreateShip.materialCount().takeWhile(_._2 > 1)
+      val iCounts = models.CreateItem.materialCount().takeWhile(_._2 > 1)
+      Ok(views.html.sta.statistics(sCounts, iCounts))
     }
   }
 
@@ -48,6 +50,24 @@ object View extends Controller {
     }
   }
 
+  def citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: Int) = Action.async {
+    Future {
+      val mat = models.ItemMat(fuel, ammo, steel, bauxite, sType, "")
+      val citems = models.CreateItem.findAllByWithName(
+        sqls"ci.fuel = $fuel and ci.ammo = $ammo and ci.steel = $steel and ci.bauxite = $bauxite and ms.stype = $sType",
+        limit = 100
+      )
+      val counts = models.CreateItem.countItemByMat(mat)
+      val sum = counts.map(_._2).sum.toDouble
+      val withRate = counts.map { case (item, count) => (item.name, count, count/sum) }
+      val countJsonRaw = counts.map { case (item, count) =>
+        Map("label" -> item.name, "data" -> count)
+      }
+      val st = models.MasterStype.find(sType).get
+      val title = s"${st.name}/$fuel/$ammo/$steel/$bauxite"
+      Ok(views.html.sta.citem(title, write(countJsonRaw), withRate, citems))
+    }
+  }
   def fromShip() = Action.async {
     Future(Ok(views.html.sta.from_ship()))
   }
