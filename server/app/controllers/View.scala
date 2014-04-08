@@ -68,7 +68,7 @@ object View extends Controller {
       Ok(views.html.sta.citem(title, write(countJsonRaw), withRate, citems))
     }
   }
-  def fromShip() = Action.async {
-    Future(Ok(views.html.sta.from_ship()))
+  def fromShip(q: String) = Action.async {
+    Future(Ok(views.html.sta.from_ship(q)))
   }
 }

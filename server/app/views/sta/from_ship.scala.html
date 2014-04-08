@@ -1,22 +1,22 @@
-@()
+@(q: String)
 
 @main {
-  <title>統計 -建造from艦娘-</title>
+  <title>統計 -建造開発from名前-</title>
   <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.3/vue.min.js"></script>
   <script src="@routes.Assets.at("javascript/from_ship.js")"></script>
 } {
   @statistics_head("from_ship") {
     <div class="page-header">
-      <h1>建造from艦娘</h1>
+      <h1>建造from名前</h1>
     </div>
 
-    <div id="from_recipe" class="row">
-      <input type="text" class="form-control" placeholder="Search Fleet Girl" v-model="query" />
+    <div id="from_name" class="row">
+      <input type="text" id="search" class="form-control" placeholder="Search Fleet Girl" v-model="query" value="@q"/>
 
       <div class="col-md-2">
-        <table class="table table-hover">
+        <table class="table table-hover" v-show="ships.length > 0">
           <thead>
-            <tr><th>艦娘選択</th></tr>
+            <tr><th>選択</th></tr>
           </thead>
           <tbody>
             <tr v-repeat="ship: ships" v-class="info: ship.id == shipId" v-on="click: selectShip(ship.id)">
@@ -24,22 +24,52 @@
             </tr>
           </tbody>
         </table>
+
+        <table class="table table-hover" v-show="items.length > 0">
+          <thead>
+            <tr><th>選択</th></tr>
+          </thead>
+          <tbody>
+            <tr v-repeat="item: items" v-class="info: item.id == itemId" v-on="click: selectItem(item.id)">
+              <td>{{item.name}}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div class="col-md-10">
-        <table class="table table-hover table-condensed">
+        <table class="table table-hover table-condensed" v-show="sCounts.length > 0">
           <thead>
             <tr>
               <th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>資材</th><th>回数</th><th>比率</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-repeat="c: counts" onclick="location.href='/entire/sta/cship/{{c.mat.fuel}}/{{c.mat.ammo}}/{{c.mat.steel}}/{{c.mat.bauxite}}/{{c.mat.develop}}'">
+            <tr v-repeat="c: sCounts" onclick="location.href='/entire/sta/cship/{{c.mat.fuel}}/{{c.mat.ammo}}/{{c.mat.steel}}/{{c.mat.bauxite}}/{{c.mat.develop}}'">
               <td>{{c.mat.fuel}}</td>
               <td>{{c.mat.ammo}}</td>
               <td>{{c.mat.steel}}</td>
               <td>{{c.mat.bauxite}}</td>
               <td>{{c.mat.develop}}</td>
+              <td>{{c.count}}</td>
+              <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="table table-hover table-condensed" v-show="iCounts.length > 0">
+          <thead>
+            <tr>
+              <th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>艦種</th><th>回数</th><th>比率</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-repeat="c: iCounts" onclick="location.href='/entire/sta/citem/{{c.mat.fuel}}/{{c.mat.ammo}}/{{c.mat.steel}}/{{c.mat.bauxite}}/{{c.mat.sType}}'">
+              <td>{{c.mat.fuel}}</td>
+              <td>{{c.mat.ammo}}</td>
+              <td>{{c.mat.steel}}</td>
+              <td>{{c.mat.bauxite}}</td>
+              <td>{{c.mat.sTypeName}}</td>
               <td>{{c.count}}</td>
               <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
             </tr>

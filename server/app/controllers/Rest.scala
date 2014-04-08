@@ -13,11 +13,27 @@ object Rest extends Controller {
 
   def searchUser(q: String) = returnJson(models.Admiral.findAllByLike(s"%$q%", limit = 20))
 
+  /** Createされた記録のあるMasterShipとMasterSlotItemを検索 */
+  def searchMaster(q: String) = returnJson {
+    val ships = models.CreateShip.findAllShipByNameLike(s"%$q%")
+    val items = models.CreateItem.findAllItemByNameLike(sqls"mi.name like ${s"%$q%"}")
+    Map("ships" -> ships, "items" -> items)
+  }
+
+  /** Createされた記録のあるMasterShipを検索 */
   def searchMasterShip(q: String) = returnJson(models.CreateShip.findAllShipByNameLike(s"%$q%"))
 
   def recipeFromShip(shipId: Int) = returnJson {
     val allCounts = models.CreateShip.materialCount().toMap
     val counts = models.CreateShip.materialCount(sqls"result_ship = ${shipId}")
+    counts.map { case (mat, count) =>
+      Map("mat" -> mat, "count" -> count, "sum" -> allCounts(mat))
+    }
+  }
+
+  def recipeFromItem(itemId: Int) = returnJson {
+    val allCounts = models.CreateItem.materialCount().toMap
+    val counts = models.CreateItem.materialCount(sqls"slotitem_id = ${itemId}")
     counts.map { case (mat, count) =>
       Map("mat" -> mat, "count" -> count, "sum" -> allCounts(mat))
     }

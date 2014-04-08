@@ -33,6 +33,7 @@ object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
 
   override val columns = Seq("id", "name", "typ", "power", "torpedo", "bomb", "antiAir", "antiSub", "search", "hit", "length", "rare", "info")
 
+  def apply(msi: SyntaxProvider[MasterSlotItem])(rs: WrappedResultSet): MasterSlotItem = apply(msi.resultName)(rs)
   def apply(msi: ResultName[MasterSlotItem])(rs: WrappedResultSet): MasterSlotItem = new MasterSlotItem(
     id = rs.int(msi.id),
     name = rs.string(msi.name),
