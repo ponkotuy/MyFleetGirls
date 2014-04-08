@@ -50,7 +50,7 @@ object MFGHttp extends Log {
     new UrlEncodedFormEntity(nvps.asJava, UTF8)
   }
 
-  def postFile(uStr: String, ver: Int = 1)(file: File)(implicit auth: Option[Auth]): Unit = {
+  def postFile(uStr: String, fileBodyKey: String, ver: Int = 1)(file: File)(implicit auth: Option[Auth]): Unit = {
     if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return }
     try {
       val http = httpBuilder.build()
@@ -58,7 +58,7 @@ object MFGHttp extends Log {
       val entity = MultipartEntityBuilder.create()
       entity.setCharset(UTF8)
       entity.addTextBody("auth", write(auth), ContentType.APPLICATION_JSON)
-      entity.addPart("image", new FileBody(file))
+      entity.addPart(fileBodyKey, new FileBody(file))
       post.setEntity(entity.build())
       val res = http.execute(post)
       alertResult(res)
@@ -79,6 +79,9 @@ object MFGHttp extends Log {
 
   def existsImage(id: Int): Boolean =
     head(s"/image/ship/$id.jpg").getStatusLine.getStatusCode == 200
+
+  def existsSound(shipId: Int, soundId: Int): Boolean =
+    head(s"/sound/ship/$shipId/$soundId.mp3").getStatusLine.getStatusCode == 200
 
   private def head(uStr: String, ver: Int = 1) = {
     val http = httpBuilder.build()

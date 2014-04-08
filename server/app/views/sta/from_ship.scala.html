@@ -7,11 +7,11 @@
 } {
   @statistics_head("from_ship") {
     <div class="page-header">
-      <h1>建造from名前</h1>
+      <h1>艦娘建造・装備開発from名前</h1>
     </div>
 
     <div id="from_name" class="row">
-      <input type="text" id="search" class="form-control" placeholder="Search Fleet Girl" v-model="query" value="@q"/>
+      <input type="text" id="search" class="form-control" placeholder="Search Fleet Girl or Slot Item" v-model="query" value="@q"/>
 
       <div class="col-md-2">
         <table class="table table-hover" v-show="ships.length > 0">

@@ -64,7 +64,7 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
     select(a.id, a.nickname, a.created, b.lv).from(Admiral as a)
       .innerJoin(Basic as b).on(a.id, b.memberId)
       .where.eq(b.created, sqls"(select MAX(${b.created}) from ${Basic.table} as b where ${a.id} = ${b.memberId})")
-      .orderBy(b.lv).desc
+      .orderBy(b.experience).desc
       .limit(limit).offset(offset)
   }.map(AdmiralWithLv(a, b)).list().apply()
 
