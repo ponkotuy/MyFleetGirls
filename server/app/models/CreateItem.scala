@@ -3,6 +3,9 @@ package models
 import scalikejdbc._
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data
+import scalikejdbc.interpolation.SQLSyntax._
+import scala.Some
+import scalikejdbc.WrappedResultSet
 
 case class CreateItem(
   memberId: Long,
@@ -86,6 +89,14 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
         .orderBy(ci.created).desc
         .limit(limit).offset(offset)
     }.map(CreateItemWithName(ci, mi, ms)).list().apply()
+  }
+
+  def findAllItemByNameLike(where: SQLSyntax)(implicit session: DBSession = autoSession): List[MasterSlotItem] = {
+    withSQL {
+      select(distinct(mi.resultAll)).from(CreateItem as ci)
+        .innerJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
+        .where(where)
+    }.map(MasterSlotItem(mi)).toList().apply()
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
