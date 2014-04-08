@@ -123,7 +123,13 @@ class PostResponse extends Log {
         parseId(q.uri).filterNot(MFGHttp.existsImage).foreach { id =>
           val swf = allRead(q.res.getContent)
           val file = TempFileTool.save(swf, "swf")
-          MFGHttp.postFile("/swf/ship/" + id)(file)
+          MFGHttp.postFile("/swf/ship/" + id, "image")(file)
+        }
+      case SoundMP3 =>
+        SoundUrlId.parseURL(q.uri).foreach { case SoundUrlId(shipId, soundId) =>
+          val sound = allRead(q.res.getContent)
+          val file = TempFileTool.save(sound, "mp3")
+          MFGHttp.postFile(s"/mp3/kc/${shipId}/${soundId}", "sound")(file)
         }
       case _ =>
         info(s"ResType: $typ")
@@ -145,5 +151,18 @@ class PostResponse extends Log {
     val baos = new ByteArrayOutputStream()
     cb.getBytes(0, baos, cb.readableBytes())
     baos.toByteArray
+  }
+}
+
+case class SoundUrlId(shipId: Int, soundId: Int)
+
+object SoundUrlId {
+  val pattern = """.*/kcs/sound/kc(\d+)/(\d+).mp3""".r
+
+  def parseURL(url: String): Option[SoundUrlId] = {
+    url match {
+      case pattern(ship, sound) => Try { SoundUrlId(ship.toInt, sound.toInt) }.toOption
+      case _ => None
+    }
   }
 }

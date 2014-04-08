@@ -72,6 +72,7 @@ object ResType extends Log {
   case object MasterSType extends ResType(s"\\A$GetMaster/stype\\z".r)
   case object MasterMission extends ResType(s"\\A$GetMaster/mission\\z".r)
   case object ShipSWF extends ResType("""\A/kcs/ships/[0-9]+\.swf\z""".r)
+  case object SoundMP3 extends ResType("""\A/kcs/sound/kc[0-9]+/[0-9]+\.mp3""".r)
 
   val values = Set(
     LoginCheck, Material, Basic, Record, Ship2, Ship3, NDock, KDock,
@@ -79,7 +80,7 @@ object ResType extends Log {
     Charge, HenseiChange, HenseiLock, MissionStart, KaisouPowerup, PracticeBattle, PracticeBattleResult, GetOthersDeck,
     MapStart, SortieBattle, SortieBattleResult, ClearItemGet, NyukyoStart, RankingList,
     MasterShip, MasterPractice, MasterUseItem, MasterFurniture, MasterSlotItem, MasterMapArea, MasterSType, MasterMission,
-    ShipSWF
+    ShipSWF, SoundMP3
   )
 
   def fromUri(uri: String): Option[ResType] = {

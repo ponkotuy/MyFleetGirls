@@ -2,7 +2,7 @@ package controllers
 
 import play.api.mvc._
 import Common._
-import java.io.{ByteArrayOutputStream, InputStream, FileInputStream, File}
+import java.io.{ByteArrayOutputStream, InputStream, FileInputStream}
 import tool.SWFTool
 
 /**
@@ -10,7 +10,7 @@ import tool.SWFTool
  * @author ponkotuy
  * Date: 14/03/22.
  */
-object PostSwf extends Controller {
+object PostFile extends Controller {
   def ship(shipId: Int) = Action.async(parse.multipartFormData) { request =>
     val form = request.body.asFormUrlEncoded
     authentication(form) { auth =>
@@ -24,7 +24,25 @@ object PostSwf extends Controller {
           case e: Throwable => Ok("Already Exists")
         }
       } match {
-        case Some(_) => Accepted("Success")
+        case Some(_) => Ok("Success")
+        case _ => BadRequest("Need Image")
+      }
+    }
+  }
+
+  def sound(shipId: Int, soundId: Int) = Action.async(parse.multipartFormData) { request =>
+    val form = request.body.asFormUrlEncoded
+    authentication(form) { auth =>
+      request.body.file("sound") match {
+        case Some(ref) =>
+          val mp3File = ref.ref.file
+          val sound = readAll(new FileInputStream(mp3File))
+          try {
+            models.ShipSound.create(shipId, soundId, sound)
+            Ok("Success")
+          } catch {
+            case e: Throwable => Ok("Already Exists")
+          }
         case _ => BadRequest("Need Image")
       }
     }

@@ -20,7 +20,8 @@ POST    /post/v1/master/ship        controllers.PostMaster.ship
 POST    /post/v1/master/mission     controllers.PostMaster.mission
 POST    /post/v1/master/slotitem    controllers.PostMaster.slotitem
 POST    /post/v1/master/stype       controllers.PostMaster.stype
-POST    /post/v1/swf/ship/:shipId   controllers.PostSwf.ship(shipId: Int)
+POST    /post/v1/swf/ship/:shipId   controllers.PostFile.ship(shipId: Int)
+POST    /post/v1/mp3/kc/:shipId/:soundId controllers.PostFile.sound(shipId: Int, soundId: Int)
 
 # Rest
 GET     /rest/v1/search_user        controllers.Rest.searchUser(q: String)
@@ -35,7 +36,9 @@ GET     /rest/v1/:userId/create_ship_count controllers.Rest.createShipCount(user
 GET     /rest/v1/:userId/create_items controllers.Rest.createItems(userId: Long, limit: Int ?= 10, offset: Int ?= 0)
 GET     /rest/v1/:userId/create_item_count controllers.Rest.createItemCount(userId: Long)
 GET     /rest/v1/image/ship/:shipId.jpg controllers.RestImage.ship(shipId: Int)
+GET     /rest/v1/sound/ship/:shipId/:soundId.mp3 controllers.RestSound.ship(shipId: Int, soundId: Int)
 HEAD    /rest/v1/image/ship/:shipId.jpg controllers.RestImage.shipHead(shipId: Int)
+HEAD    /rest/v1/sound/ship/:shipId/:soundId.mp3 controllers.RestSound.shipHead(shipId: Int, soundId: Int)
 
 # View
 GET     /                           controllers.View.index
