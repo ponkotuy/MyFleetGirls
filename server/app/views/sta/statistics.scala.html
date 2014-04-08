@@ -1,4 +1,4 @@
-@(counts: Seq[(models.Mat, Long)])
+@(counts: Seq[(models.Mat, Long)], iCounts: Seq[(models.ItemMat, Long)])
 
 @main {
   <title>統計 -建造fromレシピ-</title>
@@ -26,5 +26,29 @@
         }
       </tbody>
     </table>
+
+    <div class="page-header">
+      <h1>開発fromレシピ</h1>
+    </div>
+    <table class="table table-hover table-condensed">
+      <thead>
+        <tr>
+          <th>試行回数</th><th>旗艦</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th>
+        </tr>
+      </thead>
+      <tbody>
+        @iCounts.map { case (mat, count) =>
+        <tr onclick="location.href='@routes.View.citem(mat.fuel, mat.ammo, mat.steel, mat.bauxite, mat.sType)'">
+          <td>@count</td>
+          <td>@mat.sTypeName
+          <td>@mat.fuel</td>
+          <td>@mat.ammo</td>
+          <td>@mat.steel</td>
+          <td>@mat.bauxite</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+
   }
 }

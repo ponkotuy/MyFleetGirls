@@ -34,7 +34,7 @@ object UserView {
     models.Ship.findByUserMaxLvWithName(memberId) match {
       case Some(best) =>
         models.DeckShip.findFlagshipByUserWishShipName(memberId) match {
-          case Some(flagship) => Ok(views.html.user(user, best, flagship))
+          case Some(flagship) => Ok(views.html.user.user(user, best, flagship))
           case _ => NotFound("旗艦を登録していません")
         }
       case _ => NotFound("艦娘を登録していません")
@@ -42,45 +42,45 @@ object UserView {
   }
 
   def material(memberId: Long) = userView(memberId) { user =>
-    Ok(views.html.material(user))
+    Ok(views.html.user.material(user))
   }
 
   def ship(memberId: Long) = userView(memberId) { user =>
     val ships = models.Ship.findAllByUserWithName(memberId)
     val decks = models.DeckShip.findAllByUserWithName(memberId)
     val deckports = models.DeckPort.findAllByUser(memberId)
-    Ok(views.html.ship(user, ships, decks, deckports))
+    Ok(views.html.user.ship(user, ships, decks, deckports))
   }
 
   def book(memberId: Long) = userView(memberId) { user =>
     val sBooks = models.ShipBook.findAllBy(sqls"member_id = ${memberId}").sortBy(_.indexNo)
     val iBooks = models.ItemBook.findAllBy(sqls"member_id = ${memberId}").sortBy(_.indexNo)
-    Ok(views.html.book(user, sBooks, iBooks))
+    Ok(views.html.user.book(user, sBooks, iBooks))
   }
 
   def dock(memberId: Long) = userView(memberId) { user =>
     val ndocks = models.NDock.fineAllByUserWithName(memberId)
     val kdocks = models.KDock.findAllByUserWithName(memberId)
     val missions = models.Mission.findByUserWithName(memberId)
-    Ok(views.html.dock(user, ndocks, kdocks, missions))
+    Ok(views.html.user.dock(user, ndocks, kdocks, missions))
   }
 
   def create(memberId: Long) = userView(memberId) { user =>
     val cShips = models.CreateShip.findAllByUserWithName(memberId, large = true)
-    Ok(views.html.create(user, cShips))
+    Ok(views.html.user.create(user, cShips))
   }
 
   def aship(memberId: Long, shipId: Int) = userView(memberId) {
     user =>
       models.Ship.findByIDWithName(memberId, shipId) match {
-        case Some(ship) => Ok(views.html.modal_ship(ship))
+        case Some(ship) => Ok(views.html.user.modal_ship(ship))
         case _ => NotFound("艦娘が見つかりませんでした")
       }
   }
 
   def slotitem(memberId: Long) = userView(memberId) { user =>
     val counts = models.SlotItem.countItemBy(sqls"member_id = ${memberId}")
-    Ok(views.html.slotitem(user, counts))
+    Ok(views.html.user.slotitem(user, counts))
   }
 
   def shipslotitem(memberId: Long, itemId: Int) = Action.async {
@@ -89,7 +89,7 @@ object UserView {
         case Some(item) =>
           val slotItemIds = models.SlotItem.findAllBy(sqls"member_id = ${memberId} and slotitem_id = ${itemId}").map(_.id)
           val ships = models.SlotItem.findAllArmedShipBy(sqls"si.member_id = ${memberId} and si.slotitem_id = ${itemId}")
-          Ok(views.html.shipslotitem(item, ships, slotItemIds.size))
+          Ok(views.html.user.shipslotitem(item, ships, slotItemIds.size))
         case _ => NotFound("Itemが見つかりませんでした")
       }
     }

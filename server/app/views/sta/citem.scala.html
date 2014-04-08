@@ -1,0 +1,53 @@
+@(title: String, countJson: String, counts: Seq[(String, Long, Double)], history: Seq[models.CreateItemWithName])
+
+@main {
+  <title>開発結果 @title</title>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment-with-langs.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.pie.min.js"></script>
+  <script src="@routes.Assets.at("javascript/pie.js")"></script>
+  <script src="@routes.Assets.at("javascript/time.js")"></script>
+} {
+  @statistics_head("from_recipe") {
+    <div class="page-header">
+      <h1>@title</h1>
+    </div>
+    <div style="width:700px;height:400px;margin:auto;" class="pie" data-json="@countJson"></div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <h3>Rate</h3>
+        <table class="table table-striped table-condensed">
+          <thead>
+            <th>名前</th><th>数</th><th>Rate</th>
+          </thead>
+          <tbody>
+            @counts.map { case (name, count, rate) =>
+            <tr>
+              <td>@name</td>
+              <td>@count</td>
+              <td>@(f"${rate * 100}%.1f%%")</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col-md-6">
+        <h3>History</h3>
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr><th>名前</th><th>時間</th></tr>
+          </thead>
+          <tbody>
+            @history.map { item =>
+            <tr>
+              <td>@item.name</td>
+              <td class="viewTime" data-time="@item.created">@item.created</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+  }
+}

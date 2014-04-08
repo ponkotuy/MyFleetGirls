@@ -243,7 +243,7 @@ object ShipWithName {
 
 
   def rgb(cond: Int): RGB = {
-    if(cond > 49) White.blend(Blue, (cond - 50.0) / 50.0)
+    if(cond > 49) Blue
     else White.blend(Red, (49.0 - cond) / 49.0)
   }
 }
