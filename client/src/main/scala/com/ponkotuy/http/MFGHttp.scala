@@ -17,6 +17,7 @@ import com.ponkotuy.config.ClientConfig
 import org.json4s._
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
+import com.ponkotuy.parser.SoundUrlId
 
 /** Access To MyFleetGirls
  *
@@ -78,10 +79,10 @@ object MFGHttp extends Log {
   }
 
   def existsImage(id: Int): Boolean =
-    head(s"/image/ship/$id.jpg").getStatusLine.getStatusCode == 200
+    head(s"/image/ship/$id.jpg", ver = 1).getStatusLine.getStatusCode == 200
 
-  def existsSound(shipId: Int, soundId: Int): Boolean =
-    head(s"/sound/ship/$shipId/$soundId.mp3").getStatusLine.getStatusCode == 200
+  def existsSound(s: SoundUrlId): Boolean =
+    head(s"/sound/ship/${s.shipId}/${s.soundId}.mp3", ver = 1).getStatusLine.getStatusCode == 200
 
   private def head(uStr: String, ver: Int = 1) = {
     val http = httpBuilder.build()
