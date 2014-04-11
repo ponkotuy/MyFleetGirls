@@ -30,15 +30,15 @@ object NDock extends SQLSyntaxSupport[NDock] {
       .where.eq(nd.memberId, memberId)
   }.map(NDock(nd)).toList().apply()
 
-  def fineAllByUserWithName(memberId: Long)(implicit session: DBSession = NDock.autoSession): List[NDockWithName] = {
+  def findAllByUserWithName(memberId: Long)(implicit session: DBSession = NDock.autoSession): List[NDockWithName] = {
     val result = withSQL {
-      select(nd.id, nd.shipId, nd.completeTime, ms.name).from(NDock as nd)
+      select(nd.id, nd.shipId, nd.completeTime, ms.id, ms.name).from(NDock as nd)
         .innerJoin(Ship as s).on(sqls"${nd.memberId} = ${s.memberId} and ${nd.shipId} = ${s.id}")
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .where.eq(nd.memberId, memberId)
         .orderBy(nd.id)
     }.map { rs =>
-      NDockWithName(rs.int(nd.id), rs.int(nd.shipId), rs.long(nd.completeTime), rs.string(ms.name))
+      NDockWithName(rs.int(nd.id), rs.int(nd.shipId), rs.long(nd.completeTime), rs.int(ms.id), rs.string(ms.name))
     }.toList().apply()
     result
   }
@@ -61,4 +61,4 @@ object NDock extends SQLSyntaxSupport[NDock] {
     applyUpdate { delete.from(NDock).where.eq(NDock.column.memberId, memberId) }
 }
 
-case class NDockWithName(id: Int, shipId: Int, completeTime: Long, name: String)
+case class NDockWithName(id: Int, shipId: Int, completeTime: Long, masterShipId: Int, name: String)

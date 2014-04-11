@@ -41,7 +41,7 @@ object KDock extends SQLSyntaxSupport[KDock] {
 
   def findAllByUserWithName(memberId: Long)(
       implicit session: DBSession = KDock.autoSession): List[KDockWithName] = withSQL {
-    select(kd.id, kd.completeTime, kd.fuel, kd.ammo, kd.steel, kd.bauxite, ms.name)
+    select(kd.id, kd.completeTime, kd.fuel, kd.ammo, kd.steel, kd.bauxite, ms.id, ms.name)
       .from(KDock as kd)
       .innerJoin(MasterShipBase as ms).on(kd.shipId, ms.id)
       .where.eq(kd.memberId, memberId)
@@ -49,7 +49,7 @@ object KDock extends SQLSyntaxSupport[KDock] {
   }.map { rs =>
     KDockWithName(
       rs.int(kd.id), rs.long(kd.completeTime),
-      rs.int(kd.fuel), rs.int(kd.ammo), rs.int(kd.steel), rs.int(kd.bauxite), rs.string(ms.name))
+      rs.int(kd.fuel), rs.int(kd.ammo), rs.int(kd.steel), rs.int(kd.bauxite), rs.int(ms.id), rs.string(ms.name))
   }.toList().apply()
 
   def create(kd: data.KDock)(implicit session: DBSession = KDock.autoSession): KDock = {
@@ -89,4 +89,4 @@ object KDock extends SQLSyntaxSupport[KDock] {
 
 case class KDockWithName(
     id: Int, completeTime: Long,
-    fuel: Int, ammo: Int, steel: Int, bauxite: Int, name: String)
+    fuel: Int, ammo: Int, steel: Int, bauxite: Int, shipId: Int, name: String)

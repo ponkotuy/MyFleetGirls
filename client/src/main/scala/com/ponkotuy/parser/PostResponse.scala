@@ -126,7 +126,7 @@ class PostResponse extends Log {
           MFGHttp.postFile("/swf/ship/" + id, "image")(file)
         }
       case SoundMP3 =>
-        SoundUrlId.parseURL(q.uri).foreach { case SoundUrlId(shipId, soundId) =>
+        SoundUrlId.parseURL(q.uri).filterNot(MFGHttp.existsSound).foreach { case SoundUrlId(shipId, soundId) =>
           val sound = allRead(q.res.getContent)
           val file = TempFileTool.save(sound, "mp3")
           MFGHttp.postFile(s"/mp3/kc/${shipId}/${soundId}", "sound")(file)

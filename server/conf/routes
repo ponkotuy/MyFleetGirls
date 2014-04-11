@@ -60,5 +60,8 @@ GET     /user/:userId/slotitem      controllers.UserView.slotitem(userId: Long)
 GET     /user/:userId/shipslotitem/:itemId controllers.UserView.shipslotitem(userId: Long, itemId: Int)
 GET     /user/:userId/aship/:shipId controllers.UserView.aship(userId: Long, shipId: Int)
 
+# WebSocket
+GET     /ws/v1/user/:userId         controllers.UserWS.info(userId: Long)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
