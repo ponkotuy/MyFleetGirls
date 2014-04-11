@@ -9,7 +9,7 @@ $( ->
     methods:
       setPage: (page) ->
         @page = page
-      getData: (dat, f) ->
+      getData: (dat) ->
         $.getJSON dataUrl, dat, (ret) =>
           @data = ret
       timeToStr: (millis) ->

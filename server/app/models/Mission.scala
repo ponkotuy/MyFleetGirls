@@ -26,6 +26,8 @@ object Mission extends SQLSyntaxSupport[Mission] {
   lazy val m = Mission.syntax("m")
   lazy val mm = MasterMission.syntax("mm")
   lazy val dp = DeckPort.syntax("dp")
+  lazy val ds = DeckShip.syntax("ds")
+  lazy val s = Ship.syntax("s")
 
   def create(m: data.Mission, memberId: Long, deckId: Int, created: Long = System.currentTimeMillis())(
       implicit session: DBSession = Mission.autoSession): Mission = {
@@ -69,6 +71,16 @@ object Mission extends SQLSyntaxSupport[Mission] {
         .where.eq(m.memberId, memberId)
     }.map(MissionWithName(m, mm, dp)).list().apply()
 
+  def findByUserWithFlagship(memberId: Long)(implicit session: DBSession = autoSession): List[MissionWithFlagship] =
+    withSQL {
+      select(m.number, mm.name, m.deckId, dp.name, m.completeTime, s.shipId).from(Mission as m)
+        .leftJoin(MasterMission as mm).on(m.number, mm.id)
+        .leftJoin(DeckPort as dp).on(sqls"${m.memberId} = ${dp.memberId} and ${m.deckId} = ${dp.id}")
+        .leftJoin(DeckShip as ds).on(sqls"${m.memberId} = ${ds.memberId} and ${m.deckId} = ${ds.deckId}")
+        .leftJoin(Ship as s).on(sqls"${m.memberId} = ${s.memberId} and ${ds.shipId} = ${s.id}")
+        .where.eq(m.memberId, memberId).and.eq(ds.num, 0)
+    }.map(MissionWithFlagship(m, mm, dp, s)).list().apply()
+
   def deleteByUser(memberId: Long)(
       implicit session: DBSession = Mission.autoSession): Unit = applyUpdate {
     delete.from(Mission).where.eq(Mission.column.memberId, memberId)
@@ -99,3 +111,22 @@ object MissionWithName {
     )
 }
 
+case class MissionWithFlagship(
+    missionId: Int, missionName: String, deckId: Int, deckName: String, completeTime: Long, flagshipId: Int)
+
+object MissionWithFlagship {
+  def apply(
+      m: SyntaxProvider[Mission],
+      mm: SyntaxProvider[MasterMission],
+      dp: SyntaxProvider[DeckPort],
+      s: SyntaxProvider[Ship])(rs: WrappedResultSet): MissionWithFlagship =
+    new MissionWithFlagship(
+      rs.int(m.number),
+      rs.string(mm.name),
+      rs.int(m.deckId),
+      rs.string(dp.name),
+      rs.long(m.completeTime),
+      rs.int(s.shipId)
+    )
+
+}
