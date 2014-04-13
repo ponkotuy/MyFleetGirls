@@ -35,7 +35,7 @@ object ShipExperience {
     else 155000 + (lv - 145)*8000
   }
 
-  lazy val _sum: Stream[(Int, Int)] = (1, 0) #:: _sum.map { case (lv, exp) => (lv + 1, exp + diff(lv + 1)) }
+  val _sum: Stream[(Int, Int)] = (1, 0) #:: _sum.map { case (lv, exp) => (lv + 1, exp + diff(lv + 1)) }
 
   def sum(lv: Int): Int = _sum(lv - 1)._2
 }

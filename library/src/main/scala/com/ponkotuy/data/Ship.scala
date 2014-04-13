@@ -20,7 +20,7 @@ object Ship {
       val JInt(id) = x \ "api_id"
       val JInt(shipId) = x \ "api_ship_id"
       val JInt(lv) = x \ "api_lv"
-      val JArray(_ :: _ :: JInt(exp) :: _) = x \ "api_exp"
+      val JArray(JInt(exp) :: _) = x \ "api_exp" // [TotalEXP, NextExp, Percentage]
       val JInt(nowhp) = x \ "api_nowhp"
       val JArray(slot) = x \ "api_slot"
       val slotList = slot.map { x => val JInt(s) = x; s.toInt }

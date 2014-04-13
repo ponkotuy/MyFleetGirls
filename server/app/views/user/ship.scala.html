@@ -44,7 +44,8 @@
             <td>@ship.stName</td>
             <td><a data-toggle="modal" href="aship/@ship.id" class="modal_link" data-target="#modal">@ship.name</a></td>
             <td>@ship.lv</td>
-            <td>@ship.exp%</td>
+            <!-- TODO: EXPのPercent版（旧）とTotal版（新）の移行措置。期間経過ののちにif以下を削除 -->
+            <td>@ship.exp@if(0 < ship.exp && ship.exp < 100){%}</td>
             <td>@ship.nowhp</td>
             <td style="background-color: @ship.rgb.toString">@ship.cond</td>
             <td>@ship.karyoku</td>
