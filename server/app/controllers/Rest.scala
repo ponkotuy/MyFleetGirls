@@ -43,7 +43,11 @@ object Rest extends Controller {
 
   def basics(userId: Long) = returnJson(models.Basic.findAllByUser(userId))
 
-  def docks(memberId: Long) = returnJson(models.NDock.findAllByUser(memberId))
+  def ndocks(memberId: Long) = returnJson(models.NDock.findAllByUserWithName(memberId))
+
+  def kdocks(memberId: Long) = returnJson(models.KDock.findAllByUserWithName(memberId))
+
+  def missions(memberId: Long) = returnJson(models.Mission.findByUserWithFlagship(memberId))
 
   def createShips(memberId: Long, limit: Int, offset: Int, large: Boolean) = returnJson {
     models.CreateShip.findAllByUserWithName(memberId, large, limit, offset)
