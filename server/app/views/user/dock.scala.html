@@ -10,76 +10,72 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment-with-langs.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.3/vue.min.js"></script>
   <script src="@routes.Assets.at("javascript/time.js")"></script>
-  <script src="@routes.Assets.at("javascript/ws_user.js")"></script>
+  <script src="@routes.Assets.at("javascript/dock.js")"></script>
 } {
   @head_content(user) {
     @usertab("dock") {
-      <div id="messages">
-        <div class="alert alert-info" v-repeat="mes: messages">
-          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-          <strong>{{mes.title}}</strong>: {{mes.mes}}
+      <section id="messages">
+        <div id="mes">
+          <div class="alert alert-info" v-repeat="mes: messages">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong>{{mes.title}}</strong>: {{mes.mes}}
+          </div>
         </div>
-      </div>
 
-      <div class="page-header">
-        <h1>入渠</h1>
-      </div>
-      <table class="table table-striped">
-        <thead>
-          <tr><th>DockID</th><th>ShipID</th><th>名前</th><th>時間</th></tr>
-        </thead>
-        <tbody>
-          @ndocks.map { dock =>
-            <tr>
-              <td>@dock.id</td>
-              <td>@dock.shipId</td>
-              <td>@dock.name</td>
-              <td class="viewTimeBefore" data-time="@dock.completeTime" data-end-mes="修復完了"></td>
+        <div class="page-header">
+          <h1>入渠</h1>
+        </div>
+        <table class="table table-striped">
+          <thead>
+            <tr><th>DockID</th><th>ShipID</th><th>名前</th><th>時間</th></tr>
+          </thead>
+          <tbody>
+            <tr v-repeat="dock: ndocks">
+              <td>{{dock.id}}</td>
+              <td>{{dock.shipId}}</td>
+              <td>{{dock.name}}</td>
+              <td class="viewTimeBefore" data-time="{{dock.completeTime}}" data-end-mes="修復完了"></td>
             </tr>
-          }
-        </tbody>
-      </table>
+          </tbody>
+        </table>
 
-      <div class="page-header">
-        <h1>建造</h1>
-      </div>
-      <table class="table table-striped">
-        <thead>
-          <tr><th>DockID</th><th>名前</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>時間</th></tr>
-        </thead>
-        <tbody>
-          @kdocks.map { dock =>
-            <tr>
-              <td>@dock.id</td>
-              <td>@dock.name</td>
-              <td>@dock.fuel</td>
-              <td>@dock.ammo</td>
-              <td>@dock.steel</td>
-              <td>@dock.bauxite</td>
-              <td class="viewTimeBefore" data-time="@dock.completeTime" data-end-mes="建造完了"></td>
+        <div class="page-header">
+          <h1>建造</h1>
+        </div>
+        <table class="table table-striped">
+          <thead>
+            <tr><th>DockID</th><th>名前</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>時間</th></tr>
+          </thead>
+          <tbody>
+            <tr v-repeat="dock: kdocks">
+              <td>{{dock.id}}</td>
+              <td>{{dock.name}}</td>
+              <td>{{dock.fuel}}</td>
+              <td>{{dock.ammo}}</td>
+              <td>{{dock.steel}}</td>
+              <td>{{dock.bauxite}}</td>
+              <td class="viewTimeBefore" data-time="{{dock.completeTime}}" data-end-mes="建造完了"></td>
             </tr>
-          }
-        </tbody>
-      </table>
+          </tbody>
+        </table>
 
-      <div class="mission">
-        <h1>遠征</h1>
-      </div>
-      <table class="table table-striped">
-        <thread>
-          <tr><th>艦隊ID</th><th>艦隊名</th><th>遠征先</th><th>残り時間</th></tr>
-        </thread>
-        <tbody>
-          @missions.map { mission =>
-            <tr>
-              <td>@mission.deckId</td>
-              <td>@mission.deckName</td>
-              <td>@mission.missionName</td>
-              <td class="viewTimeBefore" data-time="@mission.completeTime" data-end-mes="帰投"></td>
+        <div class="mission">
+          <h1>遠征</h1>
+        </div>
+        <table class="table table-striped">
+          <thread>
+            <tr><th>艦隊ID</th><th>艦隊名</th><th>遠征先</th><th>残り時間</th></tr>
+          </thread>
+          <tbody>
+            <tr v-repeat="mission: missions">
+              <td>{{mission.deckId}}</td>
+              <td>{{mission.deckName}}</td>
+              <td>{{mission.missionName}}</td>
+              <td class="viewTimeBefore" data-time="{{mission.completeTime}}" data-end-mes="帰投"></td>
             </tr>
-          }
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </section>
     }
   }
 }

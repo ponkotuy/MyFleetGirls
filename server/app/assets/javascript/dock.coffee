@@ -1,24 +1,29 @@
 $(document).ready ->
   host = location.host
   userId = $('#userid').val()
-  connection = new WebSocket("ws://#{host}/ws/v1/user/#{userId}")
 
   messages = new Vue
     el: '#messages'
     data:
       messages: []
+      ndocks: []
+      kdocks: []
+      missions: []
     methods:
       onNdock: (data) ->
+        @ndocks = data
         data.forEach (elem) =>
           if @checkTime(elem.completeTime)
             @messages.unshift({title: '修復完了', mes: "DockID #{elem.id} の#{elem.name}の修復が完了しました"})
             @sound(elem.masterShipId, 26)
       onKdock: (data) ->
+        @kdocks = data
         data.forEach (elem) =>
           if @checkTime(elem.completeTime)
             @messages.unshift({title: '建造完了', mes: "DockID #{elem.id} の#{elem.name}の建造が完了しました"})
             @sound(elem.shipId, 1)
       onMission: (data) ->
+        @missions = data
         data.forEach (elem) =>
           if @checkTime(elem.completeTime)
             @messages.unshift({title: '艦隊帰投', mes: "#{elem.deckName}が#{elem.missionName}から帰投しました"})
@@ -31,9 +36,14 @@ $(document).ready ->
           audio = (new Audio("/rest/v1/sound/ship/#{shipId}/#{soundId}.mp3"))
           audio.volume = 0.3
           audio.play()
+      checkdata: (that) ->
+        () ->
+          $.getJSON "/rest/v1/#{userId}/ndocks", (data) ->
+            that.onNdock(data)
+          $.getJSON "/rest/v1/#{userId}/kdocks", (data) ->
+            that.onKdock(data)
+          $.getJSON "/rest/v1/#{userId}/missions", (data) ->
+            that.onMission(data)
     created: ->
-      connection.onmessage = (e) =>
-        data = JSON.parse(e.data)
-        @onNdock(data.ndocks)
-        @onKdock(data.kdocks)
-        @onMission(data.missions)
+      @checkdata(this)()
+      setInterval(@checkdata(this), 60*1000)
