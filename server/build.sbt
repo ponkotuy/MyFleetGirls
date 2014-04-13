@@ -8,7 +8,8 @@ libraryDependencies ++= Seq(
   "org.scalikejdbc" %% "scalikejdbc-play-plugin" % "1.7.4",
   "org.json4s" %% "json4s-native" % "3.2.6",
   "com.github.tototoshi" %% "play-flyway" % "1.0.3",
-  "mysql" % "mysql-connector-java" % "[5.1,)"
+  "mysql" % "mysql-connector-java" % "[5.1,)",
+  "org.scalatest" %% "scalatest" % "2.1.2" % "test"
 )
 
 play.Project.playScalaSettings

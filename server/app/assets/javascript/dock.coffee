@@ -36,6 +36,14 @@ $(document).ready ->
           audio = (new Audio("/rest/v1/sound/ship/#{shipId}/#{soundId}.mp3"))
           audio.volume = 0.3
           audio.play()
+      timeView: (time, endMessage) ->
+        diff = moment(time).diff(moment(), 'minutes')
+        if diff > 0
+          "あと#{diff}分"
+        else if diff <= 0
+          endMessage
+        else ""
+
       checkdata: (that) ->
         () ->
           $.getJSON "/rest/v1/#{userId}/ndocks", (data) ->
