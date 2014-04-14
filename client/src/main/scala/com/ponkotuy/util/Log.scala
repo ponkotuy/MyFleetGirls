@@ -28,5 +28,4 @@ trait Log {
   protected def fatal(obj: Any): Unit = logger.fatal(obj.toString)
 
   private def prettyJson(json: JValue): Try[String] = Try { pretty(render(json)) }
-
 }

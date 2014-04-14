@@ -6,6 +6,7 @@ import com.ponkotuy.data
 import util.scalikejdbc.BulkInsert._
 import org.json4s.JsonDSL._
 import org.json4s.native.JsonMethods._
+import util.ShipExperience
 
 /**
  *
@@ -223,6 +224,14 @@ case class ShipWithName(ship: Ship, master: MasterShipBase, stype: MasterStype) 
 
   /** Condition値による色の変化 */
   def rgb: RGB = ShipWithName.rgb(cond)
+
+  /** 次のLvまでに必要な経験値の残り比率 */
+  def expRate: Double = {
+    import ShipExperience._
+    // TODO 経験値をPercentからTotalに変更した移行措置
+    if(0 < exp && exp < 100) 0.0
+    else (exp - sum(lv)).toDouble/diff(lv + 1)
+  }
 }
 
 object ShipWithName {
@@ -240,7 +249,6 @@ object ShipWithName {
   val Red = RGB(242, 222, 222)
   val Blue = RGB(217, 237, 247)
   val White = RGB(255, 255, 255)
-
 
   def rgb(cond: Int): RGB = {
     if(cond > 49) Blue
