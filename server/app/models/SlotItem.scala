@@ -4,6 +4,7 @@ import scalikejdbc._
 import scalikejdbc.SQLInterpolation._
 import util.scalikejdbc.BulkInsert._
 import com.ponkotuy.data
+import dat.ShipWithName
 
 case class SlotItem(
   memberId: Long,

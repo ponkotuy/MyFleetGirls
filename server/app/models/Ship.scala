@@ -4,8 +4,7 @@ import scalikejdbc.SQLInterpolation._
 import scalikejdbc.{WrappedResultSet, DBSession}
 import com.ponkotuy.data
 import util.scalikejdbc.BulkInsert._
-import org.json4s.JsonDSL._
-import org.json4s.native.JsonMethods._
+import dat.ShipWithName
 
 /**
  *
@@ -177,73 +176,4 @@ object Ship extends SQLSyntaxSupport[Ship] {
   }
 }
 
-case class ShipWithName(ship: Ship, master: MasterShipBase, stype: MasterStype) {
-  import ShipWithName._
 
-  def id = ship.id
-  def shipId = ship.shipId
-  def memberId = ship.memberId
-  def lv = ship.lv
-  def exp = ship.exp
-  def nowhp = ship.nowhp
-  def slot = ship.slot
-  def fuel = ship.fuel
-  def bull = ship.bull
-  def dockTime = ship.dockTime
-  def cond = ship.cond
-  def karyoku = ship.karyoku
-  def raisou = ship.raisou
-  def taiku = ship.taiku
-  def soukou = ship.soukou
-  def kaihi = ship.kaihi
-  def taisen = ship.taisen
-  def sakuteki = ship.sakuteki
-  def lucky = ship.lucky
-  def locked = ship.locked
-  def created = ship.created
-  def name = master.name
-  def yomi = master.yomi
-  def stName = stype.name
-
-  def slotNames: List[String] = SlotItem.findIn(slot, memberId).map(_.name)
-
-  def toJson: String = {
-    val seq = Seq(
-      Seq(0, karyoku / 150.0),
-      Seq(1, raisou / 130.0),
-      Seq(2, taiku / 90.0),
-      Seq(3, soukou / 100.0),
-      Seq(4, kaihi / 80.0),
-      Seq(5, taisen / 80.0),
-      Seq(6, sakuteki / 70.0),
-      Seq(7, lucky / 40.0)
-    )
-    compact(render(seq))
-  }
-
-  /** Condition値による色の変化 */
-  def rgb: RGB = ShipWithName.rgb(cond)
-}
-
-object ShipWithName {
-  case class RGB(r: Int, g: Int, b: Int) {
-    def blend(other: RGB, rate: Double): RGB = {
-      def f(x: Int, y: Int, yrate: Double): Int = (x * (1 - yrate) + y * yrate).toInt
-      RGB(f(r, other.r, rate),
-        f(g, other.g, rate),
-        f(b, other.b, rate))
-    }
-
-    override def toString = f"#$r%2X$g%2X$b%2X"
-  }
-
-  val Red = RGB(242, 222, 222)
-  val Blue = RGB(217, 237, 247)
-  val White = RGB(255, 255, 255)
-
-
-  def rgb(cond: Int): RGB = {
-    if(cond > 49) Blue
-    else White.blend(Red, (49.0 - cond) / 49.0)
-  }
-}
