@@ -1,4 +1,4 @@
-@(user: util.User, ships: Seq[ShipWithName], decks: Seq[DeckShipWithName], deckports: Seq[DeckPort])
+@(user: util.User, ships: Seq[dat.ShipWithName], decks: Seq[dat.DeckShipWithName], deckports: Seq[DeckPort])
 
 @main {
   <title>@{user.admiral.nickname}提督 -艦娘-</title>
@@ -44,14 +44,14 @@
             <td>@ship.stName</td>
             <td><a data-toggle="modal" href="aship/@ship.id" class="modal_link" data-target="#modal">@ship.name</a></td>
             <td style="@if(ship.expRate > 0){background-color:#D9EDF7;display:block;width:@{(ship.expRate*100).toInt}%}">@ship.lv</td>
-            <!-- TODO: EXPのPercent版（旧）とTotal版（新）の移行措置。期間経過ののちにif以下を削除 -->
+            @* TODO: EXPのPercent版（旧）とTotal版（新）の移行措置。期間経過ののちにif以下を削除 *@
             <td>@ship.exp@if(0 < ship.exp && ship.exp < 100){%}</td>
-            <td>@ship.nowhp</td>
-            <td style="background-color: @ship.rgb.toString">@ship.cond</td>
-            <td>@ship.karyoku</td>
-            <td>@ship.raisou</td>
-            <td>@ship.taiku</td>
-            <td>@ship.soukou</td>
+            <td style="padding:0px;"><div style="background-color:@ship.hpRGB.toString;width:@{(ship.hpRate*100).toInt}%;padding:5px;">@ship.nowhp/@ship.maxhp</td>
+            <td style="padding:0px;"><div style="background-color:@ship.condBarRGB.toString;width:@{ship.cond}%;padding:5px;">@ship.cond</td>
+            <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.karyokuRate*100).toInt}%;padding:5px;">@ship.karyoku</div></td>
+            <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.raisouRate*100).toInt}%;padding:5px;">@ship.raisou</div></td>
+            <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.taikuRate*100).toInt}%;padding:5px;">@ship.taiku</div></td>
+            <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.soukouRate*100).toInt}%;padding:5px;">@ship.soukou</div></td>
             <td>@ship.kaihi</td>
             <td>@ship.taisen</td>
             <td>@ship.sakuteki</td>
