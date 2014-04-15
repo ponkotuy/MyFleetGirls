@@ -55,16 +55,11 @@ case class ShipWithName(ship: Ship, master: MasterShipBase, stype: MasterStype) 
   def rowTaiku: Int = taiku - slotMaster.map(_.antiair).sum
   def rowSoukou: Int = soukou
 
-  def karyokuRate: Double = {
-    val result = (rowKaryoku - spec.karyokuMin).toDouble/(spec.karyokuMax - spec.karyokuMin)
-    if(result > 1.0) println(ship.karyoku, rowKaryoku, spec.karyokuMin, spec.karyokuMax, slotMaster.map(_.power), slot.size)
-    result
-  }
-  def raisouRate: Double =
-    if(spec.raisouMax == spec.raisouMin) 1.0
-    else (rowRaisou - spec.raisouMin).toDouble/(spec.raisouMax - spec.raisouMin)
-  def taikuRate: Double = (rowTaiku - spec.taikuMin).toDouble/(spec.taikuMax - spec.taikuMin)
-  def soukouRate: Double = (rowSoukou - spec.soukoMin).toDouble/(spec.soukoMax - spec.soukoMin)
+  def calcRate(row: Double, min: Double, max: Double) = if(max == min) 1.0 else (row - min)/(max - min)
+  def karyokuRate: Double = calcRate(rowKaryoku, spec.karyokuMin, spec.karyokuMax)
+  def raisouRate: Double = calcRate(rowRaisou, spec.raisouMin, spec.raisouMax)
+  def taikuRate: Double = calcRate(rowTaiku, spec.taikuMin, spec.taikuMax)
+  def soukouRate: Double = calcRate(rowSoukou, spec.soukoMin, spec.soukoMax)
 
   def toJson: String = {
     val seq = Seq(
