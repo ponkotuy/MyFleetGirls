@@ -14,27 +14,16 @@
       <input type="text" id="search" class="form-control" placeholder="Search Fleet Girl or Slot Item" v-model="query" value="@q"/>
 
       <div class="col-md-2">
-        <table class="table table-hover" v-show="ships.length > 0">
-          <thead>
-            <tr><th>選択</th></tr>
-          </thead>
-          <tbody>
-            <tr v-repeat="ship: ships" v-class="info: ship.id == shipId" v-on="click: selectShip(ship.id)">
-              <td>{{ship.name}}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <table class="table table-hover" v-show="items.length > 0">
-          <thead>
-            <tr><th>選択</th></tr>
-          </thead>
-          <tbody>
-            <tr v-repeat="item: items" v-class="info: item.id == itemId" v-on="click: selectItem(item.id)">
-              <td>{{item.name}}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="list-group" v-show="ships.length > 0" style="margin-top:20px;margin-bottom:20px;">
+          <a v-repeat="ship: ships" class="list-group-item" v-class="active: ship.id == shipId" v-on="click: selectShip(ship.id)" href="#" onclick="return false;">
+            {{ship.name}}
+          </a>
+        </div>
+        <div class="list-group" v-show="items.length > 0" style="margin-top:20px;margin-bottom:20px;">
+          <a v-repeat="item: items" class="list-group-item"  v-class="active: item.id == itemId" v-on="click: selectItem(item.id)" href="#" onclick="return false;">
+            {{item.name}}
+          </a>
+        </div>
       </div>
 
       <div class="col-md-10">
@@ -45,7 +34,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-repeat="c: sCounts" onclick="location.href='/entire/sta/cship/{{c.mat.fuel}}/{{c.mat.ammo}}/{{c.mat.steel}}/{{c.mat.bauxite}}/{{c.mat.develop}}'">
+            <tr v-repeat="c: sCounts" onclick="location.href='/entire/sta/cship/{{c.mat.fuel}}/{{c.mat.ammo}}/{{c.mat.steel}}/{{c.mat.bauxite}}/{{c.mat.develop}}'" class="clickable">
               <td>{{c.mat.fuel}}</td>
               <td>{{c.mat.ammo}}</td>
               <td>{{c.mat.steel}}</td>
@@ -64,7 +53,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-repeat="c: iCounts" onclick="location.href='/entire/sta/citem/{{c.mat.fuel}}/{{c.mat.ammo}}/{{c.mat.steel}}/{{c.mat.bauxite}}/{{c.mat.sType}}'">
+            <tr v-repeat="c: iCounts" onclick="location.href='/entire/sta/citem/{{c.mat.fuel}}/{{c.mat.ammo}}/{{c.mat.steel}}/{{c.mat.bauxite}}/{{c.mat.sType}}'" class="clickable">
               <td>{{c.mat.fuel}}</td>
               <td>{{c.mat.ammo}}</td>
               <td>{{c.mat.steel}}</td>
