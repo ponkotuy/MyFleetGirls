@@ -35,6 +35,7 @@ object MyFleetGirlsBuild extends Build {
 
   lazy val profiler = Project(id = "profiler", base = file("profiler"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
+    .dependsOn(server)
 
   override lazy val settings = super.settings ++ Seq(
     version := ver,
