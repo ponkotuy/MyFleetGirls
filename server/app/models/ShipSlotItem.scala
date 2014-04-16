@@ -55,9 +55,16 @@ object ShipSlotItem extends SQLSyntaxSupport[ShipSlotItem] {
     }.map(ShipSlotItem(ssi.resultName)).list().apply()
   }
 
+  def findAllInShip(memberId: Long, ships: Seq[Int])(implicit session: DBSession = autoSession): List[ShipSlotItem] = {
+    withSQL {
+      select.from(ShipSlotItem as ssi).where.in(ssi.shipId, ships).and.eq(ssi.memberId, memberId)
+    }.map(ShipSlotItem(ssi.resultName)).list().apply()
+  }
+
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(ShipSlotItem as ssi).where.append(sqls"${where}")
+        .orderBy(ssi.id)
     }.map(_.long(1)).single().apply().get
   }
 

@@ -37,6 +37,7 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
   }
 
   def findFlagshipByUserWishShipName(memberId: Long)(implicit session: DBSession = autoSession): Option[ShipWithName] = {
+    val slots = ShipSlotItem.findAllBy(sqls"member_id = ${memberId}")
     withSQL {
       select.from(DeckShip as ds)
         .innerJoin(Ship as s).on(ds.shipId, s.id)
@@ -44,7 +45,9 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
         .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where.eq(ds.memberId, memberId).and.eq(s.memberId, memberId).and.eq(ds.deckId, 1).and.eq(ds.num, 0)
     }.map { rs =>
-      ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      val id = rs.int(s.id)
+      val slot = slots.filter(_.shipId == id).map(_.slotitemId)
+      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
     }.first().apply()
   }
 

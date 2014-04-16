@@ -52,7 +52,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
       case _ =>
         withSQL {
           select.from(SlotItem as si)
-            .where.in((si.memberId, si.id), xs.map(x => (memberId, x)))
+            .where.in(si.id, xs).and.eq(si.memberId, memberId)
         }.map(SlotItem(si.resultName)).list().apply()
     }
   }
@@ -80,7 +80,10 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
         .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where.append(where)
     }.map { rs =>
-      ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      val memberId = rs.long(ssi.resultName.memberId)
+      val shipId = rs.int(s.resultName.shipId)
+      val slot = Ship.findSlot(memberId, shipId)
+      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
     }.toList().apply()
   }
 

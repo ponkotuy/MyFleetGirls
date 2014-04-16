@@ -27,3 +27,4 @@ server/conf/application.conf
 
 # Others
 *~
+*.hprof.txt
