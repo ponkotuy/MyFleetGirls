@@ -45,7 +45,7 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
         .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where.eq(ds.memberId, memberId).and.eq(s.memberId, memberId).and.eq(ds.deckId, 1).and.eq(ds.num, 0)
     }.map { rs =>
-      val id = rs.int(s.id)
+      val id = rs.int(s.resultName.id)
       val slot = slots.filter(_.shipId == id).map(_.slotitemId)
       ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
     }.first().apply()
