@@ -2,7 +2,7 @@ package dat
 
 import org.json4s.JsonDSL._
 import org.json4s.native.JsonMethods._
-import util.ShipExperience
+import util.{ShipExperience => SE}
 import models._
 
 /**
@@ -82,13 +82,11 @@ case class ShipWithName(ship: Ship, master: MasterShipBase, stype: MasterStype) 
   /** HPによる色の変化 */
   def hpRGB: RGB = ShipWithName.hpRGB(hpRate)
 
-  /** 次のLvまでに必要な経験値の残り比率 */
-  def expRate: Double = {
-    import ShipExperience._
-    // TODO 経験値をPercentからTotalに変更した移行措置
-    if(0 < exp && exp < 100) 0.0
-    else (exp - sum(lv)).toDouble/diff(lv + 1)
-  }
+  /** 次のLvまでに必要な経験値の取得率 */
+  def expRate: Double = (exp - SE.sum(lv)).toDouble/SE.diff(lv + 1)
+  /** LvMAX(100 or 150)までに必要な経験値の取得率 */
+  def entireExpRate: Double =
+    if(lv > 100) exp.toDouble/SE.sum(150) else exp.toDouble/SE.sum(100)
 }
 
 object ShipWithName {
