@@ -20,16 +20,13 @@ case class Ship(
 object Ship extends SQLSyntaxSupport[Ship] {
   override val columnNames = Seq("id", "ship_id", "member_id", "lv", "exp", "nowhp", "fuel", "bull", "dock_time", "cond",
     "karyoku", "raisou", "taiku", "soukou", "kaihi", "taisen", "sakuteki", "lucky", "locked", "created")
-  def apply(x: SyntaxProvider[Ship])(rs: WrappedResultSet): Ship =
-    apply(x.resultName)(rs)
-  def apply(x: ResultName[Ship])(rs: WrappedResultSet): Ship = {
-    val id = rs.int(x.id)
-    val memberId = rs.long(x.memberId)
-    val slot = findSlot(memberId, id)
+  def apply(x: SyntaxProvider[Ship], slot: List[Int])(rs: WrappedResultSet): Ship =
+    apply(x.resultName, slot)(rs)
+  def apply(x: ResultName[Ship], slot: List[Int])(rs: WrappedResultSet): Ship = {
     new Ship(
-      id,
+      rs.int(x.id),
       rs.int(x.shipId),
-      memberId,
+      rs.long(x.memberId),
       rs.int(x.lv),
       rs.int(x.exp),
       rs.int(x.nowhp),
@@ -65,7 +62,8 @@ object Ship extends SQLSyntaxSupport[Ship] {
         .where.eq(s.memberId, memberId)
         .and.eq(s.lv, sqls"(SELECT MAX(${s.lv}) FROM ${Ship.table} s WHERE ${s.memberId} = ${memberId})")
     }.map { rs =>
-      ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      val slot = findSlot(memberId, rs.int(s.resultName.id))
+      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
     }.first().apply()
   }
 
@@ -77,7 +75,8 @@ object Ship extends SQLSyntaxSupport[Ship] {
         .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where.eq(s.memberId, memberId).and.eq(s.id, sid)
     }.map { rs =>
-      ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      val slot = findSlot(memberId, rs.int(s.resultName.id))
+      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
     }.first().apply()
   }
 
@@ -85,29 +84,42 @@ object Ship extends SQLSyntaxSupport[Ship] {
     ids match {
       case Seq() => Nil
       case _ =>
+        val slots = ShipSlotItem.findAllInShip(memberId, ids)
         withSQL {
           select.from(Ship as s)
             .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
             .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
             .where.eq(s.memberId, memberId).and.in(s.id, ids)
         }.map { rs =>
-          ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+          val id = rs.int(s.resultName.id)
+          val slot = slots.filter(_.shipId == id).map(_.slotitemId)
+          ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
         }.toList().apply()
     }
 
-  def findAllByUser(memberId: Long)(implicit session: DBSession = Ship.autoSession): List[Ship] = withSQL {
-    select.from(Ship as s)
-      .where.eq(s.memberId, memberId)
-  }.map(Ship(s)).toList().apply()
+  def findAllByUser(memberId: Long)(implicit session: DBSession = Ship.autoSession): List[Ship] = {
+    val slots = ShipSlotItem.findAllBy(sqls"member_id = ${memberId}")
+    withSQL {
+      select.from(Ship as s)
+        .where.eq(s.memberId, memberId)
+    }.map { rs =>
+      val id = rs.int(s.resultName.id)
+      val slot = slots.filter(_.shipId == id).map(_.slotitemId)
+        Ship(s, slot)(rs)
+    }.toList().apply()
+  }
 
   def findAllByUserWithName(memberId: Long)(implicit session: DBSession = Ship.autoSession): List[ShipWithName] = {
+    val slots = ShipSlotItem.findAllBy(sqls"member_id = ${memberId}")
     withSQL {
       select.from(Ship as s)
         .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where.eq(s.memberId, memberId)
     }.map { rs =>
-      ShipWithName(Ship(s)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      val id = rs.int(s.resultName.id)
+      val slot = slots.filter(_.shipId == id).map(_.slotitemId)
+      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
     }.toList().apply()
   }
 
@@ -175,5 +187,3 @@ object Ship extends SQLSyntaxSupport[Ship] {
     applyUpdate { delete.from(Ship).where.eq(Ship.column.memberId, memberId) }
   }
 }
-
-

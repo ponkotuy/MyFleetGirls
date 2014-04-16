@@ -4,6 +4,7 @@ import scalikejdbc._
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data.master
 import util.scalikejdbc.BulkInsert._
+import scala.collection.mutable
 
 case class MasterShipSpecs(
   id: Int,
@@ -37,6 +38,8 @@ case class MasterShipSpecs(
 
 
 object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
+
+  val cache = new mutable.WeakHashMap[Int, Option[MasterShipSpecs]]()
 
   override val tableName = "master_ship_specs"
 
@@ -72,9 +75,10 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
   override val autoSession = AutoSession
 
   def find(id: Int)(implicit session: DBSession = autoSession): Option[MasterShipSpecs] = {
-    withSQL {
+    def query = withSQL {
       select.from(MasterShipSpecs as mss).where.eq(mss.id, id)
     }.map(MasterShipSpecs(mss.resultName)).single().apply()
+    cache.getOrElseUpdate(id, query)
   }
 
   def findAll()(implicit session: DBSession = autoSession): List[MasterShipSpecs] = {
