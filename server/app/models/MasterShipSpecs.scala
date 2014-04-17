@@ -1,10 +1,10 @@
 package models
 
+import scala.collection.mutable
 import scalikejdbc._
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data.master
 import util.scalikejdbc.BulkInsert._
-import scala.collection.mutable
 
 case class MasterShipSpecs(
   id: Int,
@@ -39,7 +39,7 @@ case class MasterShipSpecs(
 
 object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
 
-  val cache = new mutable.WeakHashMap[Int, Option[MasterShipSpecs]]()
+  val cache = new mutable.WeakHashMap[Int, Option[MasterShipSpecs]] with mutable.SynchronizedMap[Int, Option[MasterShipSpecs]]
 
   override val tableName = "master_ship_specs"
 
