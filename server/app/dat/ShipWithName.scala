@@ -19,6 +19,7 @@ case class ShipWithName(ship: Ship, master: MasterShipBase, stype: MasterStype) 
   def lv = ship.lv
   def exp = ship.exp
   def nowhp = ship.nowhp
+  def maxhp = ship.maxhp
   def fuel = ship.fuel
   def bull = ship.bull
   def dockTime = ship.dockTime
@@ -47,7 +48,6 @@ case class ShipWithName(ship: Ship, master: MasterShipBase, stype: MasterStype) 
 
   def slotNames: List[String] = slot.map(_.name)
 
-  def maxhp: Int = spec.hp
   def hpRate: Double = nowhp / maxhp.toDouble
 
   def rowKaryoku: Int = karyoku - slotMaster.map(_.power).sum
