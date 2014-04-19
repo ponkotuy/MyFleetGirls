@@ -8,7 +8,7 @@ import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
 import com.ponkotuy.util.Log
 import com.ponkotuy.data
-import com.ponkotuy.data.{CreateShipWithId, master}
+import com.ponkotuy.data.{MapRoute, CreateShipWithId, master}
 import com.ponkotuy.value.Global
 import org.jboss.netty.buffer.ChannelBuffer
 import com.github.theon.uri.Uri
@@ -29,8 +29,10 @@ class PostResponse extends Log {
   private[this] implicit var auth: Option[data.Auth] = None
   // KDock + CreateShipのデータが欲しいのでKDockIDをKeyにCreateShipを溜めておく
   private[this] val createShips: mutable.Map[Int, data.CreateShip] = mutable.Map()
-  // 旗艦データが必要（CreateItemとか）なので溜めておく
-  private[this] var flagship: Option[Int] = None
+  // 現在進行中のStage情報がBattleResultで必要なので置いておく
+  private[this] var mapNext: Option[data.MapStart] = None
+  // 艦隊情報がRoute等で必要なので溜めておく
+  private[this] var firstFleet: List[Int] = Nil
 
   def post(q: Query): Unit = {
     val typ = q.resType.get
@@ -62,11 +64,11 @@ class PostResponse extends Log {
         }
       case DeckPort =>
         val decks = data.DeckPort.fromJson(obj)
-        flagship = decks.find(_.id == 1).flatMap(_.ships.headOption)
+        firstFleet = decks.find(_.id == 1).map(_.ships).getOrElse(Nil)
         if(decks.nonEmpty) MFGHttp.post("/deckport", write(decks))
       case Deck =>
         val decks = data.DeckPort.fromJson(obj)
-        flagship = decks.find(_.id == 1).flatMap(_.ships.headOption)
+        firstFleet = decks.find(_.id == 1).map(_.ships).getOrElse(Nil)
         // DeckPortと同じだけど頻繁に更新する必要を感じないので送らない
         // flagshipの更新だけは建造・開発で正しいデータを送るのに必要なので更新する
       case SlotItem =>
@@ -92,13 +94,26 @@ class PostResponse extends Log {
           MFGHttp.post("/createship", write(withId), 2)
         }
       case CreateItem =>
-        flagship.foreach { flag =>
+        firstFleet.lift(0).foreach { flag =>
           val createItem = data.CreateItem.from(req, obj, flag)
           MFGHttp.post("/createitem", write(createItem))
         }
+      case SortieBattleResult =>
+        val result = data.BattleResult.fromJson(obj)
+        MFGHttp.post("/battle_result", write((result, mapNext)))
+      case MapStart =>
+        val next = data.MapStart.fromJson(obj)
+        mapNext = Some(next)
+      case MapNext =>
+        val next = data.MapStart.fromJson(obj)
+        mapNext.foreach { dep =>
+          val route = MapRoute.fromMapNext(dep, next, firstFleet)
+          MFGHttp.post("/map_route", write(route))
+        }
+        mapNext = Some(next)
       case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | Charge | MissionStart => // No Need
       case HenseiChange | HenseiLock | GetOthersDeck => // No Need
-      case MasterMapArea | MasterUseItem | MasterFurniture => // No Need
+      case MasterUseItem | MasterFurniture => // No Need
       case MasterShip =>
         if(checkPonkotu) {
           val ships = master.MasterShip.fromJson(obj)
@@ -147,7 +162,7 @@ class PostResponse extends Log {
       filename.takeWhile(_ != '.').toInt
     }.toOption
 
-  def allRead(cb: ChannelBuffer): Array[Byte] = {
+  private def allRead(cb: ChannelBuffer): Array[Byte] = {
     val baos = new ByteArrayOutputStream()
     cb.getBytes(0, baos, cb.readableBytes())
     baos.toByteArray

@@ -100,4 +100,14 @@ object Post extends Controller {
     models.SlotItem.bulkInsert(items, auth.id)
     Ok("Success")
   }
+
+  def battleResult = authAndParse[(BattleResult, MapStart)] { case (auth, (result, map)) =>
+    models.BattleResult.create(result, map, auth.id)
+    Ok("Success")
+  }
+
+  def mapRoute = authAndParse[MapRoute] { case (auth, mapRoute) =>
+    models.MapRoute.create(mapRoute, auth.id)
+    Ok("Success")
+  }
 }
