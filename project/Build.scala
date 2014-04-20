@@ -40,7 +40,7 @@ object MyFleetGirlsBuild extends Build {
   override lazy val settings = super.settings ++ Seq(
     version := ver,
     scalaVersion := "2.10.3",
-    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions"),
+    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions", "-Xlint"),
     jarName in assembly := "MyFleetGirls.jar"
   )
 
