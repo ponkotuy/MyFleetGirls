@@ -4,8 +4,8 @@ import scalikejdbc._
 import scalikejdbc.SQLInterpolation._
 
 case class ShipSound(
-  shipId: Int, 
-  soundId: Int, 
+  shipId: Int,
+  soundId: Int,
   sound: Array[Byte]) {
 
   def save()(implicit session: DBSession = ShipSound.autoSession): ShipSound = ShipSound.save(this)(session)
@@ -13,7 +13,7 @@ case class ShipSound(
   def destroy()(implicit session: DBSession = ShipSound.autoSession): Unit = ShipSound.destroy(this)(session)
 
 }
-      
+
 
 object ShipSound extends SQLSyntaxSupport[ShipSound] {
 
@@ -26,37 +26,37 @@ object ShipSound extends SQLSyntaxSupport[ShipSound] {
     soundId = rs.int(ss.soundId),
     sound = rs.bytes(ss.sound)
   )
-      
+
   val ss = ShipSound.syntax("ss")
 
   override val autoSession = AutoSession
 
   def find(shipId: Int, soundId: Int)(implicit session: DBSession = autoSession): Option[ShipSound] = {
-    withSQL { 
+    withSQL {
       select.from(ShipSound as ss).where.eq(ss.shipId, shipId).and.eq(ss.soundId, soundId)
-    }.map(ShipSound(ss.resultName)).single.apply()
+    }.map(ShipSound(ss.resultName)).single().apply()
   }
-          
+
   def findAll()(implicit session: DBSession = autoSession): List[ShipSound] = {
-    withSQL(select.from(ShipSound as ss)).map(ShipSound(ss.resultName)).list.apply()
+    withSQL(select.from(ShipSound as ss)).map(ShipSound(ss.resultName)).list().apply()
   }
-          
+
   def countAll()(implicit session: DBSession = autoSession): Long = {
-    withSQL(select(sqls"count(1)").from(ShipSound as ss)).map(rs => rs.long(1)).single.apply().get
+    withSQL(select(sqls"count(1)").from(ShipSound as ss)).map(rs => rs.long(1)).single().apply().get
   }
-          
+
   def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[ShipSound] = {
-    withSQL { 
+    withSQL {
       select.from(ShipSound as ss).where.append(sqls"${where}")
-    }.map(ShipSound(ss.resultName)).list.apply()
+    }.map(ShipSound(ss.resultName)).list().apply()
   }
-      
+
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
-    withSQL { 
+    withSQL {
       select(sqls"count(1)").from(ShipSound as ss).where.append(sqls"${where}")
-    }.map(_.long(1)).single.apply().get
+    }.map(_.long(1)).single().apply().get
   }
-      
+
   def create(
     shipId: Int,
     soundId: Int,
@@ -67,11 +67,11 @@ object ShipSound extends SQLSyntaxSupport[ShipSound] {
         column.soundId,
         column.sound
       ).values(
-        shipId,
-        soundId,
-        sound
-      )
-    }.update.apply()
+          shipId,
+          soundId,
+          sound
+        )
+    }.update().apply()
 
     ShipSound(
       shipId = shipId,
@@ -80,18 +80,20 @@ object ShipSound extends SQLSyntaxSupport[ShipSound] {
   }
 
   def save(entity: ShipSound)(implicit session: DBSession = autoSession): ShipSound = {
-    withSQL { 
+    withSQL {
       update(ShipSound).set(
         column.shipId -> entity.shipId,
         column.soundId -> entity.soundId,
         column.sound -> entity.sound
       ).where.eq(column.shipId, entity.shipId).and.eq(column.soundId, entity.soundId)
-    }.update.apply()
-    entity 
+    }.update().apply()
+    entity
   }
-        
+
   def destroy(entity: ShipSound)(implicit session: DBSession = autoSession): Unit = {
-    withSQL { delete.from(ShipSound).where.eq(column.shipId, entity.shipId).and.eq(column.soundId, entity.soundId) }.update.apply()
+    withSQL {
+      delete.from(ShipSound).where.eq(column.shipId, entity.shipId).and.eq(column.soundId, entity.soundId)
+    }.update().apply()
   }
-        
+
 }

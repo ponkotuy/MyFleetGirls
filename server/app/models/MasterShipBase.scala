@@ -3,6 +3,7 @@ package models
 import scalikejdbc.SQLInterpolation._
 import scalikejdbc.{WrappedResultSet, DBSession}
 import com.ponkotuy.data.master
+import dat.{MasterShipWithStype, MasterShipWithClass}
 
 /**
  *
@@ -12,6 +13,7 @@ import com.ponkotuy.data.master
 case class MasterShipBase(id: Int, name: String, yomi: String, sortno: Int, stype: Int, ctype: Int, cnum: Int)
 
 object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
+
   override val tableName = "master_ship"
   def apply(x: SyntaxProvider[MasterShipBase])(rs: WrappedResultSet): MasterShipBase = apply(x.resultName)(rs)
   def apply(x: ResultName[MasterShipBase])(rs: WrappedResultSet): MasterShipBase = new MasterShipBase(
@@ -25,6 +27,8 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
   )
 
   lazy val ms = MasterShipBase.syntax("ms")
+  lazy val mst = MasterStype.syntax("mst")
+  lazy val msb = MasterShipBase.syntax("msb") // 2つのMasterShipBaseを区別する必要がある時用
 
   def findAll()(implicit session: DBSession = MasterShipBase.autoSession): List[MasterShipBase] = withSQL {
     select.from(MasterShipBase as ms)
@@ -33,6 +37,23 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
   def findAllByLike(q: String)(implicit session: DBSession = autoSession): List[MasterShipBase] = withSQL {
     select.from(MasterShipBase as ms).where.like(ms.name, q)
   }.map(MasterShipBase(ms)).toList().apply()
+
+  def findInWithClass(shipIds: Seq[Int])(implicit session: DBSession = autoSession): List[MasterShipWithClass] =
+    withSQL {
+      select.from(MasterShipBase as ms)
+        .leftJoin(MasterShipBase as msb).on(sqls"ms.ctype = msb.ctype and msb.cnum = 1 and msb.sortno != 0")
+        .where.in(ms.id, shipIds)
+    }.map(MasterShipWithClass(ms, msb))
+      .list().apply()
+      .groupBy(_.shipId).map { case (_, ships) => ships.head } // 改などを外す
+      .toList
+
+  def findInWithStype(shipIds: List[Int])(implicit session: DBSession = autoSession): List[MasterShipWithStype] =
+    withSQL {
+      select.from(MasterShipBase as ms)
+        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .where.in(ms.id, shipIds)
+    }.map(MasterShipWithStype(ms, mst)).list().apply()
 
   def count()(implicit session: DBSession = MasterShipBase.autoSession): Long = withSQL {
     select(sqls"count(1)").from(MasterShipBase as ms)

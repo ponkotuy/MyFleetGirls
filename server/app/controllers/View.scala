@@ -37,16 +37,29 @@ object View extends Controller {
 
   def cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int) = Action.async {
     Future {
+      // TODO Need Refactoring
       val mat = Mat(fuel, ammo, steel, bauxite, develop)
       val cships = models.CreateShip.findAllByMatWithName(mat, limit = 100)
       val counts = models.CreateShip.countByMat(mat)
+      val countsMap = counts.map{ case (ship, count) => ship.id -> count }.toMap
+      val shipIds = counts.map { case (ship, _) => ship.id }
+      val shipClass = models.MasterShipBase.findInWithClass(shipIds)
+      val sTypeMap = models.MasterShipBase.findInWithStype(shipIds)
+      val sTypes = sTypeMap.map(it => it.stypeId -> it.stypeName).toMap
       val sum = counts.map(_._2).sum.toDouble
       val withRate = counts.map { case (ship, count) => (ship.name, count, count/sum) }
-      val countJsonRaw = counts.map { case (ship, count) =>
-        Map("label" -> ship.name, "data" -> count)
+      val countJsonRaw = sTypes.map { case (stype, name) =>
+        val classes = shipClass.filter(_.stype == stype).map(it => it.ctype -> it.cls).toSet
+        val children = classes.map { case (id, cname) =>
+          val children = shipClass.filter(_.ctype == id).map { sc =>
+            Map("name" -> sc.name, "count" -> countsMap(sc.shipId))
+          }
+          Map("name" -> cname, "children" -> children)
+        }
+        Map("name" -> name, "children" -> children)
       }
       val title = s"$fuel/$ammo/$steel/$bauxite/$develop"
-      Ok(views.html.sta.cship(title, write(countJsonRaw), withRate, cships))
+      Ok(views.html.sta.cship(title, write(Map("name" -> "All", "children" -> countJsonRaw)), withRate, cships))
     }
   }
 
