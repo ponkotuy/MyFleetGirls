@@ -15,7 +15,7 @@ object ShipClass {
     for {
       ctype <- rs.intOpt(ms.ctype)
       name <- rs.stringOpt(ms.name)
-    } yield ShipClass(ctype, name + "級")
+    } yield ShipClass(ctype, name + "型")
   }
 
   def getOneClass(ms: SyntaxProvider[MasterShipBase])(rs: WrappedResultSet): ShipClass = {
