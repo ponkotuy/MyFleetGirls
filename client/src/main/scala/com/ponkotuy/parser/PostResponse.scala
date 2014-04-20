@@ -112,7 +112,7 @@ class PostResponse extends Log {
         }
         mapNext = Some(next)
       case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | Charge | MissionStart => // No Need
-      case HenseiChange | HenseiLock | GetOthersDeck => // No Need
+      case HenseiChange | HenseiLock | GetOthersDeck | NyukyoStart => // No Need
       case MasterUseItem | MasterFurniture => // No Need
       case MasterShip =>
         if(checkPonkotu) {
