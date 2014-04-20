@@ -74,14 +74,14 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
     }.map(MasterShipBase(ms)).toList().apply()
   }
 
-  def countByMat(m: Mat)(implicit session: DBSession = autoSession): List[(MiniShip, Long)] = withSQL {
-    select(cs.resultShip, ms.name, sqls"count(*) as count").from(CreateShip as cs)
+  def countByMatWithMaster(m: Mat)(implicit session: DBSession = autoSession): List[(MasterShipBase, Long)] = withSQL {
+    select(sqls"count(*) as count", ms.resultAll).from(CreateShip as cs)
       .innerJoin(MasterShipBase as ms).on(cs.resultShip, ms.id)
       .where.eq(cs.fuel, m.fuel).and.eq(cs.ammo, m.ammo).and.eq(cs.steel, m.steel).and.eq(cs.bauxite, m.bauxite)
       .and.eq(cs.develop, m.develop)
       .groupBy(cs.resultShip)
       .orderBy(sqls"count").desc
-  }.map { rs => (MiniShip(rs.int(1), rs.string(2)), rs.long(3)) }.toList().apply()
+  }.map { rs => MasterShipBase(ms)(rs) -> rs.long(1) }.toList().apply()
 
   def countByUser(memberId: Long, large: Boolean)(implicit session: DBSession = autoSession): Long = withSQL {
     select(sqls"count(*)").from(CreateShip as cs)

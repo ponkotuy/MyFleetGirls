@@ -1,4 +1,4 @@
-$(function() { drawSunburst(960, 800, '#cship_graph'); });
+$(function() { drawSunburst(960, 720, '#cship_graph'); });
 function drawSunburst(w, h, el) {
   var x = d3.scale.linear().range([0, w]);
   var y = d3.scale.linear().range([0, h]);

@@ -38,6 +38,14 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
     select.from(MasterShipBase as ms).where.like(ms.name, q)
   }.map(MasterShipBase(ms)).toList().apply()
 
+  def findAllWithClass()(implicit session: DBSession = autoSession): List[MasterShipWithClass] = withSQL {
+    select.from(MasterShipBase as ms)
+      .leftJoin(MasterShipBase as msb).on(sqls"ms.ctype = msb.ctype and msb.cnum = 1 and msb.sortno != 0")
+  }.map(MasterShipWithClass(ms, msb))
+    .list().apply()
+    .groupBy(_.shipId).map { case (_, ships) => ships.head } // 改などを外す
+    .toList
+
   def findInWithClass(shipIds: Seq[Int])(implicit session: DBSession = autoSession): List[MasterShipWithClass] =
     withSQL {
       select.from(MasterShipBase as ms)

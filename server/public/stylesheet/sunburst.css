@@ -1,8 +1,8 @@
 .chart {
  display: block;
  margin: auto;
-     margin-top: 60px;
-     font-size: 11px;
+     margin-top: 10px;
+     font-size: 1em;
  }
 
 rect {
