@@ -6,6 +6,7 @@
 POST    /post/v1/basic              controllers.Post.basic
 POST    /post/v1/material           controllers.Post.material
 POST    /post/v1/ship               controllers.Post.ship
+POST    /post/v2/ship               controllers.Post.ship2
 POST    /post/v1/ndock              controllers.Post.ndock
 POST    /post/v1/createship         controllers.Post.createShip
 POST    /post/v2/createship         controllers.Post.createShip2
@@ -16,6 +17,8 @@ POST    /post/v1/book/ship          controllers.Post.shipBook
 POST    /post/v1/book/item          controllers.Post.itemBook
 POST    /post/v1/mapinfo            controllers.Post.mapInfo
 POST    /post/v1/slotitem           controllers.Post.slotItem
+POST    /post/v1/battle_result      controllers.Post.battleResult
+POST    /post/v1/map_route          controllers.Post.mapRoute
 POST    /post/v1/master/ship        controllers.PostMaster.ship
 POST    /post/v1/master/mission     controllers.PostMaster.mission
 POST    /post/v1/master/slotitem    controllers.PostMaster.slotitem

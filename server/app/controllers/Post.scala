@@ -1,9 +1,11 @@
 package controllers
 
+import scala.Throwable
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits._
 import play.api.mvc._
 import com.ponkotuy.data._
 import Common._
-import scala.Throwable
 
 /**
  *
@@ -31,7 +33,11 @@ object Post extends Controller {
     }
   }
 
-  def ship = authAndParse[List[Ship]] { case (auth, ships) =>
+  def ship = Action.async {
+    Future { Gone("Obsolete this version API. Your client need updated.") }
+  }
+
+  def ship2 = authAndParse[List[Ship]] { case (auth, ships) =>
     models.Ship.deleteAllByUser(auth.id)
     models.Ship.bulkInsert(ships, auth.id)
     Ok("Success")
@@ -98,6 +104,16 @@ object Post extends Controller {
   def slotItem = authAndParse[List[SlotItem]] { case (auth, items) =>
     models.SlotItem.deleteAllByUser(auth.id)
     models.SlotItem.bulkInsert(items, auth.id)
+    Ok("Success")
+  }
+
+  def battleResult = authAndParse[(BattleResult, MapStart)] { case (auth, (result, map)) =>
+    models.BattleResult.create(result, map, auth.id)
+    Ok("Success")
+  }
+
+  def mapRoute = authAndParse[MapRoute] { case (auth, mapRoute) =>
+    models.MapRoute.create(mapRoute, auth.id)
     Ok("Success")
   }
 }

@@ -30,6 +30,7 @@ object ResType extends Log {
   val ReqRanking = s"$Api/api_req_ranking"
 
   case object LoginCheck extends ResType(s"\\A$AuthMember/logincheck\\z".r) // 取るべきではない
+  case object ApiStart extends ResType(s"\\A$Api/kcsapi/api_start\\z".r)
   case object Material extends ResType(s"\\A$GetMember/material\\z".r)
   case object Basic extends ResType(s"\\A$GetMember/basic\\z".r)
   case object Record extends ResType(s"\\A$GetMember/record\\z".r) // Basicの綺麗版
@@ -75,10 +76,10 @@ object ResType extends Log {
   case object SoundMP3 extends ResType("""\A/kcs/sound/kc[0-9]+/[0-9]+\.mp3""".r)
 
   val values = Set(
-    LoginCheck, Material, Basic, Record, Ship2, Ship3, NDock, KDock,
+    LoginCheck, ApiStart, Material, Basic, Record, Ship2, Ship3, NDock, KDock,
     Deck, DeckPort, UseItem, SlotItem, Practice, Book2, MapInfo, CreateShip, GetShip, CreateItem,
     Charge, HenseiChange, HenseiLock, MissionStart, KaisouPowerup, PracticeBattle, PracticeBattleResult, GetOthersDeck,
-    MapStart, SortieBattle, SortieBattleResult, ClearItemGet, NyukyoStart, RankingList,
+    MapStart, MapNext, SortieBattle, SortieBattleResult, ClearItemGet, NyukyoStart, RankingList,
     MasterShip, MasterPractice, MasterUseItem, MasterFurniture, MasterSlotItem, MasterMapArea, MasterSType, MasterMission,
     ShipSWF, SoundMP3
   )

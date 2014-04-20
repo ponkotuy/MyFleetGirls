@@ -7,7 +7,6 @@ import org.json4s._
 import org.json4s.native.Serialization.write
 import scalikejdbc.SQLInterpolation._
 import build.BuildInfo
-import models.Mat
 
 /**
  *
@@ -37,18 +36,37 @@ object View extends Controller {
 
   def cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int) = Action.async {
     Future {
-      val mat = Mat(fuel, ammo, steel, bauxite, develop)
-      val cships = models.CreateShip.findAllByMatWithName(mat, limit = 100)
-      val counts = models.CreateShip.countByMat(mat)
+      val mat = models.Mat(fuel, ammo, steel, bauxite, develop)
+      val counts = models.CreateShip.countByMatWithMaster(mat)
+      val title = s"$fuel/$ammo/$steel/$bauxite/$develop"
+      val graphJson = cshipGraphJson(counts, title)
       val sum = counts.map(_._2).sum.toDouble
       val withRate = counts.map { case (ship, count) => (ship.name, count, count/sum) }
-      val countJsonRaw = counts.map { case (ship, count) =>
-        Map("label" -> ship.name, "data" -> count)
-      }
-      val title = s"$fuel/$ammo/$steel/$bauxite/$develop"
-      Ok(views.html.sta.cship(title, write(countJsonRaw), withRate, cships))
+      val cships = models.CreateShip.findAllByMatWithName(mat, limit = 100)
+      Ok(views.html.sta.cship(title, graphJson, withRate, cships))
     }
   }
+
+  private def cshipGraphJson(counts: List[(models.MasterShipBase, Long)], title: String): String = {
+    val sum = counts.map(_._2).sum.toDouble
+    val sTypeName = models.MasterStype.findAll().map(ms => ms.id -> ms.name).toMap
+    val className = models.MasterShipBase.findAllWithClass().map(msb => msb.ctype -> msb.cls).toMap
+    val sTypeCounts = counts.groupBy(_._1.stype).mapValues(_.map(_._2).sum)
+    val data = sTypeCounts.map { case (stype, sCount) =>
+      val classes = counts.filter(_._1.stype == stype)
+      val classCounts = classes.groupBy(_._1.ctype).mapValues(_.map(_._2).sum)
+      val children = classCounts.map { case (ctype, cCount) =>
+        val children = counts.filter(_._1.ctype == ctype).map { case (msb, count) =>
+          Map("name" -> s"${msb.name} $count(${toP(count/sum)}%)", "count" -> count)
+        }
+        Map("name" -> s"${className(ctype)} $cCount(${toP(cCount/sum)}%)", "children" -> children)
+      }
+      Map("name" -> s"${sTypeName(stype)} $sCount(${toP(sCount/sum)}%)", "children" -> children)
+    }
+    write(Map("name" -> title, "children" -> data))
+  }
+
+  private def toP(d: Double): String = f"${d*100}%.1f"
 
   def citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: Int) = Action.async {
     Future {

@@ -15,11 +15,11 @@ case class Ship(
     id: Int, shipId: Int, memberId: Long,
     lv: Int, exp: Int, nowhp: Int, slot: List[Int], fuel: Int, bull: Int, dockTime: Long, cond: Int,
     karyoku: Int, raisou: Int, taiku: Int, soukou: Int, kaihi: Int, taisen: Int, sakuteki: Int, lucky: Int, locked: Boolean,
-    created: Long)
+    created: Long, maxhp: Int)
 
 object Ship extends SQLSyntaxSupport[Ship] {
   override val columnNames = Seq("id", "ship_id", "member_id", "lv", "exp", "nowhp", "fuel", "bull", "dock_time", "cond",
-    "karyoku", "raisou", "taiku", "soukou", "kaihi", "taisen", "sakuteki", "lucky", "locked", "created")
+    "karyoku", "raisou", "taiku", "soukou", "kaihi", "taisen", "sakuteki", "lucky", "locked", "created", "maxhp")
   def apply(x: SyntaxProvider[Ship], slot: List[Int])(rs: WrappedResultSet): Ship =
     apply(x.resultName, slot)(rs)
   def apply(x: ResultName[Ship], slot: List[Int])(rs: WrappedResultSet): Ship = {
@@ -44,7 +44,8 @@ object Ship extends SQLSyntaxSupport[Ship] {
       rs.int(x.sakuteki),
       rs.int(x.lucky),
       rs.boolean(x.locked),
-      rs.long(x.created)
+      rs.long(x.created),
+      rs.int(x.maxhp)
     )
   }
 
@@ -126,26 +127,24 @@ object Ship extends SQLSyntaxSupport[Ship] {
   def findSlot(memberId: Long, shipId: Int): List[Int] =
     ShipSlotItem.findAllBy(sqls"member_id = ${memberId} and ship_id = ${shipId}").map(_.slotitemId)
 
-  def create(s: data.Ship, memberId: Long)(implicit session: DBSession = Ship.autoSession): Ship = {
+  def create(s: data.Ship, memberId: Long)(implicit session: DBSession = Ship.autoSession): Unit = {
     val created = System.currentTimeMillis()
     ShipSlotItem.bulkInsert(s.slot, memberId, s.id)
-    withSQL {
+    applyUpdate {
       insert.into(Ship).namedValues(
         column.id -> s.id, column.shipId -> s.shipId, column.memberId -> memberId,
         column.lv -> s.lv, column.exp -> s.exp, column.nowhp -> s.nowhp,
-        column.fuel -> s.fuel, column.bull -> s.bull, column.dockTime -> s.dockTime, column.cond -> s.cond,
+        column.dockTime -> s.dockTime, column.cond -> s.cond,
         column.karyoku -> s.karyoku, column.raisou -> s.raisou, column.taiku -> s.taiku, column.soukou -> s.soukou,
         column.kaihi -> s.kaihi, column.taisen -> s.taisen, column.sakuteki -> s.sakuteki, column.lucky -> s.lucky,
-        column.locked -> s.locked, column.created -> created
+        column.locked -> s.locked, column.created -> created,
+        column.maxhp -> s.maxhp
       )
-    }.update().apply()
-    Ship(s.id, s.shipId, memberId, s.lv, s.exp, s.nowhp, s.slot, s.fuel, s.bull, s.dockTime, s.cond,
-      s.karyoku, s.raisou, s.taiku, s.soukou, s.kaihi, s.taisen, s.sakuteki, s.lucky, s.locked, created
-    )
+    }
   }
 
   def bulkInsert(ss: Seq[data.Ship], memberId: Long)(
-      implicit session: DBSession = Ship.autoSession): Seq[Ship] = {
+      implicit session: DBSession = Ship.autoSession): Unit = {
     val created = System.currentTimeMillis()
     ShipSlotItem.bulkInserts(ss.map(_.slot), memberId, ss.map(_.id))
     applyUpdate {
@@ -155,22 +154,16 @@ object Ship extends SQLSyntaxSupport[Ship] {
         column.fuel, column.bull, column.dockTime, column.cond,
         column.karyoku, column.raisou, column.taiku, column.soukou,
         column.kaihi, column.taisen, column.sakuteki, column.lucky,
-        column.locked, column.created
+        column.locked, column.created, column.maxhp
       ).multiValues(
           ss.map(_.id), ss.map(_.shipId), Seq.fill(ss.size)(memberId),
           ss.map(_.lv), ss.map(_.exp), ss.map(_.nowhp),
           ss.map(_.fuel), ss.map(_.bull), ss.map(_.dockTime), ss.map(_.cond),
           ss.map(_.karyoku), ss.map(_.raisou), ss.map(_.taiku), ss.map(_.soukou),
           ss.map(_.kaihi), ss.map(_.taisen), ss.map(_.sakuteki), ss.map(_.lucky),
-          ss.map(_.locked), Seq.fill(ss.size)(created)
+          ss.map(_.locked), Seq.fill(ss.size)(created),
+          ss.map(_.maxhp)
         )
-    }
-    ss.map { s =>
-      Ship(
-        s.id, s.shipId, memberId, s.lv, s.exp, s.nowhp, s.slot,
-        s.fuel, s.bull, s.dockTime, s.cond, s.karyoku, s.raisou, s.taiku, s.soukou,
-        s.kaihi, s.taisen, s.sakuteki, s.lucky, s.locked, created
-      )
     }
   }
 
