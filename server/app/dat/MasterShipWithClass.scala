@@ -16,7 +16,7 @@ case class MasterShipWithClass(ms: MasterShipBase, lead: Option[MasterShipBase])
   def stype = ms.stype
   def ctype = ms.ctype
   def cnum = ms.cnum
-  lazy val cls = lead.map(_.name + "級").getOrElse(name)
+  lazy val cls = lead.map(_.name + "型").getOrElse(name)
 }
 
 object MasterShipWithClass {
