@@ -1,6 +1,7 @@
 package com.ponkotuy.data
 
 import org.json4s._
+import com.ponkotuy.tool.Pretty
 
 /**
  *
@@ -12,7 +13,13 @@ import org.json4s._
 case class CreateItem(
     id: Option[Int], slotitemId: Option[Int],
     fuel: Int, ammo: Int, steel: Int, bauxite: Int,
-    createFlag: Boolean, shizaiFlag: Boolean, flagship: Int)
+    createFlag: Boolean, shizaiFlag: Boolean, flagship: Int) {
+  def materialSummary: String = s"$fuel/$ammo/$steel/$bauxite"
+  def summary: String = Pretty(
+    Map("成功" -> shizaiFlag, "資材" -> materialSummary) ++
+      slotitemId.map(i => Map("ItemID" -> i)).getOrElse(Map())
+  )
+}
 
 object CreateItem {
   implicit val format = DefaultFormats

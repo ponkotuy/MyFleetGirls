@@ -11,6 +11,8 @@ case class CreateShip(
 
   def equalKDock(kd: KDock): Boolean =
     fuel == kd.fuel && ammo == kd.ammo && steel == kd.steel && bauxite == kd.bauxite && kDock == kd.id
+
+  def materialSummary: String = s"$fuel/$ammo/$steel/$bauxite"
 }
 
 object CreateShip {

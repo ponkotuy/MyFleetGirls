@@ -2,6 +2,7 @@ package com.ponkotuy.data
 
 import org.json4s._
 import scala.util.Try
+import com.ponkotuy.tool.Pretty
 
 /**
  *
@@ -23,7 +24,11 @@ case class MapStart(
     next: Int,
     bossCellNo: Int,
     bossComp: Boolean,
-    enemyId: Option[Int])
+    enemyId: Option[Int]) {
+  def summary: String = Pretty(
+    Map("Map" -> s"$mapAreaId-$mapInfoNo-$no", "Next" -> next, "EnemyID" -> enemyId.getOrElse("会敵せず"))
+  )
+}
 
 object MapStart {
   implicit val default = DefaultFormats

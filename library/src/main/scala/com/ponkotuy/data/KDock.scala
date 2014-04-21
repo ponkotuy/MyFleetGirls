@@ -1,6 +1,8 @@
 package com.ponkotuy.data
 
 import org.json4s._
+import com.ponkotuy.tool.{DateFormatLocal, Pretty}
+import java.util.Date
 
 /**
  *
@@ -10,9 +12,15 @@ import org.json4s._
 case class KDock(
     id: Int, memberId: Long, shipId: Int,
     state: Int, completeTime: Long,
-    fuel: Int, ammo: Int, steel: Int, bauxite: Int)
+    fuel: Int, ammo: Int, steel: Int, bauxite: Int) {
+  import KDock._
+  def summary: String = Pretty(
+    Map("ID" -> id, "ShipID" -> shipId, "建造完了時間" -> df.format(new Date(completeTime)))
+  )
+}
 
 object KDock {
+  def df = DateFormatLocal.default
   def fromJson(obj: JValue): List[KDock] = {
     val JArray(xs) = obj
     implicit def bigint2int(bi: BigInt): Int = bi.toInt

@@ -1,6 +1,8 @@
 package com.ponkotuy.data
 
 import org.json4s._
+import com.ponkotuy.tool.{DateFormatLocal, Pretty}
+import java.util.Date
 
 /**
  *
@@ -9,9 +11,15 @@ import org.json4s._
  * @author ponkotuy
  * Date: 2014/03/01.
  */
-case class NDock(id: Int, memberId: Long, shipId: Int, completeTime: Long)
+case class NDock(id: Int, memberId: Long, shipId: Int, completeTime: Long) {
+  import NDock._
+  def summary: String = Pretty(
+    Map("ID" -> id, "ShipID" -> shipId, "入渠完了時間" -> df.format(new Date(completeTime)))
+  )
+}
 
 object NDock {
+  def df = DateFormatLocal.default
   def fromJson(json: JValue): List[NDock] = {
     val JArray(xs) = json
     xs.map { x =>

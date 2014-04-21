@@ -73,8 +73,6 @@ object MFGHttp extends Log {
     val content = allRead(res.getEntity.getContent)
     if(stCode >= 400) {
       error(s"Error Response ${stCode}\n${res.getStatusLine}\n${content}")
-    } else {
-      info(s"POST Success: ${content}")
     }
   }
 
