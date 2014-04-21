@@ -1,5 +1,7 @@
 package com.ponkotuy.data
 
+import com.ponkotuy.tool.Pretty
+
 /**
  *
  * @author ponkotuy
@@ -7,4 +9,6 @@ package com.ponkotuy.data
  */
 case class CreateShipAndDock(createShip: CreateShip, kDock: KDock)
 
-case class CreateShipWithId(createShip: CreateShip, resultShip: Int)
+case class CreateShipWithId(createShip: CreateShip, resultShip: Int) {
+  def summary: String = Pretty(Map("資材" -> createShip.materialSummary, "艦娘ID" -> resultShip))
+}

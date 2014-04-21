@@ -42,16 +42,20 @@ class PostResponse extends Log {
       case Material =>
         val material = data.Material.fromJson(obj)
         MFGHttp.post("/material", write(material))
+        println(material.summary)
       case Basic =>
         auth = Some(data.Auth.fromJSON(obj))
         val basic = data.Basic.fromJSON(obj)
         MFGHttp.post("/basic", write(basic))
+        println(basic.summary)
       case Ship3 =>
         val ship = data.Ship.fromJson(obj \ "api_ship_data")
         MFGHttp.post("/ship", write(ship), ver = 2)
+        println(s"所持艦娘数 -> ${ship.size}")
       case NDock =>
         val docks = data.NDock.fromJson(obj)
         MFGHttp.post("/ndock", write(docks))
+        docks.filterNot(_.shipId == 0).map(_.summary).foreach(println)
       case KDock =>
         val docks = data.KDock.fromJson(obj).filterNot(_.completeTime == 0)
         MFGHttp.post("/kdock", write(docks))
@@ -61,11 +65,13 @@ class PostResponse extends Log {
             MFGHttp.post("/createship", write(dat))
             createShips.remove(dock.id)
           }
+          println(dock.summary)
         }
       case DeckPort =>
         val decks = data.DeckPort.fromJson(obj)
         firstFleet = decks.find(_.id == 1).map(_.ships).getOrElse(Nil)
         if(decks.nonEmpty) MFGHttp.post("/deckport", write(decks))
+        decks.map(_.summary).foreach(println)
       case Deck =>
         val decks = data.DeckPort.fromJson(obj)
         firstFleet = decks.find(_.id == 1).map(_.ships).getOrElse(Nil)
@@ -74,6 +80,7 @@ class PostResponse extends Log {
       case SlotItem =>
         val items = data.SlotItem.fromJson(obj)
         MFGHttp.post("/slotitem", write(items))
+        println(s"所持装備数 -> ${items.size}")
       case Book2 =>
         val books = data.Book.fromJson(obj)
         if(books.isEmpty) return
@@ -92,28 +99,34 @@ class PostResponse extends Log {
         createShips.remove(req("api_kdock_id").toInt).foreach { cship =>
           val withId = CreateShipWithId(cship, id)
           MFGHttp.post("/createship", write(withId), 2)
+          println(withId.summary)
         }
       case CreateItem =>
         firstFleet.lift(0).foreach { flag =>
           val createItem = data.CreateItem.from(req, obj, flag)
           MFGHttp.post("/createitem", write(createItem))
+          println(createItem.summary)
         }
       case SortieBattleResult =>
         val result = data.BattleResult.fromJson(obj)
         MFGHttp.post("/battle_result", write((result, mapNext)))
+        println(result.summary)
       case MapStart =>
         val next = data.MapStart.fromJson(obj)
         mapNext = Some(next)
+        println(next.summary)
       case MapNext =>
         val next = data.MapStart.fromJson(obj)
         mapNext.foreach { dep =>
           val route = MapRoute.fromMapNext(dep, next, firstFleet)
           MFGHttp.post("/map_route", write(route))
+          println(route.summary)
         }
         mapNext = Some(next)
-      case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | Charge | MissionStart => // No Need
-      case HenseiChange | HenseiLock | GetOthersDeck | NyukyoStart => // No Need
-      case MasterUseItem | MasterFurniture => // No Need
+        println(next.summary)
+      case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | Charge | MissionStart | KaisouPowerup |
+           HenseiChange | HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
+           MasterFurniture => // No Need
       case MasterShip =>
         if(checkPonkotu) {
           val ships = master.MasterShip.fromJson(obj)
@@ -139,12 +152,14 @@ class PostResponse extends Log {
           val swf = allRead(q.res.getContent)
           val file = TempFileTool.save(swf, "swf")
           MFGHttp.postFile("/swf/ship/" + id, "image")(file)
+          println(s"初めて艦娘ID${id}を見た")
         }
       case SoundMP3 =>
         SoundUrlId.parseURL(q.uri).filterNot(MFGHttp.existsSound).foreach { case SoundUrlId(shipId, soundId) =>
           val sound = allRead(q.res.getContent)
           val file = TempFileTool.save(sound, "mp3")
           MFGHttp.postFile(s"/mp3/kc/${shipId}/${soundId}", "sound")(file)
+          println(s"初めて (ShipID -> $shipId, SoundID -> $soundId) の声を聞いた")
         }
       case _ =>
         info(s"ResType: $typ")
