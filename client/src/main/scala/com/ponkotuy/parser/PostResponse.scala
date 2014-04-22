@@ -125,8 +125,8 @@ class PostResponse extends Log {
         mapNext = Some(next)
         println(next.summary)
       case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | Charge | MissionStart | KaisouPowerup |
-           HenseiChange | HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
-           MasterFurniture => // No Need
+           HenseiChange | HenseiLock | PracticeBattle | PracticeMidnightBattle | PracticeBattleResult | GetOthersDeck |
+           SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem | MasterFurniture => // No Need
       case MasterShip =>
         if(checkPonkotu) {
           val ships = master.MasterShip.fromJson(obj)

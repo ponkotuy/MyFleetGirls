@@ -7,6 +7,7 @@ import org.json4s._
 import org.json4s.native.Serialization.write
 import scalikejdbc.SQLInterpolation._
 import build.BuildInfo
+import com.ponkotuy.data.GetShip
 
 /**
  *
@@ -86,7 +87,30 @@ object View extends Controller {
       Ok(views.html.sta.citem(title, write(countJsonRaw), withRate, citems))
     }
   }
+
   def fromShip(q: String) = Action.async {
     Future(Ok(views.html.sta.from_ship(q)))
+  }
+
+  def dropStage() = Action.async {
+    Future {
+      val stages = models.BattleResult.countAllByStage()
+      Ok(views.html.sta.drop_stage(stages))
+    }
+  }
+
+  def drop(area: Int, info: Int) = Action.async {
+    Future {
+      val drops = models.BattleResult.countAllGroupByDrop(area, info)
+      val byCell: Seq[(String, List[(Option[GetShip], Long, String)])] =
+        drops.groupBy(_._1.point).mapValues { xs =>
+          val sum = xs.map(_._2).sum.toDouble
+          xs.map { case (drop, count) =>
+            val rate = f"${count / sum * 100}%.1f%%"
+            (drop.getShip, count, rate)
+          }.reverse
+        }.toSeq.sortBy(_._1).sortBy(_._1.size)
+      Ok(views.html.sta.drop(s"$area-$info", byCell))
+    }
   }
 }

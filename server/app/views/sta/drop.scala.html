@@ -1,0 +1,40 @@
+@(title: String, byCell: Seq[(String, Seq[(Option[com.ponkotuy.data.GetShip], Long, String)])])
+
+@main {
+  <title>@title -艦娘ドロップ一覧-</title>
+} {
+  @statistics_head("drop") {
+    <div class="page-header">
+      <h1>@title 艦娘ドロップ</h1>
+    </div>
+    <div class="panel-group" id="accordion">
+      @byCell.map { case (cell, ships) =>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapse@cell">
+                @cell
+              </a>
+            </h3>
+          </div>
+          <div id="collapse@cell" class="panel-collapse collapse">
+            <table class="table table-striped table-condensed">
+              <thead>
+                <tr><th>ID</th><th>艦種</th><th>名前</th><th>Count</th><th>Rate</th></tr>
+              </thead>
+              @ships.map { case (ship, count, rate) =>
+                <tr>
+                  <td>@ship.map(_.id.toString).getOrElse("-")</td>
+                  <td>@ship.map(_.stype).getOrElse("---")</td>
+                  <td>@ship.map(_.name).getOrElse("ドロップなし")</td>
+                  <td>@count</td>
+                  <td>@rate</td>
+                </tr>
+              }
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+  }
+}
