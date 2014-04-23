@@ -17,7 +17,7 @@ object UserShipDB {
     val settings = ConnectionPoolSettings(initialSize = 3, maxSize = 10)
     ConnectionPool.singleton("jdbc:mysql://localhost:3306/myfleet", "user", "password", settings)
 
-    val count = Try { args(0).toInt }.toOption.getOrElse(20)
+    val count = Try { args(0).toInt }.getOrElse(20)
     val users = new UserIterator(0)
     DB readOnly { implicit session =>
       users.take(count).foreach { user =>

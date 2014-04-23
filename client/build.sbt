@@ -10,7 +10,7 @@ libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.2.0",
   "com.twitter" %% "finagle-http" % "6.10.0",
   "com.github.theon" %% "scala-uri" % "0.3.6",
-  "org.json4s" %% "json4s-native" % "3.2.7",
+  "org.json4s" %% "json4s-native" % "3.2.8",
   "org.apache.httpcomponents" % "httpclient" % "4.3.3",
   "org.apache.httpcomponents" % "httpmime" % "4.3.3"
 )

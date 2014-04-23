@@ -23,13 +23,9 @@ object PostMaster extends Controller {
   }
 
   def mission = checkPonkotuAndParse[List[MasterMission]] { missions =>
-    if(missions.size.toLong != models.MasterMission.count()) {
-      models.MasterMission.deleteByMapArea(missions.head.mapArea)
-      models.MasterMission.bulkInsert(missions)
-      Ok("Master Mission All Replaced")
-    } else {
-      Ok("No Change")
-    }
+    models.MasterMission.deleteAll()
+    models.MasterMission.bulkInsert(missions)
+    Ok("Master Mission All Replaced")
   }
 
   def slotitem = checkPonkotuAndParse[List[MasterSlotItem]] { items =>

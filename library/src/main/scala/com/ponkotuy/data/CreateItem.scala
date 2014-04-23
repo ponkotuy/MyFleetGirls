@@ -2,6 +2,7 @@ package com.ponkotuy.data
 
 import org.json4s._
 import com.ponkotuy.tool.Pretty
+import scala.util.Try
 
 /**
  *
@@ -24,13 +25,12 @@ case class CreateItem(
 object CreateItem {
   implicit val format = DefaultFormats
   def from(req: Map[String, String], res: JValue, flagship: Int): CreateItem = {
-    val id = (res \ "api_id").extractOpt[Int]
-    val slotitemId = (res \ "api_slotitem_id").extractOpt[Int]
+    val slotitem = CreateSlotItem.fromJson(res \ "api_slot_item")
     val JInt(createFlag) = res \ "api_create_flag"
     val JInt(shizaiFlag) = res \ "api_shizai_flag"
     CreateItem(
-      id,
-      slotitemId,
+      slotitem.map(_.id),
+      slotitem.map(_.slotitemId),
       fuel = req("api_item1").toInt,
       ammo = req("api_item2").toInt,
       steel = req("api_item3").toInt,
@@ -39,5 +39,18 @@ object CreateItem {
       shizaiFlag.toInt != 0,
       flagship
     )
+  }
+}
+
+case class CreateSlotItem(id: Int, slotitemId: Int)
+
+object CreateSlotItem {
+  implicit val formats = DefaultFormats
+  def fromJson(obj: JValue): Option[CreateSlotItem] = {
+    Try {
+      val id = (obj \ "api_id").extract[Int]
+      val slotitemId = (obj \ "api_slotitem_id").extract[Int]
+      CreateSlotItem(id, slotitemId)
+    }.toOption
   }
 }
