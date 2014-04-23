@@ -1,6 +1,7 @@
 package com.ponkotuy.config
 
 import java.io.File
+import scala.util.Try
 import com.typesafe.config.ConfigFactory
 
 /**
@@ -15,5 +16,5 @@ object ClientConfig {
   def postUrl(ver: Int = 1) = config.getString("url.post") + s"/post/v${ver}"
   def getUrl(ver: Int = 1) = config.getString("url.post") + s"/rest/v${ver}"
   val proxyPort = config.getInt("proxy.port")
-  val master: Boolean = config.getBoolean("auth.master")
+  val master: Boolean = Try { config.getBoolean("auth.master") }.getOrElse(false)
 }

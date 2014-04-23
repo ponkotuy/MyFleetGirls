@@ -57,30 +57,13 @@ class PostResponse extends Log {
       case Ship3 =>
         ship(obj \ "api_ship_data")
       case NDock =>
-        val docks = data.NDock.fromJson(obj)
-        MFGHttp.post("/ndock", write(docks))
-        docks.filterNot(_.shipId == 0).map(_.summary).foreach(println)
+        ndock(obj)
       case KDock =>
-        val docks = data.KDock.fromJson(obj).filterNot(_.completeTime == 0)
-        MFGHttp.post("/kdock", write(docks))
-        docks.foreach { dock =>
-          createShips.get(dock.id).foreach { cShip =>
-            val dat = data.CreateShipAndDock(cShip, dock)
-            MFGHttp.post("/createship", write(dat))
-            createShips.remove(dock.id)
-          }
-          println(dock.summary)
-        }
+        kdock(obj)
       case DeckPort =>
-        val decks = data.DeckPort.fromJson(obj)
-        firstFleet = decks.find(_.id == 1).map(_.ships).getOrElse(Nil)
-        if(decks.nonEmpty) MFGHttp.post("/deckport", write(decks))
-        decks.map(_.summary).foreach(println)
+        deckport(obj)
       case Deck =>
-        val decks = data.DeckPort.fromJson(obj)
-        firstFleet = decks.find(_.id == 1).map(_.ships).getOrElse(Nil)
-        // DeckPortと同じだけど頻繁に更新する必要を感じないので送らない
-        // flagshipの更新だけは建造・開発で正しいデータを送るのに必要なので更新する
+        deckport(obj)
       case SlotItem =>
         val items = data.SlotItem.fromJson(obj)
         MFGHttp.post("/slotitem", write(items))
@@ -132,6 +115,8 @@ class PostResponse extends Log {
         basic(obj \ "api_basic")
         ship(obj \ "api_ship")
         material(obj \ "api_material")
+        ndock(obj \ "api_ndock")
+        deckport(obj \ "api_deck_port")
       case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | Charge | MissionStart | KaisouPowerup |
            HenseiChange | HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
            MasterFurniture => // No Need
@@ -161,6 +146,32 @@ class PostResponse extends Log {
     val basic = data.Basic.fromJSON(obj)
     MFGHttp.post("/basic", write(basic))
     println(basic.summary)
+  }
+
+  private def ndock(obj: JValue): Unit = {
+    val docks = data.NDock.fromJson(obj)
+    MFGHttp.post("/ndock", write(docks))
+    docks.filterNot(_.shipId == 0).map(_.summary).foreach(println)
+  }
+
+  private def kdock(obj: JValue): Unit = {
+    val docks = data.KDock.fromJson(obj).filterNot(_.completeTime == 0)
+    MFGHttp.post("/kdock", write(docks))
+    docks.foreach { dock =>
+      createShips.get(dock.id).foreach { cShip =>
+        val dat = data.CreateShipAndDock(cShip, dock)
+        MFGHttp.post("/createship", write(dat))
+        createShips.remove(dock.id)
+      }
+      println(dock.summary)
+    }
+  }
+
+  private def deckport(obj: JValue): Unit = {
+    val decks = data.DeckPort.fromJson(obj)
+    firstFleet = decks.find(_.id == 1).map(_.ships).getOrElse(Nil)
+    if(decks.nonEmpty) MFGHttp.post("/deckport", write(decks))
+    decks.map(_.summary).foreach(println)
   }
 
   private def ship(obj: JValue): Unit = {
