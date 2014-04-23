@@ -15,4 +15,5 @@ object ClientConfig {
   def postUrl(ver: Int = 1) = config.getString("url.post") + s"/post/v${ver}"
   def getUrl(ver: Int = 1) = config.getString("url.post") + s"/rest/v${ver}"
   val proxyPort = config.getInt("proxy.port")
+  val master: Boolean = config.getBoolean("auth.master")
 }

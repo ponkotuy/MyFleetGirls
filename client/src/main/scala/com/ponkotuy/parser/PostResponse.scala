@@ -9,10 +9,10 @@ import org.json4s.native.Serialization.write
 import com.ponkotuy.util.Log
 import com.ponkotuy.data
 import com.ponkotuy.data.{MapRoute, CreateShipWithId, master}
-import com.ponkotuy.value.Global
 import org.jboss.netty.buffer.ChannelBuffer
 import com.github.theon.uri.Uri
 import com.ponkotuy.tool.TempFileTool
+import com.ponkotuy.config.ClientConfig
 
 /**
  *
@@ -39,19 +39,23 @@ class PostResponse extends Log {
     lazy val req = q.reqMap
     lazy val obj = q.resJson.get
     typ match {
+      case ApiStart2 =>
+        if(ClientConfig.master) {
+          val masterShip = master.MasterShip.fromJson(obj \ "api_mst_ship")
+          MFGHttp.masterPost("/master/ship", write(masterShip))
+          val masterMission = master.MasterMission.fromJson(obj \ "api_mst_mission")
+          MFGHttp.masterPost("/master/mission", write(masterMission))
+          val masterSlotitem = master.MasterSlotItem.fromJson(obj \ "api_mst_slotitem")
+          MFGHttp.masterPost("/master/slotitem", write(masterSlotitem))
+          val masterSType = master.MasterSType.fromJson(obj \ "api_mst_stype")
+          MFGHttp.masterPost("/master/stype", write(masterSType))
+        }
       case Material =>
-        val material = data.Material.fromJson(obj)
-        MFGHttp.post("/material", write(material))
-        println(material.summary)
+        material(obj)
       case Basic =>
-        auth = Some(data.Auth.fromJSON(obj))
-        val basic = data.Basic.fromJSON(obj)
-        MFGHttp.post("/basic", write(basic))
-        println(basic.summary)
+        basic(obj)
       case Ship3 =>
-        val ship = data.Ship.fromJson(obj \ "api_ship_data")
-        MFGHttp.post("/ship", write(ship), ver = 2)
-        println(s"所持艦娘数 -> ${ship.size}")
+        ship(obj \ "api_ship_data")
       case NDock =>
         val docks = data.NDock.fromJson(obj)
         MFGHttp.post("/ndock", write(docks))
@@ -124,29 +128,13 @@ class PostResponse extends Log {
         }
         mapNext = Some(next)
         println(next.summary)
+      case Port =>
+        basic(obj \ "api_basic")
+        ship(obj \ "api_ship")
+        material(obj \ "api_material")
       case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | Charge | MissionStart | KaisouPowerup |
            HenseiChange | HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
            MasterFurniture => // No Need
-      case MasterShip =>
-        if(checkPonkotu) {
-          val ships = master.MasterShip.fromJson(obj)
-          MFGHttp.post("/master/ship", write(ships))
-        }
-      case MasterMission =>
-        if(checkPonkotu) {
-          val missions = master.MasterMission.fromJson(obj)
-          MFGHttp.post("/master/mission", write(missions))
-        }
-      case MasterSlotItem =>
-        if(checkPonkotu) {
-          val items = master.MasterSlotItem.fromJson(obj)
-          MFGHttp.post("/master/slotitem", write(items))
-        }
-      case MasterSType =>
-        if(checkPonkotu) {
-          val stype = master.MasterSType.fromJson(obj)
-          MFGHttp.post("/master/stype", write(stype))
-        }
       case ShipSWF =>
         parseId(q.uri).filterNot(MFGHttp.existsImage).foreach { id =>
           val swf = allRead(q.res.getContent)
@@ -168,7 +156,24 @@ class PostResponse extends Log {
     }
   }
 
-  private def checkPonkotu: Boolean = auth.exists(u => Global.Admin.contains(u.memberId))
+  private def basic(obj: JValue): Unit = {
+    auth = Some(data.Auth.fromJSON(obj))
+    val basic = data.Basic.fromJSON(obj)
+    MFGHttp.post("/basic", write(basic))
+    println(basic.summary)
+  }
+
+  private def ship(obj: JValue): Unit = {
+    val ship = data.Ship.fromJson(obj)
+    MFGHttp.post("/ship", write(ship), ver = 2)
+    println(s"所持艦娘数 -> ${ship.size}")
+  }
+
+  private def material(obj: JValue): Unit = {
+    val material = data.Material.fromJson(obj)
+    MFGHttp.post("/material", write(material))
+    println(material.summary)
+  }
 
   private def parseId(str: String): Option[Int] =
     Try {

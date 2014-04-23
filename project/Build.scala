@@ -41,7 +41,8 @@ object MyFleetGirlsBuild extends Build {
     version := ver,
     scalaVersion := "2.10.3",
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions", "-Xlint"),
-    jarName in assembly := "MyFleetGirls.jar"
+    jarName in assembly := "MyFleetGirls.jar",
+    incOptions := incOptions.value.withNameHashing(true)
   )
 
   lazy val biSettings = buildInfoSettings ++ Seq(
