@@ -68,7 +68,7 @@ class PostResponse extends Log {
         val items = data.SlotItem.fromJson(obj)
         MFGHttp.post("/slotitem", write(items))
         println(s"所持装備数 -> ${items.size}")
-      case Book2 =>
+      case PictureBook =>
         val books = data.Book.fromJson(obj)
         if(books.isEmpty) return
         books.head match {

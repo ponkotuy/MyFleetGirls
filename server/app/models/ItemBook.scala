@@ -92,12 +92,12 @@ object ItemBook extends SQLSyntaxSupport[ItemBook] {
       updated = updated)
   }
 
-  def bulkUpsert(xs: Seq[data.ItemBook])(implicit session: DBSession = autoSession): Seq[ItemBook] = {
+  def bulkUpsert(xs: Seq[data.ItemBook], memberId: Long)(implicit session: DBSession = autoSession): Seq[ItemBook] = {
     val now = System.currentTimeMillis()
-    val params = xs.map { x => Seq(x.memberId, x.id, x.indexNo, x.name, now) }
+    val params = xs.map { x => Seq(memberId, x.id, x.indexNo, x.name, now) }
     sql"""replace into item_book (member_id, id, index_no, name, updated)
           values (?, ?, ?, ?, ?)""".batch(params:_*).apply()
-    xs.map { x => ItemBook(x.memberId, x.id, x.indexNo, x.name, now) }
+    xs.map { x => ItemBook(memberId, x.id, x.indexNo, x.name, now) }
   }
 
   def save(entity: ItemBook)(implicit session: DBSession = autoSession): ItemBook = {

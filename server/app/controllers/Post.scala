@@ -86,12 +86,12 @@ object Post extends Controller {
   }
 
   def shipBook = authAndParse[List[ShipBook]] { case (auth, ships) =>
-    models.ShipBook.bulkUpsert(ships)
+    models.ShipBook.bulkUpsert(ships, auth.id)
     Ok("Success")
   }
 
   def itemBook = authAndParse[List[ItemBook]] { case (auth, items) =>
-    models.ItemBook.bulkUpsert(items)
+    models.ItemBook.bulkUpsert(items, auth.id)
     Ok("Success")
   }
 
