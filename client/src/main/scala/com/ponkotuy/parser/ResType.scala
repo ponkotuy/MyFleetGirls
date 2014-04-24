@@ -43,7 +43,7 @@ object ResType extends Log {
   case object Deck extends ResType(s"\\A$GetMember/deck\\z".r) // DeckPortと何が違うのか分からなくて困っている
   case object DeckPort extends ResType(s"\\A$GetMember/deck_port\\z".r)
   case object UseItem extends ResType(s"\\A$GetMember/useitem\\z".r) // 家具箱とか
-  case object SlotItem extends ResType(s"\\A$GetMember/slotitem\\z".r)
+  case object SlotItem extends ResType(s"\\A$GetMember/slot_item\\z".r) // 旧slotitem 新slot_item
   case object Practice extends ResType(s"\\A$GetMember/practice\\z".r) // 演習相手。取るべきではない
   case object PictureBook extends ResType(s"\\A$GetMember/picture_book\\z".r)
   case object MapInfo extends ResType(s"\\A$GetMember/mapinfo\\z".r)

@@ -167,6 +167,21 @@ object Ship extends SQLSyntaxSupport[Ship] {
     }
   }
 
+  def bulkUpsert(ss: Seq[data.Ship], memberId: Long)(implicit sesssion: DBSession = autoSession): Unit = {
+    ShipSlotItem.bulkUpserts(ss.map(_.slot), memberId, ss.map(_.id))
+    val created = System.currentTimeMillis()
+    val params = ss.map { x =>
+      Seq(
+        x.id, x.shipId, memberId, x.lv, x.exp, x.nowhp, x.fuel, x.bull, x.dockTime, x.cond,
+        x.karyoku, x.raisou, x.taiku, x.soukou, x.kaihi, x.taisen, x.sakuteki, x.lucky, x.locked, created, x.maxhp
+      )
+    }
+    sql"""replace into ship (id, ship_id, member_id, lv, exp, nowhp, fuel, bull, dock_time, cond,
+          karyoku, raisou, taiku, soukou, kaihi, taisen, sakuteki, lucky, locked, created, maxhp)
+          values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+      .batch(params:_*).apply()
+  }
+
   def destroy(memberId: Long, id: Int)(implicit session: DBSession = autoSession): Unit = {
     ShipSlotItem.deleteAllBy(sqls"member_id = ${memberId} and ship_id = ${s.id}")
     applyUpdate {

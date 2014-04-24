@@ -55,7 +55,8 @@ class PostResponse extends Log {
       case Basic =>
         basic(obj)
       case Ship3 =>
-        ship(obj \ "api_ship_data")
+        val update = data.Ship.fromJson(obj \ "api_ship_data")
+        MFGHttp.post("/update_ship", write(update))
       case NDock =>
         ndock(obj)
       case KDock =>

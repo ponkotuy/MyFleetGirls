@@ -43,6 +43,11 @@ object Post extends Controller {
     Ok("Success")
   }
 
+  def updateShip = authAndParse[List[Ship]] { case (auth, ships) =>
+    models.Ship.bulkUpsert(ships, auth.id)
+    Ok("Success")
+  }
+
   def ndock = authAndParse[List[NDock]] { case (auth, docks) =>
     models.NDock.deleteAllByUser(auth.id)
     docks.foreach(dock => models.NDock.create(dock))
