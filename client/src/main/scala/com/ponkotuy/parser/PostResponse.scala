@@ -55,7 +55,8 @@ class PostResponse extends Log {
       case Basic =>
         basic(obj)
       case Ship3 =>
-        ship(obj \ "api_ship_data")
+        val update = data.Ship.fromJson(obj \ "api_ship_data")
+        MFGHttp.post("/update_ship", write(update))
       case NDock =>
         ndock(obj)
       case KDock =>
@@ -68,7 +69,7 @@ class PostResponse extends Log {
         val items = data.SlotItem.fromJson(obj)
         MFGHttp.post("/slotitem", write(items))
         println(s"所持装備数 -> ${items.size}")
-      case Book2 =>
+      case PictureBook =>
         val books = data.Book.fromJson(obj)
         if(books.isEmpty) return
         books.head match {

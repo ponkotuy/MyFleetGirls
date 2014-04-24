@@ -122,6 +122,17 @@ object ShipSlotItem extends SQLSyntaxSupport[ShipSlotItem] {
     shipIds.zip(ids).zip(slotFlat).map { case ((sid, id), slot) => ShipSlotItem(memberId, sid, id, slot) }
   }
 
+  def bulkUpserts(slots: Seq[Seq[Int]], memberId: Long, shipId: Seq[Int])(
+      implicit session: DBSession = autoSession): Unit = {
+    val params = slots.zip(shipId).flatMap { case (slot, sid) =>
+      slot.filter(0 <= _).zipWithIndex.map { case (x, i) =>
+        Seq(memberId, sid, i + 1, x)
+      }
+    }
+    sql"""replace into ship_slot_item (member_id, ship_id, id, slotitem_id) values (?, ?, ?, ?)"""
+      .batch(params:_*).apply()
+  }
+
   def save(entity: ShipSlotItem)(implicit session: DBSession = autoSession): ShipSlotItem = {
     withSQL {
       update(ShipSlotItem).set(

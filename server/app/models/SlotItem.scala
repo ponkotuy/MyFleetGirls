@@ -127,13 +127,14 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
       name = name)
   }
 
-  def bulkInsert(xs: Seq[data.SlotItem], memberId: Long)(implicit session: DBSession = autoSession): Seq[SlotItem] = {
+  def bulkInsert(xs: Seq[data.SlotItem], memberId: Long)(implicit session: DBSession = autoSession): Unit = {
+    val masterNames = MasterSlotItem.findAll().map(msi => msi.id -> msi.name).toMap
+    val names = xs.map(x => masterNames(x.id))
     applyUpdate {
       insert.into(SlotItem)
         .columns(column.memberId, column.id, column.slotitemId, column.name)
-        .multiValues(Seq.fill(xs.size)(memberId), xs.map(_.id), xs.map(_.slotitemId), xs.map(_.name))
+        .multiValues(Seq.fill(xs.size)(memberId), xs.map(_.id), xs.map(_.slotitemId), names)
     }
-    xs.map { x => SlotItem(memberId, x.id, x.slotitemId, x.name) }
   }
 
   def save(entity: SlotItem)(implicit session: DBSession = autoSession): SlotItem = {

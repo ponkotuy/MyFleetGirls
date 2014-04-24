@@ -7,6 +7,7 @@ POST    /post/v1/basic              controllers.Post.basic
 POST    /post/v1/material           controllers.Post.material
 POST    /post/v1/ship               controllers.Post.ship
 POST    /post/v2/ship               controllers.Post.ship2
+POST    /post/v1/update_ship        controllers.Post.updateShip
 POST    /post/v1/ndock              controllers.Post.ndock
 POST    /post/v1/createship         controllers.Post.createShip
 POST    /post/v2/createship         controllers.Post.createShip2
