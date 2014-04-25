@@ -10,10 +10,11 @@ import dat.{MasterShipWithStype, MasterShipWithClass}
  * @author ponkotuy
  * Date: 14/02/25.
  */
-case class MasterShipBase(id: Int, name: String, yomi: String, sortno: Int, stype: Int, ctype: Int, cnum: Int)
+case class MasterShipBase(
+    id: Int, name: String, yomi: String, sortno: Int, stype: Int, ctype: Int, cnum: Int, filename: String
+)
 
 object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
-
   override val tableName = "master_ship"
   def apply(x: SyntaxProvider[MasterShipBase])(rs: WrappedResultSet): MasterShipBase = apply(x.resultName)(rs)
   def apply(x: ResultName[MasterShipBase])(rs: WrappedResultSet): MasterShipBase = new MasterShipBase(
@@ -23,12 +24,17 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
     rs.int(x.sortno),
     rs.int(x.stype),
     rs.int(x.ctype),
-    rs.int(x.cnum)
+    rs.int(x.cnum),
+    rs.string(x.filename)
   )
 
   lazy val ms = MasterShipBase.syntax("ms")
   lazy val mst = MasterStype.syntax("mst")
   lazy val msb = MasterShipBase.syntax("msb") // 2つのMasterShipBaseを区別する必要がある時用
+
+  def findByFilename(key: String)(implicit session: DBSession = autoSession): Option[MasterShipBase] = withSQL {
+    select.from(MasterShipBase as ms).where.eq(ms.filename, key)
+  } .map(MasterShipBase(ms)).single().apply()
 
   def findAll()(implicit session: DBSession = MasterShipBase.autoSession): List[MasterShipBase] = withSQL {
     select.from(MasterShipBase as ms)
@@ -71,10 +77,11 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
     withSQL {
       insert.into(MasterShipBase).namedValues(
         column.id -> ms.id, column.name -> ms.name, column.yomi -> ms.yomi,
-        column.sortno -> ms.sortno, column.stype -> ms.stype, column.ctype -> ms.ctype, column.cnum -> ms.cnum
+        column.sortno -> ms.sortno, column.stype -> ms.stype, column.ctype -> ms.ctype, column.cnum -> ms.cnum,
+        column.filename -> ms.filename
       )
     }.update().apply()
-    MasterShipBase(ms.id, ms.name, ms.yomi, ms.sortno, ms.stype, ms.ctype, ms.cnum)
+    MasterShipBase(ms.id, ms.name, ms.yomi, ms.sortno, ms.stype, ms.ctype, ms.cnum, ms.filename)
   }
 
   def deleteAll()(implicit session: DBSession = MasterShipBase.autoSession): Unit =

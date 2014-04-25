@@ -12,10 +12,10 @@ case class MasterShip(base: MasterShipBase, specs: MasterShipSpecs, after: Maste
 object MasterShip {
   implicit val formats = DefaultFormats
 
-  def fromJson(json: JValue): List[MasterShip] = {
+  def fromJson(json: JValue, filenames: Int => String): List[MasterShip] = {
     val JArray(xs) = json
     xs.map { x =>
-      val base = MasterShipBase.fromJson(x)
+      val base = MasterShipBase.fromJson(x, filenames)
       val specs = MasterShipSpecs.fromJson(x)
       val after = MasterShipAfter.fromJson(x)
       val other = MasterShipOther.fromJson(x)
@@ -46,11 +46,13 @@ object MasterShip {
  * @param ctype : Class IDだと思われる
  * @param cnum : N番艦 * @param id
  */
-case class MasterShipBase(id: Int, sortno: Int, name: String, yomi: String, stype: Int, ctype: Int, cnum: Int)
+case class MasterShipBase(
+    id: Int, sortno: Int, name: String, yomi: String, stype: Int, ctype: Int, cnum: Int, filename: String
+)
 
 object MasterShipBase {
   import MasterShip._
-  def fromJson(x: JValue): MasterShipBase = {
+  def fromJson(x: JValue, filenames: Int => String): MasterShipBase = {
     val id = toInt(x \ "api_id")
     val sortno = toInt(x \ "api_sortno")
     val JString(name) = x \ "api_name"
@@ -58,7 +60,7 @@ object MasterShipBase {
     val stype = toInt(x \ "api_stype")
     val ctype = toInt(x \ "api_ctype")
     val cnum = toInt(x \ "api_cnum")
-    MasterShipBase(id, sortno, name, yomi, stype, ctype, cnum)
+    MasterShipBase(id, sortno, name, yomi, stype, ctype, cnum, filenames(id))
   }
 }
 
