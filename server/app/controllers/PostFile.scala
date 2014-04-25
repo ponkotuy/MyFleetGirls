@@ -4,6 +4,7 @@ import play.api.mvc._
 import Common._
 import java.io.{ByteArrayOutputStream, InputStream, FileInputStream}
 import tool.SWFTool
+import models.ShipImage
 
 /**
  *
@@ -11,21 +12,32 @@ import tool.SWFTool
  * Date: 14/03/22.
  */
 object PostFile extends Controller {
-  def ship(shipId: Int) = Action.async(parse.multipartFormData) { request =>
+  def ship(shipKey: String) = Action.async(parse.multipartFormData) { request =>
     val form = request.body.asFormUrlEncoded
     authentication(form) { auth =>
-      request.body.file("image").map { ref =>
-        val swfFile = ref.ref.file
-        val imageFile = SWFTool.extractJPG(swfFile, 5)
-        val image = readAll(new FileInputStream(imageFile))
-        try {
-          models.ShipImage.create(shipId, image)
-        } catch {
-          case e: Throwable => Ok("Already Exists")
-        }
-      } match {
-        case Some(_) => Ok("Success")
-        case _ => BadRequest("Need Image")
+      request.body.file("image") match {
+        case Some(ref) =>
+          val swfFile = ref.ref.file
+          val imageFile = SWFTool.extractJPG(swfFile, 5)
+          val image = readAll(new FileInputStream(imageFile))
+          models.MasterShipBase.findByFilename(shipKey) match {
+            case Some(ship) =>
+              try {
+                models.ShipImage.create(ship.id, image, shipKey, auth.id)
+                Ok("Success")
+              } catch { // When Duplicate
+                case e: Throwable =>
+                  models.ShipImage.find(ship.id) match {
+                    case Some(si) =>
+                      ShipImage(si.id, si.image, Some(shipKey), si.memberId).save() // filenameをupdate
+                      Ok("Updated Ship Image Key")
+                    case None =>
+                      Ok("Already Exists")
+                  }
+              }
+            case None => BadRequest("Wrong Filename or Not Found Master Data")
+          }
+        case None => BadRequest("Need Image")
       }
     }
   }

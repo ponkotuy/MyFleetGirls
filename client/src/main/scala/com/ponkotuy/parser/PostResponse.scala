@@ -10,7 +10,6 @@ import com.ponkotuy.util.Log
 import com.ponkotuy.data
 import com.ponkotuy.data.{MapRoute, CreateShipWithId, master}
 import org.jboss.netty.buffer.ChannelBuffer
-import com.github.theon.uri.Uri
 import com.ponkotuy.tool.TempFileTool
 import com.ponkotuy.config.ClientConfig
 
@@ -41,7 +40,9 @@ class PostResponse extends Log {
     typ match {
       case ApiStart2 =>
         if(ClientConfig.master) {
-          val masterShip = master.MasterShip.fromJson(obj \ "api_mst_ship")
+          val masterGraph = master.MasterShipGraph.fromJson(obj \ "api_mst_shipgraph")
+          val filenames = masterGraph.map(it => it.id -> it.filename).toMap
+          val masterShip = master.MasterShip.fromJson(obj \ "api_mst_ship", filenames)
           MFGHttp.masterPost("/master/ship", write(masterShip))
           val masterMission = master.MasterMission.fromJson(obj \ "api_mst_mission")
           MFGHttp.masterPost("/master/mission", write(masterMission))
@@ -122,11 +123,11 @@ class PostResponse extends Log {
            HenseiChange | HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
            MasterFurniture => // No Need
       case ShipSWF =>
-        parseId(q.uri).filterNot(MFGHttp.existsImage).foreach { id =>
+        parseKey(q.uri).filterNot(MFGHttp.existsImage).foreach { key =>
           val swf = allRead(q.res.getContent)
           val file = TempFileTool.save(swf, "swf")
-          MFGHttp.postFile("/swf/ship/" + id, "image")(file)
-          println(s"初めて艦娘ID${id}を見た")
+          MFGHttp.postFile("/swf/ship/" + key, "image")(file)
+          println(s"初めての艦娘を見て画像を転送しました")
         }
       case SoundMP3 =>
         SoundUrlId.parseURL(q.uri).filterNot(MFGHttp.existsSound).foreach { case SoundUrlId(shipId, soundId) =>
@@ -137,8 +138,8 @@ class PostResponse extends Log {
         }
       case _ =>
         info(s"ResType: $typ")
-        info(s"Req: $req")
-        jsonInfo(obj)
+        info(s"Req: ${q.reqCont}")
+        q.resJson.map(jsonInfo(_))
     }
   }
 
@@ -187,11 +188,10 @@ class PostResponse extends Log {
     println(material.summary)
   }
 
-  private def parseId(str: String): Option[Int] =
+  private def parseKey(str: String): Option[String] =
     Try {
-      val uri = Uri.parseUri(str)
-      val filename = uri.pathParts.last
-      filename.takeWhile(_ != '.').toInt
+      val filename = str.split('/').last
+      filename.takeWhile(_ != '.')
     }.toOption
 
   private def allRead(cb: ChannelBuffer): Array[Byte] = {

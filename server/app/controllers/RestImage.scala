@@ -27,4 +27,13 @@ object RestImage extends Controller {
       }
     }
   }
+
+  def shipKeyHead(shipKey: String) = Action.async {
+    Future {
+      models.ShipImage.findByFilename(shipKey) match {
+        case Some(record) => Ok(record.image).as("image/jpeg")
+        case _ => NotFound(s"Not Found Image (key=$shipKey)")
+      }
+    }
+  }
 }
