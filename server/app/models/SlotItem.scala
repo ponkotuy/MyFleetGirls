@@ -129,7 +129,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
 
   def bulkInsert(xs: Seq[data.SlotItem], memberId: Long)(implicit session: DBSession = autoSession): Unit = {
     val masterNames = MasterSlotItem.findAll().map(msi => msi.id -> msi.name).toMap
-    val names = xs.map(x => masterNames(x.id))
+    val names = xs.map(x => masterNames(x.slotitemId))
     applyUpdate {
       insert.into(SlotItem)
         .columns(column.memberId, column.id, column.slotitemId, column.name)
