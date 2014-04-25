@@ -5,7 +5,9 @@ import scalikejdbc.SQLInterpolation._
 
 case class ShipImage(
   id: Int,
-  image: Array[Byte]) {
+  image: Array[Byte],
+  filename: Option[String],
+  memberId: Long) {
 
   def save()(implicit session: DBSession = ShipImage.autoSession): ShipImage = ShipImage.save(this)(session)
 
@@ -17,11 +19,13 @@ object ShipImage extends SQLSyntaxSupport[ShipImage] {
 
   override val tableName = "ship_image"
 
-  override val columns = Seq("id", "image")
+  override val columns = Seq("id", "image", "filename", "member_id")
 
   def apply(si: ResultName[ShipImage])(rs: WrappedResultSet): ShipImage = new ShipImage(
     id = rs.int(si.id),
-    image = rs.bytes(si.image)
+    image = rs.bytes(si.image),
+    filename = rs.stringOpt(si.filename),
+    memberId = rs.long(si.memberId)
   )
 
   val si = ShipImage.syntax("si")
@@ -31,6 +35,12 @@ object ShipImage extends SQLSyntaxSupport[ShipImage] {
   def find(id: Int)(implicit session: DBSession = autoSession): Option[ShipImage] = {
     withSQL {
       select.from(ShipImage as si).where.eq(si.id, id)
+    }.map(ShipImage(si.resultName)).single().apply()
+  }
+
+  def findByFilename(filename: String)(implicit session: DBSession = autoSession): Option[ShipImage] = {
+    withSQL {
+      select.from(ShipImage as si).where.eq(si.filename, filename)
     }.map(ShipImage(si.resultName)).single().apply()
   }
 
@@ -55,28 +65,38 @@ object ShipImage extends SQLSyntaxSupport[ShipImage] {
   }
 
   def create(
-    id: Int,
-    image: Array[Byte])(implicit session: DBSession = autoSession): ShipImage = {
+      id: Int,
+      image: Array[Byte],
+      filename: String,
+      memberId: Long)(implicit session: DBSession = autoSession): ShipImage = {
     withSQL {
       insert.into(ShipImage).columns(
         column.id,
-        column.image
+        column.image,
+        column.filename,
+        column.memberId
       ).values(
           id,
-          image
+          image,
+          filename,
+          memberId
         )
     }.update().apply()
 
     ShipImage(
       id = id,
-      image = image)
+      image = image,
+      filename = Some(filename),
+      memberId = memberId)
   }
 
   def save(entity: ShipImage)(implicit session: DBSession = autoSession): ShipImage = {
     withSQL {
       update(ShipImage).set(
         column.id -> entity.id,
-        column.image -> entity.image
+        column.image -> entity.image,
+        column.filename -> entity.filename,
+        column.memberId -> entity.memberId
       ).where.eq(column.id, entity.id)
     }.update().apply()
     entity

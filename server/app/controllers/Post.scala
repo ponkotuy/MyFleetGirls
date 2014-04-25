@@ -43,7 +43,7 @@ object Post extends Controller {
     Ok("Success")
   }
 
-  def updateShip = authAndParse[List[Ship]] { case (auth, ships) =>
+  def updateShip() = authAndParse[List[Ship]] { case (auth, ships) =>
     models.Ship.bulkUpsert(ships, auth.id)
     Ok("Success")
   }
