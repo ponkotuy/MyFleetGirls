@@ -96,6 +96,10 @@ class PostResponse extends Log {
           MFGHttp.post("/createitem", write(createItem))
           println(createItem.summary)
         }
+      case HenseiChange =>
+        val change = data.HenseiChange.fromMap(req)
+        if(change.id == 1) firstFleet = firstFleet.updated(change.shipIdx, change.shipId)
+        // 第一艦隊の情報のみ変更。めんどいので特にサーバは更新しない
       case SortieBattleResult =>
         val result = data.BattleResult.fromJson(obj)
         MFGHttp.post("/battle_result", write((result, mapNext)))
@@ -120,7 +124,7 @@ class PostResponse extends Log {
         ndock(obj \ "api_ndock")
         deckport(obj \ "api_deck_port")
       case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | Charge | MissionStart | KaisouPowerup |
-           HenseiChange | HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
+          HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
            MasterFurniture => // No Need
       case ShipSWF =>
         parseKey(q.uri).filterNot(MFGHttp.existsImage).foreach { key =>
