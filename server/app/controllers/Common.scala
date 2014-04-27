@@ -8,7 +8,6 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data.Auth
-import com.ponkotuy.value.Global
 import util.User
 
 /**
@@ -30,6 +29,7 @@ object Common extends Controller {
     }
   }
 
+  /** 実際はCheckしてないです */
   def checkPonkotuAndParse[T](f: (T) => SimpleResult)(implicit mf: Manifest[T]): Action[Req] = {
     Action.async(parse.urlFormEncoded(1024*1024*2)) { request =>
       checkPonkotu(request.body) {
@@ -59,19 +59,11 @@ object Common extends Controller {
     }
   }
 
+  /** Checkしなくなりました */
   def checkPonkotu(request: Req)(f: => SimpleResult): Future[SimpleResult] = {
     Future {
-      val optResult = for {
-        json <- reqHead(request)("auth")
-        auth <- J.parse(json).extractOpt[Auth]
-        if Global.Admin.contains(auth.memberId)
-      } yield true
-      optResult match {
-        case Some(true) =>
-          f
-          Ok("Success")
-        case _ => Unauthorized("Failed Authorization")
-      }
+      f
+      Ok("Success")
     }
   }
 

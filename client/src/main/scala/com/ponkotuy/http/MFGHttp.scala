@@ -44,6 +44,19 @@ object MFGHttp extends Log {
     }
   }
 
+  def masterPost(uStr: String, data: String, ver: Int = 1): Unit = {
+    try {
+      val http = httpBuilder.build()
+      val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
+      val entity = createEntity(Map("data" -> data))
+      post.setEntity(entity)
+      val res = http.execute(post)
+      alertResult(res)
+    } catch {
+      case e: Throwable => error(e.getStackTrace.mkString("\n"))
+    }
+  }
+
   private def createEntity(map: Map[String, String]): UrlEncodedFormEntity = {
     val nvps = map.map { case (key, value) =>
       new BasicNameValuePair(key, value)
@@ -76,8 +89,8 @@ object MFGHttp extends Log {
     }
   }
 
-  def existsImage(id: Int): Boolean =
-    head(s"/image/ship/$id.jpg", ver = 1).getStatusLine.getStatusCode == 200
+  def existsImage(key: String): Boolean =
+    head(s"/image/ship_obf/$key.jpg", ver = 1).getStatusLine.getStatusCode == 200
 
   def existsSound(s: SoundUrlId): Boolean =
     head(s"/sound/ship/${s.shipId}/${s.soundId}.mp3", ver = 1).getStatusLine.getStatusCode == 200

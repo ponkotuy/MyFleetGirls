@@ -7,7 +7,7 @@ import sbtbuildinfo.Plugin._
 
 object MyFleetGirlsBuild extends Build {
 
-  val ver = "0.10.2"
+  val ver = "0.10.6"
 
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
@@ -41,7 +41,8 @@ object MyFleetGirlsBuild extends Build {
     version := ver,
     scalaVersion := "2.10.3",
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions", "-Xlint"),
-    jarName in assembly := "MyFleetGirls.jar"
+    jarName in assembly := "MyFleetGirls.jar",
+    incOptions := incOptions.value.withNameHashing(true)
   )
 
   lazy val biSettings = buildInfoSettings ++ Seq(

@@ -9,10 +9,9 @@ import org.json4s.native.Serialization.write
 import com.ponkotuy.util.Log
 import com.ponkotuy.data
 import com.ponkotuy.data.{MapRoute, CreateShipWithId, master}
-import com.ponkotuy.value.Global
 import org.jboss.netty.buffer.ChannelBuffer
-import com.github.theon.uri.Uri
 import com.ponkotuy.tool.TempFileTool
+import com.ponkotuy.config.ClientConfig
 
 /**
  *
@@ -39,49 +38,39 @@ class PostResponse extends Log {
     lazy val req = q.reqMap
     lazy val obj = q.resJson.get
     typ match {
-      case Material =>
-        val material = data.Material.fromJson(obj)
-        MFGHttp.post("/material", write(material))
-        println(material.summary)
-      case Basic =>
-        auth = Some(data.Auth.fromJSON(obj))
-        val basic = data.Basic.fromJSON(obj)
-        MFGHttp.post("/basic", write(basic))
-        println(basic.summary)
-      case Ship3 =>
-        val ship = data.Ship.fromJson(obj \ "api_ship_data")
-        MFGHttp.post("/ship", write(ship), ver = 2)
-        println(s"所持艦娘数 -> ${ship.size}")
-      case NDock =>
-        val docks = data.NDock.fromJson(obj)
-        MFGHttp.post("/ndock", write(docks))
-        docks.filterNot(_.shipId == 0).map(_.summary).foreach(println)
-      case KDock =>
-        val docks = data.KDock.fromJson(obj).filterNot(_.completeTime == 0)
-        MFGHttp.post("/kdock", write(docks))
-        docks.foreach { dock =>
-          createShips.get(dock.id).foreach { cShip =>
-            val dat = data.CreateShipAndDock(cShip, dock)
-            MFGHttp.post("/createship", write(dat))
-            createShips.remove(dock.id)
-          }
-          println(dock.summary)
+      case ApiStart2 =>
+        if(ClientConfig.master) {
+          val masterGraph = master.MasterShipGraph.fromJson(obj \ "api_mst_shipgraph")
+          val filenames = masterGraph.map(it => it.id -> it.filename).toMap
+          val masterShip = master.MasterShip.fromJson(obj \ "api_mst_ship", filenames)
+          MFGHttp.masterPost("/master/ship", write(masterShip))
+          val masterMission = master.MasterMission.fromJson(obj \ "api_mst_mission")
+          MFGHttp.masterPost("/master/mission", write(masterMission))
+          val masterSlotitem = master.MasterSlotItem.fromJson(obj \ "api_mst_slotitem")
+          MFGHttp.masterPost("/master/slotitem", write(masterSlotitem))
+          val masterSType = master.MasterSType.fromJson(obj \ "api_mst_stype")
+          MFGHttp.masterPost("/master/stype", write(masterSType))
         }
+      case Material =>
+        material(obj)
+      case Basic =>
+        basic(obj)
+      case Ship3 =>
+        val update = data.Ship.fromJson(obj \ "api_ship_data")
+        MFGHttp.post("/update_ship", write(update))
+      case NDock =>
+        ndock(obj)
+      case KDock =>
+        kdock(obj)
       case DeckPort =>
-        val decks = data.DeckPort.fromJson(obj)
-        firstFleet = decks.find(_.id == 1).map(_.ships).getOrElse(Nil)
-        if(decks.nonEmpty) MFGHttp.post("/deckport", write(decks))
-        decks.map(_.summary).foreach(println)
+        deckport(obj)
       case Deck =>
-        val decks = data.DeckPort.fromJson(obj)
-        firstFleet = decks.find(_.id == 1).map(_.ships).getOrElse(Nil)
-        // DeckPortと同じだけど頻繁に更新する必要を感じないので送らない
-        // flagshipの更新だけは建造・開発で正しいデータを送るのに必要なので更新する
+        deckport(obj)
       case SlotItem =>
         val items = data.SlotItem.fromJson(obj)
         MFGHttp.post("/slotitem", write(items))
         println(s"所持装備数 -> ${items.size}")
-      case Book2 =>
+      case PictureBook =>
         val books = data.Book.fromJson(obj)
         if(books.isEmpty) return
         books.head match {
@@ -107,6 +96,17 @@ class PostResponse extends Log {
           MFGHttp.post("/createitem", write(createItem))
           println(createItem.summary)
         }
+      case HenseiChange =>
+        val change = data.HenseiChange.fromMap(req)
+        if(change.id == 1) {
+          if(change.shipId == -1) firstFleet = firstFleet.drop(change.shipIdx)
+          else {
+            firstFleet = Try {
+              firstFleet.updated(change.shipIdx, change.shipId)
+            }.getOrElse(firstFleet :+ change.shipId)
+          }
+        }
+        // 第一艦隊の情報のみ変更。めんどいので特にサーバは更新しない
       case SortieBattleResult =>
         val result = data.BattleResult.fromJson(obj)
         MFGHttp.post("/battle_result", write((result, mapNext)))
@@ -124,35 +124,21 @@ class PostResponse extends Log {
         }
         mapNext = Some(next)
         println(next.summary)
+      case Port =>
+        basic(obj \ "api_basic")
+        ship(obj \ "api_ship")
+        material(obj \ "api_material")
+        ndock(obj \ "api_ndock")
+        deckport(obj \ "api_deck_port")
       case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | Charge | MissionStart | KaisouPowerup |
-           HenseiChange | HenseiLock | PracticeBattle | PracticeMidnightBattle | PracticeBattleResult | GetOthersDeck |
-           SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem | MasterFurniture => // No Need
-      case MasterShip =>
-        if(checkPonkotu) {
-          val ships = master.MasterShip.fromJson(obj)
-          MFGHttp.post("/master/ship", write(ships))
-        }
-      case MasterMission =>
-        if(checkPonkotu) {
-          val missions = master.MasterMission.fromJson(obj)
-          MFGHttp.post("/master/mission", write(missions))
-        }
-      case MasterSlotItem =>
-        if(checkPonkotu) {
-          val items = master.MasterSlotItem.fromJson(obj)
-          MFGHttp.post("/master/slotitem", write(items))
-        }
-      case MasterSType =>
-        if(checkPonkotu) {
-          val stype = master.MasterSType.fromJson(obj)
-          MFGHttp.post("/master/stype", write(stype))
-        }
+          HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
+           MasterFurniture => // No Need
       case ShipSWF =>
-        parseId(q.uri).filterNot(MFGHttp.existsImage).foreach { id =>
+        parseKey(q.uri).filterNot(MFGHttp.existsImage).foreach { key =>
           val swf = allRead(q.res.getContent)
           val file = TempFileTool.save(swf, "swf")
-          MFGHttp.postFile("/swf/ship/" + id, "image")(file)
-          println(s"初めて艦娘ID${id}を見た")
+          MFGHttp.postFile("/swf/ship/" + key, "image")(file)
+          println(s"初めての艦娘を見て画像を転送しました")
         }
       case SoundMP3 =>
         SoundUrlId.parseURL(q.uri).filterNot(MFGHttp.existsSound).foreach { case SoundUrlId(shipId, soundId) =>
@@ -163,18 +149,60 @@ class PostResponse extends Log {
         }
       case _ =>
         info(s"ResType: $typ")
-        info(s"Req: $req")
-        jsonInfo(obj)
+        info(s"Req: ${q.reqCont}")
+        q.resJson.map(jsonInfo(_))
     }
   }
 
-  private def checkPonkotu: Boolean = auth.exists(u => Global.Admin.contains(u.memberId))
+  private def basic(obj: JValue): Unit = {
+    auth = Some(data.Auth.fromJSON(obj))
+    val basic = data.Basic.fromJSON(obj)
+    MFGHttp.post("/basic", write(basic))
+    println(basic.summary)
+  }
 
-  private def parseId(str: String): Option[Int] =
+  private def ndock(obj: JValue): Unit = {
+    val docks = data.NDock.fromJson(obj)
+    MFGHttp.post("/ndock", write(docks))
+    docks.filterNot(_.shipId == 0).map(_.summary).foreach(println)
+  }
+
+  private def kdock(obj: JValue): Unit = {
+    val docks = data.KDock.fromJson(obj).filterNot(_.completeTime == 0)
+    MFGHttp.post("/kdock", write(docks))
+    docks.foreach { dock =>
+      createShips.get(dock.id).foreach { cShip =>
+        val dat = data.CreateShipAndDock(cShip, dock)
+        MFGHttp.post("/createship", write(dat))
+        createShips.remove(dock.id)
+      }
+      println(dock.summary)
+    }
+  }
+
+  private def deckport(obj: JValue): Unit = {
+    val decks = data.DeckPort.fromJson(obj)
+    firstFleet = decks.find(_.id == 1).map(_.ships).getOrElse(Nil)
+    if(decks.nonEmpty) MFGHttp.post("/deckport", write(decks))
+    decks.map(_.summary).foreach(println)
+  }
+
+  private def ship(obj: JValue): Unit = {
+    val ship = data.Ship.fromJson(obj)
+    MFGHttp.post("/ship", write(ship), ver = 2)
+    println(s"所持艦娘数 -> ${ship.size}")
+  }
+
+  private def material(obj: JValue): Unit = {
+    val material = data.Material.fromJson(obj)
+    MFGHttp.post("/material", write(material))
+    println(material.summary)
+  }
+
+  private def parseKey(str: String): Option[String] =
     Try {
-      val uri = Uri.parseUri(str)
-      val filename = uri.pathParts.last
-      filename.takeWhile(_ != '.').toInt
+      val filename = str.split('/').last
+      filename.takeWhile(_ != '.')
     }.toOption
 
   private def allRead(cb: ChannelBuffer): Array[Byte] = {

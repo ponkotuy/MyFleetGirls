@@ -7,6 +7,7 @@ POST    /post/v1/basic              controllers.Post.basic
 POST    /post/v1/material           controllers.Post.material
 POST    /post/v1/ship               controllers.Post.ship
 POST    /post/v2/ship               controllers.Post.ship2
+POST    /post/v1/update_ship        controllers.Post.updateShip
 POST    /post/v1/ndock              controllers.Post.ndock
 POST    /post/v1/createship         controllers.Post.createShip
 POST    /post/v2/createship         controllers.Post.createShip2
@@ -23,7 +24,7 @@ POST    /post/v1/master/ship        controllers.PostMaster.ship
 POST    /post/v1/master/mission     controllers.PostMaster.mission
 POST    /post/v1/master/slotitem    controllers.PostMaster.slotitem
 POST    /post/v1/master/stype       controllers.PostMaster.stype
-POST    /post/v1/swf/ship/:shipId   controllers.PostFile.ship(shipId: Int)
+POST    /post/v1/swf/ship/:shipId   controllers.PostFile.ship(shipId: String)
 POST    /post/v1/mp3/kc/:shipId/:soundId controllers.PostFile.sound(shipId: Int, soundId: Int)
 
 # Rest
@@ -44,6 +45,7 @@ GET     /rest/v1/:userId/create_item_count controllers.Rest.createItemCount(user
 GET     /rest/v1/image/ship/:shipId.jpg controllers.RestImage.ship(shipId: Int)
 GET     /rest/v1/sound/ship/:shipId/:soundId.mp3 controllers.RestSound.ship(shipId: Int, soundId: Int)
 HEAD    /rest/v1/image/ship/:shipId.jpg controllers.RestImage.shipHead(shipId: Int)
+HEAD    /rest/v1/image/ship_obf/:shipKey.jpg controllers.RestImage.shipKeyHead(shipKey: String)
 HEAD    /rest/v1/sound/ship/:shipId/:soundId.mp3 controllers.RestSound.shipHead(shipId: Int, soundId: Int)
 
 # View

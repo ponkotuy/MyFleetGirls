@@ -47,4 +47,8 @@ object MasterMission extends SQLSyntaxSupport[MasterMission] {
   def deleteByMapArea(mapArea: Int)(implicit session: DBSession = MasterMission.autoSession): Unit = applyUpdate {
     delete.from(MasterMission).where.eq(MasterMission.column.mapArea, mapArea)
   }
+
+  def deleteAll()(implicit session: DBSession = autoSession): Unit = applyUpdate {
+    delete.from(MasterMission)
+  }
 }
