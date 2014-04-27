@@ -98,7 +98,14 @@ class PostResponse extends Log {
         }
       case HenseiChange =>
         val change = data.HenseiChange.fromMap(req)
-        if(change.id == 1) firstFleet = firstFleet.updated(change.shipIdx, change.shipId)
+        if(change.id == 1) {
+          if(change.shipId == -1) firstFleet = firstFleet.drop(change.shipIdx)
+          else {
+            firstFleet = Try {
+              firstFleet.updated(change.shipIdx, change.shipId)
+            }.getOrElse(firstFleet :+ change.shipId)
+          }
+        }
         // 第一艦隊の情報のみ変更。めんどいので特にサーバは更新しない
       case SortieBattleResult =>
         val result = data.BattleResult.fromJson(obj)
