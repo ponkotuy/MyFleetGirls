@@ -1,0 +1,46 @@
+@(title: String, byCell: Seq[(CellInfo, Seq[(Option[com.ponkotuy.data.GetShip], Long, String)])])
+
+@main {
+  <title>@title -艦娘ドロップ一覧-</title>
+} {
+  @statistics_head("drop") {
+    <div class="page-header">
+      <h1>@title 艦娘ドロップ</h1>
+    </div>
+
+    <div>
+      <p>ステージ後ろのアルファベットは<a target="_blank" href="http://wikiwiki.jp/kancolle/?%BD%D0%B7%E2#maps">艦これWiki出撃一覧</a>のアルファベットと対応しています</p>
+      <p>アルファベットの無い海域は情報提供募集中です。<a target="_blank" href="https://docs.google.com/spreadsheets/d/1iAFrEpw64nc8YnVcyNb9hjG0jb1UMy_29zKhRlKc7Ig/edit?usp=sharing">こちら</a>から情報提供できます</p>
+    </div>
+
+    <div class="panel-group" id="accordion">
+      @byCell.map { case (cell, ships) =>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapse@cell.pointStr">
+                @cell.pointStr @if(cell.alphabet.nonEmpty){(@cell.alphabet)}</a>
+              </a>
+            </h3>
+          </div>
+          <div id="collapse@cell.pointStr" class="panel-collapse collapse">
+            <table class="table table-striped table-condensed">
+              <thead>
+                <tr><th>ID</th><th>艦種</th><th>名前</th><th>Count</th><th>Rate</th></tr>
+              </thead>
+              @ships.map { case (ship, count, rate) =>
+                <tr>
+                  <td>@ship.map(_.id.toString).getOrElse("-")</td>
+                  <td>@ship.map(_.stype).getOrElse("---")</td>
+                  <td>@ship.map(_.name).getOrElse("ドロップなし")</td>
+                  <td>@count</td>
+                  <td>@rate</td>
+                </tr>
+              }
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+  }
+}

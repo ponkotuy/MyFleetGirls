@@ -54,7 +54,9 @@ GET     /entire/about               controllers.View.about
 GET     /entire/statistics          controllers.View.statistics
 GET     /entire/sta/cship/:fuel/:ammo/:steel/:bauxite/:develop controllers.View.cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int)
 GET     /entire/sta/citem/:fuel/:ammo/:steel/:bauxite/:sType controllers.View.citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: Int)
-GET     /entire/sta/from_ship        controllers.View.fromShip(q: String ?= "")
+GET     /entire/sta/from_ship       controllers.View.fromShip(q: String ?= "")
+GET     /entire/sta/drop_stage      controllers.View.dropStage()
+GET     /entire/sta/drop/:area/:info controllers.View.drop(area: Int, info: Int)
 GET     /u/:user                    controllers.UserView.name(user: String)
 GET     /user/:userId               controllers.UserView.user2(userId: Long)
 GET     /user/:userId/              controllers.UserView.user(userId: Long)

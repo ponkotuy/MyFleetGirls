@@ -3,6 +3,7 @@ package models
 import scalikejdbc._
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data
+import dat.{Stage, ShipDrop}
 
 case class BattleResult(
   id: Long,
@@ -80,6 +81,29 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
     withSQL {
       select(sqls"count(1)").from(BattleResult as br).where.append(sqls"${where}")
     }.map(_.long(1)).single().apply().get
+  }
+
+  def countAllGroupByDrop(area: Int, info: Int)(implicit session: DBSession = autoSession): List[(ShipDrop, Long)] = {
+    withSQL {
+      select(br.*, sqls"count(1) as cnt")
+        .from(BattleResult as br)
+        .where.eq(br.areaId, area).and.eq(br.infoNo, info)
+        .groupBy(br.areaId, br.infoNo, br.cell, br.getShipId)
+        .orderBy(br.cell, sqls"cnt")
+    }.map { rs =>
+      ShipDrop(br)(rs) -> rs.long("cnt")
+    }.list().apply()
+  }
+
+  def countAllByStage()(implicit session: DBSession = autoSession): List[(Stage, Long)] = {
+    withSQL {
+      select(br.*, sqls"count(1) as cnt")
+        .from(BattleResult as br)
+        .groupBy(br.areaId, br.infoNo)
+        .orderBy(br.areaId, br.infoNo)
+    }.map { rs =>
+      Stage(br)(rs) -> rs.long("cnt")
+    }.list().apply()
   }
 
   def create(result: data.BattleResult, map: data.MapStart, memberId: Long)(
