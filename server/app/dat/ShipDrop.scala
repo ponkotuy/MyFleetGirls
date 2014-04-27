@@ -2,7 +2,7 @@ package dat
 
 import scalikejdbc.WrappedResultSet
 import scalikejdbc.SQLInterpolation._
-import models.BattleResult
+import models.{CellInfo, BattleResult}
 import com.ponkotuy.data.GetShip
 
 /**
@@ -14,7 +14,8 @@ case class ShipDrop(
     areaId: Int, infoNo: Int, cell: Int,
     getShipId: Option[Int], getShipType: Option[String], getShipName: Option[String]) {
   def stage: String = s"$areaId-$infoNo"
-  def point: String = s"$stage-$cell"
+  def point: (Int, Int, Int) = (areaId, infoNo, cell)
+  def pointStr: String = s"$areaId-$infoNo-$cell"
 
   def getShip: Option[GetShip] = for {
     id <- getShipId
@@ -23,6 +24,8 @@ case class ShipDrop(
   } yield {
     GetShip(id, typ, name)
   }
+
+  def cellInfo(): Option[CellInfo] = CellInfo.find(areaId, infoNo, cell)
 }
 
 object ShipDrop {
