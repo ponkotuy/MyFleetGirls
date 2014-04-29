@@ -131,7 +131,8 @@ class PostResponse extends Log {
         ndock(obj \ "api_ndock")
         deckport(obj \ "api_deck_port")
       case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | Charge | MissionStart | KaisouPowerup |
-          HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
+           PracticeBattle | PracticeMidnightBattle | PracticeBattleResult |
+           HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
            MasterFurniture => // No Need
       case ShipSWF =>
         parseKey(q.uri).filterNot(MFGHttp.existsImage).foreach { key =>

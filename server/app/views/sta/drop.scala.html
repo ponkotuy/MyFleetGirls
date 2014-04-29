@@ -25,7 +25,8 @@
           <div class="panel-heading">
             <h2 class="panel-title">
               <a data-toggle="collapse" data-parent="#accordion" href="#collapse@cell.pointStr">
-                @cell.pointStr @if(cell.alphabet.nonEmpty){(@cell.alphabet)}</a>
+                @cell.pointStr @if(cell.alphabet.nonEmpty){(@cell.alphabet)}
+                <small>@if(cell.start){Start} @if(cell.boss){BOSS}</small>
               </a>
             </h2>
           </div>
