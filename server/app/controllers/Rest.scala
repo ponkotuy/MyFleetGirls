@@ -2,6 +2,9 @@ package controllers
 
 import play.api.mvc.Controller
 import scalikejdbc.SQLInterpolation._
+import org.json4s._
+import org.json4s.JsonDSL._
+import com.ponkotuy.data.GetShip
 
 /**
  *
@@ -36,6 +39,37 @@ object Rest extends Controller {
     val counts = models.CreateItem.materialCount(sqls"slotitem_id = ${itemId}")
     counts.map { case (mat, count) =>
       Map("mat" -> mat, "count" -> count, "sum" -> allCounts(mat))
+    }
+  }
+
+  def drop(area: Int, info: Int, rank: String) = returnJson {
+    val drops = models.BattleResult.countAllGroupByDrop(area, info, rank)
+    val raw: Map[(Int, Int, Int), List[(Option[GetShip], Long, String)]] =
+      drops.groupBy(_._1.point).mapValues { xs =>
+        val sum = xs.map(_._2).sum.toDouble
+        xs.map { case (drop, count) =>
+          val rate = f"${count / sum * 100}%.1f%%"
+          (drop.getShip, count, rate)
+        }.reverse
+      }
+    raw.toSeq.sortBy(_._1).map { case ((a, i, c), rest) =>
+      val ci = models.CellInfo.find(a, i, c)
+        .getOrElse(models.CellInfo.noAlphabet(a, i, c))
+      val ships = rest.map { case (ship, count, rate) =>
+        val shipJson = ship.map(Extraction.decompose).orNull
+        ("ship" -> shipJson) ~ ("count" -> count) ~ ("rate" -> rate)
+      }
+      Extraction.decompose(ci).asInstanceOf[JObject] ~ ("getship" -> ships)
+    }
+  }
+
+  def dropCell(area: Int, info: Int, cell: Int, rank: String) = returnJson {
+    val drops = models.BattleResult.countCellsGroupByDrop(area, info, cell, rank)
+    val sum = drops.map(_._2).sum.toDouble
+    drops.map { case (drop, count) =>
+      Extraction.decompose(drop).asInstanceOf[JObject] ~
+        ("count" -> count) ~
+        ("rate" -> f"${count / sum * 100}%.1f%%")
     }
   }
 

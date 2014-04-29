@@ -58,4 +58,6 @@ object GetShip {
       GetShip(id, stype, name)
     }.toOption
   }
+
+  val empty = GetShip(0, "-", "無し")
 }

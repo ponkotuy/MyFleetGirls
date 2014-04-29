@@ -7,7 +7,6 @@ import org.json4s._
 import org.json4s.native.Serialization.write
 import scalikejdbc.SQLInterpolation._
 import build.BuildInfo
-import com.ponkotuy.data.GetShip
 
 /**
  *
@@ -101,20 +100,8 @@ object View extends Controller {
 
   def drop(area: Int, info: Int) = Action.async {
     Future {
-      val drops = models.BattleResult.countAllGroupByDrop(area, info)
-      val byCell: Seq[(models.CellInfo, List[(Option[GetShip], Long, String)])] =
-        drops.groupBy(_._1.point).mapValues { xs =>
-          val sum = xs.map(_._2).sum.toDouble
-          xs.map { case (drop, count) =>
-            val rate = f"${count / sum * 100}%.1f%%"
-            (drop.getShip, count, rate)
-          }.reverse
-        }.toSeq.sortBy(_._1).map { case ((a, i, c), rest) =>
-          val cellInfo = models.CellInfo.find(a, i, c)
-            .getOrElse(models.CellInfo(a, i, c, "", false, false))
-          cellInfo -> rest
-        }
-      Ok(views.html.sta.drop(s"$area-$info", byCell))
+      val cells = models.BattleResult.dropedCells(area, info)
+      Ok(views.html.sta.drop(area, info, cells))
     }
   }
 }
