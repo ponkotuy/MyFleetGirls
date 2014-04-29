@@ -3,8 +3,9 @@ package models
 import scalikejdbc._
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data
-import dat.{Stage, ShipDrop}
+import dat.{BattleResultWithCell, Stage, ShipDrop}
 import scala.util.Try
+import scalikejdbc.WrappedResultSet
 
 case class BattleResult(
   id: Long,
@@ -73,10 +74,24 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
     withSQL(select(sqls"count(1)").from(BattleResult as br)).map(rs => rs.long(1)).single().apply().get
   }
 
-  def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[BattleResult] = {
+  def findAllBy(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session: DBSession = autoSession): List[BattleResult] = {
     withSQL {
       select.from(BattleResult as br).where.append(sqls"${where}")
+        .limit(limit).offset(offset)
     }.map(BattleResult(br.resultName)).list().apply()
+  }
+
+  def findAllByWithCell(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session: DBSession = autoSession): List[BattleResultWithCell] = {
+    withSQL {
+      select.from(BattleResult as br)
+        .leftJoin(CellInfo as ci)
+        .on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
+        .where.append(sqls"${where}")
+        .orderBy(br.created).desc
+        .limit(limit).offset(offset)
+    }.map(BattleResultWithCell(br, ci)).list().apply()
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {

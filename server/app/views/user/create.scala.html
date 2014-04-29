@@ -1,8 +1,8 @@
 @(user: util.User, ships: Seq[dat.CreateShipWithName])
 
 @main {
-  <title>@{user.admiral.nickname}提督 -建造履歴-</title>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment-with-langs.min.js"></script>
+  <title>建造履歴 -@{user.admiral.nickname}提督-</title>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.6.0/moment-with-langs.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.3/vue.min.js"></script>
   <script src="@routes.Assets.at("javascript/time.js")"></script>
   <script src="@routes.Assets.at("javascript/create.js")"></script>
