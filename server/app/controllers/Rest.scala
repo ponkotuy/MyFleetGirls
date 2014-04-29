@@ -2,6 +2,8 @@ package controllers
 
 import play.api.mvc.Controller
 import scalikejdbc.SQLInterpolation._
+import org.json4s._
+import org.json4s.JsonDSL._
 
 /**
  *
@@ -39,6 +41,16 @@ object Rest extends Controller {
     }
   }
 
+  def dropCell(area: Int, info: Int, cell: Int, rank: String) = returnJson {
+    val drops = models.BattleResult.countCellsGroupByDrop(area, info, cell, rank)
+    val sum = drops.map(_._2).sum.toDouble
+    drops.map { case (drop, count) =>
+      Extraction.decompose(drop).asInstanceOf[JObject] ~
+        ("count" -> count) ~
+        ("rate" -> f"${count / sum * 100}%.1f%%")
+    }
+  }
+
   def materials(userId: Long) = returnJson(models.Material.findAllByUser(userId))
 
   def basics(userId: Long) = returnJson(models.Basic.findAllByUser(userId))
@@ -61,4 +73,11 @@ object Rest extends Controller {
   }
 
   def createItemCount(memberId: Long) = returnString(models.CreateItem.countBy(sqls"member_id = ${memberId}"))
+
+  def battleResult(memberId: Long, limit: Int, offset: Int) = returnJson {
+    val result = models.BattleResult.findAllByWithCell(sqls"member_id = ${memberId}", limit, offset)
+    JArray(result.map(_.toJson))
+  }
+
+  def battleResultCount(memberId: Long) = returnString(models.BattleResult.countBy(sqls"member_id = ${memberId}"))
 }

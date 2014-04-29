@@ -1,5 +1,4 @@
-$(function() { drawSunburst(960, 720, '#cship_graph'); });
-function drawSunburst(w, h, el) {
+function drawSunburst(w, h, el, data) {
   var x = d3.scale.linear().range([0, w]);
   var y = d3.scale.linear().range([0, h]);
 
@@ -14,20 +13,17 @@ function drawSunburst(w, h, el) {
   var partition = d3.layout.partition()
     .value(function(d) { return d.count; });
 
-  console.log($(el))
-  var root = JSON.parse($(el).attr('data-json'))
-
   var g = vis.selectAll("g")
-    .data(partition.nodes(root))
+    .data(partition.nodes(data))
     .enter().append("svg:g")
     .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; })
     .on("click", click);
 
-  var kx = w / root.dx,
+  var kx = w / data.dx,
   ky = h / 1;
 
   g.append("svg:rect")
-    .attr("width", root.dy * kx)
+    .attr("width", data.dy * kx)
     .attr("height", function(d) { return d.dx * ky; })
     .attr("class", function(d) { return d.children ? "parent" : "child"; });
 
@@ -38,7 +34,7 @@ function drawSunburst(w, h, el) {
     .text(function(d) { return d.name; })
 
   d3.select(window)
-    .on("click", function() { click(root); })
+    .on("click", function() { click(data); })
 
   function click(d) {
     if (!d.children) return;

@@ -3,7 +3,9 @@ package models
 import scalikejdbc._
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data
-import dat.{Stage, ShipDrop}
+import dat.{BattleResultWithCell, Stage, ShipDrop}
+import scala.util.Try
+import scalikejdbc.WrappedResultSet
 
 case class BattleResult(
   id: Long,
@@ -54,6 +56,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
   )
 
   val br = BattleResult.syntax("br")
+  val ci = CellInfo.syntax("ci")
 
   override val autoSession = AutoSession
 
@@ -71,10 +74,24 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
     withSQL(select(sqls"count(1)").from(BattleResult as br)).map(rs => rs.long(1)).single().apply().get
   }
 
-  def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[BattleResult] = {
+  def findAllBy(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session: DBSession = autoSession): List[BattleResult] = {
     withSQL {
       select.from(BattleResult as br).where.append(sqls"${where}")
+        .limit(limit).offset(offset)
     }.map(BattleResult(br.resultName)).list().apply()
+  }
+
+  def findAllByWithCell(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session: DBSession = autoSession): List[BattleResultWithCell] = {
+    withSQL {
+      select.from(BattleResult as br)
+        .leftJoin(CellInfo as ci)
+        .on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
+        .where.append(sqls"${where}")
+        .orderBy(br.created).desc
+        .limit(limit).offset(offset)
+    }.map(BattleResultWithCell(br, ci)).list().apply()
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
@@ -83,11 +100,26 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
     }.map(_.long(1)).single().apply().get
   }
 
-  def countAllGroupByDrop(area: Int, info: Int)(implicit session: DBSession = autoSession): List[(ShipDrop, Long)] = {
+  def countAllGroupByDrop(area: Int, info: Int, rank: String)(
+      implicit session: DBSession = autoSession): List[(ShipDrop, Long)] = {
     withSQL {
       select(br.*, sqls"count(1) as cnt")
         .from(BattleResult as br)
-        .where.eq(br.areaId, area).and.eq(br.infoNo, info)
+        .where.eq(br.areaId, area).and.eq(br.infoNo, info).and.in(br.winRank, rank.map(_.toString))
+        .groupBy(br.areaId, br.infoNo, br.cell, br.getShipId)
+        .orderBy(br.cell, sqls"cnt")
+    }.map { rs =>
+      ShipDrop(br)(rs) -> rs.long("cnt")
+    }.list().apply()
+  }
+
+  def countCellsGroupByDrop(area: Int, info: Int, cell: Int, rank: String)(
+      implicit session: DBSession = autoSession): List[(ShipDrop, Long)] = {
+    withSQL {
+      select(br.*, sqls"count(1) as cnt")
+        .from(BattleResult as br)
+        .where.eq(br.areaId, area).and.eq(br.infoNo, info).and.eq(br.cell, cell)
+        .and.in(br.winRank, rank.map(_.toString))
         .groupBy(br.areaId, br.infoNo, br.cell, br.getShipId)
         .orderBy(br.cell, sqls"cnt")
     }.map { rs =>
@@ -105,6 +137,22 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
       Stage(br)(rs) -> rs.long("cnt")
     }.list().apply()
   }
+  def dropedCells(area: Int, info: Int)(implicit session: DBSession = autoSession): List[CellInfo] = {
+    withSQL {
+      select(br.areaId, br.infoNo, br.cell, ci.resultAll).from(BattleResult as br)
+        .leftJoin(CellInfo as ci)
+        .on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
+        .where.eq(br.areaId, area).and.eq(br.infoNo, info)
+        .groupBy(br.cell)
+    }
+  }.map { rs =>
+    Try(CellInfo(ci)(rs)).getOrElse {
+      val areaId = rs.int(1)
+      val infoNo = rs.int(2)
+      val cell = rs.int(3)
+      CellInfo.noAlphabet(areaId, infoNo, cell)
+    }
+  }.list().apply()
 
   def create(result: data.BattleResult, map: data.MapStart, memberId: Long)(
       implicit session: DBSession = autoSession): BattleResult = {

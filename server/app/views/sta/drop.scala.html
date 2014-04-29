@@ -1,11 +1,17 @@
-@(title: String, byCell: Seq[(CellInfo, Seq[(Option[com.ponkotuy.data.GetShip], Long, String)])])
+@(area: Int, info: Int, cells: Seq[CellInfo])
 
 @main {
-  <title>@title -艦娘ドロップ一覧-</title>
+  <title>@area-@info -艦娘ドロップ一覧-</title>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.3/vue.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.5/d3.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+  <script src="@routes.Assets.at("javascript/lib/sunburst.js")"></script>
+  <script src="@routes.Assets.at("javascript/drop.js")"></script>
+  <link rel="stylesheet" href="@routes.Assets.at("stylesheet/sunburst.css")" />
 } {
   @statistics_head("drop") {
     <div class="page-header">
-      <h1>@title 艦娘ドロップ</h1>
+      <h1>@area-@info 艦娘ドロップ</h1>
     </div>
 
     <div>
@@ -14,29 +20,40 @@
     </div>
 
     <div class="panel-group" id="accordion">
-      @byCell.map { case (cell, ships) =>
-        <div class="panel panel-default">
+      @cells.map { cell =>
+        <div class="panel panel-default" id="panel@cell.pointStr">
           <div class="panel-heading">
-            <h3 class="panel-title">
+            <h2 class="panel-title">
               <a data-toggle="collapse" data-parent="#accordion" href="#collapse@cell.pointStr">
                 @cell.pointStr @if(cell.alphabet.nonEmpty){(@cell.alphabet)}</a>
               </a>
-            </h3>
+            </h2>
           </div>
-          <div id="collapse@cell.pointStr" class="panel-collapse collapse">
+          <div id="collapse@cell.pointStr" class="panel-collapse collapse" data-url="@routes.Rest.dropCell(cell.areaId, cell.infoNo, cell.cell, "(rank)")">
+            <div class="panel-body">
+              <label class="checkbox-inline">
+                <input type="checkbox" v-model="rank_s" />S勝利
+              </label>
+              <label class="checkbox-inline">
+                <input type="checkbox" v-model="rank_a" />A勝利
+              </label>
+              <label class="checkbox-inline">
+                <input type="checkbox" v-model="rank_b" />B勝利
+              </label>
+              <div style="width:900px;height:600px;margin:auto;" id="sunburst@cell.pointStr" class="sunburst"></div>
+            </div>
             <table class="table table-striped table-condensed">
               <thead>
-                <tr><th>ID</th><th>艦種</th><th>名前</th><th>Count</th><th>Rate</th></tr>
+                <tr><th>艦種</th><th>名前</th><th>Count</th><th>Rate</th></tr>
               </thead>
-              @ships.map { case (ship, count, rate) =>
-                <tr>
-                  <td>@ship.map(_.id.toString).getOrElse("-")</td>
-                  <td>@ship.map(_.stype).getOrElse("---")</td>
-                  <td>@ship.map(_.name).getOrElse("ドロップなし")</td>
-                  <td>@count</td>
-                  <td>@rate</td>
+              <tbody>
+                <tr v-repeat="drop: drops">
+                  <td>{{ drop.getShipType }}</td>
+                  <td>{{ drop.getShipName }}</td>
+                  <td>{{ drop.count }}</td>
+                  <td>{{ drop.rate }}</td>
                 </tr>
-              }
+              </tbody>
             </table>
           </div>
         </div>

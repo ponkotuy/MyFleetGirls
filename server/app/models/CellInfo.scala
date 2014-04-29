@@ -122,4 +122,6 @@ object CellInfo extends SQLSyntaxSupport[CellInfo] {
     }.update().apply()
   }
 
+  def noAlphabet(area: Int, info: Int, cell: Int): CellInfo = CellInfo(area, info, cell, "", false, false)
+
 }

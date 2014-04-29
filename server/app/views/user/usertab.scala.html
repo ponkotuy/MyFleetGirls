@@ -1,4 +1,5 @@
 @(active: String)(body: Html)
+
   <ul class="nav nav-tabs">
     <li class="@if(active=="top"){active}">
       <a href="top">Top</a>
@@ -20,6 +21,9 @@
     </li>
     <li class="@if(active=="create"){active}">
       <a href="create">建造履歴</a>
+    </li>
+    <li class="@if(active=="naval"){active}">
+      <a href="naval_battle">海戦履歴</a>
     </li>
   </ul>
 

@@ -1,7 +1,7 @@
 @(user: util.User, ships: Seq[dat.ShipWithName], decks: Seq[dat.DeckShipWithName], deckports: Seq[DeckPort])
 
 @main {
-  <title>@{user.admiral.nickname}提督 -艦娘-</title>
+  <title>艦娘 -@{user.admiral.nickname}提督-</title>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.bootstrap.css" />
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.widgets.min.js"></script>
