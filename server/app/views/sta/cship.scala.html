@@ -7,6 +7,13 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.5/d3.min.js"></script>
   <script src="@routes.Assets.at("javascript/time.js")"></script>
   <script src="@routes.Assets.at("javascript/lib/sunburst.js")"></script>
+  <script>
+    $(function() {
+      var el = '#cship_graph'
+      var data = JSON.parse($(el).attr('data-json'));
+      drawSunburst(960, 720, el, data);
+    });
+  </script>
 } {
   @statistics_head("from_recipe") {
     <div class="page-header">
