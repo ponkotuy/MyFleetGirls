@@ -1,3 +1,4 @@
+import plugins.C3P0ConnectionPoolFactory
 import scala.util.Try
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -14,16 +15,15 @@ import UserShip.UserIterator
 object UserShipDB {
   def main(args: Array[String]): Unit = {
     Class.forName("com.mysql.jdbc.Driver")
-    val settings = ConnectionPoolSettings(initialSize = 3, maxSize = 10)
-    ConnectionPool.singleton("jdbc:mysql://localhost:3306/myfleet", "user", "password", settings)
+    ConnectionPool.singleton("jdbc:mysql://localhost:3306/myfleet", "myfleet", "myfleet")
 
     val count = Try { args(0).toInt }.getOrElse(20)
     val users = new UserIterator(0)
-    DB readOnly { implicit session =>
-      users.take(count).foreach { user =>
-        val result = controllers.UserView.ship(user).apply(FakeRequest())
-        println(Await.result(result, 60.seconds))
-      }
+    users.take(count).foreach { user =>
+      val result = controllers.UserView.ship(user).apply(FakeRequest())
+      println(Await.result(result, 60.seconds))
     }
   }
+
+  implicit val factory = C3P0ConnectionPoolFactory
 }

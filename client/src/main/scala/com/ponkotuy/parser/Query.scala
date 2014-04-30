@@ -2,6 +2,7 @@ package com.ponkotuy.parser
 
 import scala.util.Try
 import java.nio.charset.Charset
+import java.net.URLDecoder
 import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
 import org.json4s._
 
@@ -23,14 +24,12 @@ case class Query(req: HttpRequest, res: HttpResponse) {
 
 object Query {
   val UTF8 = "UTF-8"
-  val Underbar = """\%5F""".r
 
   def parseKeyValue(str: String): Map[String, String] =
     Try {
-      Underbar.replaceAllIn(str, "_").split('&').map {
-        elem =>
-          val Array(key, value) = elem.split('=')
-          key -> value
+      URLDecoder.decode(str, UTF8).split('&').map { elem =>
+        val Array(key, value) = elem.split('=')
+        key -> value
       }.toMap
     }.getOrElse(Map())
 }

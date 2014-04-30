@@ -79,7 +79,8 @@ object ResType extends Log {
   val values = Set(
     LoginCheck, ApiStart2, Material, Basic, Record, Ship2, Ship3, NDock, KDock,
     Deck, DeckPort, UseItem, SlotItem, Practice, PictureBook, MapInfo, MapCell, CreateShip, GetShip, CreateItem,
-    Charge, HenseiChange, HenseiLock, MissionStart, KaisouPowerup, PracticeBattle, PracticeBattleResult, GetOthersDeck,
+    Charge, HenseiChange, HenseiLock, MissionStart, KaisouPowerup,
+    PracticeBattle, PracticeMidnightBattle, PracticeBattleResult, GetOthersDeck,
     MapStart, MapNext, SortieBattle, SortieBattleResult, ClearItemGet, NyukyoStart, RankingList,
     MasterPractice, MasterUseItem, MasterFurniture, MasterSlotItem, MasterMapArea,
     Port, ShipSWF, SoundMP3
