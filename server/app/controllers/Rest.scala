@@ -87,7 +87,7 @@ object Rest extends Controller {
 
   private def battleResultWhere(memberId: Long, boss: Boolean, drop: Boolean, rank: String) =
     sqls"member_id = ${memberId}"
-      .append(sqls" and win_rank in (${rank.map(_.toString)})")
+      .append(if(rank.nonEmpty) sqls" and win_rank in (${rank.map(_.toString)})" else sqls"")
       .append(if(boss) sqls" and boss = true" else sqls"")
       .append(if(drop) sqls" and get_ship_id is not null" else sqls"")
 }

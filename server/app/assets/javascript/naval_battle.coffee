@@ -12,7 +12,7 @@ $(document).ready ->
       rankS: true
       rankA: true
       rankB: true
-      rankC: true
+      rankC: false
       rankD: false
       rankE: false
     methods:
