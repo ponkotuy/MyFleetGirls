@@ -13,6 +13,48 @@
       </div>
 
       <div id="battle_log">
+        <form class="form-inline" role="form">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" v-model="bossOnly">BOSSのみ
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" v-model="dropOnly">ドロップありのみ
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" v-model="rankS">S勝利
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" v-model="rankA">A勝利
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" v-model="rankB">B勝利
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" v-model="rankC">C敗北
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" v-model="rankD">D敗北
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" v-model="rankE">E敗北
+            </label>
+          </div>
+        </form>
         <table class="table table-striped table-condensed">
           <thead>
             <tr>
@@ -21,7 +63,7 @@
           </thead>
           <tbody>
             <tr v-repeat="drop: data">
-              <td>{{drop.point}}</td>
+              <td>{{drop.point}}<small v-if="drop.start">Start</small> <small v-if="drop.boss">BOSS</small></td>
               <td>{{drop.winRank}}</td>
               <td>{{drop.getShipName}}</td>
               <td>{{timeToStr(drop.created)}}</td>
