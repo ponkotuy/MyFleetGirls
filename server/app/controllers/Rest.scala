@@ -74,10 +74,20 @@ object Rest extends Controller {
 
   def createItemCount(memberId: Long) = returnString(models.CreateItem.countBy(sqls"member_id = ${memberId}"))
 
-  def battleResult(memberId: Long, limit: Int, offset: Int) = returnJson {
-    val result = models.BattleResult.findAllByWithCell(sqls"member_id = ${memberId}", limit, offset)
+  def battleResult(memberId: Long, limit: Int, offset: Int, boss: Boolean, drop: Boolean, rank: String) = returnJson {
+    val where = battleResultWhere(memberId, boss, drop, rank)
+    val result = models.BattleResult.findAllByWithCell(where, limit, offset)
     JArray(result.map(_.toJson))
   }
 
-  def battleResultCount(memberId: Long) = returnString(models.BattleResult.countBy(sqls"member_id = ${memberId}"))
+  def battleResultCount(memberId: Long, boss: Boolean, drop: Boolean, rank: String) = returnString {
+    val where = battleResultWhere(memberId, boss, drop, rank)
+    models.BattleResult.countBy(where)
+  }
+
+  private def battleResultWhere(memberId: Long, boss: Boolean, drop: Boolean, rank: String) =
+    sqls"member_id = ${memberId}"
+      .append(sqls" and win_rank in (${rank.map(_.toString)})")
+      .append(if(boss) sqls" and boss = true" else sqls"")
+      .append(if(drop) sqls" and get_ship_id is not null" else sqls"")
 }
