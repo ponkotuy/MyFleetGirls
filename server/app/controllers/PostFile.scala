@@ -17,23 +17,21 @@ object PostFile extends Controller {
     authentication(form) { auth =>
       request.body.file("image") match {
         case Some(ref) =>
-          val swfFile = ref.ref.file
-          val imageFile = SWFTool.extractJPG(swfFile, 5)
-          val image = readAll(new FileInputStream(imageFile))
           models.MasterShipBase.findByFilename(shipKey) match {
             case Some(ship) =>
-              try {
-                models.ShipImage.create(ship.id, image, shipKey, auth.id)
-                Ok("Success")
-              } catch { // When Duplicate
-                case e: Throwable =>
-                  models.ShipImage.find(ship.id) match {
-                    case Some(si) =>
-                      ShipImage(si.id, si.image, Some(shipKey), si.memberId).save() // filenameをupdate
-                      Ok("Updated Ship Image Key")
-                    case None =>
-                      Ok("Already Exists")
+              models.ShipImage.find(ship.id) match {
+                case Some(si) =>
+                  if(si.filename.isDefined) Ok("Already Exists")
+                  else {
+                    ShipImage(si.id, si.image, Some(shipKey), si.memberId).save() // filenameをupdate
+                    Ok("Updated Ship Image Key")
                   }
+                case None =>
+                  val swfFile = ref.ref.file
+                  val imageFile = SWFTool.extractJPG(swfFile, 5)
+                  val image = readAll(new FileInputStream(imageFile))
+                  models.ShipImage.create(ship.id, image, shipKey, auth.id)
+                  Ok("Success")
               }
             case None => BadRequest("Wrong Filename or Not Found Master Data")
           }

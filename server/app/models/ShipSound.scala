@@ -1,7 +1,7 @@
 package models
 
 import scalikejdbc._
-import scalikejdbc.SQLInterpolation._
+import models.SQLInterpolation._
 
 case class ShipSound(
   shipId: Int,
@@ -62,7 +62,7 @@ object ShipSound extends SQLSyntaxSupport[ShipSound] {
     soundId: Int,
     sound: Array[Byte])(implicit session: DBSession = autoSession): ShipSound = {
     withSQL {
-      insert.into(ShipSound).columns(
+      insertIgnore.into(ShipSound).columns(
         column.shipId,
         column.soundId,
         column.sound
