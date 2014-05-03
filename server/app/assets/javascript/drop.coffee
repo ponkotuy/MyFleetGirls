@@ -6,6 +6,7 @@ $(document).ready ->
       el: '#' + id
       data:
         drops: []
+        dropOnly: false
         rank_s: true
         rank_a: true
         rank_b: true
@@ -18,7 +19,8 @@ $(document).ready ->
         getJSON: ->
           url = @url.replace('(rank)', @rank())
           $.getJSON url, (data) =>
-            @drops = data.reverse().map (it) ->
+            xs = if @dropOnly then _.filter(data, (drop) -> drop.getShipName?) else data
+            @drops = xs.reverse().map (it) ->
               it.getShipName ?= 'ドロップ無し'
               it
         draw: ->
@@ -49,6 +51,8 @@ $(document).ready ->
           if i.drops.length == 0
             i.getJSON()
       ready: ->
+        @$watch 'dropOnly', ->
+          @getJSON()
         @$watch 'rank_s', ->
           @getJSON()
         @$watch 'rank_a', ->

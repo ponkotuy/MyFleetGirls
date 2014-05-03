@@ -33,6 +33,9 @@
           <div id="collapse@cell.pointStr" class="panel-collapse collapse" data-url="@routes.Rest.dropCell(cell.areaId, cell.infoNo, cell.cell, "(rank)")">
             <div class="panel-body">
               <label class="checkbox-inline">
+                <input type="checkbox" v-model="dropOnly" />ドロップありのみ
+              </label>
+              <label class="checkbox-inline">
                 <input type="checkbox" v-model="rank_s" />S勝利
               </label>
               <label class="checkbox-inline">

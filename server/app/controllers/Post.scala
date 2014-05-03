@@ -71,6 +71,13 @@ object Post extends Controller {
 
   def createItem = authAndParse[CreateItem] { (auth, item) =>
     models.CreateItem.create(item, auth.id)
+    for {
+      id <- item.id
+      slotitemId <- item.slotitemId
+      master <- models.MasterSlotItem.find(slotitemId)
+    } {
+      models.SlotItem.create(auth.id, id, slotitemId, master.name)
+    }
     Ok("Success")
   }
 

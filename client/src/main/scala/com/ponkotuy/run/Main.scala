@@ -10,5 +10,11 @@ import com.ponkotuy.config.ClientConfig
  * Date: 14/02/18.
  */
 object Main extends App {
-  new FinagleProxy(ClientConfig.kcUrl, ClientConfig.proxyPort, new KCIntercepter).start()
+  try {
+    new FinagleProxy(ClientConfig.kcUrl, ClientConfig.proxyPort, new KCIntercepter).start()
+  } catch {
+    case e: ExceptionInInitializerError =>
+      e.printStackTrace()
+      println("application.confが存在しないか設定が無効です。application.conf.sampleをコピーして設定しましょう")
+  }
 }

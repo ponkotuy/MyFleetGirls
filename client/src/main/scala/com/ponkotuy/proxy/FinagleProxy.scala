@@ -2,7 +2,7 @@ package com.ponkotuy.proxy
 
 import com.github.theon.uri.Uri
 import com.twitter.finagle.builder.ClientBuilder
-import com.twitter.finagle.{http, Service, Http}
+import com.twitter.finagle.{ChannelException, http, Service, Http}
 import com.twitter.util.{Future, Await}
 import org.jboss.netty.handler.codec.http.{HttpMethod, HttpResponse, HttpRequest}
 import com.ponkotuy.intercept.{Intercepter, PassThrough}
@@ -36,7 +36,14 @@ class FinagleProxy(hosts: String, port: Int, inter: Intercepter = new PassThroug
       res
     }
   }
-  val server = Http.serve(s":$port", service)
+  val server = try {
+    Http.serve(s":$port", service)
+  } catch {
+    case e: ChannelException =>
+      e.printStackTrace()
+      println("多重起動していないかどうか確認してください")
+      sys.exit(1)
+  }
 
   def start(): Unit = {
     Await.ready(server)
