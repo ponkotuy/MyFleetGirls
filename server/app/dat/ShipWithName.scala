@@ -86,7 +86,7 @@ case class ShipWithName(ship: Ship, master: MasterShipBase, stype: MasterStype) 
   def expRate: Double = (exp - SE.sum(lv)).toDouble/SE.diff(lv + 1)
   /** LvMAX(100 or 150)までに必要な経験値の取得率 */
   def entireExpRate: Double =
-    if(lv > 100) exp.toDouble/SE.sum(150) else exp.toDouble/SE.sum(100)
+    if(lv > 99) exp.toDouble/SE.sum(150) else exp.toDouble/SE.sum(100)
 }
 
 object ShipWithName {
