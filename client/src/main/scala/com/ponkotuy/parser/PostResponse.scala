@@ -99,11 +99,14 @@ class PostResponse extends Log {
       case HenseiChange =>
         val change = data.HenseiChange.fromMap(req)
         if(change.id == 1) {
-          if(change.shipId == -1) firstFleet = firstFleet.drop(change.shipIdx)
+          if(change.shipId == -1) firstFleet = firstFleet.filterNot(_ == firstFleet(change.shipIdx))
           else {
             firstFleet = Try {
               firstFleet.updated(change.shipIdx, change.shipId)
-            }.getOrElse(firstFleet :+ change.shipId)
+            }.getOrElse {
+              firstFleet = firstFleet.filterNot(_ == change.shipId)
+              firstFleet :+ change.shipId
+            }
           }
         }
         // 第一艦隊の情報のみ変更。めんどいので特にサーバは更新しない
@@ -130,8 +133,8 @@ class PostResponse extends Log {
         material(obj \ "api_material")
         ndock(obj \ "api_ndock")
         deckport(obj \ "api_deck_port")
-      case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | Charge | MissionStart | KaisouPowerup |
-           PracticeBattle | PracticeMidnightBattle | PracticeBattleResult |
+      case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | UpdateDeckName | Charge | MissionStart |
+           KaisouPowerup | PracticeBattle | PracticeMidnightBattle | PracticeBattleResult |
            HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
            MasterFurniture => // No Need
       case ShipSWF =>
