@@ -20,7 +20,8 @@ $(document).ready ->
   $.getJSON "/rest/v1/#{userid}/materials", (data) ->
     table = translate(data)
 
-    mainPlot()
+    param = fromURLParameter(location.hash.replace(/^\#/, ''))
+    mainPlot(param.min, param.max)
     $(chart).bind 'plotselected', (event, ranges) ->
       mainPlot(ranges.xaxis.from, ranges.xaxis.to)
 
@@ -39,7 +40,14 @@ translate = (data) ->
 
 transElem = (data, elem) -> data.map (x) -> [x['created'], x[elem]]
 
+# rangePlot = (rangeStr) -> a
+
+monthPlot = -> mainPlot moment().subtract('months', 1).valueOf()
+weekPlot = -> mainPlot moment().subtract('weeks', 1).valueOf()
+dayPlot = -> mainPlot moment().subtract('days', 1).valueOf()
+
 mainPlot = (min, max = moment().valueOf()) ->
+  location.hash = toURLParameter({min: min, max: max})
   if min?
     newOpt = $.extend true, {}, option,
       xaxis: { min: min, max: max }
@@ -51,8 +59,8 @@ button = ->
   $('#whole').click ->
     mainPlot()
   $('#month').click ->
-    mainPlot moment().subtract('months', 1).valueOf()
+    monthPlot()
   $('#week').click ->
-    mainPlot moment().subtract('weeks', 1).valueOf()
+    weekPlot()
   $('#day').click ->
-    mainPlot moment().subtract('days', 1).valueOf()
+    dayPlot()
