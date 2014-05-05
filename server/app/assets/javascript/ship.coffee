@@ -9,10 +9,16 @@ $(document).ready ->
     sortList: [[3, 1], [4, 1]]
     theme: 'bootstrap'
     headerTemplate: '{content} {icon}'
-    widgets: ["uitheme"]
+    widgets: ['uitheme']
 
-  $('#modal').on 'shown.bs.modal', ->
+  param = fromURLParameter(location.hash.replace(/^\#/, ''))
+  if param.modal?
+    $('#modal').modal({remote: "aship/#{param.id}"})
+
+  $('#modal').on 'shown.bs.modal', (e) ->
     $('.ship_hbar').each () ->
+      id = JSON.parse($(this).attr('data-id'))
+      location.hash = toURLParameter({modal: true, id: id})
       data = JSON.parse($(this).attr('data-json'))
       option =
         seriesDefaults:
@@ -35,4 +41,5 @@ $(document).ready ->
       $(this).jqplot(data, option)
 
   $('#modal').on 'hidden.bs.modal', ->
+    location.hash = ''
     $(this).removeData('bs.modal')

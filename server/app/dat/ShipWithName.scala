@@ -35,6 +35,13 @@ case class ShipWithName(ship: Ship, master: MasterShipBase, stype: MasterStype) 
   def name = master.name
   def yomi = master.yomi
   def stName = stype.name
+  def stAbbName = stAbbNames(stName)
+
+  val stAbbNames = Map(
+    "重雷装巡洋艦" -> "雷巡", "重巡洋艦" -> "重巡", "軽巡洋艦" -> "軽巡",
+    "航空巡洋艦" -> "航巡", "航空戦艦" -> "航戦",
+    "水上機母艦" -> "水母"
+  ).withDefault(identity)
 
   lazy val slot: List[SlotItem] = SlotItem.findIn(ship.slot, memberId)
   lazy val slotMaster: List[MasterSlotItem] = {
