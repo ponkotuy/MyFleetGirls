@@ -133,8 +133,8 @@ class PostResponse extends Log {
         material(obj \ "api_material")
         ndock(obj \ "api_ndock")
         deckport(obj \ "api_deck_port")
-      case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | Charge | MissionStart | KaisouPowerup |
-           PracticeBattle | PracticeMidnightBattle | PracticeBattleResult |
+      case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | UpdateDeckName | Charge | MissionStart |
+           KaisouPowerup | PracticeBattle | PracticeMidnightBattle | PracticeBattleResult |
            HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
            MasterFurniture => // No Need
       case ShipSWF =>
