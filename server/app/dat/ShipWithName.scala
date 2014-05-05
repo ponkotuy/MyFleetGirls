@@ -1,7 +1,5 @@
 package dat
 
-import org.json4s.JsonDSL._
-import org.json4s.native.JsonMethods._
 import util.{ShipExperience => SE}
 import models._
 
@@ -10,7 +8,7 @@ import models._
  * @author ponkotuy
  * Date: 14/04/15.
  */
-case class ShipWithName(ship: Ship, master: MasterShipBase, stype: MasterStype) {
+case class ShipWithName(ship: Ship, master: MasterShipBase, stype: MasterStype) extends GraphData {
   import ShipWithName._
 
   def id = ship.id
@@ -60,20 +58,6 @@ case class ShipWithName(ship: Ship, master: MasterShipBase, stype: MasterStype) 
   def raisouRate: Double = calcRate(rowRaisou, spec.raisouMin, spec.raisouMax)
   def taikuRate: Double = calcRate(rowTaiku, spec.taikuMin, spec.taikuMax)
   def soukouRate: Double = calcRate(rowSoukou, spec.soukoMin, spec.soukoMax)
-
-  def toJson: String = {
-    val seq = Seq(
-      Seq(0, karyoku / 150.0),
-      Seq(1, raisou / 130.0),
-      Seq(2, taiku / 90.0),
-      Seq(3, soukou / 100.0),
-      Seq(4, kaihi / 80.0),
-      Seq(5, taisen / 80.0),
-      Seq(6, sakuteki / 70.0),
-      Seq(7, lucky / 40.0)
-    )
-    compact(render(seq))
-  }
 
   /** Condition値による色の変化 */
   def rgb: RGB = ShipWithName.rgb(cond)

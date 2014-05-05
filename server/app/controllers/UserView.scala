@@ -70,12 +70,18 @@ object UserView {
     Ok(views.html.user.create(user, cShips))
   }
 
-  def aship(memberId: Long, shipId: Int) = userView(memberId) {
-    user =>
-      models.Ship.findByIDWithName(memberId, shipId) match {
-        case Some(ship) => Ok(views.html.user.modal_ship(ship))
-        case _ => NotFound("艦娘が見つかりませんでした")
-      }
+  def aship(memberId: Long, shipId: Int) = userView(memberId) { user =>
+    models.Ship.findByIDWithName(memberId, shipId) match {
+      case Some(ship) => Ok(views.html.user.modal_ship(ship))
+      case _ => NotFound("艦娘が見つかりませんでした")
+    }
+  }
+
+  def shipPage(memberId: Long, shipId: Int) = userView(memberId) { user =>
+    models.Ship.findByIDWithName(memberId, shipId) match {
+      case Some(ship) => Ok(views.html.user.modal_ship(ship))
+      case _ => NotFound("艦娘が見つかりませんでした")
+    }
   }
 
   def slotitem(memberId: Long) = userView(memberId) { user =>
