@@ -2,6 +2,7 @@ $(document).ready ->
   $('.panel').each ->
     elem = $(this)
     id = elem.attr('id')
+    cell = elem.attr('data-cell')
     vue = new Vue
       el: '#' + id
       data:
@@ -17,6 +18,7 @@ $(document).ready ->
             (if @rank_a then 'A' else '') +
             (if @rank_b then 'B' else '')
         getJSON: ->
+          @setHash()
           url = @url.replace('(rank)', @rank())
           $.getJSON url, (data) =>
             xs = if @dropOnly then _.filter(data, (drop) -> drop.getShipName?) else data
@@ -44,9 +46,20 @@ $(document).ready ->
           counts = drops.map (drop) -> drop.count
           _.reduce counts, (x, y) -> x + y
         viewCount: (elem, sum) -> "#{elem}(#{Math.round(elem/sum*1000)/10}%)"
+        setHash: ->
+          location.hash = toURLParameter({cell: cell, rank: @rank(), dropOnly: @dropOnly})
+        restoreHash: ->
+          obj = fromURLParameter(location.hash.replace(/^\#/, ''))
+          unless obj.cell? then return
+          @dropOnly = obj.dropOnly == 'true'
+          unless obj.rank? then return
+          @rank_s = obj.rank.indexOf('S') != -1
+          @rank_a = obj.rank.indexOf('A') != -1
+          @rank_b = obj.rank.indexOf('B') != -1
       created: ->
         i = this
         elem.find('.panel-collapse').on 'show.bs.collapse', ->
+          i.restoreHash()
           i.url = $(this).attr('data-url')
           if i.drops.length == 0
             i.getJSON()
@@ -61,4 +74,8 @@ $(document).ready ->
           @getJSON()
         @$watch 'drops', (drops) ->
           if drops.length > 0
+            $("#panel#{cell}")[0].scrollIntoView(true)
             @draw()
+
+  obj = fromURLParameter(location.hash.replace(/^\#/, ''))
+  $("#collapse#{obj.cell}").collapse()

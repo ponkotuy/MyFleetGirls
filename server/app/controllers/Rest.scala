@@ -23,13 +23,24 @@ object Rest extends Controller {
   }
 
   /** Createされた記録のあるMasterShipを検索 */
-  def searchMasterShip(q: String) = returnJson(models.CreateShip.findAllShipByNameLike(s"%$q%"))
+  def searchMasterShip(q: String) = returnJson {
+    models.CreateShip.findAllShipByNameLike(s"%$q%") ++
+      models.BattleResult.findAllShipByNameLike(s"%$q%")
+  }
 
   def recipeFromShip(shipId: Int) = returnJson {
     val allCounts = models.CreateShip.materialCount().toMap
     val counts = models.CreateShip.materialCount(sqls"result_ship = ${shipId}")
     counts.map { case (mat, count) =>
       Map("mat" -> mat, "count" -> count, "sum" -> allCounts(mat))
+    }
+  }
+
+  def dropFromShip(shipId: Int) = returnJson {
+    val allCounts = models.BattleResult.countAllGroupByCells().toMap
+    val dropCounts = models.BattleResult.countAllGroupByCells(sqls"get_ship_id = ${shipId}")
+    dropCounts.map { case (cell, count) =>
+      Map("cell" -> cell, "count" -> count, "sum" -> allCounts(cell))
     }
   }
 

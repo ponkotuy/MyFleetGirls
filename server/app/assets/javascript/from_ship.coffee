@@ -10,6 +10,7 @@ $(document).ready ->
       shipId: -1
       itemId: -1
       sCounts: []
+      dropCounts: []
       iCounts: []
 
     methods:
@@ -28,15 +29,18 @@ $(document).ready ->
       selectItem: (iid) ->
         @itemId = iid
       getSCounts: (sid) ->
+        @resetCounts()
         $.getJSON "/rest/v1/recipe/from_ship/#{sid}", {}, (ret) =>
           @sCounts = ret
-          @iCounts = []
+        $.getJSON "/rest/v1/drop_from_ship/#{sid}", {}, (ret) =>
+          @dropCounts = ret
       getICounts: (iid) ->
+        @resetCounts()
         $.getJSON "/rest/v1/recipe/from_item/#{iid}", {}, (ret) =>
-          @sCounts = []
           @iCounts = ret
       resetCounts: ->
         @sCounts = []
+        @dropCounts = []
         @iCounts = []
 
     created: ->
