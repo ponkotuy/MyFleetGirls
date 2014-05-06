@@ -19,6 +19,7 @@ $(document).ready ->
       setPage: (page) ->
         @page = page
       getData: () ->
+        @setHash()
         dat = @whereObj()
         $.getJSON "/rest/v1/#{userid}/battle_result_count", dat, (ret) =>
           @allCount = ret
@@ -35,13 +36,35 @@ $(document).ready ->
         drop: @dropOnly
         rank: @rank()
       rank: ->
-        (if @rankS then "S" else "") +
-          (if @rankA then "A" else "") +
-          (if @rankB then "B" else "") +
-          (if @rankC then "C" else "") +
-          (if @rankD then "D" else "") +
-          (if @rankE then "E" else "")
+        (if @rankS then 'S' else '') +
+          (if @rankA then 'A' else '') +
+          (if @rankB then 'B' else '') +
+          (if @rankC then 'C' else '') +
+          (if @rankD then 'D' else '') +
+          (if @rankE then 'E' else '')
+      setHash: ->
+        obj =
+          count: @count
+          page: @page
+          bossOnly: @bossOnly
+          dropOnly: @dropOnly
+          rank: @rank()
+        location.hash = toURLParameter(obj)
+      restoreHash: ->
+        obj = fromURLParameter(location.hash.replace(/^\#/, ''))
+        unless obj.count? then return
+        @count = parseInt(obj.count)
+        @page = parseInt(obj.page)
+        @bossOnly = obj.bossOnly != 'false'
+        @dropOnly = obj.dropOnly != 'false'
+        @rankS = obj.rank.indexOf('S') != -1
+        @rankA = obj.rank.indexOf('A') != -1
+        @rankB = obj.rank.indexOf('B') != -1
+        @rankC = obj.rank.indexOf('C') != -1
+        @rankD = obj.rank.indexOf('D') != -1
+        @rankE = obj.rank.indexOf('E') != -1
     created: ->
+      @restoreHash()
       @getData()
     ready: ->
       @$watch 'page', () -> @getData()

@@ -1,11 +1,11 @@
 package models
 
+import scala.util.Try
 import scalikejdbc._
 import scalikejdbc.SQLInterpolation._
+import sqls.distinct
 import com.ponkotuy.data
-import dat.{BattleResultWithCell, Stage, ShipDrop}
-import scala.util.Try
-import scalikejdbc.WrappedResultSet
+import dat.{CellWithRank, BattleResultWithCell, Stage, ShipDrop}
 
 case class BattleResult(
   id: Long,
@@ -57,6 +57,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
 
   val br = BattleResult.syntax("br")
   val ci = CellInfo.syntax("ci")
+  val ms = MasterShipBase.syntax("ms")
 
   override val autoSession = AutoSession
 
@@ -92,6 +93,14 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
         .orderBy(br.created).desc
         .limit(limit).offset(offset)
     }.map(BattleResultWithCell(br, ci)).list().apply()
+  }
+
+  def findAllShipByNameLike(q: String)(implicit session: DBSession = autoSession): List[MasterShipBase] = {
+    withSQL {
+      select(distinct(ms.resultAll)).from(BattleResult as br)
+        .innerJoin(MasterShipBase as ms).on(br.getShipId, ms.id)
+        .where.like(ms.name, q)
+    }.map(MasterShipBase(ms)).list().apply()
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
@@ -137,6 +146,19 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
       Stage(br)(rs) -> rs.long("cnt")
     }.list().apply()
   }
+
+  def countAllGroupByCells(where: SQLSyntax = sqls"1")(implicit session: DBSession = autoSession): List[(CellWithRank, Long)] = {
+    withSQL {
+      select(br.*, sqls"count(1) as cnt")
+        .from(BattleResult as br)
+        .where.append(sqls"${where}")
+        .groupBy(br.areaId, br.infoNo, br.cell, br.winRank)
+        .orderBy(br.areaId, br.infoNo, br.cell, br.winRank)
+    }.map { rs =>
+      CellWithRank(br)(rs) -> rs.long("cnt")
+    }.list().apply()
+  }
+
   def dropedCells(area: Int, info: Int)(implicit session: DBSession = autoSession): List[CellInfo] = {
     withSQL {
       select(br.areaId, br.infoNo, br.cell, ci.resultAll).from(BattleResult as br)

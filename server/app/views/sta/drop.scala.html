@@ -6,6 +6,7 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.5/d3.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
   <script src="@routes.Assets.at("javascript/lib/sunburst.js")"></script>
+  <script src="@routes.Assets.at("javascript/common.js")"></script>
   <script src="@routes.Assets.at("javascript/drop.js")"></script>
   <link rel="stylesheet" href="@routes.Assets.at("stylesheet/sunburst.css")" />
 } {
@@ -21,7 +22,7 @@
 
     <div class="panel-group" id="accordion">
       @cells.map { cell =>
-        <div class="panel panel-default" id="panel@cell.pointStr">
+        <div class="panel panel-default" id="panel@cell.pointStr" data-cell="@cell.pointStr">
           <div class="panel-heading">
             <h2 class="panel-title">
               <a data-toggle="collapse" data-parent="#accordion" href="#collapse@cell.pointStr">
