@@ -17,9 +17,10 @@ object Rest extends Controller {
 
   /** Createされた記録のあるMasterShipとMasterSlotItemを検索 */
   def searchMaster(q: String) = returnJson {
-    val ships = models.CreateShip.findAllShipByNameLike(s"%$q%")
+    val ships = models.CreateShip.findAllShipByNameLike(s"%$q%") ++
+      models.BattleResult.findAllShipByNameLike(s"%$q%")
     val items = models.CreateItem.findAllItemByNameLike(sqls"mi.name like ${s"%$q%"}")
-    Map("ships" -> ships, "items" -> items)
+    Map("ships" -> ships.distinct, "items" -> items)
   }
 
   /** Createされた記録のあるMasterShipを検索 */
