@@ -39,12 +39,31 @@ $(document).ready ->
         $.getJSON "/rest/v1/recipe/from_item/#{iid}", {}, (ret) =>
           @iCounts = ret
       resetCounts: ->
+        @setHash()
         @sCounts = []
         @dropCounts = []
         @iCounts = []
+      setHash: ->
+        param = query: @query
+        if @shipId != -1 then param.ship = @shipId
+        else if @itemId != -1 then param.item = @itemId
+        location.hash = toURLParameter(param)
+      restoreHash: ->
+        param = fromURLParameter(location.hash.replace(/^\#/, ''))
+        @query = param.query ? @query
+        @shipId = param.ship ? @shipId
+        @itemId = param.item ? @itemId
 
     created: ->
-      @query = $('#search').val()
+      @restoreHash()
+      if @shipId != -1
+        @getSCounts(@shipId)
+      else if @itemId != -1
+        @getICounts(@itemId)
+      else if @query != ''
+        timout = @searchShip(this, @query)()
+
+    ready: ->
       @$watch 'query', (q) ->
         if q != ''
           clearTimeout(timeout)

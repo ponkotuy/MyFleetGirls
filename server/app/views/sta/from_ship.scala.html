@@ -1,8 +1,9 @@
-@(q: String)
+@()
 
 @main {
   <title>入手経路検索 -統計-</title>
   <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.3/vue.min.js"></script>
+  <script src="@routes.Assets.at("javascript/common.js")"></script>
   <script src="@routes.Assets.at("javascript/from_ship.js")"></script>
 } {
   @statistics_head("from_ship") {
@@ -11,7 +12,7 @@
     </div>
 
     <div id="from_name" class="row">
-      <input type="text" id="search" class="form-control" placeholder="Search Fleet Girl or Slot Item" v-model="query" value="@q"/>
+      <input type="text" id="search" class="form-control" placeholder="Search Fleet Girl or Slot Item" v-model="query" />
 
       <div class="col-md-2">
         <div class="list-group" v-show="ships.length > 0" style="margin-top:20px;margin-bottom:20px;">

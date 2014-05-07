@@ -23,4 +23,4 @@ $(document).ready ->
 
     $.plot($(this), data, option)
     $(this).bind "plotclick", (event, pos, item) ->
-      location.href = "/entire/sta/from_ship?q=#{item.series.label}"
+      location.href = "/entire/sta/from_ship#query=#{item.series.label}"

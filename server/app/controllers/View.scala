@@ -87,8 +87,8 @@ object View extends Controller {
     }
   }
 
-  def fromShip(q: String) = Action.async {
-    Future(Ok(views.html.sta.from_ship(q)))
+  def fromShip() = Action.async {
+    Future { Ok(views.html.sta.from_ship()) }
   }
 
   def dropStage() = Action.async {
