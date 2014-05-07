@@ -108,18 +108,21 @@ object ShipSlotItem extends SQLSyntaxSupport[ShipSlotItem] {
 
   def bulkInserts(slots: Seq[Seq[Int]], memberId: Long, shipId: Seq[Int])(
       implicit session: DBSession = autoSession): Seq[ShipSlotItem] = {
-    val filtered = slots.map(_.filter(0 <= _))
-    val shipIds = filtered.zip(shipId).flatMap { case (slot, sid) =>
-      Seq.fill(slot.size)(sid)
+    if(slots.isEmpty || shipId.isEmpty) Nil
+    else {
+      val filtered = slots.map(_.filter(0 <= _))
+      val shipIds = filtered.zip(shipId).flatMap { case (slot, sid) =>
+        Seq.fill(slot.size)(sid)
+      }
+      val ids = filtered.flatMap(1 to _.size)
+      val slotFlat = filtered.flatten
+      applyUpdate {
+        insert.into(ShipSlotItem)
+          .columns(column.memberId, column.shipId, column.id, column.slotitemId)
+          .multiValues(Seq.fill(shipIds.size)(memberId), shipIds, ids, slotFlat)
+      }
+      shipIds.zip(ids).zip(slotFlat).map { case ((sid, id), slot) => ShipSlotItem(memberId, sid, id, slot)}
     }
-    val ids = filtered.flatMap(1 to _.size)
-    val slotFlat = filtered.flatten
-    applyUpdate {
-      insert.into(ShipSlotItem)
-        .columns(column.memberId, column.shipId, column.id, column.slotitemId)
-        .multiValues(Seq.fill(shipIds.size)(memberId), shipIds, ids, slotFlat)
-    }
-    shipIds.zip(ids).zip(slotFlat).map { case ((sid, id), slot) => ShipSlotItem(memberId, sid, id, slot) }
   }
 
   def bulkUpserts(slots: Seq[Seq[Int]], memberId: Long, shipId: Seq[Int])(

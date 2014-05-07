@@ -168,6 +168,7 @@ object Ship extends SQLSyntaxSupport[Ship] {
   }
 
   def bulkUpsert(ss: Seq[data.Ship], memberId: Long)(implicit sesssion: DBSession = autoSession): Unit = {
+    if(ss.isEmpty) return
     ShipSlotItem.deleteAllBy(sqls"member_id = ${memberId} and ship_id in (${ss.map(_.id)})")
     ShipSlotItem.bulkInserts(ss.map(_.slot), memberId, ss.map(_.id))
     val created = System.currentTimeMillis()
