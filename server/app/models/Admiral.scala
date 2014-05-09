@@ -78,12 +78,7 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
 
   def create(a: data.Auth)(implicit session: DBSession = Admiral.autoSession): Admiral = {
     val created = System.currentTimeMillis()
-    withSQL {
-      insert.into(Admiral).namedValues(
-        column.id -> a.memberId,
-        column.nicknameId -> a.id, column.nickname -> a.nickname, column.created -> created
-      )
-    }.update().apply()
+    sql"insert ignore into admiral values (${a.memberId}, ${a.id}, ${a.nickname}, ${created})".update().apply()
     Admiral(a.memberId, a.id, a.nickname, created)
   }
 }
