@@ -1,4 +1,5 @@
 @(user: dat.User, ships: Seq[dat.ShipWithName], decks: Seq[dat.DeckShipWithName], deckports: Seq[DeckPort])
+@import views.html.user.{head_content, usertab}
 
 @main {
   <title>艦娘 -@{user.admiral.nickname}提督-</title>

@@ -102,4 +102,6 @@ object Rest extends Controller {
       .append(if(rank.nonEmpty) sqls" and win_rank in (${rank.map(_.toString)})" else sqls"")
       .append(if(boss) sqls" and boss = true" else sqls"")
       .append(if(drop) sqls" and get_ship_id is not null" else sqls"")
+
+  def quest(memberId: Long) = returnJson { models.Quest.findAllBy(sqls"member_id = ${memberId}") }
 }
