@@ -1,13 +1,13 @@
-@(user: util.User, best: dat.ShipWithName, flagship: dat.ShipWithName)
+@(user: dat.User, best: dat.ShipWithName, flagship: dat.ShipWithName)
 
 @main {
   <title>@{user.admiral.nickname}提督 -MyFleetGirls-</title>
-  <link rel="stylesheet" href="@routes.Assets.at("stylesheet/jquery.jqplot.min.css")">
-  <script type="text/javascript" src="@routes.Assets.at("jqplot/jquery.jqplot.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("jqplot/plugins/jqplot.barRenderer.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("jqplot/plugins/jqplot.categoryAxisRenderer.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("jqplot/plugins/jqplot.pointLabels.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("jqplot/plugins/jqplot.highlighter.min.js")"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.css">
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.barRenderer.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.categoryAxisRenderer.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.pointLabels.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.highlighter.min.js"></script>
   <script type="text/javascript" src="@routes.Assets.at("javascript/bar.js")"></script>
 } {
   @head_content(user) {

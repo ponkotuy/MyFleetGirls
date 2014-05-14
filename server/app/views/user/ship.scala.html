@@ -1,19 +1,20 @@
-@(user: util.User, ships: Seq[dat.ShipWithName], decks: Seq[dat.DeckShipWithName], deckports: Seq[DeckPort])
+@(user: dat.User, ships: Seq[dat.ShipWithName], decks: Seq[dat.DeckShipWithName], deckports: Seq[DeckPort])
+@import views.html.user.{head_content, usertab}
 
 @main {
   <title>艦娘 -@{user.admiral.nickname}提督-</title>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.bootstrap.css" />
-  <link rel="stylesheet" href="@routes.Assets.at("stylesheet/jquery.jqplot.min.css")">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.css">
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.widgets.min.js"></script>
-  <script type="text/javascript" src="@routes.Assets.at("jqplot/jquery.jqplot.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("jqplot/plugins/jqplot.barRenderer.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("jqplot/plugins/jqplot.categoryAxisRenderer.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("jqplot/plugins/jqplot.pointLabels.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("jqplot/plugins/jqplot.highlighter.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("javascript/common.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("javascript/bar.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("javascript/ship.js")"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.barRenderer.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.categoryAxisRenderer.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.pointLabels.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.highlighter.min.js"></script>
+  <script src="@routes.Assets.at("javascript/common.js")"></script>
+  <script src="@routes.Assets.at("javascript/bar.js")"></script>
+  <script src="@routes.Assets.at("javascript/ship.js")"></script>
 } {
   @head_content(user) {
     @usertab("ship") {

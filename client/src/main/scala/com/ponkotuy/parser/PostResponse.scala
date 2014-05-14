@@ -133,9 +133,12 @@ class PostResponse extends Log {
         material(obj \ "api_material")
         ndock(obj \ "api_ndock")
         deckport(obj \ "api_deck_port")
+      case QuestList =>
+        val qList = data.QuestList.fromJson(obj)
+        MFGHttp.post("/questlist", write(qList))
       case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | UpdateDeckName | Charge | MissionStart |
            KaisouPowerup | PracticeBattle | PracticeMidnightBattle | PracticeBattleResult |
-           HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
+           HenseiLock | GetOthersDeck | SortieBattle | NyukyoStart | MasterUseItem |
            MasterFurniture => // No Need
       case ShipSWF =>
         parseKey(q.uri).filterNot(MFGHttp.existsImage).foreach { key =>

@@ -1,5 +1,5 @@
 import org.scalatest.FunSuite
-import util.ShipExperience
+import tool.ShipExperience
 
 /**
  *

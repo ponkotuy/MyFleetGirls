@@ -24,7 +24,7 @@ class C3P0ConnectionPool(
      _dataSource.setCheckoutTimeout(settings.connectionTimeoutMillis.toInt)
 
      // Customized
-     _dataSource.setIdleConnectionTestPeriod(1)
+     _dataSource.setIdleConnectionTestPeriod(10)
 
      override def dataSource: DataSource = _dataSource
      override def borrow(): Connection = dataSource.getConnection

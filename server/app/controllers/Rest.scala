@@ -17,9 +17,10 @@ object Rest extends Controller {
 
   /** Createされた記録のあるMasterShipとMasterSlotItemを検索 */
   def searchMaster(q: String) = returnJson {
-    val ships = models.CreateShip.findAllShipByNameLike(s"%$q%")
+    val ships = models.CreateShip.findAllShipByNameLike(s"%$q%") ++
+      models.BattleResult.findAllShipByNameLike(s"%$q%")
     val items = models.CreateItem.findAllItemByNameLike(sqls"mi.name like ${s"%$q%"}")
-    Map("ships" -> ships, "items" -> items)
+    Map("ships" -> ships.distinct, "items" -> items)
   }
 
   /** Createされた記録のあるMasterShipを検索 */
@@ -101,4 +102,6 @@ object Rest extends Controller {
       .append(if(rank.nonEmpty) sqls" and win_rank in (${rank.map(_.toString)})" else sqls"")
       .append(if(boss) sqls" and boss = true" else sqls"")
       .append(if(drop) sqls" and get_ship_id is not null" else sqls"")
+
+  def quest(memberId: Long) = returnJson { models.Quest.findAllBy(sqls"member_id = ${memberId}") }
 }

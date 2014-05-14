@@ -8,7 +8,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data.Auth
-import util.User
+import dat.User
 
 /**
  *
@@ -48,7 +48,7 @@ object Common extends Controller {
       } yield {
         models.Admiral.find(auth.memberId) match {
           case Some(old: models.Admiral) if old.authentication(auth) => Some(old)
-          case Some(_) => None: Option[models.Admiral]
+          case Some(_) => None
           case _ => Some(models.Admiral.create(auth))
         }
       }

@@ -47,12 +47,12 @@
               </label>
               <div style="width:900px;height:600px;margin:auto;" id="sunburst@cell.pointStr" class="sunburst"></div>
             </div>
-            <table class="table table-striped table-condensed">
+            <table class="table table-condensed table-hover">
               <thead>
                 <tr><th>艦種</th><th>名前</th><th>Count</th><th>Rate</th></tr>
               </thead>
               <tbody>
-                <tr v-repeat="drop: drops">
+                <tr v-repeat="drop: drops" class="clickable" onclick="location.href='/entire/sta/from_ship#query={{ drop.getShipName }}&ship={{ drop.getShipId }}'">
                   <td>{{ drop.getShipType }}</td>
                   <td>{{ drop.getShipName }}</td>
                   <td>{{ drop.count }}</td>

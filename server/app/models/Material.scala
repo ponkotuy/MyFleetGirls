@@ -3,6 +3,7 @@ package models
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data
 import scalikejdbc.{DBSession, WrappedResultSet}
+import tool.DiffCalc
 
 /**
  *
@@ -20,7 +21,7 @@ case class Material(
     Material.save(this)
 
   def diff(x: data.Material): Double = {
-    import util.DiffCalc._
+    import DiffCalc._
     Iterator(
       ratio(fuel, x.fuel),
       ratio(ammo, x.ammo),

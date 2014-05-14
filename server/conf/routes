@@ -20,6 +20,7 @@ POST    /post/v1/mapinfo            controllers.Post.mapInfo
 POST    /post/v1/slotitem           controllers.Post.slotItem
 POST    /post/v1/battle_result      controllers.Post.battleResult
 POST    /post/v1/map_route          controllers.Post.mapRoute
+POST    /post/v1/questlist          controllers.Post.questlist
 POST    /post/v1/master/ship        controllers.PostMaster.ship
 POST    /post/v1/master/mission     controllers.PostMaster.mission
 POST    /post/v1/master/slotitem    controllers.PostMaster.slotitem
@@ -46,6 +47,7 @@ GET     /rest/v1/:userId/create_items controllers.Rest.createItems(userId: Long,
 GET     /rest/v1/:userId/create_item_count controllers.Rest.createItemCount(userId: Long)
 GET     /rest/v1/:userId/battle_result controllers.Rest.battleResult(userId: Long, limit: Int ?= 10, offset: Int ?= 0, boss: Boolean ?= false, drop: Boolean ?= false, rank: String ?= "SABCDE")
 GET     /rest/v1/:userId/battle_result_count controllers.Rest.battleResultCount(userId: Long, boss: Boolean ?= false, drop: Boolean ?= false, rank: String ?= "SABCDE")
+GET     /rest/v1/:userId/quest      controllers.Rest.quest(userId: Long)
 GET     /rest/v1/image/ship/:shipId.jpg controllers.RestImage.ship(shipId: Int)
 GET     /rest/v1/sound/ship/:shipId/:soundId.mp3 controllers.RestSound.ship(shipId: Int, soundId: Int)
 HEAD    /rest/v1/image/ship/:shipId.jpg controllers.RestImage.shipHead(shipId: Int)
@@ -75,6 +77,7 @@ GET     /user/:userId/slotitem      controllers.UserView.slotitem(userId: Long)
 GET     /user/:userId/shipslotitem/:itemId controllers.UserView.shipslotitem(userId: Long, itemId: Int)
 GET     /user/:userId/aship/:shipId controllers.UserView.aship(userId: Long, shipId: Int)
 GET     /user/:userId/naval_battle  controllers.UserView.navalBattle(userId: Long)
+GET     /user/:userId/quest         controllers.UserView.quest(userId: Long)
 
 # WebSocket
 GET     /ws/v1/user/:userId         controllers.UserWS.info(userId: Long)

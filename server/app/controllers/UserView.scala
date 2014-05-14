@@ -104,4 +104,8 @@ object UserView {
   def navalBattle(memberId: Long) = userView(memberId) { user =>
     Ok(views.html.user.naval_battle(user))
   }
+
+  def quest(memberId: Long) = userView(memberId) { user =>
+    Ok(views.html.user.quest(user))
+  }
 }
