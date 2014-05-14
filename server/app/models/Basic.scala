@@ -3,6 +3,7 @@ package models
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data
 import scalikejdbc.{DBSession, WrappedResultSet}
+import tool.DiffCalc
 
 /**
  *
@@ -29,7 +30,7 @@ case class Basic(
    * 新規挿入の判断等に使う差分情報
    */
   def diff(x: data.Basic): Double = {
-    import util.DiffCalc._
+    import DiffCalc._
     Iterator(
       neq(lv, x.lv),
       ratio(experience, x.experience),

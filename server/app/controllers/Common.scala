@@ -8,7 +8,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data.Auth
-import util.User
+import dat.User
 
 /**
  *

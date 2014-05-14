@@ -20,6 +20,7 @@ POST    /post/v1/mapinfo            controllers.Post.mapInfo
 POST    /post/v1/slotitem           controllers.Post.slotItem
 POST    /post/v1/battle_result      controllers.Post.battleResult
 POST    /post/v1/map_route          controllers.Post.mapRoute
+POST    /post/v1/questlist          controllers.Post.questlist
 POST    /post/v1/master/ship        controllers.PostMaster.ship
 POST    /post/v1/master/mission     controllers.PostMaster.mission
 POST    /post/v1/master/slotitem    controllers.PostMaster.slotitem

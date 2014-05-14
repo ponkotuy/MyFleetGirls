@@ -1,4 +1,4 @@
-package util
+package tool
 
 /** 新規挿入の判断等に使う差分情報の計算ツール
   *

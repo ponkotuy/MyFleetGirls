@@ -134,9 +134,8 @@ class PostResponse extends Log {
         ndock(obj \ "api_ndock")
         deckport(obj \ "api_deck_port")
       case QuestList =>
-        jsonAllInfo(obj)
         val qList = data.QuestList.fromJson(obj)
-        println(qList)
+        MFGHttp.post("/questlist", write(qList))
       case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | UpdateDeckName | Charge | MissionStart |
            KaisouPowerup | PracticeBattle | PracticeMidnightBattle | PracticeBattleResult |
            HenseiLock | GetOthersDeck | SortieBattle | NyukyoStart | MasterUseItem |
