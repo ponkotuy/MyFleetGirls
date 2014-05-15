@@ -72,7 +72,7 @@ object Quest extends SQLSyntaxSupport[Quest] {
 
   def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[Quest] = {
     withSQL {
-      select.from(Quest as q).where.append(sqls"${where}")
+      select.from(Quest as q).where.append(sqls"${where}").orderBy(q.state)
     }.map(Quest(q.resultName)).list().apply()
   }
 
