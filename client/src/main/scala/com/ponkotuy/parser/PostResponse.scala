@@ -138,7 +138,7 @@ class PostResponse extends Log {
         MFGHttp.post("/questlist", write(qList))
       case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | UpdateDeckName | Charge | MissionStart |
            KaisouPowerup | PracticeBattle | PracticeMidnightBattle | PracticeBattleResult |
-           HenseiLock | GetOthersDeck | SortieBattle | NyukyoStart | MasterUseItem |
+           HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
            MasterFurniture => // No Need
       case ShipSWF =>
         parseKey(q.uri).filterNot(MFGHttp.existsImage).foreach { key =>

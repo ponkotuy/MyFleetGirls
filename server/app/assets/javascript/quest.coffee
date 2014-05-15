@@ -23,5 +23,10 @@ $(document).ready ->
           @daily_quests = data.filter (x) -> x.typ == 2
           @weekly_quests = data.filter (x) -> x.typ == 3
           @once_quests = data.filter (x) -> x.typ == 1
+      setTooltip: () ->
+        $('tr.tltip').tooltip({html: true})
+        console.log("OK")
     created: () ->
       @getJson()
+    ready: () ->
+      @$watch 'once_quests', @setTooltip
