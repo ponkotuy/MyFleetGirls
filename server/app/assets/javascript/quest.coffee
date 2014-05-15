@@ -25,7 +25,6 @@ $(document).ready ->
           @once_quests = data.filter (x) -> x.typ == 1
       setTooltip: () ->
         $('tr.tltip').tooltip({html: true})
-        console.log("OK")
     created: () ->
       @getJson()
     ready: () ->

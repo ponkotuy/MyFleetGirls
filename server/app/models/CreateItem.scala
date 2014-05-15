@@ -129,7 +129,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where(where)
-        .groupBy(ci.fuel, ci.ammo, ci.steel, ci.bauxite, mst.id)
+        .groupBy(ci.fuel, ci.ammo, ci.steel, ci.bauxite, mst.name)
         .orderBy(sqls"count").desc
     }.map { rs =>
       ItemMat(ci, mst)(rs) -> rs.long(7)
