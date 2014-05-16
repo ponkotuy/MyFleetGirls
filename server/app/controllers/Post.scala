@@ -130,7 +130,6 @@ object Post extends Controller {
   }
 
   def questlist = authAndParse[List[Quest]] { case (auth, quests) =>
-    println(quests)
     models.Quest.bulkUpsert(quests, auth.id)
     Ok("Success")
   }

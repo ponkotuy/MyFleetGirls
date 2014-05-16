@@ -9,8 +9,9 @@ $(document).ready ->
     sortList: [[3, 1], [4, 1]]
     theme: 'bootstrap'
     headerTemplate: '{content} {icon}'
-    widgets: ['uitheme']
-
+    widgets: ['uitheme', 'filter']
+    widgetOptions:
+      filter_hideFilters: true
   param = fromURLParameter(location.hash.replace(/^\#/, ''))
   if param.modal?
     $('#modal').modal({remote: "aship/#{param.id}"})

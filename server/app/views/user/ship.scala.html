@@ -25,7 +25,8 @@
             <ol>
               @decks.filter(_.deckId == deckport.id).map { ship =>
                 <li style="background-color: @ship.rgb.toString">
-                  <a data-toggle="modal" href="aship/@ship.shipId" class="modal_link" data-target="#modal">@ship.name</a><small>Lv@ship.lv</small>
+                  <a data-toggle="modal" href="aship/@ship.shipId" class="modal_link" data-target="#modal">@ship.name</a>
+                  <small>Lv@ship.lv</small>
                 </li>
               }
             </ol>
@@ -36,35 +37,56 @@
       <div class="page-header">
         <h1>艦娘一覧</h1>
       </div>
-      <table class="table table-striped table-condensed" id="ship_table">
-        <thead>
-          <tr>
-            <th>ID</th><th>艦種</th><th>名前</th><th>Lv</th><th>Exp</th><th>HP</th><th>Cond</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th><th>回避</th><th>対潜</th><th>索敵</th><th>運</th>
-          </tr>
-        </thead>
-        <tbody>
-          @ships.map { ship =>
-          <tr>
-            <td>@ship.id</td>
-            <td>@ship.stAbbName</td>
-            <td><a data-toggle="modal" href="aship/@ship.id" class="modal_link" data-target="#modal">@ship.name</a></td>
-            <td style="@if(ship.expRate > 0){background-color:#D9EDF7;display:block;width:@{(ship.expRate*100).toInt}%}">@ship.lv</td>
-            <td style="padding:0px;"><div style="background-color:@if(ship.lv >= 100){#EBCCD1}else{#D9EDF7};width:@{(ship.entireExpRate*100).toInt}%;padding:5px;">@ship.exp</div></td>
-            <td style="padding:0px;"><div style="background-color:@ship.hpRGB.toString;width:@{(ship.hpRate*100).toInt}%;padding:5px;">@ship.nowhp/@ship.maxhp</div></td>
-            <td style="padding:0px;"><div style="background-color:@ship.condBarRGB.toString;width:@{ship.cond}%;padding:5px;">@ship.cond</div></td>
-            <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.karyokuRate*100).toInt}%;padding:5px;">@ship.karyoku</div></td>
-            <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.raisouRate*100).toInt}%;padding:5px;">@ship.raisou</div></td>
-            <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.taikuRate*100).toInt}%;padding:5px;">@ship.taiku</div></td>
-            <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.soukouRate*100).toInt}%;padding:5px;">@ship.soukou</div></td>
-            <td>@ship.kaihi</td>
-            <td>@ship.taisen</td>
-            <td>@ship.sakuteki</td>
-            <td>@ship.lucky</td>
-          </tr>
-          }
-        </tbody>
-      </table>
+      <div id="ships">
+        <table class="table table-striped table-condensed" id="ship_table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>艦種</th>
+              <th>名前</th>
+              <th>Lv</th>
+              <th>Exp</th>
+              <th>HP</th>
+              <th>Cond</th>
+              <th>火力</th>
+              <th>雷装</th>
+              <th>対空</th>
+              <th>装甲</th>
+              <th>回避</th>
+              <th>対潜</th>
+              <th>索敵</th>
+              <th>運</th>
+            </tr>
+          </thead>
+          <tbody>
+            @ships.map { ship =>
+            <tr>
+              <td>@ship.id</td>
+              <td>@ship.stAbbName</td>
+              <td><a data-toggle="modal" href="aship/@ship.id" class="modal_link" data-target="#modal">@ship.name</a></td>
+              <td style="@if(ship.expRate > 0){background-color:#D9EDF7;display:block;width:@{(ship.expRate*100).toInt}%}">@ship.lv</td>
+              <td style="padding:0px;"><div style="background-color:@if(ship.lv >= 100){#EBCCD1}else{#D9EDF7};width:@{(ship.entireExpRate*100).toInt}%;padding:5px;">@ship.exp</div></td>
+              <td style="padding:0px;"><div style="background-color:@ship.hpRGB.toString;width:@{(ship.hpRate*100).toInt}%;padding:5px;">@ship.nowhp/@ship.maxhp</div></td>
+              <td style="padding:0px;"><div style="background-color:@ship.condBarRGB.toString;width:@{ship.cond}%;padding:5px;">@ship.cond</div></td>
+              <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.karyokuRate*100).toInt}%;padding:5px;">@ship.karyoku</div></td>
+              <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.raisouRate*100).toInt}%;padding:5px;">@ship.raisou</div></td>
+              <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.taikuRate*100).toInt}%;padding:5px;">@ship.taiku</div></td>
+              <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.soukouRate*100).toInt}%;padding:5px;">@ship.soukou</div></td>
+              <td>@ship.kaihi</td>
+              <td>@ship.taisen</td>
+              <td>@ship.sakuteki</td>
+              <td>@ship.lucky</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
       <h3>表の見方</h3>
+      <p>
+        表検索の詳細は以下を参考にしてください。
+        部分一致だけではなく、数値の上限（<50）下限（>50）でも検索できたりします。
+        <a href="http://mottie.github.io/tablesorter/docs/example-widget-filter-custom.html">http://mottie.github.io/tablesorter/docs/example-widget-filter-custom.html</a>
+      </p>
       <p>背景のバーは以下を示しています</p>
       <dl class="dl-horizontal">
         <dt>Lv</dt><dd>次のLvまでの経験値取得率</dd>
