@@ -21,7 +21,9 @@
       <div class="row">
         @deckports.map { deckport =>
           <div class="col-md-3">
-            <h3>@deckport.name</h3>
+            <h3>
+              <a data-toggle="modal" href="fleet/@deckport.id" class="modal_link" data-target="#modal">@deckport.name</a>
+            </h3>
             <ol>
               @decks.filter(_.deckId == deckport.id).map { ship =>
                 <li style="background-color: @ship.rgb.toString">

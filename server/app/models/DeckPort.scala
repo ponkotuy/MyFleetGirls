@@ -23,6 +23,13 @@ object DeckPort extends SQLSyntaxSupport[DeckPort] {
 
   lazy val dp = DeckPort.syntax("dp")
 
+  def find(memberId: Long, deckId: Int)(implicit session: DBSession = autoSession): Option[DeckPort] = {
+    withSQL {
+      select.from(DeckPort as dp)
+        .where.eq(dp.memberId, memberId).and.eq(dp.id, deckId)
+    }.map(DeckPort(dp)).single().apply()
+  }
+
   def findAllByUser(memberId: Long)(implicit session: DBSession = autoSession): List[DeckPort] = withSQL {
     select.from(DeckPort as dp).where.eq(dp.memberId, memberId)
   }.map(DeckPort(dp)).list().apply()
