@@ -76,6 +76,7 @@ GET     /user/:userId/create        controllers.UserView.create(userId: Long)
 GET     /user/:userId/slotitem      controllers.UserView.slotitem(userId: Long)
 GET     /user/:userId/shipslotitem/:itemId controllers.UserView.shipslotitem(userId: Long, itemId: Int)
 GET     /user/:userId/aship/:shipId controllers.UserView.aship(userId: Long, shipId: Int)
+GET     /user/:userId/fleet/:deckId controllers.UserView.fleet(userId: Long, deckId: Int)
 GET     /user/:userId/naval_battle  controllers.UserView.navalBattle(userId: Long)
 GET     /user/:userId/quest         controllers.UserView.quest(userId: Long)
 

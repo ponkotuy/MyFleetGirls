@@ -77,6 +77,14 @@ object UserView {
     }
   }
 
+  def fleet(memberId: Long, deckId: Int) = userView(memberId) { user =>
+    val fleet = models.DeckShip.findAllByDeck(memberId, deckId)
+    models.DeckPort.find(memberId, deckId) match {
+      case Some(deck) => Ok(views.html.user.modal_fleet(fleet, deck))
+      case _ => NotFound("艦隊が見つかりませんでした")
+    }
+  }
+
   def shipPage(memberId: Long, shipId: Int) = userView(memberId) { user =>
     models.Ship.findByIDWithName(memberId, shipId) match {
       case Some(ship) => Ok(views.html.user.modal_ship(ship))

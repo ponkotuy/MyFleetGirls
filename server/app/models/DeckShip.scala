@@ -36,6 +36,22 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
     }.map(DeckShipWithName(ds, s, ms)).list().apply()
   }
 
+  def findAllByDeck(memberId: Long, deckId: Int)(implicit session: DBSession = autoSession): List[ShipWithName] = {
+    val slots = ShipSlotItem.findAllBy(sqls"member_id = ${memberId}")
+    withSQL {
+      select.from(DeckShip as ds)
+        .innerJoin(Ship as s).on(sqls"${ds.shipId} = ${s.id} and ${ds.memberId} = ${s.memberId}")
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .where.eq(ds.memberId, memberId).and.eq(ds.deckId, deckId)
+        .orderBy(ds.num)
+    }.map { rs =>
+      val id = rs.int(s.resultName.id)
+      val slot = slots.filter(_.shipId == id).map(_.slotitemId)
+      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+    }.list().apply()
+  }
+
   def findFlagshipByUserWishShipName(memberId: Long)(implicit session: DBSession = autoSession): Option[ShipWithName] = {
     val slots = ShipSlotItem.findAllBy(sqls"member_id = ${memberId}")
     withSQL {
