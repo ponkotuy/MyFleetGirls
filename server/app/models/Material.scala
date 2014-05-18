@@ -32,6 +32,8 @@ case class Material(
       ratio(develop, x.develop)
     ).max
   }
+
+  def destroy()(implicit session: DBSession = Material.autoSession): Unit = Material.destroy(id)(session)
 }
 
 object Material extends SQLSyntaxSupport[Material] {
@@ -85,9 +87,16 @@ object Material extends SQLSyntaxSupport[Material] {
       .limit(1)
   }.map(Material(m)).toOption().apply()
 
-  def findAllByUser(memberId: Long)(implicit session: DBSession = Material.autoSession): List[Material] = withSQL {
-    select.from(Material as m)
-      .where.eq(m.memberId, memberId)
-      .orderBy(m.created).desc
-  }.map(Material(m)).list().apply()
+  def findAllByUser(memberId: Long, from: Long = 0, to: Long = Long.MaxValue)(
+      implicit session: DBSession = autoSession): List[Material] = {
+    withSQL {
+      select.from(Material as m)
+        .where.eq(m.memberId, memberId).and.between(m.created, from, to)
+        .orderBy(m.created).asc
+    }.map(Material(m)).list().apply()
+  }
+
+  def destroy(id: Long)(implicit session: DBSession = autoSession): Unit = applyUpdate {
+    delete.from(Material).where.eq(column.id, id)
+  }
 }
