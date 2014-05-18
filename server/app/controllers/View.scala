@@ -104,4 +104,10 @@ object View extends Controller {
       Ok(views.html.sta.drop(area, info, cells))
     }
   }
+
+  def route(area: Int, info: Int) = Action.async {
+    Future {
+      Ok(views.html.sta.route(area, info))
+    }
+  }
 }

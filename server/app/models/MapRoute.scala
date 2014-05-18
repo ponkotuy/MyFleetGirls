@@ -68,6 +68,17 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
     }.map(_.long(1)).single().apply().get
   }
 
+  def countCellsGroupByDest(areaId: Int, infoNo: Int)(implicit session: DBSession = autoSession): List[(MapRoute, Long)] = {
+    withSQL {
+      select(mr.resultAll, sqls"count(1) as cnt").from(MapRoute as mr)
+        .where.eq(mr.areaId, areaId).and.eq(mr.infoNo, infoNo)
+        .groupBy(mr.dep, mr.dest)
+        .orderBy(mr.dep, mr.dest)
+    }.map { rs =>
+      MapRoute(mr.resultName)(rs) -> rs.long("cnt")
+    }.list().apply()
+  }
+
   def create(x: data.MapRoute, memberId: Long)(implicit session: DBSession = autoSession): MapRoute = {
     val created = System.currentTimeMillis()
     createOrig(memberId, x.areaId, x.infoNo, x.dep, x.dest, x.fleet.mkString(","), created)

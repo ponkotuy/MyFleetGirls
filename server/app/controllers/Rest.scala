@@ -63,6 +63,20 @@ object Rest extends Controller {
     }
   }
 
+  def route(area: Int, info: Int) = returnJson {
+    val routes = models.MapRoute.countCellsGroupByDest(area, info)
+    routes.map { case (route, count) =>
+      Extraction.decompose(route).asInstanceOf[JObject] ~ ("count" -> count)
+    }
+  }
+
+  def cellInfo(area: Int, info: Int) = returnJson {
+    val where = sqls"true"
+      .append(if(area != -1) sqls" and area_id = ${area}" else sqls"")
+      .append(if(info != -1) sqls" and info_no = ${info}" else sqls"")
+    models.CellInfo.findAllBy(where)
+  }
+
   def materials(userId: Long) = returnJson(models.Material.findAllByUser(userId))
 
   def basics(userId: Long) = returnJson(models.Basic.findAllByUser(userId))
