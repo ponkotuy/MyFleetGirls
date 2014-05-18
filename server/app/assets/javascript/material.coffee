@@ -21,9 +21,12 @@ $(document).ready ->
     table = translate(data)
 
     param = fromURLParameter(location.hash.replace(/^\#/, ''))
-    mainPlot(param.min, param.max)
+    if param.max?
+      mainPlot(param.active, param.min, param.max)
+    else
+      monthPlot()
     $(chart).bind 'plotselected', (event, ranges) ->
-      mainPlot(ranges.xaxis.from, ranges.xaxis.to)
+      mainPlot('', ranges.xaxis.from, ranges.xaxis.to)
 
     plotO = $.plot(overview, table, optionO)
     $(overview).bind('plotselected', (event, ranges) -> plot.setSelection(ranges))
@@ -40,14 +43,13 @@ translate = (data) ->
 
 transElem = (data, elem) -> data.map (x) -> [x['created'], x[elem]]
 
-# rangePlot = (rangeStr) -> a
+monthPlot = -> mainPlot 'month', moment().subtract('months', 1).valueOf()
+weekPlot = -> mainPlot 'week', moment().subtract('weeks', 1).valueOf()
+dayPlot = -> mainPlot 'day', moment().subtract('days', 1).valueOf()
 
-monthPlot = -> mainPlot moment().subtract('months', 1).valueOf()
-weekPlot = -> mainPlot moment().subtract('weeks', 1).valueOf()
-dayPlot = -> mainPlot moment().subtract('days', 1).valueOf()
-
-mainPlot = (min, max = moment().valueOf()) ->
-  location.hash = toURLParameter({min: min, max: max})
+mainPlot = (active, min, max = moment().valueOf()) ->
+  activeButton(active)
+  location.hash = toURLParameter({min: min, max: max, active: active})
   if min?
     newOpt = $.extend true, {}, option,
       xaxis: { min: min, max: max }
@@ -55,9 +57,13 @@ mainPlot = (min, max = moment().valueOf()) ->
   else
     plot = $.plot(chart, table, option)
 
+activeButton = (active) ->
+  $('#range').children('button.active').map () -> $(this).removeClass('active')
+  $('#' + active).addClass('active')
+
 button = ->
   $('#whole').click ->
-    mainPlot()
+    mainPlot('whole')
   $('#month').click ->
     monthPlot()
   $('#week').click ->
