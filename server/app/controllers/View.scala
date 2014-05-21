@@ -110,4 +110,16 @@ object View extends Controller {
       Ok(views.html.sta.route(area, info))
     }
   }
+
+  def routeFleet(area: Int, info: Int, dep: Int, dest: Int) = Action.async {
+    Future {
+      val fleets = models.MapRoute.findFleetBy(sqls"area_id = $area and info_no = $info and dep = $dep and dest = $dest")
+      val counts = fleets.map { xs => xs.map(_.stype.name).sorted }
+        .groupBy(identity).mapValues(_.size)
+        .toList.sortBy(_._2).reverse.take(30)
+      val cDep = models.CellInfo.findOrDefault(area, info, dep)
+      val cDest = models.CellInfo.findOrDefault(area, info, dest)
+      Ok(views.html.sta.modal_route(area, info, cDep, cDest, counts))
+    }
+  }
 }

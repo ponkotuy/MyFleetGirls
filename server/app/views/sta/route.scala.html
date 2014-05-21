@@ -13,14 +13,16 @@
 
     <p>海図との対照表は<a href="http://wikiwiki.jp/kancolle/?%BD%D0%B7%E2#maps">Wiki</a>よりどうぞ</p>
 
-    <table class="table table-striped table-condensed" id="route_table" data-area="@area" data-info="@info">
+    <table class="table table-hover table-condensed" id="route_table" data-area="@area" data-info="@info">
       <thead>
         <tr>
           <th>from</th><th>TO</th><th>Count</th><th>Rate</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-repeat="route: routes">
+        <tr v-repeat="route: routes" class="clickable"
+            data-toggle="modal" data-target="#modal"
+            href="/entire/sta/route_fleet/@area/@info/{{route.dep}}/{{route.dest}}">
           <td v-html="viewCell(route.dep)"></td>
           <td v-html="viewCell(route.dest)"></td>
           <td>{{route.count}}</td>
@@ -28,5 +30,12 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- Modal -->
+    <div class="modal fade bs-example-modal-lg" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content"></div>
+      </div>
+    </div>
   }
 }
