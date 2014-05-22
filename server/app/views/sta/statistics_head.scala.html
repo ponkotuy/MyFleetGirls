@@ -10,13 +10,13 @@
 
   <ul class="nav nav-tabs">
     <li class="@if(active=="from_recipe"){active}">
-      <a href="@routes.View.statistics">建造開発レシピ</a>
+      <a href="@routes.View.statistics()">建造開発レシピ</a>
     </li>
     <li class="@if(active=="from_ship"){active}">
       <a href="@routes.View.fromShip()">入手経路検索</a>
     </li>
     <li class="@if(active=="drop"){active}">
-      <a href="@routes.View.dropStage()">ドロップ</a>
+      <a href="@routes.View.dropStage()">海域</a>
     </li>
   </ul>
 

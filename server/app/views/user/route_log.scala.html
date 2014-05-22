@@ -1,0 +1,59 @@
+@(user: dat.User, stages: Seq[dat.Stage])
+
+@main {
+  <title>海戦記録 -@{user.admiral.nickname}提督-</title>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.6.0/moment-with-langs.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.4/vue.min.js"></script>
+  <script src="@routes.Assets.at("javascript/common.js")"></script>
+  <script src="@routes.Assets.at("javascript/route_log.js")"></script>
+} {
+  @head_content(user) {
+    @usertab("route") {
+      <div class="page-header">
+        <h1>羅針盤履歴</h1>
+      </div>
+
+      <div id="routelog">
+        <form class="form-inline" role="form">
+          <div class="form-group">
+            <select v-model="stage" id="stage_select">
+              <option selected="selected">ALL</option>
+              @stages.map { stage =>
+                <option>@stage.area-@stage.info</option>
+              }
+            </select>
+          </div>
+        </form>
+        <table class="table table-condensed table-striped">
+          <thead>
+            <tr>
+              <th><a href="http://wikiwiki.jp/kancolle/?%BD%D0%B7%E2#maps">Stage</a></th>
+              <th>from</th><th>TO</th><th>日時</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-repeat="r: routes">
+              <th>{{r.areaId}}-{{r.infoNo}}</th>
+              <td v-html="viewCell(r.areaId, r.infoNo, r.dep)"></td>
+              <td v-html="viewCell(r.areaId, r.infoNo, r.dest)"></td>
+              <td>{{timeToStr(r.created)}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <ul class="pagination" v-if="allCount > count">
+          <li v-show="page != 0">
+            <a href="#" v-on="click: setPage(page - 1)" onclick="return false;">&laquo;</a>
+          </li>
+          <li v-repeat="p: pages()" v-attr="class: (p == page ? 'active' : '')">
+            <a v-on="click: setPage(p)" href="#" onclick="return false;">{{p + 1}}</a>
+          </li>
+          <li v-show="(page + 1) != maxPage()">
+            <a href="#" v-on="click: setPage(page + 1)" onclick="return false;">&raquo;</a>
+          </li>
+        </ul>
+      </div>
+      </div>
+    }
+  }
+}

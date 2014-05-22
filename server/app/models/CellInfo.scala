@@ -50,6 +50,9 @@ object CellInfo extends SQLSyntaxSupport[CellInfo] {
   def find(areaId: Int, infoNo: Int, cell: Int): Option[CellInfo] =
     all.find(c => c.areaId == areaId && c.infoNo == infoNo && c.cell == cell)
 
+  def findOrDefault(areaId: Int, infoNo: Int, cell: Int): CellInfo =
+    find(areaId, infoNo, cell).getOrElse(noAlphabet(areaId, infoNo, cell))
+
   /** from Heap */
   def findAll(): List[CellInfo] = all
 

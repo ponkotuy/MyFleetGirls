@@ -1,20 +1,31 @@
 @(stages: Seq[(dat.Stage, Long)])
 
 @main {
-  <title>ステージ選択 -艦娘ドロップ一覧-</title>
+  <title>ステージ選択 -海域情報-</title>
 } {
   @statistics_head("drop") {
     <div class="page-header">
-      <h1>艦娘ドロップ(ステージ選択)</h1>
+      <h1>海域情報(ステージ選択)</h1>
     </div>
 
-    <div class="list-group">
+    <table class="table table-striped">
+      <tbody>
       @stages.map { case (stage, count) =>
-        <a href="@routes.View.drop(stage.area, stage.info)" class="list-group-item">
-          <span class="badge">@count</span>
-          @stage
-        </a>
+        <tr>
+          <th>@stage</th>
+          <td>
+            <a href="@routes.View.drop(stage.area, stage.info)">
+              艦娘ドロップ(@count)
+            </a>
+          </td>
+          <td>
+            <a href="@routes.View.route(stage.area, stage.info)">
+              羅針盤
+            </a>
+          </td>
+        </tr>
       }
-    </ul>
+      </tbody>
+    </table>
   }
 }

@@ -1,16 +1,16 @@
 @(user: dat.User)
 
 @main {
-  <title>海戦記録 -@{user.admiral.nickname}提督-</title>
+  <title>海戦履歴 -@{user.admiral.nickname}提督-</title>
   <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.6.0/moment-with-langs.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.3/vue.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.4/vue.js"></script>
   <script src="@routes.Assets.at("javascript/common.js")"></script>
   <script src="@routes.Assets.at("javascript/naval_battle.js")"></script>
 } {
   @head_content(user) {
     @usertab("naval") {
       <div class="page-header">
-        <h1>ドロップ履歴</h1>
+        <h1>海戦履歴</h1>
       </div>
 
       <div id="battle_log">
@@ -56,6 +56,7 @@
             </label>
           </div>
         </form>
+
         <table class="table table-striped table-condensed">
           <thead>
             <tr>
@@ -71,6 +72,7 @@
             </tr>
           </tbody>
         </table>
+
         <ul class="pagination" v-if="allCount > count">
           <li v-show="page != 0">
             <a href="#" v-on="click: setPage(page - 1)" onclick="return false;">&laquo;</a>
