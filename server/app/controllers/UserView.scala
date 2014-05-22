@@ -113,6 +113,11 @@ object UserView {
     Ok(views.html.user.naval_battle(user))
   }
 
+  def routeLog(memberId: Long) = userView(memberId) { user =>
+    val stages = models.MapRoute.findStageUnique()
+    Ok(views.html.user.route_log(user, stages))
+  }
+
   def quest(memberId: Long) = userView(memberId) { user =>
     Ok(views.html.user.quest(user))
   }

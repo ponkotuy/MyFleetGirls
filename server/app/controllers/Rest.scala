@@ -77,6 +77,10 @@ object Rest extends Controller {
     models.CellInfo.findAllBy(where)
   }
 
+  def maps() = returnJson {
+    models.MapRoute.findStageUnique()
+  }
+
   def materials(userId: Long) = returnJson(models.Material.findAllByUser(userId))
 
   def basics(userId: Long) = returnJson(models.Basic.findAllByUser(userId))
@@ -116,6 +120,20 @@ object Rest extends Controller {
       .append(if(rank.nonEmpty) sqls" and win_rank in (${rank.map(_.toString)})" else sqls"")
       .append(if(boss) sqls" and boss = true" else sqls"")
       .append(if(drop) sqls" and get_ship_id is not null" else sqls"")
+
+  def routeLog(memberId: Long, limit: Int, offset: Int, area: Int, info: Int) = returnJson {
+    models.MapRoute.findAllBy(routeLogWhere(memberId, area, info), limit, offset)
+  }
+
+  def routeLogCount(memberId: Long, area: Int, info: Int) = returnString {
+    models.MapRoute.countBy(routeLogWhere(memberId, area, info))
+  }
+
+  private def routeLogWhere(memberId: Long, area: Int, info: Int) = {
+    sqls"member_id = ${memberId}"
+      .append(if(area != -1) sqls" and area_id = ${area}" else sqls"")
+      .append(if(info != -1) sqls" and info_no = ${info}" else sqls"")
+  }
 
   def quest(memberId: Long) = returnJson { models.Quest.findAllBy(sqls"member_id = ${memberId}") }
 }

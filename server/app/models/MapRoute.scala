@@ -4,7 +4,7 @@ import scalikejdbc._
 import scalikejdbc.SQLInterpolation._
 import com.ponkotuy.data
 import scalikejdbc.WrappedResultSet
-import dat.ShipWithName
+import dat.{Stage, ShipWithName}
 
 case class MapRoute(
   id: Long,
@@ -60,9 +60,13 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
     withSQL(select(sqls"count(1)").from(MapRoute as mr)).map(rs => rs.long(1)).single().apply().get
   }
 
-  def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[MapRoute] = {
+  def findAllBy(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session: DBSession = autoSession): List[MapRoute] = {
     withSQL {
-      select.from(MapRoute as mr).where.append(sqls"${where}")
+      select.from(MapRoute as mr)
+        .where.append(sqls"${where}")
+        .orderBy(mr.created).desc
+        .limit(limit).offset(offset)
     }.map(MapRoute(mr.resultName)).list().apply()
   }
 
@@ -78,6 +82,16 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
       ids.flatMap(id => ships.get((memberId, id))).toVector
     }.toList
     result
+  }
+
+  def findStageUnique()(implicit session: DBSession = autoSession): List[Stage] = {
+    withSQL {
+      select(mr.areaId, mr.infoNo).from(MapRoute as mr)
+        .groupBy(mr.areaId, mr.infoNo)
+        .orderBy(mr.areaId, mr.infoNo)
+    }.map { rs =>
+      Stage(rs.int(mr.areaId), rs.int(mr.infoNo))
+    }.list().apply()
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {

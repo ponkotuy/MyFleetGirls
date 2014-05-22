@@ -1,6 +1,6 @@
 $(document).ready ->
   userid = $('#userid').val()
-  vue = new Vue
+  battle = new Vue
     el: '#battle_log'
     data:
       count: 20

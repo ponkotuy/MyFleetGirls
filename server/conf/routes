@@ -37,6 +37,7 @@ GET     /rest/v1/recipe/from_item/:itemId controllers.Rest.recipeFromItem(itemId
 GET     /rest/v1/drop/:rank/:area/:info/:cell controllers.Rest.dropCell(area: Int, info: Int, cell: Int, rank: String)
 GET     /rest/v1/route/:area/:info  controllers.Rest.route(area: Int, info: Int)
 GET     /rest/v1/cell_info          controllers.Rest.cellInfo(area: Int ?= -1, info: Int ?= -1)
+GET     /rest/v1/maps               controllers.Rest.maps()
 GET     /rest/v1/drop_from_ship/:shipId  controllers.Rest.dropFromShip(shipId: Int)
 GET     /rest/v1/:userId/materials  controllers.Rest.materials(userId: Long)
 GET     /rest/v1/:userId/basics     controllers.Rest.basics(userId: Long)
@@ -49,6 +50,8 @@ GET     /rest/v1/:userId/create_items controllers.Rest.createItems(userId: Long,
 GET     /rest/v1/:userId/create_item_count controllers.Rest.createItemCount(userId: Long)
 GET     /rest/v1/:userId/battle_result controllers.Rest.battleResult(userId: Long, limit: Int ?= 10, offset: Int ?= 0, boss: Boolean ?= false, drop: Boolean ?= false, rank: String ?= "SABCDE")
 GET     /rest/v1/:userId/battle_result_count controllers.Rest.battleResultCount(userId: Long, boss: Boolean ?= false, drop: Boolean ?= false, rank: String ?= "SABCDE")
+GET     /rest/v1/:userId/route_log  controllers.Rest.routeLog(userId: Long, limit: Int ?= 10, offset: Int ?= 0, area: Int ?= -1, info: Int ?= -1)
+GET     /rest/v1/:userId/route_log_count controllers.Rest.routeLogCount(userId: Long, area: Int ?= -1, info: Int ?= -1)
 GET     /rest/v1/:userId/quest      controllers.Rest.quest(userId: Long)
 GET     /rest/v1/image/ship/:shipId.jpg controllers.RestImage.ship(shipId: Int)
 GET     /rest/v1/sound/ship/:shipId/:soundId.mp3 controllers.RestSound.ship(shipId: Int, soundId: Int)
@@ -82,6 +85,7 @@ GET     /user/:userId/shipslotitem/:itemId controllers.UserView.shipslotitem(use
 GET     /user/:userId/aship/:shipId controllers.UserView.aship(userId: Long, shipId: Int)
 GET     /user/:userId/fleet/:deckId controllers.UserView.fleet(userId: Long, deckId: Int)
 GET     /user/:userId/naval_battle  controllers.UserView.navalBattle(userId: Long)
+GET     /user/:userId/route_log     controllers.UserView.routeLog(userId: Long)
 GET     /user/:userId/quest         controllers.UserView.quest(userId: Long)
 
 # WebSocket
