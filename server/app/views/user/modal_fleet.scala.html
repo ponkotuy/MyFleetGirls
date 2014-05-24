@@ -16,13 +16,14 @@
   <table class="table table-condensed">
     <thead>
       <tr>
-        <th>艦種</th><th>Lv</th><th>Exp</th><th>HP</th><th>Cond</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th><th>回避</th><th>対潜</th><th>索敵</th><th>運</th>
+        <th>艦種</th><th>名前</th><th>Lv</th><th>Exp</th><th>HP</th><th>Cond</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th><th>回避</th><th>対潜</th><th>索敵</th><th>運</th>
       </tr>
     </thead>
     <tbody>
       @decks.map { ship =>
         <tr>
           <td>@ship.stName</td>
+          <td>@ship.name</td>
           <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.expRate*100).toInt}%;padding:5px;">@ship.lv</div></td>
           <td style="padding:0px;"><div style="background-color:@if(ship.lv > 100){#EBCCD1}else{#D9EDF7};width:@{(ship.entireExpRate*100).toInt}%;padding:5px;">@ship.exp</div></td>
           <td style="padding:0px;"><div style="background-color:@ship.hpRGB.toString;width:@{(ship.hpRate*100).toInt}%;padding:5px;">@ship.nowhp/@ship.maxhp</div></td>

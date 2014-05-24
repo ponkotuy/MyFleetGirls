@@ -56,6 +56,5 @@ $(document).ready ->
       @getData()
     ready: ->
       values = ['page', 'bossOnly', 'dropOnly', 'ranks']
-      console.log(values)
       values.map (v) =>
         @$watch v, () -> @getData()
