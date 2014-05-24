@@ -9,12 +9,7 @@ $(document).ready ->
       data: []
       bossOnly: false
       dropOnly: false
-      rankS: true
-      rankA: true
-      rankB: true
-      rankC: false
-      rankD: false
-      rankE: false
+      ranks: {S: true, A: true, B: true, C: false, D: false, E: false}
     methods:
       setPage: (page) ->
         @page = page
@@ -36,12 +31,9 @@ $(document).ready ->
         drop: @dropOnly
         rank: @rank()
       rank: ->
-        (if @rankS then 'S' else '') +
-          (if @rankA then 'A' else '') +
-          (if @rankB then 'B' else '') +
-          (if @rankC then 'C' else '') +
-          (if @rankD then 'D' else '') +
-          (if @rankE then 'E' else '')
+        xs = for str, value of @ranks
+          if value then str else ''
+        xs.join('')
       setHash: ->
         obj =
           count: @count
@@ -57,22 +49,13 @@ $(document).ready ->
         @page = parseInt(obj.page)
         @bossOnly = obj.bossOnly != 'false'
         @dropOnly = obj.dropOnly != 'false'
-        @rankS = obj.rank.indexOf('S') != -1
-        @rankA = obj.rank.indexOf('A') != -1
-        @rankB = obj.rank.indexOf('B') != -1
-        @rankC = obj.rank.indexOf('C') != -1
-        @rankD = obj.rank.indexOf('D') != -1
-        @rankE = obj.rank.indexOf('E') != -1
+        for str, _ of @ranks.key
+          @ranks[str] = obj.rank.indexOf(str) != -1
     created: ->
       @restoreHash()
       @getData()
     ready: ->
-      @$watch 'page', () -> @getData()
-      @$watch 'bossOnly', () -> @getData()
-      @$watch 'dropOnly', () -> @getData()
-      @$watch 'rankS', () -> @getData()
-      @$watch 'rankA', () -> @getData()
-      @$watch 'rankB', () -> @getData()
-      @$watch 'rankC', () -> @getData()
-      @$watch 'rankD', () -> @getData()
-      @$watch 'rankE', () -> @getData()
+      values = ['page', 'bossOnly', 'dropOnly', 'ranks']
+      console.log(values)
+      values.map (v) =>
+        @$watch v, () -> @getData()
