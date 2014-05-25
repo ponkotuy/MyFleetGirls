@@ -11,7 +11,7 @@ import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.content.FileBody
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.message.BasicNameValuePair
-import com.ponkotuy.data.Auth
+import com.ponkotuy.data.{MyFleetAuth, Auth}
 import com.ponkotuy.util.Log
 import com.ponkotuy.config.ClientConfig
 import org.json4s._
@@ -30,12 +30,12 @@ object MFGHttp extends Log {
 
   implicit val formats = Serialization.formats(NoTypeHints)
 
-  def post(uStr: String, data: String, ver: Int = 1)(implicit auth: Option[Auth]): Unit = {
+  def post(uStr: String, data: String, ver: Int = 1)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return }
     try {
       val http = httpBuilder.build()
       val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
-      val entity = createEntity(Map("auth" -> write(auth), "data" -> data))
+      val entity = createEntity(Map("auth" -> write(auth), "auth2" -> write(auth2), "data" -> data))
       post.setEntity(entity)
       val res = http.execute(post)
       alertResult(res)
@@ -44,11 +44,11 @@ object MFGHttp extends Log {
     }
   }
 
-  def masterPost(uStr: String, data: String, ver: Int = 1): Unit = {
+  def masterPost(uStr: String, data: String, ver: Int = 1)(implicit auth2: Option[MyFleetAuth]): Unit = {
     try {
       val http = httpBuilder.build()
       val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
-      val entity = createEntity(Map("data" -> data))
+      val entity = createEntity(Map("auth2" -> write(auth2), "data" -> data))
       post.setEntity(entity)
       val res = http.execute(post)
       alertResult(res)
@@ -64,7 +64,8 @@ object MFGHttp extends Log {
     new UrlEncodedFormEntity(nvps.asJava, UTF8)
   }
 
-  def postFile(uStr: String, fileBodyKey: String, ver: Int = 1)(file: File)(implicit auth: Option[Auth]): Unit = {
+  def postFile(uStr: String, fileBodyKey: String, ver: Int = 1)(file: File)(
+      implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return }
     try {
       val http = httpBuilder.build()
