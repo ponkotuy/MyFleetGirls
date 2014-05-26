@@ -1,25 +1,65 @@
-@(user: dat.User, best: dat.ShipWithName, flagship: dat.ShipWithName)
+@(user: dat.User, yome: Option[dat.ShipWithName], best: Option[dat.ShipWithName], flagship: Option[dat.ShipWithName])
 
 @main {
   <title>@{user.admiral.nickname}提督 -MyFleetGirls-</title>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.css">
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.js"></script>
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.barRenderer.min.js"></script>
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.categoryAxisRenderer.min.js"></script>
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.pointLabels.min.js"></script>
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.highlighter.min.js"></script>
-  <script type="text/javascript" src="@routes.Assets.at("javascript/bar.js")"></script>
 } {
   @head_content(user) {
     @usertab("top") {
-      <div class="page-header">
-        <h1>嫁艦（最大Lv）</h1>
+      <div class="row">
+        @yome.map { ship =>
+          <div class="col-md-4">
+            <div class="page-header">
+              <h1>嫁艦</h1>
+            </div>
+            @ship_detail(ship)
+          </div>
+        }
+        @best.map { ship =>
+          <div class="col-md-4">
+            <div class="page-header">
+              <h1>主力艦（最大Lv）</h1>
+            </div>
+            @ship_detail(ship)
+          </div>
+        }
+        @flagship.map { ship =>
+          <div class="col-md-4">
+            <div class="page-header">
+              <h1>旗艦</h1>
+            </div>
+            @ship_detail(ship)
+          </div>
+        }
       </div>
-      @ship_detail(best)
-      <div class="page-header">
-        <h1>旗艦</h1>
-      </div>
-      @ship_detail(flagship, true)
+
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th>艦種</th><th>名前</th><th>Lv</th><th>Exp</th><th>HP</th><th>Cond</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th><th>回避</th><th>対潜</th><th>索敵</th><th>運</th>
+          </tr>
+        </thead>
+        <tbody>
+        @List(yome, best, flagship).flatten.map { ship =>
+          <tr>
+            <td>@ship.stName</td>
+            <td>@ship.name</td>
+            <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.expRate*100).toInt}%;padding:5px;">@ship.lv</div></td>
+            <td style="padding:0px;"><div style="background-color:@if(ship.lv > 100){#EBCCD1}else{#D9EDF7};width:@{(ship.entireExpRate*100).toInt}%;padding:5px;">@ship.exp</div></td>
+            <td style="padding:0px;"><div style="background-color:@ship.hpRGB.toString;width:@{(ship.hpRate*100).toInt}%;padding:5px;">@ship.nowhp/@ship.maxhp</div></td>
+            <td style="padding:0px;"><div style="background-color:@ship.condBarRGB.toString;width:@{ship.cond}%;padding:5px;">@ship.cond</div></td>
+            <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.karyokuRate*100).toInt}%;padding:5px;">@ship.karyoku</div></td>
+            <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.raisouRate*100).toInt}%;padding:5px;">@ship.raisou</div></td>
+            <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.taikuRate*100).toInt}%;padding:5px;">@ship.taiku</div></td>
+            <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.soukouRate*100).toInt}%;padding:5px;">@ship.soukou</div></td>
+            <td>@ship.kaihi</td>
+            <td>@ship.taisen</td>
+            <td>@ship.sakuteki</td>
+            <td>@ship.lucky</td>
+          </tr>
+        }
+        </tbody>
+      </table>
     }
   }
 }

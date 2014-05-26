@@ -21,7 +21,13 @@ object Authentication {
     }
   }
 
-  def myfleetAuth(auth: MyFleetAuth): Boolean = {
+  def myfleetAuth(memberId: Long, pass: String): Boolean = {
+    models.MyFleetAuth.find(memberId).filter { auth =>
+      toHash(pass, auth.salt) sameElements auth.hash
+    }.isDefined
+  }
+
+  def myfleetAuthOrCreate(auth: MyFleetAuth): Boolean = {
     models.MyFleetAuth.find(auth.id) match {
       case Some(old) if toHash(auth.pass, old.salt) sameElements old.hash => true
       case Some(old) => false

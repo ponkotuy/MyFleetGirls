@@ -51,7 +51,7 @@ object Common extends Controller {
         case Some(oldAuth) =>
           reqHeadParse[MyFleetAuth](request)("auth2") match {
             case Some(auth) =>
-              if(Authentication.myfleetAuth(auth)) {
+              if(Authentication.myfleetAuthOrCreate(auth)) {
                 if(auth.id == oldAuth.memberId) {
                   Authentication.oldAuth(oldAuth) match {
                     case Some(ad) => f(ad)

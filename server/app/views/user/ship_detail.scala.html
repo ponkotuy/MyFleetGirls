@@ -1,25 +1,4 @@
-@(ship: dat.ShipWithName, imageLeft: Boolean = false)
+@(ship: dat.ShipWithName)
 
-<!-- Require jqPlot -->
-
-@graph() = {
-  <div style="float:left" class="col-md-5">
-    <h3>@ship.name<small>Lv@ship.lv</small></h3>
-    <div style="width:360px;height:300px" class="ship_hbar" data-json="@ship.toJqPlot"></div>
-  </div>
-}
-
-@image() = {
-  <div style="float:left" class="col-md-3">
-    <img src="@routes.RestImage.ship(ship.shipId)" alt="@ship.name" class="img-rounded" />
-    <ul>
-      @ship.slotNames.map { slot =>
-        <li>@slot</li>
-      }
-    </ul>
-  </div>
-}
-
-<div class="row">
-  @if(imageLeft) {@image() @graph()} else {@graph() @image()}
-</div>
+<h3><a href="@{routes.UserView.ship(ship.memberId)}#modal=true&id=@ship.id">@ship.name</a><small>Lv@ship.lv</small></h3>
+<img src="@routes.RestImage.ship(ship.shipId)" alt="@ship.name" />

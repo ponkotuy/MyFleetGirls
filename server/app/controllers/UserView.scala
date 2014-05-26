@@ -31,14 +31,10 @@ object UserView {
   }
 
   def top(memberId: Long) = userView(memberId) { user =>
-    models.Ship.findByUserMaxLvWithName(memberId) match {
-      case Some(best) =>
-        models.DeckShip.findFlagshipByUserWishShipName(memberId) match {
-          case Some(flagship) => Ok(views.html.user.user(user, best, flagship))
-          case _ => NotFound("旗艦を登録していません")
-        }
-      case _ => NotFound("艦娘を登録していません")
-    }
+    val yome = models.UserSettings.findYome(memberId)
+    val best = models.Ship.findByUserMaxLvWithName(memberId)
+    val flagship = models.DeckShip.findFlagshipByUserWishShipName(memberId)
+    Ok(views.html.user.user(user, yome, best, flagship))
   }
 
   def material(memberId: Long) = userView(memberId) { user =>
@@ -51,6 +47,8 @@ object UserView {
     val deckports = models.DeckPort.findAllByUser(memberId)
     Ok(views.html.user.ship(user, ships, decks, deckports))
   }
+
+  def settings(memberId: Long) = userView(memberId) { user => Ok(views.html.user.settings(user)) }
 
   def book(memberId: Long) = userView(memberId) { user =>
     val sBooks = models.ShipBook.findAllBy(sqls"member_id = ${memberId}").sortBy(_.indexNo)

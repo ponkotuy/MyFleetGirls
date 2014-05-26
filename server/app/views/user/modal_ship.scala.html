@@ -54,6 +54,7 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+  <buttton type="button" class="btn btn-primary" onclick="yome()">嫁艦にする</buttton>
   <a type="button" class="btn btn-primary" onclick="tweet()" target="_blank">Tweet</a>
   <script>
     var tweet = function(){
@@ -61,6 +62,9 @@
       var text = "@ship.name Lv@ship.lv";
       var url = "https://twitter.com/intent/tweet?original_referer=" + here + "&url=" + here + "&text=" + text;
       window.open(url);
+    }
+    var yome = function(){
+      location.href='@{routes.UserView.settings(ship.memberId)}#userId=@ship.memberId&shipId=@ship.id'
     }
   </script>
 </div>
