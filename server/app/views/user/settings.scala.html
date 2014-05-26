@@ -1,0 +1,51 @@
+@(user: dat.User)
+
+@main {
+  <title>嫁艦設定</title>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.4/vue.js"></script>
+  <script src="@routes.Assets.at("javascript/common.js")"></script>
+  <script src="@routes.Assets.at("javascript/settings.js")"></script>
+} {
+  @head_content(user) {
+    @usertab("ship") {
+      <div class="page-header">
+        <h1>嫁艦設定</h1>
+      </div>
+
+      <div id="settings">
+        <div class="alert alert-warning alert-dismissable" v-show="errorMsg.status">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          <strong>{{ errorMsg.status }} {{ errorMsg.statusText }}</strong>: {{ errorMsg.responseText }}
+        </div>
+
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label for="ship_id" class="col-sm-2 control-label">ShipID</label>
+            <div class="col-sm-10">
+              <input type="number" class="form-control" id="ship_id" v-model="shipId" placeholder="嫁艦ID" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="user_id" class="col-sm-2 control-label">UserID</label>
+            <div class="col-sm-10">
+              <input type="number" class="form-control" id="user_id" v-model="userId" placeholder="UserID" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="password" class="col-sm-2 control-label">
+              <a href="@{routes.View.about()}#password">Password</a>
+            </label>
+            <div class="col-sm-10">
+              <input type="password" class="form-control" id="password" v-model="password" />
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="button" class="btn btn-primary" id="submit" v-on="click: submit()">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    }
+  }
+}

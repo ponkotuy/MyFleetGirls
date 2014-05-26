@@ -8,7 +8,7 @@ import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
 import com.ponkotuy.util.Log
 import com.ponkotuy.data
-import com.ponkotuy.data.{MapRoute, CreateShipWithId, master}
+import com.ponkotuy.data.{MyFleetAuth, MapRoute, CreateShipWithId, master}
 import org.jboss.netty.buffer.ChannelBuffer
 import com.ponkotuy.tool.TempFileTool
 import com.ponkotuy.config.ClientConfig
@@ -24,6 +24,7 @@ class PostResponse extends Log {
 
   implicit val formats = Serialization.formats(NoTypeHints)
 
+  // TODO 実はThreadSafeじゃないからどうにかしないと
   // データ転送に毎回必要
   private[this] implicit var auth: Option[data.Auth] = None
   // KDock + CreateShipのデータが欲しいのでKDockIDをKeyにCreateShipを溜めておく
@@ -34,12 +35,13 @@ class PostResponse extends Log {
   private[this] var firstFleet: List[Int] = Nil
 
   def post(q: Query): Unit = {
+    implicit val auth2: Option[MyFleetAuth] = auth.flatMap(a => ClientConfig.auth(a.memberId))
     val typ = q.resType.get
     lazy val req = q.reqMap
     lazy val obj = q.resJson.get
     typ match {
       case ApiStart2 =>
-        if(ClientConfig.master) {
+        if(ClientConfig.Auth.master) {
           val masterGraph = master.MasterShipGraph.fromJson(obj \ "api_mst_shipgraph")
           val filenames = masterGraph.map(it => it.id -> it.filename).toMap
           val masterShip = master.MasterShip.fromJson(obj \ "api_mst_ship", filenames)
@@ -161,20 +163,20 @@ class PostResponse extends Log {
     }
   }
 
-  private def basic(obj: JValue): Unit = {
+  private def basic(obj: JValue)(implicit auth2: Option[MyFleetAuth]): Unit = {
     auth = Some(data.Auth.fromJSON(obj))
     val basic = data.Basic.fromJSON(obj)
     MFGHttp.post("/basic", write(basic))
     println(basic.summary)
   }
 
-  private def ndock(obj: JValue): Unit = {
+  private def ndock(obj: JValue)(implicit auth2: Option[MyFleetAuth]): Unit = {
     val docks = data.NDock.fromJson(obj)
     MFGHttp.post("/ndock", write(docks))
     docks.filterNot(_.shipId == 0).map(_.summary).foreach(println)
   }
 
-  private def kdock(obj: JValue): Unit = {
+  private def kdock(obj: JValue)(implicit auth2: Option[MyFleetAuth]): Unit = {
     val docks = data.KDock.fromJson(obj).filterNot(_.completeTime == 0)
     MFGHttp.post("/kdock", write(docks))
     docks.foreach { dock =>
@@ -187,20 +189,20 @@ class PostResponse extends Log {
     }
   }
 
-  private def deckport(obj: JValue): Unit = {
+  private def deckport(obj: JValue)(implicit auth2: Option[MyFleetAuth]): Unit = {
     val decks = data.DeckPort.fromJson(obj)
     firstFleet = decks.find(_.id == 1).map(_.ships).getOrElse(Nil)
     if(decks.nonEmpty) MFGHttp.post("/deckport", write(decks))
     decks.map(_.summary).foreach(println)
   }
 
-  private def ship(obj: JValue): Unit = {
+  private def ship(obj: JValue)(implicit auth2: Option[MyFleetAuth]): Unit = {
     val ship = data.Ship.fromJson(obj)
     MFGHttp.post("/ship", write(ship), ver = 2)
     println(s"所持艦娘数 -> ${ship.size}")
   }
 
-  private def material(obj: JValue): Unit = {
+  private def material(obj: JValue)(implicit auth2: Option[MyFleetAuth]): Unit = {
     val material = data.Material.fromJson(obj)
     MFGHttp.post("/material", write(material))
     println(material.summary)

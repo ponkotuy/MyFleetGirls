@@ -7,8 +7,9 @@ import org.json4s.native.Serialization.write
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
 import scalikejdbc.SQLInterpolation._
-import com.ponkotuy.data.Auth
+import com.ponkotuy.data.{MyFleetAuth, Auth}
 import dat.User
+import tool.Authentication
 
 /**
  *
@@ -40,21 +41,33 @@ object Common extends Controller {
     }
   }
 
+  /**
+   * 1. 旧ログイン系は必ず必要（さもないとデータが不足する）
+   * 2. 新ログイン系は任意だが、一度でも認証させたら通さないと駄目
+   */
   def authentication(request: Req)(f: (models.Admiral) => SimpleResult): Future[SimpleResult] = {
     Future {
-      val optoptResult:Option[Option[models.Admiral]] = for {
-        json <- reqHead(request)("auth")
-        auth <- J.parse(json).extractOpt[Auth]
-      } yield {
-        models.Admiral.find(auth.memberId) match {
-          case Some(old: models.Admiral) if old.authentication(auth) => Some(old)
-          case Some(_) => None
-          case _ => Some(models.Admiral.create(auth))
-        }
-      }
-      optoptResult.getOrElse(None) match {
-        case Some(admiral) => f(admiral)
-        case _ => Unauthorized("Failed Authorization")
+      reqHeadParse[Auth](request)("auth") match {
+        case Some(oldAuth) =>
+          reqHeadParse[MyFleetAuth](request)("auth2") match {
+            case Some(auth) =>
+              if(Authentication.myfleetAuthOrCreate(auth)) {
+                if(auth.id == oldAuth.memberId) {
+                  Authentication.oldAuth(oldAuth) match {
+                    case Some(ad) => f(ad)
+                    case _ => Unauthorized("Failed Old Authentication")
+                  }
+                } else Unauthorized("Failed Password Authentication")
+              } else Unauthorized("Failed Pasword Authentication")
+            case None =>
+              if(models.MyFleetAuth.find(oldAuth.memberId).isEmpty) {
+                Authentication.oldAuth(oldAuth) match {
+                  case Some(ad) => f(ad)
+                  case _ => Unauthorized("Failed Old Authentication")
+                }
+              } else Unauthorized("Require Password")
+          }
+        case None => Unauthorized("Require Auth Data")
       }
     }
   }
@@ -89,6 +102,13 @@ object Common extends Controller {
       results <- request.get(key)
       one <- results.headOption
     } yield one
+  }
+
+  def reqHeadParse[T](request: Req)(key: String)(implicit m: Manifest[T]): Option[T] = {
+    for {
+      head <- reqHead(request)(key)
+      result <- J.parse(head).extractOpt[T]
+    } yield result
   }
 
   private def getUser(memberId: Long): Option[User] = {

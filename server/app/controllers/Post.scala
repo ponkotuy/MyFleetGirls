@@ -6,6 +6,8 @@ import scala.concurrent.ExecutionContext.Implicits._
 import play.api.mvc._
 import com.ponkotuy.data._
 import Common._
+import dat.Settings
+import tool.Authentication
 
 /**
  *
@@ -132,5 +134,19 @@ object Post extends Controller {
   def questlist = authAndParse[List[Quest]] { case (auth, quests) =>
     models.Quest.bulkUpsert(quests, auth.id)
     Ok("Success")
+  }
+
+  def settings = Action.async(parse.urlFormEncoded) { request =>
+    Future {
+      Settings.fromReq(request.body) match {
+        case Some(set: Settings) =>
+          if(Authentication.myfleetAuth(set.userId, set.password)) {
+          models.UserSettings.upsert(set.userId, set.shipId)
+          Ok("Success")
+        } else {
+          Unauthorized("Authentication failure")
+        }
+      }
+    }
   }
 }

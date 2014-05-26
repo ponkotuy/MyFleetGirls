@@ -15,6 +15,6 @@ trait ExtendedQueryDSLFeature extends QueryDSLFeature { self: SQLInterpolationFe
 
   object upsert {
     def into(support: SQLSyntaxSupport[_]): InsertSQLBuilder =
-      new InsertSQLBuilder(sqls"insert on duplicate key update into ${support.table}")
+      new InsertSQLBuilder(sqls"replace into ${support.table}")
   }
 }
