@@ -49,23 +49,17 @@ object Common extends Controller {
     Future {
       reqHeadParse[Auth](request)("auth") match {
         case Some(oldAuth) =>
-          reqHeadParse[MyFleetAuth](request)("auth2") match {
-            case Some(auth) =>
-              if(Authentication.myfleetAuthOrCreate(auth)) {
-                if(auth.id == oldAuth.memberId) {
-                  Authentication.oldAuth(oldAuth) match {
-                    case Some(ad) => f(ad)
-                    case _ => Unauthorized("Failed Old Authentication")
-                  }
-                } else Unauthorized("Failed Password Authentication")
-              } else Unauthorized("Failed Pasword Authentication")
-            case None =>
-              if(models.MyFleetAuth.find(oldAuth.memberId).isEmpty) {
-                Authentication.oldAuth(oldAuth) match {
-                  case Some(ad) => f(ad)
-                  case _ => Unauthorized("Failed Old Authentication")
-                }
-              } else Unauthorized("Require Password")
+          Authentication.oldAuth(oldAuth) match {
+            case Some(ad) =>
+              reqHeadParse[MyFleetAuth](request)("auth2") match {
+                case Some(auth) =>
+                  if(auth.id == oldAuth.memberId && Authentication.myfleetAuthOrCreate(auth)) f(ad)
+                  else Unauthorized("Failed Pasword Authentication")
+                case None =>
+                  if(models.MyFleetAuth.find(oldAuth.memberId).isEmpty) f(ad)
+                  else Unauthorized("Require Password")
+              }
+            case None => Unauthorized("Failed Old Authentication")
           }
         case None => Unauthorized("Require Auth Data")
       }

@@ -23,8 +23,8 @@ object ClientConfig {
   def auth(memberId: Long): Option[MyFleetAuth] = Auth.password.map(p => MyFleetAuth(memberId, p))
 
   object Auth {
-    val conf = config.getConfig("auth")
-    val master: Boolean = Try { conf.getBoolean("master") }.getOrElse(false)
-    val password: Option[String] = Try { conf.getString("pass") }.toOption
+    val conf = Try { config.getConfig("auth") }.toOption
+    val master: Boolean = Try { conf.get.getBoolean("master") }.getOrElse(false)
+    val password: Option[String] = Try { conf.get.getString("pass") }.toOption
   }
 }
