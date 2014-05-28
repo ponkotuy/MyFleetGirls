@@ -17,7 +17,7 @@ import com.ponkotuy.tool.Pretty
  * Date: 14/02/20
  */
 case class Basic(
-    memberId: Long, lv: Int, experience: Int, rank: Int,
+    lv: Int, experience: Int, rank: Int,
     maxChara: Int, fCoin: Int,
     stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int) {
   def summary: String = Pretty(Map("Lv" -> lv, "経験値" -> experience))
@@ -28,7 +28,6 @@ object Basic {
 
   def fromJSON(json: JValue): Basic = {
     implicit def toInt(json: JValue) = json.extract[Int]
-    val JString(memberId) = json \ "api_member_id"
     val lv = json \ "api_level"
     val experience = json \ "api_experience"
     val rank = json \ "api_rank"
@@ -40,7 +39,6 @@ object Basic {
     val msSuccess = json \ "api_ms_success"
     val ptWin = json \ "api_pt_win"
     val ptLose: Int = json \ "api_pt_lose"
-    Basic(memberId.toLong,
-      lv, experience, rank, maxChara, fCoin, stWin, stLose, msCount, msSuccess, ptWin, ptLose)
+    Basic(lv, experience, rank, maxChara, fCoin, stWin, stLose, msCount, msSuccess, ptWin, ptLose)
   }
 }

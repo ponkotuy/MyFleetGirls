@@ -96,13 +96,13 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       .orderBy(sqls"count").desc
   }.map(rs => (Mat(cs)(rs), rs.long(6))).toList().apply()
 
-  def createFromKDock(cs: data.CreateShip, kd: data.KDock)(
+  def createFromKDock(cs: data.CreateShip, kd: data.KDock, memberId: Long)(
       implicit session: DBSession = CreateShip.autoSession): Unit = {
     require(cs.equalKDock(kd))
     val created = System.currentTimeMillis()
     applyUpdate {
       insert.into(CreateShip).namedValues(
-        column.memberId -> kd.memberId, column.resultShip -> kd.shipId,
+        column.memberId -> memberId, column.resultShip -> kd.shipId,
         column.fuel -> cs.fuel, column.ammo -> cs.ammo, column.steel -> cs.steel, column.bauxite -> cs.bauxite,
         column.develop -> cs.develop, column.kDock -> cs.kDock, column.highspeed -> cs.highspeed,
         column.largeFlag -> cs.largeFlag, column.completeTime -> kd.completeTime, column.created -> created

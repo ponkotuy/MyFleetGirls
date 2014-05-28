@@ -34,43 +34,41 @@ object DeckPort extends SQLSyntaxSupport[DeckPort] {
     select.from(DeckPort as dp).where.eq(dp.memberId, memberId)
   }.map(DeckPort(dp)).list().apply()
 
-  def create(dp: data.DeckPort)(
+  def create(dp: data.DeckPort, memberId: Long)(
       implicit session: DBSession = DeckPort.autoSession): Unit = {
     val created = System.currentTimeMillis()
     dp.mission match {
-      case Some(mission) => Mission.create(mission, dp.memberId, dp.id, created)
-      case None => Mission.deleteByDeck(dp.memberId, dp.id)
+      case Some(mission) => Mission.create(mission, memberId, dp.id, created)
+      case None => Mission.deleteByDeck(memberId, dp.id)
     }
-    DeckShip.bulkInsert(dp.id, dp.memberId, dp.ships)
+    DeckShip.bulkInsert(dp.id, memberId, dp.ships)
     applyUpdate {
       insert.into(DeckPort).namedValues(
-        column.id -> dp.id, column.memberId -> dp.memberId,
+        column.id -> dp.id, column.memberId -> memberId,
         column.name -> dp.name, column.created -> created
       )
     }
   }
 
-  def bulkInsert(dps: Seq[data.DeckPort])(
-      implicit session: DBSession = DeckPort.autoSession): Seq[DeckPort] = {
-    if(dps.isEmpty) return Nil
-    require(dps.map(_.memberId).toSet.size == 1)
-    val created = System.currentTimeMillis()
-    val memberId = dps.head.memberId
+  def bulkInsert(dps: Seq[data.DeckPort], memberId: Long)(
+      implicit session: DBSession = DeckPort.autoSession): Unit = {
+    if(dps.nonEmpty) {
+      val created = System.currentTimeMillis()
 
-    // Mission
-    val (missions, ids) = dps.flatMap(d => d.mission.map(_ -> d.id)).unzip
-    Mission.bulkInsert(missions, ids, memberId, created)
+      // Mission
+      val (missions, ids) = dps.flatMap(d => d.mission.map(_ -> d.id)).unzip
+      Mission.bulkInsert(missions, ids, memberId, created)
 
-    // DeckShip
-    dps.foreach { d => DeckShip.bulkInsert(d.id, d.memberId, d.ships) }
+      // DeckShip
+      dps.foreach { d => DeckShip.bulkInsert(d.id, memberId, d.ships)}
 
-    // Main
-    applyUpdate {
-      insert.into(DeckPort)
-        .columns(column.id, column.memberId, column.name, column.created)
-        .multiValues(dps.map(_.id), dps.map(_.memberId), dps.map(_.name), Seq.fill(dps.size)(created))
+      // Main
+      applyUpdate {
+        insert.into(DeckPort)
+          .columns(column.id, column.memberId, column.name, column.created)
+          .multiValues(dps.map(_.id), Seq.fill(dps.size)(memberId), dps.map(_.name), Seq.fill(dps.size)(created))
+      }
     }
-    dps.map { d => DeckPort(d.id, d.memberId, d.name, created) }
   }
 
   /** まとめて従属するTableまでdelete */

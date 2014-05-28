@@ -18,7 +18,7 @@ object Post extends Controller {
   def basic = authAndParse[Basic] { case (auth, basic) =>
     val isChange = !models.Basic.findByUser(auth.id).exists(_.diff(basic) < 0.01)
     if(isChange) {
-      models.Basic.create(basic)
+      models.Basic.create(basic, auth.id)
       Ok("Success")
     } else {
       Ok("No Change")
@@ -28,7 +28,7 @@ object Post extends Controller {
   def material = authAndParse[Material] { case (auth, material) =>
     val isChange = !models.Material.findByUser(auth.id).exists(_.diff(material) < 0.01)
     if(isChange) {
-      models.Material.create(material)
+      models.Material.create(material, auth.id)
       Ok("Success")
     } else {
       Ok("No Change")
@@ -52,13 +52,13 @@ object Post extends Controller {
 
   def ndock = authAndParse[List[NDock]] { case (auth, docks) =>
     models.NDock.deleteAllByUser(auth.id)
-    docks.foreach(dock => models.NDock.create(dock))
+    docks.foreach(dock => models.NDock.create(dock, auth.id))
     Ok("Success")
   }
 
   def createShip = authAndParse[CreateShipAndDock] { case (auth, CreateShipAndDock(ship, dock)) =>
     try {
-      models.CreateShip.createFromKDock(ship, dock)
+      models.CreateShip.createFromKDock(ship, dock, auth.id)
     } catch {
       case e: Throwable =>
         Ok("Duplicate Entry")
@@ -85,14 +85,14 @@ object Post extends Controller {
 
   def kdock = authAndParse[List[KDock]] { case (auth, docks) =>
     models.KDock.deleteByUser(auth.id)
-    models.KDock.bulkInsert(docks.filterNot(_.completeTime == 0))
+    models.KDock.bulkInsert(docks.filterNot(_.completeTime == 0), auth.id)
     Ok("Success")
   }
 
   def deckPort = authAndParse[List[DeckPort]] { case (auth, decks) =>
     try {
       models.DeckPort.deleteByUser(auth.id)
-      models.DeckPort.bulkInsert(decks)
+      models.DeckPort.bulkInsert(decks, auth.id)
     } catch {
       case e: Exception => e.printStackTrace()
     }
@@ -141,11 +141,13 @@ object Post extends Controller {
       Settings.fromReq(request.body) match {
         case Some(set: Settings) =>
           if(Authentication.myfleetAuth(set.userId, set.password)) {
-          models.UserSettings.upsert(set.userId, set.shipId)
-          Ok("Success")
-        } else {
-          Unauthorized("Authentication failure")
-        }
+            models.UserSettings.upsert(set.userId, set.shipId)
+            Ok("Success")
+          } else {
+            Unauthorized("Authentication failure")
+          }
+        case None =>
+          BadRequest("Failure")
       }
     }
   }
