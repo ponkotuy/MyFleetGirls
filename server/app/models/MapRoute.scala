@@ -13,7 +13,7 @@ case class MapRoute(
   infoNo: Int,
   dep: Int,
   dest: Int,
-  fleet: String,
+  fleet: List[Int],
   created: Long) {
 
   def save()(implicit session: DBSession = MapRoute.autoSession): MapRoute = MapRoute.save(this)(session)
@@ -36,7 +36,7 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
     infoNo = rs.int(mr.infoNo),
     dep = rs.int(mr.dep),
     dest = rs.int(mr.dest),
-    fleet = rs.string(mr.fleet),
+    fleet = rs.string(mr.fleet).split(',').map(_.toInt).toList,
     created = rs.long(mr.created)
   )
 
@@ -72,7 +72,7 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
 
   def findFleetBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[Vector[ShipWithName]] = {
     val routes = findAllBy(where)
-    val fleets = routes.map(r => r.memberId -> r.fleet.split(',').map(_.toInt))
+    val fleets = routes.map(r => r.memberId -> r.fleet)
     val userShips = fleets.groupBy(_._1).mapValues(_.map(_._2).flatten)
     val ships = userShips.flatMap { case (memberId, ids) =>
       val xs = Ship.findIn(memberId, ids)
@@ -111,7 +111,7 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
     }.list().apply()
   }
 
-  def create(x: data.MapRoute, memberId: Long)(implicit session: DBSession = autoSession): MapRoute = {
+  def create(x: data.MapRoute, memberId: Long)(implicit session: DBSession = autoSession): Long = {
     val created = System.currentTimeMillis()
     createOrig(memberId, x.areaId, x.infoNo, x.dep, x.dest, x.fleet.mkString(","), created)
   }
@@ -123,8 +123,8 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
     dep: Int,
     dest: Int,
     fleet: String,
-    created: Long)(implicit session: DBSession = autoSession): MapRoute = {
-    val generatedKey = withSQL {
+    created: Long)(implicit session: DBSession = autoSession): Long = {
+    withSQL {
       insert.into(MapRoute).columns(
         column.memberId,
         column.areaId,
@@ -143,16 +143,6 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
           created
         )
     }.updateAndReturnGeneratedKey().apply()
-
-    MapRoute(
-      id = generatedKey,
-      memberId = memberId,
-      areaId = areaId,
-      infoNo = infoNo,
-      dep = dep,
-      dest = dest,
-      fleet = fleet,
-      created = created)
   }
 
   def save(entity: MapRoute)(implicit session: DBSession = autoSession): MapRoute = {

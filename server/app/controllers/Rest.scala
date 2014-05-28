@@ -122,7 +122,16 @@ object Rest extends Controller {
       .append(if(drop) sqls" and get_ship_id is not null" else sqls"")
 
   def routeLog(memberId: Long, limit: Int, offset: Int, area: Int, info: Int) = returnJson {
-    models.MapRoute.findAllBy(routeLogWhere(memberId, area, info), limit, offset)
+    val result = models.MapRoute.findAllBy(routeLogWhere(memberId, area, info), limit, offset)
+    val ships = models.Ship.findAllByUserWithName(memberId)
+      .map(s => s.id -> s).toMap
+    result.map { route =>
+      Extraction.decompose(route).asInstanceOf[JObject] ~
+        ("ships" -> route.fleet.map { sid =>
+          val ship = ships.apply(sid)
+          ("id" -> ship.id) ~ ("name" -> ship.name)
+        })
+    }
   }
 
   def routeLogCount(memberId: Long, area: Int, info: Int) = returnString {
