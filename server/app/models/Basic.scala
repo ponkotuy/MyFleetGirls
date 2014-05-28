@@ -73,11 +73,11 @@ object Basic extends SQLSyntaxSupport[Basic] {
     b
   }
 
-  def create(b: data.Basic)(implicit session: DBSession = Basic.autoSession): Basic = {
+  def create(b: data.Basic, memberId: Long)(implicit session: DBSession = Basic.autoSession): Long = {
     val created = System.currentTimeMillis()
-    val id = withSQL {
+    withSQL {
       insert.into(Basic).namedValues(
-        column.memberId -> b.memberId,
+        column.memberId -> memberId,
         column.lv -> b.lv, column.experience -> b.experience, column.rank -> b.rank,
         column.maxChara -> b.maxChara, column.fCoin -> b.fCoin,
         column.stWin -> b.stWin, column.stLose -> b.stLose,
@@ -86,9 +86,6 @@ object Basic extends SQLSyntaxSupport[Basic] {
         column.created -> created
       )
     }.updateAndReturnGeneratedKey().apply()
-    Basic(id, b.memberId,
-      b.lv, b.experience, b.rank, b.maxChara, b.fCoin, b.stWin, b.stLose, b.msCount, b.msSuccess, b.ptWin, b.ptLose,
-      created)
   }
 
   /** 特定ユーザの最新1件を取得

@@ -33,7 +33,9 @@ object UserView {
   def top(memberId: Long) = userView(memberId) { user =>
     val yome = models.UserSettings.findYome(memberId)
     val best = models.Ship.findByUserMaxLvWithName(memberId)
+      .filterNot(b => b.id == yome.fold(-1)(_.id))
     val flagship = models.DeckShip.findFlagshipByUserWishShipName(memberId)
+      .filterNot(f => Set(yome, best).flatten.map(_.id).contains(f.id))
     Ok(views.html.user.user(user, yome, best, flagship))
   }
 

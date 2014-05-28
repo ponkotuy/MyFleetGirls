@@ -28,7 +28,7 @@
           <thead>
             <tr>
               <th><a href="http://wikiwiki.jp/kancolle/?%BD%D0%B7%E2#maps">Stage</a></th>
-              <th>from</th><th>TO</th><th>日時</th>
+              <th>from</th><th>TO</th><th>日時</th><th>艦隊</th>
             </tr>
           </thead>
           <tbody>
@@ -37,6 +37,7 @@
               <td v-html="viewCell(r.areaId, r.infoNo, r.dep)"></td>
               <td v-html="viewCell(r.areaId, r.infoNo, r.dest)"></td>
               <td>{{timeToStr(r.created)}}</td>
+              <td><a v-repeat="s: r.ships" href="/user/@user.admiral.id/ship#modal=true&id={{s.id}}">{{s.name}} </a></td>
             </tr>
           </tbody>
         </table>

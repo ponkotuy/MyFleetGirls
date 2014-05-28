@@ -43,18 +43,17 @@ object NDock extends SQLSyntaxSupport[NDock] {
     result
   }
 
-  def create(nd: data.NDock)(implicit session: DBSession = NDock.autoSession): NDock = {
+  def create(nd: data.NDock, memberId: Long)(implicit session: DBSession = NDock.autoSession): Unit = {
     val created = System.currentTimeMillis()
     applyUpdate {
       insert.into(NDock).namedValues(
         column.id -> nd.id,
-        column.memberId -> nd.memberId,
+        column.memberId -> memberId,
         column.shipId -> nd.shipId,
         column.completeTime -> nd.completeTime,
         column.created -> created
       )
     }
-    NDock(nd.id, nd.memberId, nd.shipId, nd.completeTime, created)
   }
 
   def deleteAllByUser(memberId: Long)(implicit session: DBSession = NDock.autoSession): Unit =

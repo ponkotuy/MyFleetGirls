@@ -64,18 +64,17 @@ object Material extends SQLSyntaxSupport[Material] {
     m
   }
 
-  def create(m: data.Material)(
-    implicit session: DBSession = Material.autoSession): Material = {
+  def create(m: data.Material, memberId: Long)(
+    implicit session: DBSession = Material.autoSession): Long = {
     val created = System.currentTimeMillis()
-    val id = withSQL {
+    withSQL {
       insert.into(Material).namedValues(
-        column.memberId -> m.memberId,
+        column.memberId -> memberId,
         column.fuel -> m.fuel, column.ammo -> m.ammo, column.steel -> m.steel, column.bauxite -> m.bauxite,
         column.instant -> m.instant, column.bucket -> m.bucket, column.develop -> m.develop,
         column.created -> created
       )
     }.updateAndReturnGeneratedKey().apply()
-    Material(id, m.memberId, m.fuel, m.ammo, m.steel, m.bauxite, m.instant, m.bucket, m.develop, created)
   }
 
   /** 指定ユーザの最新1件を取ってくる
