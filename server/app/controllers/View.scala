@@ -3,6 +3,7 @@ package controllers
 import play.api.mvc._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
+import scala.concurrent.duration._
 import org.json4s._
 import org.json4s.native.Serialization.write
 import scalikejdbc.SQLInterpolation._
@@ -121,5 +122,18 @@ object View extends Controller {
       val cDest = models.CellInfo.findOrDefault(area, info, dest)
       Ok(views.html.sta.modal_route(area, info, cDep, cDest, counts))
     }
+  }
+
+  def ranking() = Action.async {
+    Future {
+      val materials = models.AdmiralRanking.findAllOrderByMaterial(20, agoMillis(7.days))
+      val firstLv = models.AdmiralRanking.findFirstShipOrderByExp(20, agoMillis(7.days))
+      val bookCounts = models.AdmiralRanking.findAllOrderByShipBookCount(20, agoMillis(30.days))
+      Ok(views.html.sta.ranking(materials, firstLv, bookCounts))
+    }
+  }
+
+  private def agoMillis(d: Duration): Long = {
+    System.currentTimeMillis() - d.toMillis
   }
 }
