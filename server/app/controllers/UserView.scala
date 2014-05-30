@@ -59,10 +59,7 @@ object UserView {
   }
 
   def dock(memberId: Long) = userView(memberId) { user =>
-    val ndocks = models.NDock.findAllByUserWithName(memberId)
-    val kdocks = models.KDock.findAllByUserWithName(memberId)
-    val missions = models.Mission.findByUserWithName(memberId)
-    Ok(views.html.user.dock(user, ndocks, kdocks, missions))
+    Ok(views.html.user.dock(user))
   }
 
   def create(memberId: Long) = userView(memberId) { user =>
