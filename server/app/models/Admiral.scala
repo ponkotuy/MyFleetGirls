@@ -60,7 +60,8 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
       .and.eq(b.created, sqls"(select MAX(${b.created}) from ${Basic.table} as b where ${a.id} = ${b.memberId})")
   }.map(AdmiralWithLv(a, b)).list().apply()
 
-  def findAllLvTop(limit: Int = Int.MaxValue, offset: Int = 0)(implicit session: DBSession = Admiral.autoSession): List[AdmiralWithLv] = withSQL {
+  def findAllLvTop(limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session: DBSession = Admiral.autoSession): List[AdmiralWithLv] = withSQL {
     select(a.id, a.nickname, a.created, b.lv).from(Admiral as a)
       .innerJoin(Basic as b).on(a.id, b.memberId)
       .where.eq(b.created, sqls"(select MAX(${b.created}) from ${Basic.table} as b where ${a.id} = ${b.memberId})")
