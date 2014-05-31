@@ -66,4 +66,18 @@ object AdmiralRanking {
       admin -> (cnt + dCounts(admin.id))
     }.sortBy(_._2).reverse.take(limit)
   }
+
+  def findAllOrderByShipExpSum(limit: Int = 10, from: Long = 0)(
+      implicit session: DBSession = Ship.autoSession): List[(Admiral, Long)] = {
+    withSQL {
+      select(a.resultAll, sqls"sum(s.exp) as sum").from(Ship as s)
+        .innerJoin(Admiral as a).on(s.memberId, a.id)
+        .where.gt(s.created, from)
+        .groupBy(s.memberId)
+        .orderBy(sqls"sum").desc
+        .limit(limit)
+    }.map { rs =>
+      Admiral(a)(rs) -> rs.long("sum")
+    }.list().apply()
+  }
 }

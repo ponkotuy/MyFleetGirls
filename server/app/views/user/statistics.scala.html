@@ -1,0 +1,19 @@
+@(user: dat.User, stypeExpJson: String)
+
+@main {
+  <title>統計 -@{user.admiral.nickname}提督-</title>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.pie.min.js"></script>
+  <script src="@routes.Assets.at("javascript/pie.js")"></script>
+} {
+  @head_content(user) {
+    @usertab("sta") {
+      <div class="page-header">
+        <h1>統計情報</h1>
+      </div>
+
+      <h3>経験値取得比率</h3>
+      <div style="width: 500px ;height: 400px;" class="pie" data-json="@stypeExpJson" data-clickable="false"></div>
+    }
+  }
+}

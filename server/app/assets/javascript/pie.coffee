@@ -22,5 +22,7 @@ $(document).ready ->
         clickable: true
 
     $.plot($(this), data, option)
-    $(this).bind "plotclick", (event, pos, item) ->
-      location.href = "/entire/sta/from_ship#query=#{item.series.label}"
+    clickable = $(this).attr('data-clickable') != "false"
+    if clickable
+      $(this).bind "plotclick", (event, pos, item) ->
+        location.href = "/entire/sta/from_ship#query=#{item.series.label}"

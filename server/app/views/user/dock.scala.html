@@ -1,9 +1,4 @@
-@(
-  user: dat.User,
-  ndocks: Seq[NDockWithName],
-  kdocks: Seq[KDockWithName],
-  missions: Seq[MissionWithName]
-)
+@(user: dat.User)
 
 @main {
   <title>ドック -@{user.admiral.nickname}提督-</title>
@@ -21,59 +16,66 @@
           </div>
         </div>
 
-        <div class="page-header">
-          <h1>入渠</h1>
-        </div>
-        <table class="table table-striped">
-          <thead>
-            <tr><th>DockID</th><th>ShipID</th><th>名前</th><th>時間</th></tr>
-          </thead>
-          <tbody>
-            <tr v-repeat="dock: ndocks">
-              <td>{{dock.id}}</td>
-              <td>{{dock.shipId}}</td>
-              <td>{{dock.name}}</td>
-              <td>{{timeView(dock.completeTime, '修復完了')}}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="row">
+          <div class="col-lg-3 col-md-5 col-sm-5">
+            <div class="page-header">
+              <h1>入渠</h1>
+            </div>
+            <table class="table table-striped">
+              <thead>
+                <tr><th>ID</th><th>名前</th><th>時間</th></tr>
+              </thead>
+              <tbody>
+                <tr v-repeat="dock: ndocks">
+                  <td>{{dock.id}}</td>
+                  <td><a href="/user/@user.admiral.id/ship#modal=true&id={{dock.shipId}}">{{dock.name}}</a></td>
+                  <td>{{timeView(dock.completeTime, '修復完了')}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-        <div class="page-header">
-          <h1>建造</h1>
-        </div>
-        <table class="table table-striped">
-          <thead>
-            <tr><th>DockID</th><th>名前</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>時間</th></tr>
-          </thead>
-          <tbody>
-            <tr v-repeat="dock: kdocks">
-              <td>{{dock.id}}</td>
-              <td>{{dock.name}}</td>
-              <td>{{dock.fuel}}</td>
-              <td>{{dock.ammo}}</td>
-              <td>{{dock.steel}}</td>
-              <td>{{dock.bauxite}}</td>
-              <td>{{timeView(dock.completeTime, '建造完了')}}</td>
-            </tr>
-          </tbody>
-        </table>
+          <div class="col-lg-4 col-md-7 col-sm-7">
+            <div class="mission">
+              <h1>遠征</h1>
+            </div>
+            <table class="table table-striped">
+              <thead>
+                <tr><th>ID</th><th>艦隊名</th><th>遠征先</th><th>残り時間</th></tr>
+              </thead>
+              <tbody>
+                <tr v-repeat="mission: missions">
+                  <td>{{mission.deckId}}</td>
+                  <td>{{mission.deckName}}</td>
+                  <td>{{mission.missionName}}</td>
+                  <td>{{timeView(mission.completeTime, '帰投')}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-        <div class="mission">
-          <h1>遠征</h1>
+          <div class="col-lg-5 col-md-12 col-sm-12">
+            <div class="page-header">
+              <h1>建造</h1>
+            </div>
+            <table class="table table-striped">
+              <thead>
+                <tr><th>ID</th><th>名前</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>時間</th></tr>
+              </thead>
+              <tbody>
+                <tr v-repeat="dock: kdocks">
+                  <td>{{dock.id}}</td>
+                  <td>{{dock.name}}</td>
+                  <td>{{dock.fuel}}</td>
+                  <td>{{dock.ammo}}</td>
+                  <td>{{dock.steel}}</td>
+                  <td>{{dock.bauxite}}</td>
+                  <td>{{timeView(dock.completeTime, '建造完了')}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <table class="table table-striped">
-          <thread>
-            <tr><th>艦隊ID</th><th>艦隊名</th><th>遠征先</th><th>残り時間</th></tr>
-          </thread>
-          <tbody>
-            <tr v-repeat="mission: missions">
-              <td>{{mission.deckId}}</td>
-              <td>{{mission.deckName}}</td>
-              <td>{{mission.missionName}}</td>
-              <td>{{timeView(mission.completeTime, '帰投')}}</td>
-            </tr>
-          </tbody>
-        </table>
       </section>
     }
   }

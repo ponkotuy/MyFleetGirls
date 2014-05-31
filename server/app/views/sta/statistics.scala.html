@@ -4,51 +4,56 @@
   <title>建造開発fromレシピ -統計-</title>
 } {
   @statistics_head("from_recipe") {
-    <div class="page-header">
-      <h1>建造fromレシピ</h1>
-    </div>
-    <table class="table table-hover table-condensed">
-      <thead>
-        <tr>
-          <th>試行回数</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>資材</th>
-        </tr>
-      </thead>
-      <tbody>
-        @counts.map { case (mat, count) =>
-        <tr onclick="location.href='@routes.View.cship(mat.fuel, mat.ammo, mat.steel, mat.bauxite, mat.develop)'" class="clickable">
-          <td>@count</td>
-          <td>@mat.fuel</td>
-          <td>@mat.ammo</td>
-          <td>@mat.steel</td>
-          <td>@mat.bauxite</td>
-          <td>@mat.develop</td>
-        </tr>
-        }
-      </tbody>
-    </table>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="page-header">
+          <h1>建造fromレシピ</h1>
+        </div>
+        <table class="table table-hover table-condensed">
+          <thead>
+            <tr>
+              <th>試行回数</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>資材</th>
+            </tr>
+          </thead>
+          <tbody>
+            @counts.map { case (mat, count) =>
+            <tr onclick="location.href='@routes.View.cship(mat.fuel, mat.ammo, mat.steel, mat.bauxite, mat.develop)'" class="clickable">
+              <td>@count</td>
+              <td>@mat.fuel</td>
+              <td>@mat.ammo</td>
+              <td>@mat.steel</td>
+              <td>@mat.bauxite</td>
+              <td>@mat.develop</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
 
-    <div class="page-header">
-      <h1>開発fromレシピ</h1>
+      <div class="col-lg-6">
+        <div class="page-header">
+          <h1>開発fromレシピ</h1>
+        </div>
+        <table class="table table-hover table-condensed">
+          <thead>
+            <tr>
+              <th>試行回数</th><th>旗艦</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th>
+            </tr>
+          </thead>
+          <tbody>
+            @iCounts.map { case (mat, count) =>
+            <tr onclick="location.href='@routes.View.citem(mat.fuel, mat.ammo, mat.steel, mat.bauxite, mat.sType)'" class="clickable">
+              <td>@count</td>
+              <td>@mat.sTypeName
+              <td>@mat.fuel</td>
+              <td>@mat.ammo</td>
+              <td>@mat.steel</td>
+              <td>@mat.bauxite</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
-    <table class="table table-hover table-condensed">
-      <thead>
-        <tr>
-          <th>試行回数</th><th>旗艦</th><th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th>
-        </tr>
-      </thead>
-      <tbody>
-        @iCounts.map { case (mat, count) =>
-        <tr onclick="location.href='@routes.View.citem(mat.fuel, mat.ammo, mat.steel, mat.bauxite, mat.sType)'" class="clickable">
-          <td>@count</td>
-          <td>@mat.sTypeName
-          <td>@mat.fuel</td>
-          <td>@mat.ammo</td>
-          <td>@mat.steel</td>
-          <td>@mat.bauxite</td>
-        </tr>
-        }
-      </tbody>
-    </table>
-
   }
 }

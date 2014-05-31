@@ -14,7 +14,7 @@
     <div id="from_name" class="row">
       <input type="text" id="search" class="form-control" placeholder="Search Fleet Girl or Slot Item" v-model="query" />
 
-      <div class="col-md-2">
+      <div class="col-md-2 col-sm-3">
         <div class="list-group" v-show="ships.length > 0" style="margin-top:20px;margin-bottom:20px;">
           <a v-repeat="ship: ships" class="list-group-item" v-class="active: ship.id == shipId" v-on="click: selectShip(ship.id)" href="#" onclick="return false;">
             {{ship.name}}
@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="col-md-10">
+      <div class="col-md-10 col-sm-9">
         <div v-show="sCounts.length > 0">
           <h3>建造レシピ</h3>
           <table class="table table-hover table-condensed" v-show="sCounts.length > 0">
@@ -88,6 +88,6 @@
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
   }
 }
