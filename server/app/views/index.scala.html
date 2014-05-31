@@ -15,6 +15,16 @@
   </div>
 
   <div class="row">
+    <div class="col-md-4 col-sm-4" id="search_user">
+      <h2>提督検索</h2>
+      <input type="text" class="form-control" placeholder="Search Admiral" v-model="query" />
+      <ul>
+        <li v-repeat="user: users">
+          <a href="/user/{{user.id}}">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
+        </li>
+      </ul>
+    </div>
+
     <div class="col-md-4 col-sm-4">
       <h2>New</h2>
       <ul>
@@ -23,21 +33,13 @@
         }
       </ul>
     </div>
+
     <div class="col-md-4 col-sm-4">
       <h2>提督Lv順</h2>
       <ul>
         @highLv.map { a =>
           <li><a href="@routes.UserView.user(a.id)">@a.nickname</a><small>Lv@a.lv</small></li>
         }
-      </ul>
-    </div>
-    <div class="col-md-4 col-sm-4" id="search_user">
-      <h2>提督検索</h2>
-      <input type="text" class="form-control" placeholder="Search Admiral" v-model="query" />
-      <ul>
-        <li v-repeat="user: users">
-          <a href="/user/{{user.id}}">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
-        </li>
       </ul>
     </div>
   </div>

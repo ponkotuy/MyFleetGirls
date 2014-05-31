@@ -24,7 +24,10 @@ $(document).ready ->
     if param.max?
       mainPlot(param.active, param.min, param.max)
     else
-      monthPlot()
+      if data[0].created < moment().subtract('month', 1).valueOf()
+        monthPlot()
+      else
+        wholePlot()
     $(chart).bind 'plotselected', (event, ranges) ->
       mainPlot('', ranges.xaxis.from, ranges.xaxis.to)
 
@@ -46,6 +49,7 @@ transElem = (data, elem) -> data.map (x) -> [x['created'], x[elem]]
 monthPlot = -> mainPlot 'month', moment().subtract('months', 1).valueOf()
 weekPlot = -> mainPlot 'week', moment().subtract('weeks', 1).valueOf()
 dayPlot = -> mainPlot 'day', moment().subtract('days', 1).valueOf()
+wholePlot = -> mainPlot 'whole'
 
 mainPlot = (active, min, max = moment().valueOf()) ->
   activeButton(active)
