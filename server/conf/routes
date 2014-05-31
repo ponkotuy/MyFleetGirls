@@ -90,6 +90,7 @@ GET     /user/:userId/fleet/:deckId controllers.UserView.fleet(userId: Long, dec
 GET     /user/:userId/naval_battle  controllers.UserView.navalBattle(userId: Long)
 GET     /user/:userId/route_log     controllers.UserView.routeLog(userId: Long)
 GET     /user/:userId/quest         controllers.UserView.quest(userId: Long)
+GET     /user/:userId/statistics    controllers.UserView.statistics(userId: Long)
 
 # WebSocket
 GET     /ws/v1/user/:userId         controllers.UserWS.info(userId: Long)

@@ -4,6 +4,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
 import play.api.mvc._
 import scalikejdbc.SQLInterpolation._
+import org.json4s.native.Serialization.write
 
 /**
  *
@@ -117,5 +118,18 @@ object UserView {
 
   def quest(memberId: Long) = userView(memberId) { user =>
     Ok(views.html.user.quest(user))
+  }
+
+  val stype = Map(4 -> 3, 6 -> 5, 9 -> 8, 10 -> 8, 14 -> 13, 16 -> 7, 18 -> 11).withDefault(identity)
+  def statistics(memberId: Long) = userView(memberId) { user =>
+    val ships = models.Ship.findAllByUserWithName(memberId)
+    val stypeExps = ships.groupBy(s => stype(s.stype.id))
+      .mapValues(_.map(_.exp.toLong).sum)
+      .toSeq.sortBy(_._2).reverse
+    val stypes = models.MasterStype.findAll().map(st => st.id -> st.name).toMap
+    val stypeExpJson = stypeExps.map { case (st, exp) =>
+      Map("label" -> stypes(st), "data" -> exp)
+    }
+    Ok(views.html.user.statistics(user, write(stypeExpJson)))
   }
 }
