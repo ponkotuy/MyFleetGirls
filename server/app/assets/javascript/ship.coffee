@@ -31,7 +31,9 @@ $(document).ready ->
       location.hash = toURLParameter({modal: true, id: id, fleet: true})
 
   $('#modal').on 'hidden.bs.modal', ->
-    location.hash = ''
+    url = location.href.split('#')[0]
+    history.pushState(null, null, url)
+
     $(this).removeData('bs.modal')
 
 jqplotOpt =
