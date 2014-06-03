@@ -1,7 +1,7 @@
 package models
 
 import scalikejdbc._
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 import com.ponkotuy.data
 import scalikejdbc.WrappedResultSet
 import dat.{Stage, ShipWithName}

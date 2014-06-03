@@ -5,7 +5,7 @@ import scala.concurrent.ExecutionContext.Implicits._
 import play.api._
 import play.libs.Akka
 import akka.actor.Props
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 import org.joda.time.{LocalDate, DateTimeConstants}
 import util.{Cron, CronSchedule, CronScheduler}
 import models.Quest

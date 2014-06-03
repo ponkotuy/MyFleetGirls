@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.duration._
 import org.json4s._
 import org.json4s.native.Serialization.write
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 import build.BuildInfo
 
 /**

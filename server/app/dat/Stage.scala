@@ -1,7 +1,6 @@
 package dat
 
-import scalikejdbc.SQLInterpolation._
-import scalikejdbc.WrappedResultSet
+import scalikejdbc._
 import models.BattleResult
 
 /**

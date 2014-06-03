@@ -1,6 +1,6 @@
 package util.scalikejdbc
 
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 
 object BulkInsert {
   implicit class BulkInsertSQLBuilder(val self: InsertSQLBuilder) extends AnyVal {

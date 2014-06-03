@@ -1,8 +1,7 @@
 package dat
 
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 import models.MasterShipBase
-import scalikejdbc.WrappedResultSet
 
 /**
  * @author ponkotuy

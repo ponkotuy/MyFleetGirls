@@ -2,7 +2,7 @@ package models
 
 import scala.util.Try
 import scalikejdbc._
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 import sqls.distinct
 import com.ponkotuy.data
 import dat.{CellWithRank, BattleResultWithCell, Stage, ShipDrop}

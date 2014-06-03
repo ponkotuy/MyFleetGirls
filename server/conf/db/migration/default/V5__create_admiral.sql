@@ -1,4 +1,5 @@
 
+drop table admiral;
 create table admiral(
         id bigint not null primary key,
         nickname_id bigint not null,

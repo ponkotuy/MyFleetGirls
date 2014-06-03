@@ -6,7 +6,7 @@ import org.json4s.native.{ JsonMethods => J }
 import org.json4s.native.Serialization.write
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 import com.ponkotuy.data.{MyFleetAuth, Auth}
 import dat.User
 import tool.Authentication

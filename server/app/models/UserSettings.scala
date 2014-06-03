@@ -1,7 +1,6 @@
 package models
 
 import scalikejdbc._
-import scalikejdbc.SQLInterpolation._
 import dat.ShipWithName
 
 case class UserSettings(

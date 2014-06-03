@@ -1,7 +1,6 @@
 package dat
 
 import scalikejdbc._
-import scalikejdbc.SQLInterpolation._
 import models.BattleResult
 
 /**

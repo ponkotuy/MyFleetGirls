@@ -1,7 +1,6 @@
 package models
 
-import scalikejdbc.SQLInterpolation._
-import scalikejdbc.{WrappedResultSet, DBSession}
+import scalikejdbc._
 import com.ponkotuy.data
 import util.scalikejdbc.BulkInsert._
 import dat.ShipWithName

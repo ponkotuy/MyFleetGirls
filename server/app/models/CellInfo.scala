@@ -1,7 +1,7 @@
 package models
 
 import scalikejdbc._
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 
 case class CellInfo(
   areaId: Int,
