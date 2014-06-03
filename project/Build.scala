@@ -4,6 +4,7 @@ import Keys._
 import sbtassembly.Plugin._
 import AssemblyKeys._
 import sbtbuildinfo.Plugin._
+import play._
 
 object MyFleetGirlsBuild extends Build {
 
@@ -18,9 +19,11 @@ object MyFleetGirlsBuild extends Build {
   )
 
   lazy val server = Project(id = "server", base = file("server"))
-    .settings(biSettings:_*)
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .dependsOn(library)
+    .enablePlugins(PlayScala).settings(
+      scalaVersion := "2.11.1"
+    )
 
   lazy val client = Project(id = "client", base = file("client"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
@@ -39,18 +42,11 @@ object MyFleetGirlsBuild extends Build {
 
   override lazy val settings = super.settings ++ Seq(
     version := ver,
-    scalaVersion := "2.10.3",
+    scalaVersion := "2.11.1",
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions", "-Xlint"),
     jarName in assembly := "MyFleetGirls.jar",
     incOptions := incOptions.value.withNameHashing(true)
   )
-
-  lazy val biSettings = buildInfoSettings ++ Seq(
-    sourceGenerators in Compile <+= buildInfo,
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion),
-    buildInfoPackage := "com.ponkotuy.build"
-  )
-
 
   def proxy = Command.command("proxy") { state =>
     val subState = Command.process("project client", state)

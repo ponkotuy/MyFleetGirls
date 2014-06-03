@@ -1,7 +1,6 @@
 package models
 
 import scalikejdbc._
-import scalikejdbc.SQLInterpolation._
 import util.scalikejdbc.BulkInsert._
 
 case class ShipSlotItem(

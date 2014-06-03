@@ -1,7 +1,7 @@
 package controllers
 
 import play.api.mvc.Controller
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 import org.json4s._
 import org.json4s.JsonDSL._
 

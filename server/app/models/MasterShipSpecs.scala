@@ -2,7 +2,7 @@ package models
 
 import scala.collection.mutable
 import scalikejdbc._
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 import com.ponkotuy.data.master
 import util.scalikejdbc.BulkInsert._
 

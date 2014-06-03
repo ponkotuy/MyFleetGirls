@@ -3,7 +3,7 @@ package controllers
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
 import play.api.mvc._
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 import org.json4s.native.Serialization.write
 
 /**

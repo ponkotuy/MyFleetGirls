@@ -1,7 +1,7 @@
 package models
 
-import scalikejdbc._
-import models.SQLInterpolation._
+import SQLInterpolation._
+import scalikejdbc.{AutoSession, WrappedResultSet, DBSession}
 
 case class ShipSound(
   shipId: Int,

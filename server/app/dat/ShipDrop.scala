@@ -1,7 +1,6 @@
 package dat
 
-import scalikejdbc.WrappedResultSet
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 import models.{CellInfo, BattleResult}
 import com.ponkotuy.data.GetShip
 

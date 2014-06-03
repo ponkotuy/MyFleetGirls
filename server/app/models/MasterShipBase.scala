@@ -1,6 +1,6 @@
 package models
 
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 import scalikejdbc.{WrappedResultSet, DBSession}
 import com.ponkotuy.data.master
 import dat.{MasterShipWithStype, MasterShipWithClass}

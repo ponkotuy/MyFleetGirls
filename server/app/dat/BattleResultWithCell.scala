@@ -2,7 +2,6 @@ package dat
 
 import scala.util.Try
 import scalikejdbc._
-import scalikejdbc.SQLInterpolation._
 import org.json4s._
 import org.json4s.JsonDSL._
 import models.{CellInfo, BattleResult}
