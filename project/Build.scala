@@ -27,10 +27,12 @@ object MyFleetGirlsBuild extends Build {
 
   lazy val client = Project(id = "client", base = file("client"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
+    .settings(scalaVersion := "2.10.4")
     .dependsOn(library)
 
   lazy val library = Project(id = "library", base = file("library"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
+    .settings(crossScalaVersions := Seq("2.10.4", "2.11.1"))
 
   lazy val update = Project(id = "update", base = file("update"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
