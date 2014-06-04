@@ -8,6 +8,8 @@ import org.json4s._
 import org.json4s.native.Serialization.write
 import scalikejdbc._
 import build.BuildInfo
+import scala.io.Source
+import java.io.File
 
 /**
  *
@@ -21,7 +23,8 @@ object View extends Controller {
     Future {
       val newest = models.Admiral.findNewest(limit = 20)
       val lvTops = models.Admiral.findAllLvTop(limit = 20)
-      Ok(views.html.index(BuildInfo.version, newest, lvTops))
+      val message = Source.fromFile("server/public/message").mkString
+      Ok(views.html.index(BuildInfo.version, newest, lvTops, message))
     }
   }
 
