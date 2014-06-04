@@ -1,4 +1,4 @@
-@(version: String, newest: Seq[Admiral], highLv: Seq[AdmiralWithLv])
+@(version: String, newest: Seq[Admiral], highLv: Seq[AdmiralWithLv], message: String)
 
 @main {
 <title>MyFleetGirls</title>
@@ -15,7 +15,10 @@
   </div>
 
   <div class="row">
-    <div class="col-md-4 col-sm-4" id="search_user">
+    <div class="col-lg-6 col-md-5 col-sm-4" id="search_user">
+      <h2>お知らせ</h2>
+      <p>@message</p>
+
       <h2>提督検索</h2>
       <input type="text" class="form-control" placeholder="Search Admiral" v-model="query" />
       <ul>
@@ -25,7 +28,7 @@
       </ul>
     </div>
 
-    <div class="col-md-4 col-sm-4">
+    <div class="col-lg-3 col-md-3 col-sm-4">
       <h2>New</h2>
       <ul>
         @newest.map { a =>
@@ -34,7 +37,7 @@
       </ul>
     </div>
 
-    <div class="col-md-4 col-sm-4">
+    <div class="col-lg-3 col-md-4 col-sm-4">
       <h2>提督Lv順</h2>
       <ul>
         @highLv.map { a =>

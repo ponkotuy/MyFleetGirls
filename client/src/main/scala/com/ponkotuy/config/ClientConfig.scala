@@ -14,7 +14,8 @@ object ClientConfig {
   val config = ConfigFactory.parseFile(new File("application.conf"))
 
   val kcUrl = config.getString("url.kc")
-  def postUrl(ver: Int = 1) = config.getString("url.post") + s"/post/v${ver}"
+  val post = config.getString("url.post")
+  def postUrl(ver: Int = 1) = post + s"/post/v${ver}"
   def getUrl(ver: Int = 1) = config.getString("url.post") + s"/rest/v${ver}"
   val proxyPort = config.getInt("proxy.port")
 

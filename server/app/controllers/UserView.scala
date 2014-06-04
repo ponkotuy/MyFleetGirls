@@ -120,7 +120,7 @@ object UserView {
     Ok(views.html.user.quest(user))
   }
 
-  val stype = Map(4 -> 3, 6 -> 5, 9 -> 8, 10 -> 8, 14 -> 13, 16 -> 7, 18 -> 11).withDefault(identity)
+  val stype = Map(6 -> 5, 9 -> 8, 10 -> 8, 14 -> 13, 16 -> 7, 18 -> 11).withDefault(identity)
   def statistics(memberId: Long) = userView(memberId) { user =>
     val ships = models.Ship.findAllByUserWithName(memberId)
     val stypeExps = ships.groupBy(s => stype(s.stype.id))

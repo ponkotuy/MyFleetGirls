@@ -20,3 +20,11 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:impli
 assemblySettings
 
 mainClass in assembly := Some("com.ponkotuy.run.Main")
+
+buildInfoSettings
+
+sourceGenerators in Compile <+= buildInfo
+
+buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
+
+buildInfoPackage := "com.ponkotuy.build"
