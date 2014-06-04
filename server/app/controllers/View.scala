@@ -133,7 +133,8 @@ object View extends Controller {
       val firstLv = models.AdmiralRanking.findFirstShipOrderByExp(20, agoMillis(7.days))
       val bookCounts = models.AdmiralRanking.findAllOrderByShipBookCount(20, agoMillis(30.days))
       val shipExp = models.AdmiralRanking.findAllOrderByShipExpSum(20, agoMillis(7.days))
-      Ok(views.html.sta.ranking(materials, firstLv, bookCounts, shipExp))
+      val itemBook = models.AdmiralRanking.findAllOrderByItemBookCount(20, agoMillis(30.days))
+      Ok(views.html.sta.ranking(materials, firstLv, bookCounts, shipExp, itemBook))
     }
   }
 

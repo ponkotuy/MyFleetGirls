@@ -23,14 +23,16 @@ object Main extends App {
   }
 
   def message(): Unit = {
-    println("--------------------------------------------")
-    println(s" Welcome to MyFleetGirls Client Ver ${BuildInfo.version}")
-    println("--------------------------------------------")
+    println()
+    println("---------------------------------------------")
+    println(s"  Welcome to MyFleetGirls Client Ver ${BuildInfo.version}")
+    println("---------------------------------------------")
     println()
     val mes = Try {
       val url = s"${ClientConfig.post}/assets/message"
-      Source.fromURL(url).getLines().foreach(println)
-    }
+      Source.fromURL(url).getLines()
+    }.getOrElse(Nil)
+    mes.foreach(println)
     println()
   }
 }

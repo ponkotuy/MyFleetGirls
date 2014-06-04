@@ -16,6 +16,7 @@ object AdmiralRanking {
   lazy val ms = MasterShipBase.syntax("ms")
   lazy val mst = MasterStype.syntax("mst")
   lazy val sb = ShipBook.syntax("sb")
+  lazy val ib = ItemBook.syntax("ib")
 
   def findAllOrderByMaterial(limit: Int = 10, from: Long = 0)(
     implicit session: DBSession = Admiral.autoSession): List[(Admiral, Int)] = {
@@ -66,6 +67,19 @@ object AdmiralRanking {
       admin -> (cnt + dCounts(admin.id))
     }.sortBy(_._2).reverse.take(limit)
   }
+
+  def findAllOrderByItemBookCount(limit: Int = 10, from: Long = 0)(
+      implicit session: DBSession = ItemBook.autoSession): List[(Admiral, Long)] = {
+    withSQL {
+      select(ib.resultAll, a.resultAll, sqls"count(1) as cnt").from(ItemBook as ib)
+        .innerJoin(Admiral as a).on(ib.memberId, a.id)
+        .where.gt(ib.updated, from)
+        .groupBy(ib.memberId)
+        .orderBy(sqls"cnt").desc
+        .limit(limit)
+    }.map { rs => Admiral(a)(rs) -> rs.long("cnt") }.list().apply()
+  }
+
 
   def findAllOrderByShipExpSum(limit: Int = 10, from: Long = 0)(
       implicit session: DBSession = Ship.autoSession): List[(Admiral, Long)] = {
