@@ -4,8 +4,7 @@ import com.ponkotuy.intercept.KCIntercepter
 import com.ponkotuy.proxy.FinagleProxy
 import com.ponkotuy.config.ClientConfig
 import com.ponkotuy.build.BuildInfo
-import scala.io.Source
-import scala.util.Try
+import scala.io.{Codec, Source}
 
 /**
  *
@@ -28,11 +27,12 @@ object Main extends App {
     println(s"  Welcome to MyFleetGirls Client Ver ${BuildInfo.version}")
     println("---------------------------------------------")
     println()
-    val mes = Try {
+    try {
       val url = s"${ClientConfig.post}/assets/message"
-      Source.fromURL(url).getLines()
-    }.getOrElse(Nil)
-    mes.foreach(println)
+      Source.fromURL(url)(Codec.UTF8).getLines().foreach(println)
+    } catch {
+      case e: Throwable =>
+    }
     println()
   }
 }

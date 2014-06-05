@@ -4,10 +4,10 @@ import com.github.theon.uri.Uri
 import com.twitter.finagle.builder.ClientBuilder
 import com.twitter.finagle.{ChannelException, http, Service, Http}
 import com.twitter.util.{Future, Await}
-import org.jboss.netty.handler.codec.http.{HttpMethod, HttpResponse, HttpRequest}
-import com.ponkotuy.intercept.{Intercepter, PassThrough}
 import com.twitter.conversions.storage._
 import com.twitter.conversions.time._
+import org.jboss.netty.handler.codec.http.{HttpMethod, HttpResponse, HttpRequest}
+import com.ponkotuy.intercept.{Intercepter, PassThrough}
 
 /** Proxy by Finagle
   *
