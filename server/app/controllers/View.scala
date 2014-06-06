@@ -23,7 +23,7 @@ object View extends Controller {
     Future {
       val newest = models.Admiral.findNewest(limit = 20)
       val lvTops = models.Admiral.findAllLvTop(limit = 20)
-      val message = Source.fromFile("server/public/message").mkString
+      val message = Source.fromFile("server/public/message").getLines()
       Ok(views.html.index(BuildInfo.version, newest, lvTops, message))
     }
   }

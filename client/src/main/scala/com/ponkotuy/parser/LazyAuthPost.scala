@@ -19,7 +19,6 @@ class LazyAuthPost {
   def setAuth(auth: Auth): Unit = {
     synchronized {
       this.auth = Some(auth)
-      println(seq)
       seq.map(f => f(this.auth, auth2))
       seq.clear()
     }

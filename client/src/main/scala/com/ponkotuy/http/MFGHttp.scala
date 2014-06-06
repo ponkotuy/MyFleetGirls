@@ -73,6 +73,7 @@ object MFGHttp extends Log {
       val entity = MultipartEntityBuilder.create()
       entity.setCharset(UTF8)
       entity.addTextBody("auth", write(auth), ContentType.APPLICATION_JSON)
+      entity.addTextBody("auth2", write(auth2), ContentType.APPLICATION_JSON)
       entity.addPart(fileBodyKey, new FileBody(file))
       post.setEntity(entity.build())
       val res = http.execute(post)

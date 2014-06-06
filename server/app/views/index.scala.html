@@ -1,4 +1,4 @@
-@(version: String, newest: Seq[Admiral], highLv: Seq[AdmiralWithLv], message: String)
+@(version: String, newest: Seq[Admiral], highLv: Seq[AdmiralWithLv], message: TraversableOnce[String])
 
 @main {
 <title>MyFleetGirls</title>
@@ -17,7 +17,9 @@
   <div class="row">
     <div class="col-lg-6 col-md-5 col-sm-4" id="search_user">
       <h2>お知らせ</h2>
-      <p>@message</p>
+      @message.map { m =>
+        <p>@m</p>
+      }
 
       <h2>提督検索</h2>
       <input type="text" class="form-control" placeholder="Search Admiral" v-model="query" />
