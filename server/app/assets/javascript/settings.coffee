@@ -9,7 +9,7 @@ $(document).ready ->
     methods:
       submit: () ->
         data = {shipId: parseInt(@shipId), userId: parseInt(@userId), password: @password}
-        $.post('/post/v1/settings', data)
+        $.post('/passwd/v1/settings', data)
           .done( => location.href = "/user/#{@userId}")
           .fail((str) => @errorMsg = str)
       fromHash: () ->
