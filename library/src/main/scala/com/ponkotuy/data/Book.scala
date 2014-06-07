@@ -35,10 +35,11 @@ object Book {
       val JArray(st) = states
       val exist = st(0).extract[Int] != 0
       val isDameged = st(1).extract[Int] != 0
+      val isMarried = st(2).extract[Int] != 0
       if(exist) i match {
-        case 0 => Some(ShipBook(id, indexNo, isDameged, name))
-        case 1 => Some(ShipBook(id, indexNo + 100000, isDameged, name + "改"))
-        case 2 => Some(ShipBook(id, indexNo + 200000, isDameged, name + "改二"))
+        case 0 => Some(ShipBook(id, indexNo, isDameged, name, Some(isMarried)))
+        case 1 => Some(ShipBook(id, indexNo + 100000, isDameged, name + "改", Some(isMarried)))
+        case 2 => Some(ShipBook(id, indexNo + 200000, isDameged, name + "改二", Some(isMarried)))
         case _ => None
       } else None
     }
@@ -62,7 +63,7 @@ object Book {
   }
 }
 
-case class ShipBook(id: Int, indexNo: Int, isDamaged: Boolean, name: String) extends Book
+case class ShipBook(id: Int, indexNo: Int, isDamaged: Boolean, name: String, isMarried: Option[Boolean]) extends Book
 
 case class ItemBook(id: Int, indexNo: Int, name: String) extends Book
 

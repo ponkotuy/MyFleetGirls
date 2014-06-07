@@ -1,7 +1,6 @@
 package models
 
 import scalikejdbc._
-import scalikejdbc._
 import com.ponkotuy.data
 import scalikejdbc.WrappedResultSet
 import dat.{Stage, ShipWithName}
@@ -36,7 +35,7 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
     infoNo = rs.int(mr.infoNo),
     dep = rs.int(mr.dep),
     dest = rs.int(mr.dest),
-    fleet = rs.string(mr.fleet).split(',').map(_.toInt).toList,
+    fleet = rs.string(mr.fleet).split(',').filter(_.nonEmpty).map(_.toInt).toList,
     created = rs.long(mr.created)
   )
 

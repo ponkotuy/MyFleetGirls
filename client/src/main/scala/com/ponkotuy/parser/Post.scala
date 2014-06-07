@@ -10,11 +10,12 @@ import com.ponkotuy.tool.TempFileTool
 import com.ponkotuy.config.ClientConfig
 import java.io.ByteArrayOutputStream
 import org.jboss.netty.buffer.ChannelBuffer
+import com.ponkotuy.util.Log
 
 /**
  * Date: 14/06/01.
  */
-object Post {
+object Post extends Log {
   implicit val formats = DefaultFormats
 
   def master(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
