@@ -9,7 +9,8 @@ case class ShipBook(
   indexNo: Int,
   isDameged: Boolean,
   name: String,
-  updated: Long) {
+  updated: Long,
+  isMarried: Boolean) {
 
   def save()(implicit session: DBSession = ShipBook.autoSession): ShipBook = ShipBook.save(this)(session)
 
@@ -22,7 +23,7 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
 
   override val tableName = "ship_book"
 
-  override val columns = Seq("member_id", "id", "index_no", "is_dameged", "name", "updated")
+  override val columns = Seq("member_id", "id", "index_no", "is_dameged", "name", "updated", "is_married")
 
   def apply(sb: ResultName[ShipBook])(rs: WrappedResultSet): ShipBook = new ShipBook(
     memberId = rs.long(sb.memberId),
@@ -30,7 +31,8 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
     indexNo = rs.int(sb.indexNo),
     isDameged = rs.boolean(sb.isDameged),
     name = rs.string(sb.name),
-    updated = rs.long(sb.updated)
+    updated = rs.long(sb.updated),
+    isMarried = rs.boolean(sb.isMarried)
   )
 
   val sb = ShipBook.syntax("sb")
@@ -65,12 +67,13 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
   }
 
   def create(
-    memberId: Long,
-    id: Int,
-    indexNo: Int,
-    isDameged: Boolean,
-    name: String,
-    updated: Long)(implicit session: DBSession = autoSession): ShipBook = {
+      memberId: Long,
+      id: Int,
+      indexNo: Int,
+      isDameged: Boolean,
+      name: String,
+      updated: Long,
+      isMarried: Boolean)(implicit session: DBSession = autoSession): ShipBook = {
     withSQL {
       insert.into(ShipBook).columns(
         column.memberId,
@@ -78,14 +81,16 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
         column.indexNo,
         column.isDameged,
         column.name,
-        column.updated
+        column.updated,
+        column.isMarried
       ).values(
           memberId,
           id,
           indexNo,
           isDameged,
           name,
-          updated
+          updated,
+          isMarried
         )
     }.update().apply()
 
@@ -95,17 +100,17 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
       indexNo = indexNo,
       isDameged = isDameged,
       name = name,
-      updated = updated)
+      updated = updated,
+      isMarried = isMarried)
   }
 
-  def bulkUpsert(xs: Seq[data.ShipBook], memberId: Long)(implicit session: DBSession = autoSession): Seq[ShipBook] = {
+  def bulkUpsert(xs: Seq[data.ShipBook], memberId: Long)(implicit session: DBSession = autoSession): Unit = {
     val now = System.currentTimeMillis()
     val params = xs.map { x =>
-      Seq(memberId, x.id, x.indexNo, x.isDamaged, x.name, now)
+      Seq(memberId, x.id, x.indexNo, x.isDamaged, x.name, now, x.isMarried.getOrElse(false))
     }
-    sql"replace into ship_book (member_id, id, index_no, is_dameged, name, updated) values (?, ?, ?, ?, ?, ?)"
+    sql"replace into ship_book (member_id, id, index_no, is_dameged, name, updated, is_married) values (?, ?, ?, ?, ?, ?, ?)"
       .batch(params:_*).apply()
-    xs.map { x => ShipBook(memberId, x.id, x.indexNo, x.isDamaged, x.name, now) }
   }
 
   def save(entity: ShipBook)(implicit session: DBSession = autoSession): ShipBook = {
@@ -116,7 +121,8 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
         column.indexNo -> entity.indexNo,
         column.isDameged -> entity.isDameged,
         column.name -> entity.name,
-        column.updated -> entity.updated
+        column.updated -> entity.updated,
+        column.isMarried -> entity.isMarried
       ).where.eq(column.indexNo, entity.indexNo).and.eq(column.memberId, entity.memberId)
     }.update().apply()
     entity

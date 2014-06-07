@@ -1,7 +1,6 @@
 package models
 
 import scalikejdbc._
-import scalikejdbc._
 import dat.ShipWithName
 
 /**
@@ -62,9 +61,16 @@ object AdmiralRanking {
         .where.gt(sb.updated, from).and.eq(sb.isDameged, true)
         .groupBy(sb.memberId)
     }.map { rs => Admiral(a)(rs) -> rs.long("cnt") }.list().apply()
+    val married = withSQL {
+      select(sb.resultAll, a.resultAll, sqls"count(1) as cnt").from(ShipBook as sb)
+        .innerJoin(Admiral as a).on(sb.memberId, a.id)
+        .where.gt(sb.updated, from).and.eq(sb.isMarried, true)
+        .groupBy(sb.memberId)
+    }.map { rs => Admiral(a)(rs) -> rs.long("cnt") }.list().apply()
     val dCounts: Map[Long, Long] = damaged.map { case (admin, cnt) => admin.id -> cnt }.toMap.withDefaultValue(0L)
+    val mCounts: Map[Long, Long] = married.map { case (admin, cnt) => admin.id -> cnt }.toMap.withDefaultValue(0L)
     normal.map { case (admin, cnt) =>
-      admin -> (cnt + dCounts(admin.id))
+      admin -> (cnt + dCounts(admin.id) + mCounts(admin.id))
     }.sortBy(_._2).reverse.take(limit)
   }
 

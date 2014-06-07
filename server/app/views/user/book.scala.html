@@ -13,7 +13,7 @@
           <table class="table table-striped table-condensed" id="ship_book_table">
             <thread>
               <tr>
-                <th>No</th><th>名前</th><th>中破絵</th>
+                <th>No</th><th>名前</th><th>中破絵</th><th>ケッコン</th>
               </tr>
             </thread>
             <tbody>
@@ -24,6 +24,10 @@
                 <td>@if(book.isDameged){
                     <span class="glyphicon glyphicon-ok"></span>
                   }
+                </td>
+                <td>@if(book.isMarried){
+                  <span class="glyphicon glyphicon-ok"></span>
+                }
                 </td>
               </tr>
               }
