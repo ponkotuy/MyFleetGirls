@@ -126,11 +126,11 @@ object Rest extends Controller {
     val ships = models.Ship.findAllByUserWithName(memberId)
       .map(s => s.id -> s).toMap
     result.map { route =>
-      Extraction.decompose(route).asInstanceOf[JObject] ~
-        ("ships" -> route.fleet.map { sid =>
-          val ship = ships.apply(sid)
-          ("id" -> ship.id) ~ ("name" -> ship.name)
-        })
+      val xs = route.fleet.map { sid =>
+        val ship = ships.apply(sid)
+        ("id" -> ship.id) ~ ("name" -> ship.name) ~ ("stype" -> ship.stName)
+      }
+      Extraction.decompose(route).asInstanceOf[JObject] ~ ("ships" -> xs)
     }
   }
 

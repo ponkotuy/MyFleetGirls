@@ -10,6 +10,7 @@ $(document).ready ->
       page: 0
       cellInfo: []
       stage: 'ALL'
+      fleetType: 'name'
     methods:
       getInitData: () ->
         @fromHash()
@@ -42,11 +43,13 @@ $(document).ready ->
           xs = @stage.split('-')
           {area: xs[0], info: xs[1]}
       setHash: () ->
-        location.hash = toURLParameter(@areainfo())
+        data = if @fleetType != 'name' then $.extend(@areainfo(), {ftype: @fleetType}) else @areainfo()
+        location.hash = toURLParameter(data)
       fromHash: () ->
         obj = fromURLParameter(location.hash.replace(/^\#/, ''))
         if obj.area? and obj.info?
           @stage = "#{obj.area}-#{obj.info}"
+        @fleetType = obj.ftype ? @fleetType
       setPage: (page) -> @page = page
       maxPage: () -> Math.min(Math.ceil(@allCount / @count), 10)
       pages: () -> [0..(@maxPage() - 1)]
@@ -55,3 +58,4 @@ $(document).ready ->
     ready: () ->
       @$watch 'stage', () -> @page = 0
       @$watch 'page', () -> @getData()
+      @$watch 'fleetType', () -> @setHash()
