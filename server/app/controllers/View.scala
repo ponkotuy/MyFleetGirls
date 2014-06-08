@@ -130,11 +130,12 @@ object View extends Controller {
   def ranking() = Action.async {
     Future {
       val materials = models.AdmiralRanking.findAllOrderByMaterial(20, agoMillis(7.days))
-      val firstLv = models.AdmiralRanking.findFirstShipOrderByExp(20, agoMillis(7.days))
+      val yomeLv = models.AdmiralRanking.findAllOrderByYomeExp(20, agoMillis(7.days))
+      val firstLv = models.AdmiralRanking.findAllByOrderByExp(sqls"s.id = 1", 20, agoMillis(7.days))
       val bookCounts = models.AdmiralRanking.findAllOrderByShipBookCount(20, agoMillis(30.days))
       val shipExp = models.AdmiralRanking.findAllOrderByShipExpSum(20, agoMillis(7.days))
       val itemBook = models.AdmiralRanking.findAllOrderByItemBookCount(20, agoMillis(30.days))
-      Ok(views.html.sta.ranking(materials, firstLv, bookCounts, shipExp, itemBook))
+      Ok(views.html.sta.ranking(materials, yomeLv, firstLv, bookCounts, shipExp, itemBook))
     }
   }
 

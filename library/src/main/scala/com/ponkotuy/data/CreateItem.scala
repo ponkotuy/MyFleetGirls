@@ -17,8 +17,8 @@ case class CreateItem(
     createFlag: Boolean, shizaiFlag: Boolean, flagship: Int) {
   def materialSummary: String = s"$fuel/$ammo/$steel/$bauxite"
   def summary: String = Pretty(
-    Map("成功" -> shizaiFlag, "資材" -> materialSummary) ++
-      slotitemId.map(i => Map("ItemID" -> i)).getOrElse(Map())
+    Map(("成功", shizaiFlag), ("資材", materialSummary)) ++
+      slotitemId.map(i => Map(("ItemID", i))).getOrElse(Map())
   )
 }
 

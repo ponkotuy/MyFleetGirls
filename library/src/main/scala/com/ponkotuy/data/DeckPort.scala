@@ -12,10 +12,10 @@ import java.util.Date
 case class DeckPort(id: Int, name: String, mission: Option[Mission], ships: List[Int]) {
   def summary: String = Pretty(
     Map(
-      "ID" -> id,
-      "名前" -> name,
-      "艦娘" -> ships.mkString("(", ", ", ")"),
-      "遠征" -> mission.map(_.summary).getOrElse("")
+      ("ID", id),
+      ("名前", name),
+      ("艦娘", ships.mkString("(", ", ", ")")),
+      ("遠征", mission.map(_.summary).getOrElse(""))
     )
   )
 }
@@ -23,7 +23,7 @@ case class Mission(page: Int, number: Int, completeTime: Long) {
   import DeckPort._
   def summary: String = {
     val content = Pretty(
-      Map("ID" -> s"$page-$number", "遠征完了時間" -> df.format(new Date(completeTime)))
+      Map(("ID", s"$page-$number"), ("遠征完了時間", df.format(new Date(completeTime))))
     )
     s"(${content})"
   }

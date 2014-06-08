@@ -16,11 +16,19 @@
       <div id="routelog">
         <form class="form-inline" role="form">
           <div class="form-group">
+            <label>Stage</label>
             <select v-model="stage" id="stage_select">
               <option selected="selected">ALL</option>
               @stages.map { stage =>
                 <option>@stage.area-@stage.info</option>
               }
+            </select>
+          </div>
+          <div class="form-group">
+            <label>艦隊表示形式</label>
+            <select v-model="fleetType" id="fleet_type_select">
+              <option selected="selected" value="name">艦名</option>
+              <option value="stype">艦種</option>
             </select>
           </div>
         </form>
@@ -37,7 +45,12 @@
               <td v-html="viewCell(r.areaId, r.infoNo, r.dep)"></td>
               <td v-html="viewCell(r.areaId, r.infoNo, r.dest)"></td>
               <td>{{timeToStr(r.created)}}</td>
-              <td><a v-repeat="s: r.ships" href="/user/@user.admiral.id/ship#modal=true&id={{s.id}}">{{s.name}} </a></td>
+              <td v-if="fleetType === 'name'">
+                <a v-repeat="s: r.ships" href="/user/@user.admiral.id/ship#modal=true&id={{s.id}}">{{s.name}} </a>
+              </td>
+              <td v-if="fleetType === 'stype'">
+                <span v-repeat="s: r.ships | orderBy 'stype'">{{s.stype}} </span>
+              </td>
             </tr>
           </tbody>
         </table>

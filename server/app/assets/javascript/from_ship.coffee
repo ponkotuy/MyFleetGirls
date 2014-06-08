@@ -50,7 +50,7 @@ $(document).ready ->
         location.hash = toURLParameter(param)
       restoreHash: ->
         param = fromURLParameter(location.hash.replace(/^\#/, ''))
-        @query = param.query ? @query
+        @query = if param.query? then decodeURIComponent(param.query) else @query
         @shipId = param.ship ? @shipId
         @itemId = param.item ? @itemId
 

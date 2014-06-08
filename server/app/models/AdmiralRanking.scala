@@ -16,6 +16,7 @@ object AdmiralRanking {
   lazy val mst = MasterStype.syntax("mst")
   lazy val sb = ShipBook.syntax("sb")
   lazy val ib = ItemBook.syntax("ib")
+  lazy val us = UserSettings.syntax("us")
 
   def findAllOrderByMaterial(limit: Int = 10, from: Long = 0)(
     implicit session: DBSession = Admiral.autoSession): List[(Admiral, Int)] = {
@@ -32,14 +33,30 @@ object AdmiralRanking {
     }.list().apply()
   }
 
-  def findFirstShipOrderByExp(limit: Int = 10, from: Long = 0)(
+  def findAllOrderByYomeExp(limit: Int = 10, from: Long = 0)(
       implicit session: DBSession = Ship.autoSession): List[(Admiral, ShipWithName)] = {
     withSQL {
       select.from(Ship as s)
         .innerJoin(Admiral as a).on(s.memberId, a.id)
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
-        .where.eq(s.id, 1).and.gt(s.created, from)
+        .innerJoin(UserSettings as us).on(s.memberId, us.memberId)
+        .where.gt(s.created, from).and.eq(us.yome, s.id)
+        .orderBy(s.exp).desc
+        .limit(limit)
+    }.map { rs =>
+      Admiral(a)(rs) -> ShipWithName(Ship(s, Nil)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+    }.list().apply()
+  }
+
+  def findAllByOrderByExp(where: SQLSyntax, limit: Int = 10, from: Long = 0)(
+      implicit session: DBSession = Ship.autoSession): List[(Admiral, ShipWithName)] = {
+    withSQL {
+      select.from(Ship as s)
+        .innerJoin(Admiral as a).on(s.memberId, a.id)
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .where.gt(s.created, from).and.append(where)
         .orderBy(s.exp).desc
         .limit(limit)
     }.map { rs =>
@@ -49,29 +66,24 @@ object AdmiralRanking {
 
   def findAllOrderByShipBookCount(limit: Int = 10, from: Long = 0)(
       implicit session: DBSession = ShipBook.autoSession): List[(Admiral, Long)] = {
-    val normal = withSQL {
-      select(sb.resultAll, a.resultAll, sqls"count(1) as cnt").from(ShipBook as sb)
-        .innerJoin(Admiral as a).on(sb.memberId, a.id)
-        .where.gt(sb.updated, from)
-        .groupBy(sb.memberId)
-    }.map { rs => Admiral(a)(rs) -> rs.long("cnt") }.list().apply()
-    val damaged = withSQL {
-      select(sb.resultAll, a.resultAll, sqls"count(1) as cnt").from(ShipBook as sb)
-        .innerJoin(Admiral as a).on(sb.memberId, a.id)
-        .where.gt(sb.updated, from).and.eq(sb.isDameged, true)
-        .groupBy(sb.memberId)
-    }.map { rs => Admiral(a)(rs) -> rs.long("cnt") }.list().apply()
-    val married = withSQL {
-      select(sb.resultAll, a.resultAll, sqls"count(1) as cnt").from(ShipBook as sb)
-        .innerJoin(Admiral as a).on(sb.memberId, a.id)
-        .where.gt(sb.updated, from).and.eq(sb.isMarried, true)
-        .groupBy(sb.memberId)
-    }.map { rs => Admiral(a)(rs) -> rs.long("cnt") }.list().apply()
+    val normal = shipBookCountBy()
+    val damaged = shipBookCountBy(sqls"sb.is_dameged = true")
+    val married = shipBookCountBy(sqls"sb.is_married = true")
     val dCounts: Map[Long, Long] = damaged.map { case (admin, cnt) => admin.id -> cnt }.toMap.withDefaultValue(0L)
     val mCounts: Map[Long, Long] = married.map { case (admin, cnt) => admin.id -> cnt }.toMap.withDefaultValue(0L)
     normal.map { case (admin, cnt) =>
       admin -> (cnt + dCounts(admin.id) + mCounts(admin.id))
     }.sortBy(_._2).reverse.take(limit)
+  }
+
+  private def shipBookCountBy(where: SQLSyntax = sqls"1", from: Long = 0)(
+      implicit session: DBSession = ShipBook.autoSession): List[(Admiral, Long)] = {
+    withSQL {
+      select(sb.resultAll, a.resultAll, sqls"count(1) as cnt").from(ShipBook as sb)
+        .innerJoin(Admiral as a).on(sb.memberId, a.id)
+        .where.gt(sb.updated, from).and.append(where)
+        .groupBy(sb.memberId)
+    }.map { rs => Admiral(a)(rs) -> rs.long("cnt") }.list().apply()
   }
 
   def findAllOrderByItemBookCount(limit: Int = 10, from: Long = 0)(

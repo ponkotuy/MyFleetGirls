@@ -14,7 +14,12 @@ case class BattleResult(
     baseExp: Int, shipExp: List[Int], lostFlag: List[Boolean], questName: String, questLevel: Int, enemyDeck: String,
     firstClear: Boolean, getShip: Option[GetShip]) {
   def summary: String = Pretty(
-    Map("Rank" -> winRank, "MVP" -> mvp, "Enemy" -> enemyDeck, "ドロップ艦娘" -> getShip.map(_.name).getOrElse("なし"))
+    Map(
+      ("Rank", winRank),
+      ("MVP", mvp),
+      ("Enemy", enemyDeck),
+      ("ドロップ艦娘", getShip.map(_.name).getOrElse("なし"))
+    )
   )
 }
 

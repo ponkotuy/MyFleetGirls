@@ -20,7 +20,7 @@ case class Basic(
     lv: Int, experience: Int, rank: Int,
     maxChara: Int, fCoin: Int,
     stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int) {
-  def summary: String = Pretty(Map("Lv" -> lv, "経験値" -> experience))
+  def summary: String = Pretty(Map(("Lv", lv), ("経験値", experience)))
 }
 
 object Basic {
