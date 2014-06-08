@@ -40,18 +40,10 @@
             <li>Java7（JRE7）以降がインストールされてない場合はする <a href="http://java.com/ja/download/">JavaDownload</a></li>
             <li><a href="@routes.Assets.at("zip/MyFleetGirls.zip")">DownloaderのDownload</a></li>
             <li>ZIPファイルを解凍</li>
-            <li>MyFleetGirls.shかMyFleetGirls.batを起動する（ここで自動アップデートも走ります）。エラーで終了して問題無い</li>
-            <li>application.conf.sampleをコピーしてapplication.confというファイルを作る</li>
-            <li>application.confをテキストエディタで開き、自分の艦これサーバのIPアドレスを設定。初期設定はブイン基地になってます</li>
-            <li>ブラウザのProxy設定</li>
-            <ol>
-              <li>特定アドレスへの通信にProxyを設定するaddon等をインストール。Chromeなら<a href="https://chrome.google.com/webstore/detail/proxy-switchysharp/dpplabbmogkhghncfbfdeeokoefdjegm">Proxy SwichySharp</a>、Firefoxなら<a href="https://addons.mozilla.org/ja/firefox/addon/foxyproxy-standard/">FoxyProxy</a>で動作確認済</li>
-              <li>前に設定した艦これサーバのIPアドレスのアクセスをlocalhost:8080へ転送する</li>
-              <li>Proxy SwichySharpの設定の詳細は<a href="http://d.hatena.ne.jp/ponkotuy/20140330/1396184917">HatenaDialy</a></li>
-            </ol>
-            <li>MyFleetGirls.shかMyFleetGirls.batを起動する（ここでエラーの場合はapplication.confの設定が間違っている）</li>
-            <li>先程設定したブラウザで艦これのFlashを起動する</li>
-            <li>しばらくゲームが進んだ後に http://myfleet.ponkotuy.com/u/{ユーザ名} にアクセスすると閲覧できる</li>
+            <li>MyFleetGirls.shかMyFleetGirls.batを起動する</li>
+            <li>PACファイルを使ってブラウザのProxy設定をする。<a href="@routes.Assets.at("proxy.pac")">http://myfleet.ponkotuy.com/assets/proxy.pac</a>をブラウザにセット（PACファイルの設定方法はGoogle先生からどうぞ）</li>
+            <li>設定したブラウザで艦これのFlashを起動する</li>
+            <li>しばらくゲームが進んだ後に<a href="@routes.View.index()">http://myfleet.ponkotuy.com/</a>にアクセスすると閲覧できるようになっている</li>
           </ol>
         </section>
 

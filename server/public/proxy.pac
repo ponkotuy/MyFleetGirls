@@ -1,6 +1,5 @@
 function FindProxyForURL(url, host) {
-  if(isPlainHostName(host) ||
-     isInNet(host, "203.104.105.167", "255.255.255.255") ||
+  if(isInNet(host, "203.104.105.167", "255.255.255.255") ||
      isInNet(host, "125.6.184.15", "255.255.255.255") ||
      isInNet(host, "125.6.184.16", "255.255.255.255") ||
      isInNet(host, "125.6.187.205", "255.255.255.255") ||

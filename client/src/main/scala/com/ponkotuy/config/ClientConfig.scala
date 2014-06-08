@@ -11,13 +11,19 @@ import com.ponkotuy.data.MyFleetAuth
  * Date: 14/02/23
  */
 object ClientConfig {
-  val config = ConfigFactory.parseFile(new File("application.conf"))
+  lazy val config = {
+    val file = new File("application.conf")
+    if(file.exists()) {
+      ConfigFactory.parseFile(file)
+    } else {
+      ConfigFactory.parseFile(new File("application.conf.sample"))
+    }
+  }
 
-  val kcUrl = config.getString("url.kc")
-  val post = config.getString("url.post")
+  lazy val post = config.getString("url.post")
   def postUrl(ver: Int = 1) = post + s"/post/v${ver}"
   def getUrl(ver: Int = 1) = config.getString("url.post") + s"/rest/v${ver}"
-  val proxyPort = config.getInt("proxy.port")
+  def proxyPort = config.getInt("proxy.port")
 
   @deprecated("Move to Auth.master", "0.13.0")
   def master: Boolean = Auth.master
