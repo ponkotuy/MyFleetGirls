@@ -26,7 +26,11 @@ case class MapStart(
     bossComp: Boolean,
     enemyId: Option[Int]) {
   def summary: String = Pretty(
-    Map("Map" -> s"$mapAreaId-$mapInfoNo-$no", "Next" -> next, "EnemyID" -> enemyId.getOrElse("会敵せず"))
+    Map(
+      ("Map", s"$mapAreaId-$mapInfoNo-$no"),
+      ("Next", next),
+      ("EnemyID", enemyId.getOrElse("会敵せず"))
+    )
   )
 }
 

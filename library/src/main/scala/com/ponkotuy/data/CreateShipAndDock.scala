@@ -10,5 +10,5 @@ import com.ponkotuy.tool.Pretty
 case class CreateShipAndDock(createShip: CreateShip, kDock: KDock)
 
 case class CreateShipWithId(createShip: CreateShip, resultShip: Int) {
-  def summary: String = Pretty(Map("資材" -> createShip.materialSummary, "艦娘ID" -> resultShip))
+  def summary: String = Pretty(Map(("資材", createShip.materialSummary), ("艦娘ID", resultShip)))
 }

@@ -14,7 +14,11 @@ import java.util.Date
 case class NDock(id: Int, shipId: Int, completeTime: Long) {
   import NDock._
   def summary: String = Pretty(
-    Map("ID" -> id, "ShipID" -> shipId, "入渠完了時間" -> df.format(new Date(completeTime)))
+    Map(
+      ("ID", id),
+      ("ShipID", shipId),
+      ("入渠完了時間", df.format(new Date(completeTime)))
+    )
   )
 }
 

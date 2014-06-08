@@ -15,7 +15,7 @@ case class KDock(
     fuel: Int, ammo: Int, steel: Int, bauxite: Int) {
   import KDock._
   def summary: String = Pretty(
-    Map("ID" -> id, "ShipID" -> shipId, "建造完了時間" -> df.format(new Date(completeTime)))
+    Map(("ID" ,id), ("ShipID" ,shipId), ("建造完了時間" ,df.format(new Date(completeTime))))
   )
 }
 

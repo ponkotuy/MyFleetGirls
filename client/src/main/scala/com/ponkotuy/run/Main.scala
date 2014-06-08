@@ -14,7 +14,7 @@ import scala.io.{Codec, Source}
 object Main extends App {
   try {
     message()
-    new FinagleProxy(ClientConfig.kcUrl, ClientConfig.proxyPort, new KCIntercepter).start()
+    new FinagleProxy(ClientConfig.proxyPort, new KCIntercepter).start()
   } catch {
     case e: ExceptionInInitializerError =>
       e.printStackTrace()
