@@ -109,6 +109,13 @@ object View extends Controller {
     }
   }
 
+  def dropAlpha(area: Int, info: Int) = Action.async {
+    Future {
+      val cells = models.BattleResult.dropedCellsAlpha(area, info)
+      Ok(views.html.sta.drop_alpha(area, info, cells))
+    }
+  }
+
   def route(area: Int, info: Int) = Action.async {
     Future {
       Ok(views.html.sta.route(area, info))

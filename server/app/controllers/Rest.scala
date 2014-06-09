@@ -4,6 +4,7 @@ import play.api.mvc.Controller
 import scalikejdbc._
 import org.json4s._
 import org.json4s.JsonDSL._
+import dat.ShipDrop
 
 /**
  *
@@ -56,11 +57,20 @@ object Rest extends Controller {
   def dropCell(area: Int, info: Int, cell: Int, rank: String) = returnJson {
     val drops = models.BattleResult.countCellsGroupByDrop(area, info, cell, rank)
     val sum = drops.map(_._2).sum.toDouble
-    drops.map { case (drop, count) =>
-      Extraction.decompose(drop).asInstanceOf[JObject] ~
-        ("count" -> count) ~
-        ("rate" -> f"${count / sum * 100}%.1f%%")
-    }
+    drops.map(dropToJson(sum))
+  }
+
+  def dropCellAlpha(area: Int, info: Int, alpha: String, rank: String) = returnJson {
+    val drops = models.BattleResult.countCellsAlphaGroupByDrop(area, info, alpha, rank)
+    val sum = drops.map(_._2).sum.toDouble
+    drops.map(dropToJson(sum))
+  }
+
+  private def dropToJson(sum: Double)(sCount: (ShipDrop, Long)) = {
+    val (drop, count) = sCount
+    Extraction.decompose(drop).asInstanceOf[JObject] ~
+      ("count" -> count) ~
+      ("rate" -> f"${count / sum * 100}%.1f%%")
   }
 
   def route(area: Int, info: Int) = returnJson {
