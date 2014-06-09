@@ -78,7 +78,7 @@ object ResType extends Log {
   case object MasterMapArea extends ResType(s"\\A$GetMaster/maparea\\z".r) // 鎮守府海域・南西諸島海域など
   case object Port extends ResType(s"\\A$Api/api_port/port\\z".r)
   case object ShipSWF extends ResType("""\A/kcs/resources/swf/ships/[a-z]+\.swf\z""".r)
-  case object SoundMP3 extends ResType("""\A/kcs/sound/kc[0-9]+/[0-9]+\.mp3""".r)
+  case object SoundMP3 extends ResType("""\A/kcs/sound/kc[a-z]+/[0-9]+\.mp3""".r)
 
   val values = Set(
     LoginCheck, ApiStart2, Material, Basic, Record, Ship2, Ship3, NDock, KDock,

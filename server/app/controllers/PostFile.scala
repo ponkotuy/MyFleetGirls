@@ -4,7 +4,7 @@ import play.api.mvc._
 import Common._
 import java.io.{ByteArrayOutputStream, InputStream, FileInputStream}
 import tool.SWFTool
-import models.ShipImage
+import models.{MasterShipBase, ShipImage}
 
 /**
  *
@@ -17,41 +17,41 @@ object PostFile extends Controller {
     authentication(form) { auth =>
       request.body.file("image") match {
         case Some(ref) =>
-          models.MasterShipBase.findByFilename(shipKey) match {
-            case Some(ship) =>
-              models.ShipImage.find(ship.id) match {
-                case Some(si) =>
-                  if(si.filename.isDefined) Ok("Already Exists")
-                  else {
-                    ShipImage(si.id, si.image, Some(shipKey), si.memberId).save() // filenameをupdate
-                    Ok("Updated Ship Image Key")
-                  }
-                case None =>
-                  val swfFile = ref.ref.file
-                  val imageFile = SWFTool.extractJPG(swfFile, 5)
-                  val image = readAll(new FileInputStream(imageFile))
-                  models.ShipImage.create(ship.id, image, shipKey, auth.id)
-                  Ok("Success")
-              }
-            case None => BadRequest("Wrong Filename or Not Found Master Data")
+          findKey(shipKey) { ship =>
+            models.ShipImage.find(ship.id) match {
+              case Some(si) =>
+                if(si.filename.isDefined) Ok("Already Exists")
+                else {
+                  ShipImage(si.id, si.image, Some(shipKey), si.memberId).save() // filenameをupdate
+                  Ok("Updated Ship Image Key")
+                }
+              case None =>
+                val swfFile = ref.ref.file
+                val imageFile = SWFTool.extractJPG(swfFile, 5)
+                val image = readAll(new FileInputStream(imageFile))
+                models.ShipImage.create(ship.id, image, shipKey, auth.id)
+                Ok("Success")
+            }
           }
         case None => BadRequest("Need Image")
       }
     }
   }
 
-  def sound(shipId: Int, soundId: Int) = Action.async(parse.multipartFormData) { request =>
+  def sound(shipKey: String, soundId: Int) = Action.async(parse.multipartFormData) { request =>
     val form = request.body.asFormUrlEncoded
     authentication(form) { auth =>
       request.body.file("sound") match {
         case Some(ref) =>
-          val mp3File = ref.ref.file
-          val sound = readAll(new FileInputStream(mp3File))
-          try {
-            models.ShipSound.create(shipId, soundId, sound)
-            Ok("Success")
-          } catch {
-            case e: Throwable => Ok("Already Exists")
+          findKey(shipKey) { ship =>
+            val mp3File = ref.ref.file
+            val sound = readAll(new FileInputStream(mp3File))
+            try {
+              models.ShipSound.create(ship.id, soundId, sound)
+              Ok("Success")
+            } catch {
+              case e: Throwable => Ok("Already Exists")
+            }
           }
         case _ => BadRequest("Need Image")
       }
@@ -67,5 +67,12 @@ object PostFile extends Controller {
       len = is.read(buf)
     }
     baos.toByteArray
+  }
+
+  private def findKey(key: String)(f: MasterShipBase => Result) = {
+    models.MasterShipBase.findByFilename(key) match {
+      case Some(ship) => f(ship)
+      case None => BadRequest("Wrong Filename or Not Found Master Data")
+    }
   }
 }

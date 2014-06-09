@@ -97,11 +97,11 @@ object Post extends Log {
   }
 
   def mp3kc(q: Query)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    SoundUrlId.parseURL(q.uri).filterNot(MFGHttp.existsSound).foreach { case SoundUrlId(shipId, soundId) =>
+    SoundUrlId.parseURL(q.uri).filterNot(MFGHttp.existsSound).foreach { case SoundUrlId(shipKey, soundId) =>
       val sound = allRead(q.res.getContent)
       val file = TempFileTool.save(sound, "mp3")
-      MFGHttp.postFile(s"/mp3/kc/${shipId}/${soundId}", "sound")(file)
-      println(s"初めて (ShipID -> $shipId, SoundID -> $soundId) の声を聞いた")
+      MFGHttp.postFile(s"/mp3/kc/${shipKey}/${soundId}", "sound")(file)
+      println(s"初めて (ShipKey -> $shipKey, SoundID -> $soundId) の声を聞いた")
     }
   }
 
@@ -118,14 +118,14 @@ object Post extends Log {
   }
 }
 
-case class SoundUrlId(shipId: Int, soundId: Int)
+case class SoundUrlId(shipKey: String, soundId: Int)
 
 object SoundUrlId {
-  val pattern = """.*/kcs/sound/kc(\d+)/(\d+).mp3""".r
+  val pattern = """.*/kcs/sound/kc([a-z]+)/(\d+).mp3""".r
 
   def parseURL(url: String): Option[SoundUrlId] = {
     url match {
-      case pattern(ship, sound) => Try { SoundUrlId(ship.toInt, sound.toInt) }.toOption
+      case pattern(ship, sound) => Try { SoundUrlId(ship, sound.toInt) }.toOption
       case _ => None
     }
   }

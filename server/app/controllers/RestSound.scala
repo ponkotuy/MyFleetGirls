@@ -3,6 +3,7 @@ package controllers
 import scala.concurrent.ExecutionContext.Implicits._
 import play.api.mvc._
 import scala.concurrent.Future
+import models.ShipSound
 
 /**
  *
@@ -24,6 +25,15 @@ object RestSound extends Controller {
       models.ShipSound.find(shipId, soundId) match {
         case Some(record) => Ok(record.sound).as("audio/mp3")
         case _ => NotFound(s"Not Found Image (shipId=$shipId, soundId=$soundId)")
+      }
+    }
+  }
+
+  def shipKeyHead(shipKey: String, soundId: Int) = Action.async {
+    Future {
+      ShipSound.findKey(shipKey, soundId) match {
+        case Some(record) => Ok(record.sound).as("audio/mp3")
+        case _ => NotFound(s"Not Found Image (shipKey=$shipKey, soundId=$soundId)")
       }
     }
   }

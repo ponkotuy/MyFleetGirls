@@ -95,7 +95,7 @@ object MFGHttp extends Log {
     head(s"/image/ship_obf/$key.jpg", ver = 1).getStatusLine.getStatusCode == 200
 
   def existsSound(s: SoundUrlId): Boolean =
-    head(s"/sound/ship/${s.shipId}/${s.soundId}.mp3", ver = 1).getStatusLine.getStatusCode == 200
+    head(s"/sound/ship_obf/${s.shipKey}/${s.soundId}.mp3", ver = 1).getStatusLine.getStatusCode == 200
 
   private def head(uStr: String, ver: Int = 1) = {
     val http = httpBuilder.build()
