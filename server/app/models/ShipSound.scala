@@ -1,6 +1,6 @@
 package models
 
-import SQLInterpolation._
+import scalikejdbc._
 import scalikejdbc.{AutoSession, WrappedResultSet, DBSession}
 
 case class ShipSound(
@@ -28,12 +28,21 @@ object ShipSound extends SQLSyntaxSupport[ShipSound] {
   )
 
   val ss = ShipSound.syntax("ss")
+  val ms = MasterShipBase.syntax("ms")
 
   override val autoSession = AutoSession
 
   def find(shipId: Int, soundId: Int)(implicit session: DBSession = autoSession): Option[ShipSound] = {
     withSQL {
       select.from(ShipSound as ss).where.eq(ss.shipId, shipId).and.eq(ss.soundId, soundId)
+    }.map(ShipSound(ss.resultName)).single().apply()
+  }
+
+  def findKey(shipKey: String, soundId: Int)(implicit session: DBSession = autoSession): Option[ShipSound] = {
+    withSQL {
+      select.from(ShipSound as ss)
+        .innerJoin(MasterShipBase as ms).on(ss.shipId, ms.id)
+        .where.eq(ms.filename, shipKey).and.eq(ss.soundId, soundId)
     }.map(ShipSound(ss.resultName)).single().apply()
   }
 
@@ -58,21 +67,11 @@ object ShipSound extends SQLSyntaxSupport[ShipSound] {
   }
 
   def create(
-    shipId: Int,
-    soundId: Int,
-    sound: Array[Byte])(implicit session: DBSession = autoSession): ShipSound = {
-    withSQL {
-      insertIgnore.into(ShipSound).columns(
-        column.shipId,
-        column.soundId,
-        column.sound
-      ).values(
-          shipId,
-          soundId,
-          sound
-        )
-    }.update().apply()
-
+      shipId: Int,
+      soundId: Int,
+      sound: Array[Byte])(implicit session: DBSession = autoSession): ShipSound = {
+    sql"insert ignore into ship_sound (${column.shipId}, ${column.soundId}, ${column.sound}) values (${shipId}, ${soundId}, ${sound})"
+      .update().apply()
     ShipSound(
       shipId = shipId,
       soundId = soundId,

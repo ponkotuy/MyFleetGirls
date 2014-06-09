@@ -127,8 +127,11 @@ object Rest extends Controller {
       .map(s => s.id -> s).toMap
     result.map { route =>
       val xs = route.fleet.map { sid =>
-        val ship = ships.apply(sid)
-        ("id" -> ship.id) ~ ("name" -> ship.name) ~ ("stype" -> ship.stName)
+        ships.get(sid).map { ship =>
+          ("id" -> ship.id) ~ ("name" -> ship.name) ~ ("stype" -> ship.stName)
+        }.getOrElse {
+          ("id" -> sid) ~ ("name" -> "轟沈艦") ~ ("stype" -> "不明")
+        }
       }
       Extraction.decompose(route).asInstanceOf[JObject] ~ ("ships" -> xs)
     }
