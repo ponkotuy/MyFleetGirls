@@ -1,5 +1,6 @@
 package com.ponkotuy.proxy
 
+import scala.collection.mutable
 import com.github.theon.uri.Uri
 import com.twitter.finagle.builder.ClientBuilder
 import com.twitter.finagle.{ChannelException, http, Service, Http}
@@ -15,22 +16,13 @@ import com.ponkotuy.intercept.{Intercepter, PassThrough}
   * @param inter: com.ponkotuy.intercept.Intercepter
   */
 class FinagleProxy(port: Int, inter: Intercepter = new PassThrough) {
-  var client: Service[HttpRequest, HttpResponse] = null
+  val clients: mutable.Map[String, Service[HttpRequest, HttpResponse]] = mutable.Map()
 
   val service = new Service[HttpRequest, HttpResponse] {
     def apply(req: HttpRequest): Future[HttpResponse] = {
-      val res = if(req.getMethod == HttpMethod.POST) {
-        val uri = Uri.parseUri(req.getUri)
-        req.setUri(uri.pathRaw)
-        if(client == null) client = createClient(uri.host.get + ":80")
-        client.apply(req)
-      } else {
-        if(client == null) {
-          val uri = Uri.parseUri(req.getUri)
-          client = createClient(uri.host.get + ":80")
-        }
-        client.apply(req)
-      }
+      val uri = Uri.parseUri(req.getUri)
+      if(req.getMethod == HttpMethod.POST) req.setUri(uri.pathRaw)
+      val res = client(uri.host.get + ":80").apply(req)
       res.foreach(rs => inter.input(req, rs))
       res
     }
@@ -44,13 +36,15 @@ class FinagleProxy(port: Int, inter: Intercepter = new PassThrough) {
       sys.exit(1)
   }
 
-  private def createClient(hosts: String) = {
-    ClientBuilder()
-      .codec(http.Http().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
-      .timeout(30.seconds)
-      .tcpConnectTimeout(30.seconds)
-      .hosts(hosts)
-      .hostConnectionLimit(4).build()
+  private def client(host: String) = {
+    clients.getOrElseUpdate(host, {
+      ClientBuilder()
+        .codec(http.Http().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
+        .timeout(30.seconds)
+        .tcpConnectTimeout(30.seconds)
+        .hosts(host)
+        .hostConnectionLimit(4).build()
+    })
   }
 
   def start(): Unit = {
