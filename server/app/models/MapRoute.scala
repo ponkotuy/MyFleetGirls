@@ -71,16 +71,19 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
 
   def findFleetBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[Vector[ShipWithName]] = {
     val routes = findAllBy(where)
+    findFleet(routes)
+  }
+
+  private def findFleet(routes: Seq[MapRoute]): List[Vector[ShipWithName]] = {
     val fleets = routes.map(r => r.memberId -> r.fleet)
     val userShips = fleets.groupBy(_._1).mapValues(_.map(_._2).flatten)
     val ships = userShips.flatMap { case (memberId, ids) =>
       val xs = Ship.findIn(memberId, ids)
       xs.map(x => (x.memberId, x.id) -> x)
     }.toMap
-    val result = fleets.map { case (memberId, ids) =>
+    fleets.map { case (memberId, ids) =>
       ids.flatMap(id => ships.get((memberId, id))).toVector
     }.toList
-    result
   }
 
   def findStageUnique()(implicit session: DBSession = autoSession): List[Stage] = {

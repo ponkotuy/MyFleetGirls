@@ -24,7 +24,7 @@
           <tbody>
             @counts.map { case (name, count, rate) =>
             <tr>
-              <td><a href="@routes.View.fromShip()#query=@name">@name</a></td>
+              <td><a href="@routes.ViewSta.fromShip()#query=@name">@name</a></td>
               <td>@count</td>
               <td>@(f"${rate * 100}%.1f%%")</td>
             </tr>
@@ -42,7 +42,7 @@
           <tbody>
             @history.map { item =>
             <tr>
-              <td><a href="@routes.View.fromShip()#query=@item.name&item=@item.slotitemId">@item.name</a></td>
+              <td><a href="@routes.ViewSta.fromShip()#query=@item.name&item=@item.slotitemId">@item.name</a></td>
               <td class="viewTime" data-time="@item.created">@item.created</td>
             </tr>
             }

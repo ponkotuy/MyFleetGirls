@@ -15,6 +15,7 @@ case class CellInfo(
   def destroy()(implicit session: DBSession = CellInfo.autoSession): Unit = CellInfo.destroy(this)(session)
 
   def pointStr: String = s"$areaId-$infoNo-$cell"
+  def pointAlpha: String = s"$areaId-$infoNo-$alphabet"
 
 }
 
