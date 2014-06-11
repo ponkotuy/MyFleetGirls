@@ -29,6 +29,6 @@ class KCIntercepter extends Intercepter with Log {
 
   private def valid(req: HttpRequest): Boolean = {
     val uri = Uri.parseUri(req.getUri)
-    uri.host.map(KCServer.ips.contains).getOrElse(false)
+    uri.host.map(KCServer.ips.contains).getOrElse(true)
   }
 }
