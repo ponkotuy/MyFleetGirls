@@ -66,9 +66,9 @@ object AdmiralRanking {
 
   def findAllOrderByShipBookCount(limit: Int = 10, from: Long = 0)(
       implicit session: DBSession = ShipBook.autoSession): List[(Admiral, Long)] = {
-    val normal = shipBookCountBy()
-    val damaged = shipBookCountBy(sqls"sb.is_dameged = true")
-    val married = shipBookCountBy(sqls"sb.is_married = true")
+    val normal = shipBookCountBy(from=from)
+    val damaged = shipBookCountBy(sqls"sb.is_dameged = true", from)
+    val married = shipBookCountBy(sqls"sb.is_married = true", from)
     val dCounts: Map[Long, Long] = damaged.map { case (admin, cnt) => admin.id -> cnt }.toMap.withDefaultValue(0L)
     val mCounts: Map[Long, Long] = married.map { case (admin, cnt) => admin.id -> cnt }.toMap.withDefaultValue(0L)
     normal.map { case (admin, cnt) =>

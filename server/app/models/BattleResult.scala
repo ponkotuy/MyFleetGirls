@@ -2,7 +2,6 @@ package models
 
 import scala.util.Try
 import scalikejdbc._
-import scalikejdbc._
 import sqls.distinct
 import com.ponkotuy.data
 import dat.{CellWithRank, BattleResultWithCell, Stage, ShipDrop}
@@ -136,6 +135,22 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
     }.list().apply()
   }
 
+  def countCellsAlphaGroupByDrop(area: Int, info: Int, alpha: String, rank: String)(
+    implicit session: DBSession = autoSession): List[(ShipDrop, Long)] = {
+    withSQL {
+      select(br.*, sqls"count(1) as cnt")
+        .from(BattleResult as br)
+        .innerJoin(CellInfo as ci)
+        .on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
+        .where.eq(br.areaId, area).and.eq(br.infoNo, info).and.eq(ci.alphabet, alpha)
+        .and.in(br.winRank, rank.map(_.toString))
+        .groupBy(br.areaId, br.infoNo, ci.alphabet, br.getShipId)
+        .orderBy(br.cell, sqls"cnt")
+    }.map { rs =>
+      ShipDrop(br)(rs) -> rs.long("cnt")
+    }.list().apply()
+  }
+
   def countAllByStage()(implicit session: DBSession = autoSession): List[(Stage, Long)] = {
     withSQL {
       select(br.*, sqls"count(1) as cnt")
@@ -175,6 +190,16 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
       CellInfo.noAlphabet(areaId, infoNo, cell)
     }
   }.list().apply()
+
+  def dropedCellsAlpha(area: Int, info: Int)(implicit session: DBSession = autoSession): List[CellInfo] = {
+    withSQL {
+      select(br.areaId, br.infoNo, ci.resultAll).from(BattleResult as br)
+        .innerJoin(CellInfo as ci)
+        .on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
+        .where.eq(br.areaId, area).and.eq(br.infoNo, info)
+        .groupBy(ci.alphabet)
+    }.map(CellInfo(ci)).list().apply()
+  }
 
   def create(result: data.BattleResult, map: data.MapStart, memberId: Long)(
       implicit session: DBSession = autoSession): BattleResult = {
