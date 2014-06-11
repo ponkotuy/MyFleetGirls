@@ -20,7 +20,7 @@ object Common extends Controller {
   type Req = Map[String, Seq[String]]
   implicit val formats = DefaultFormats
 
-  def authAndParse[T](f: (models.Admiral, T) => SimpleResult)(implicit mf: Manifest[T]): Action[Req] = {
+  def authAndParse[T](f: (models.Admiral, T) => Result)(implicit mf: Manifest[T]): Action[Req] = {
     Action.async(parse.urlFormEncoded) { request =>
       authentication(request.body) { auth =>
         withData[T](request.body) { data =>
@@ -31,7 +31,7 @@ object Common extends Controller {
   }
 
   /** 実際はCheckしてないです */
-  def checkPonkotuAndParse[T](f: (T) => SimpleResult)(implicit mf: Manifest[T]): Action[Req] = {
+  def checkPonkotuAndParse[T](f: (T) => Result)(implicit mf: Manifest[T]): Action[Req] = {
     Action.async(parse.urlFormEncoded(1024*1024*2)) { request =>
       checkPonkotu(request.body) {
         withData[T](request.body) { data =>
@@ -45,7 +45,7 @@ object Common extends Controller {
    * 1. 旧ログイン系は必ず必要（さもないとデータが不足する）
    * 2. 新ログイン系は任意だが、一度でも認証させたら通さないと駄目
    */
-  def authentication(request: Req)(f: (models.Admiral) => SimpleResult): Future[SimpleResult] = {
+  def authentication(request: Req)(f: (models.Admiral) => Result): Future[Result] = {
     Future {
       reqHeadParse[Auth](request)("auth") match {
         case Some(oldAuth) =>
@@ -67,14 +67,14 @@ object Common extends Controller {
   }
 
   /** Checkしなくなりました */
-  def checkPonkotu(request: Req)(f: => SimpleResult): Future[SimpleResult] = {
+  def checkPonkotu(request: Req)(f: => Result): Future[Result] = {
     Future {
       f
       Ok("Success")
     }
   }
 
-  def withData[T](request: Req)(f: T => SimpleResult)(implicit mf: Manifest[T]): SimpleResult = {
+  def withData[T](request: Req)(f: T => Result)(implicit mf: Manifest[T]): Result = {
     val result = for {
       json <- reqHead(request)("data")
       data <- J.parse(json).extractOpt[T]
@@ -82,12 +82,10 @@ object Common extends Controller {
     result.getOrElse(BadRequest("Request Error(JSON Parse Error? Header?)"))
   }
 
-  def userView(memberId: Long)(f: User => SimpleResult): Action[AnyContent] = Action.async {
-    Future {
-      getUser(memberId) match {
-        case Some(user) => f(user)
-        case _ => NotFound("ユーザが見つかりませんでした")
-      }
+  def userView(memberId: Long)(f: User => Result): Action[AnyContent] = actionAsync {
+    getUser(memberId) match {
+      case Some(user) => f(user)
+      case _ => NotFound("ユーザが見つかりませんでした")
     }
   }
 
@@ -126,9 +124,11 @@ object Common extends Controller {
     }
   }
 
-  def returnString[A](f: => A) = Action.async {
+  def returnString[A](f: => A) = actionAsync { Ok(f.toString) }
+
+  def actionAsync(f: => Result) = Action.async {
     Future {
-      Ok(f.toString)
+      f
     }
   }
 }
