@@ -20,9 +20,9 @@ $(document).ready ->
         [undefined, '編成', '出撃', '演習', '遠征', '補給/入渠', '工廠', '改装'][cat]
       getJson: () ->
         $.getJSON "/rest/v1/#{userid}/quest", {}, (data) =>
-          @daily_quests = data.filter (x) -> [2, 4, 5].indexOf(x.typ) > 0
+          @daily_quests = data.filter (x) -> [2, 4, 5].indexOf(x.typ) >= 0
           @weekly_quests = data.filter (x) -> x.typ == 3
-          @once_quests = data.filter (x) -> [1, 6].indexOf(x.typ) > 0
+          @once_quests = data.filter (x) -> [1, 6].indexOf(x.typ) >= 0
       setTooltip: () ->
         $('tr.tltip').tooltip({html: true})
     created: () ->
