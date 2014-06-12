@@ -28,4 +28,7 @@ object KCServer {
   )
 
   lazy val ips = values.map(_.ip).toSet
+
+  def fromNumber(number: Int): Option[KCServer] = values.find(_.number == number)
+  def fromIP(ip: String): Option[KCServer] = values.find(_.ip == ip)
 }

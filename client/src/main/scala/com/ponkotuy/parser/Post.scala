@@ -1,5 +1,7 @@
 package com.ponkotuy.parser
 
+import com.ponkotuy.value.KCServer
+
 import scala.util.Try
 import org.json4s._
 import org.json4s.native.Serialization.write
@@ -37,6 +39,11 @@ object Post extends Log {
     val basic = Basic.fromJSON(obj)
     MFGHttp.post("/basic", write(basic))
     println(basic.summary)
+  }
+
+  def admiralSettings(kcServer: KCServer)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
+    MFGHttp.post("/admiral_settings", write(kcServer))
+    println(s"所属： ${kcServer.name}")
   }
 
   def ship(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
