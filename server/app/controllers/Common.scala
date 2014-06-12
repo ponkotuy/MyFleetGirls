@@ -114,7 +114,8 @@ object Common extends Controller {
       } else {
         notClear.map(_.abbr).mkString("", ", ", "海域の攻略中")
       }
-      User(auth, basic, nextMapView)
+      val settings = models.UserSettings.find(memberId).getOrElse(models.UserSettings.empty(memberId))
+      User(auth, basic, nextMapView, settings)
     }
   }
 

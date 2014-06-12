@@ -1,5 +1,7 @@
 package com.ponkotuy.parser
 
+import com.github.theon.uri.Uri
+
 import scala.util.Try
 import java.net.URLDecoder
 import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
@@ -14,9 +16,9 @@ import scala.io.Source
  * @author ponkotuy
  * Date: 14/03/21.
  */
-case class Query(req: HttpRequest, res: HttpResponse) {
+case class Query(req: HttpRequest, res: HttpResponse, uri: Uri) {
   import Query._
-  def uri = req.getUri
+  def host = Uri.parseUri(uri).host
   lazy val resType = ResType.fromUri(uri)
   def resCont: String = Query.toString(res.getContent)
   def resJson: Option[JValue] = KCJson.toAst(resCont)

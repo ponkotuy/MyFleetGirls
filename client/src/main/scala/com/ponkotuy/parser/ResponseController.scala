@@ -1,6 +1,8 @@
 package com.ponkotuy.parser
 
+import com.github.theon.uri.Uri
 import org.json4s._
+import com.ponkotuy.value.KCServer
 import com.ponkotuy.util.Log
 import com.ponkotuy.data
 
@@ -11,6 +13,8 @@ import com.ponkotuy.data
  */
 class ResponseController extends Log {
   import com.ponkotuy.parser.ResType._
+
+  private[this] var initSended = false
 
   val lazyPost = new LazyAuthPost
   val dependent = new DependentPost
@@ -25,7 +29,7 @@ class ResponseController extends Log {
       case Material =>
         lazyPost { (a, b) => Post.material(obj)(a, b) }
       case Basic =>
-        basic(obj)
+        basic(obj, q.uri)
       case Ship3 =>
         lazyPost { (a, b) => Post.update_ship(obj)(a, b) }
       case NDock =>
@@ -57,7 +61,7 @@ class ResponseController extends Log {
       case MapNext =>
         lazyPost { (a, b) => dependent.mapRoute(obj)(a, b) }
       case Port =>
-        basic(obj \ "api_basic")
+        basic(obj \ "api_basic", q.uri)
         lazyPost { (a, b) => Post.ship(obj \ "api_ship")(a, b) }
         lazyPost { (a, b) => Post.material(obj \ "api_material")(a, b) }
         lazyPost { (a, b) => Post.ndock(obj \ "api_ndock")(a, b) }
@@ -79,9 +83,18 @@ class ResponseController extends Log {
     }
   }
 
-  private def basic(obj: JValue): Unit = {
+  private def basic(obj: JValue, uri: Uri): Unit = {
     val a = data.Auth.fromJSON(obj)
     lazyPost.setAuth(a)
     lazyPost { (a, b) => Post.basic(obj)(a, b) }
+    if(!initSended) {
+      for {
+        host <- uri.host
+        kcServer <- KCServer.fromIP(host)
+      } {
+        lazyPost { (a, b) => Post.admiralSettings(kcServer)(a, b)}
+        initSended = true
+      }
+    }
   }
 }

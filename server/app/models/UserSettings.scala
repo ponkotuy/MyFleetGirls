@@ -5,7 +5,8 @@ import dat.ShipWithName
 
 case class UserSettings(
   memberId: Long,
-  yome: Int) {
+  yome: Option[Int],
+  base: Option[Int]) {
 
   def save()(implicit session: DBSession = UserSettings.autoSession): UserSettings = UserSettings.save(this)(session)
 
@@ -18,12 +19,13 @@ object UserSettings extends SQLSyntaxSupport[UserSettings] {
 
   override val tableName = "user_settings"
 
-  override val columns = Seq("member_id", "yome")
+  override val columns = Seq("member_id", "yome", "base")
 
   def apply(us: SyntaxProvider[UserSettings])(rs: WrappedResultSet): UserSettings = apply(us.resultName)(rs)
   def apply(us: ResultName[UserSettings])(rs: WrappedResultSet): UserSettings = new UserSettings(
     memberId = rs.get(us.memberId),
-    yome = rs.get(us.yome)
+    yome = rs.get(us.yome),
+    base = rs.get(us.base)
   )
 
   val us = UserSettings.syntax("us")
@@ -74,30 +76,33 @@ object UserSettings extends SQLSyntaxSupport[UserSettings] {
 
   def create(
     memberId: Long,
-    yome: Int)(implicit session: DBSession = autoSession): UserSettings = {
+    yome: Option[Int],
+    base: Option[Int])(implicit session: DBSession = autoSession): Unit = {
     withSQL {
       insert.into(UserSettings).columns(
         column.memberId,
-        column.yome
+        column.yome,
+        column.base
       ).values(
           memberId,
-          yome
+          yome,
+          base
         )
     }.update().apply()
-
-    UserSettings(
-      memberId = memberId,
-      yome = yome)
   }
 
-  def upsert(memberId: Long, yome: Int)(implicit session: DBSession = autoSession): Unit =
-    sql"replace ${UserSettings.table} (${column.memberId}, ${column.yome}) values ($memberId, $yome)".update().apply()
+  def setYome(memberId: Long, yome: Int)(implicit session: DBSession = autoSession): Unit =
+    sql"insert into ${UserSettings.table} (${column.memberId}, ${column.yome}) values ($memberId, $yome) on duplicate key update ${column.yome}=${yome}".update().apply()
+
+  def setBase(memberId: Long, base: Int)(implicit session: DBSession = autoSession): Unit =
+    sql"insert into ${UserSettings.table} (${column.memberId}, ${column.base}) values ($memberId, $base) on duplicate key update ${column.base}=${base}".update().apply()
 
   def save(entity: UserSettings)(implicit session: DBSession = autoSession): UserSettings = {
     withSQL {
       update(UserSettings).set(
         column.memberId -> entity.memberId,
-        column.yome -> entity.yome
+        column.yome -> entity.yome,
+        column.base -> entity.base
       ).where.eq(column.memberId, entity.memberId)
     }.update().apply()
     entity
@@ -108,5 +113,7 @@ object UserSettings extends SQLSyntaxSupport[UserSettings] {
       delete.from(UserSettings).where.eq(column.memberId, entity.memberId)
     }.update().apply()
   }
+
+  def empty(memberId: Long): UserSettings = UserSettings(memberId, None, None)
 
 }

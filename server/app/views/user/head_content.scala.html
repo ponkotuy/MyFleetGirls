@@ -1,5 +1,7 @@
 @(user: dat.User)(body: Html)
 
+@import com.ponkotuy.value.KCServer
+
 @rank(r: Int) = {
   @Map(
     1 -> "元帥", 2 -> "大将", 3 -> "中将", 4 -> "少将",
@@ -13,7 +15,16 @@
   <div class="jumbotron">
     <h1>@{user.admiral.nickname}@rank(user.basic.rank)<small>Lv@{user.basic.lv}</small></h1>
     @tweet()
-    <div><p>@user.map</p></div>
+    <p>
+    @{
+      for {
+        base <- user.setting.base
+        server <-KCServer.fromNumber(base)
+      } yield {
+          s"${server.name}所属、"
+      }
+    }
+    @user.map</p>
   </div>
   @body
 </div>

@@ -1,13 +1,14 @@
 package controllers
 
-import scala.Throwable
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits._
-import play.api.mvc._
 import com.ponkotuy.data._
-import Common._
+import com.ponkotuy.value.KCServer
+import controllers.Common._
 import dat.Settings
+import play.api.mvc._
 import tool.Authentication
+
+import scala.concurrent.ExecutionContext.Implicits._
+import scala.concurrent.Future
 
 /**
  *
@@ -23,6 +24,11 @@ object Post extends Controller {
     } else {
       Ok("No Change")
     }
+  }
+
+  def admiralSettings = authAndParse[KCServer] { case (auth, server) =>
+    models.UserSettings.setBase(auth.id, server.number)
+    Ok("Success")
   }
 
   def material = authAndParse[Material] { case (auth, material) =>
@@ -141,7 +147,7 @@ object Post extends Controller {
       Settings.fromReq(request.body) match {
         case Some(set: Settings) =>
           if(Authentication.myfleetAuth(set.userId, set.password)) {
-            models.UserSettings.upsert(set.userId, set.shipId)
+            models.UserSettings.setYome(set.userId, set.shipId)
             Ok("Success")
           } else {
             Unauthorized("Authentication failure")

@@ -4,6 +4,7 @@
 
 # Post
 POST    /post/v1/basic              controllers.Post.basic
+POST    /post/v1/admiral_settings   controllers.Post.admiralSettings
 POST    /post/v1/material           controllers.Post.material
 POST    /post/v1/ship               controllers.Post.ship
 POST    /post/v2/ship               controllers.Post.ship2

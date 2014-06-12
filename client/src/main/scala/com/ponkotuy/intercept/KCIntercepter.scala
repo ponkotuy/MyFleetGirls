@@ -1,12 +1,10 @@
 package com.ponkotuy.intercept
 
-import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
+import com.github.theon.uri.Uri
 import com.ponkotuy.parser.{Query, ResponseController}
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits._
 import com.ponkotuy.util.Log
 import com.ponkotuy.value.KCServer
-import com.github.theon.uri.Uri
+import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
 
 /**
  *
@@ -15,15 +13,13 @@ import com.github.theon.uri.Uri
  */
 class KCIntercepter extends Intercepter with Log {
   val controller = new ResponseController
-  override def input(req: HttpRequest, res: HttpResponse): Unit = {
+  override def input(req: HttpRequest, res: HttpResponse, uri: Uri): Unit = {
     if(!valid(req)) return
-    Future {
-      try {
-        val q = Query(req, res)
-        if(q.parsable) controller.query(q)
-      } catch {
-        case e: Throwable => error((e.getMessage +: e.getStackTrace).mkString("\n"))
-      }
+    try {
+      val q = Query(req, res, uri)
+      if(q.parsable) controller.query(q)
+    } catch {
+      case e: Throwable => error((e.getMessage +: e.getStackTrace).mkString("\n"))
     }
   }
 

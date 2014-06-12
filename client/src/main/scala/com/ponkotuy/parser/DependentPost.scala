@@ -1,12 +1,13 @@
 package com.ponkotuy.parser
 
-import scala.util.Try
-import scala.collection.mutable
+import com.ponkotuy.data
+import com.ponkotuy.data._
+import com.ponkotuy.http.MFGHttp
 import org.json4s._
 import org.json4s.native.Serialization.write
-import com.ponkotuy.data
-import com.ponkotuy.http.MFGHttp
-import com.ponkotuy.data._
+
+import scala.collection.mutable
+import scala.util.Try
 
 /**
  *
