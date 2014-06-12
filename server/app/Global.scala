@@ -22,19 +22,24 @@ object Global extends GlobalSettings {
     val cron = Akka.system().actorOf(Props[CronScheduler], "cron")
     cron ! CronSchedule(Cron(0, 5, aster, aster, aster), _ => deleteDailyQuest())
     cron ! CronSchedule(Cron(0, 5, aster, aster, DateTimeConstants.MONDAY), _ => deleteWeeklyQuest())
+    cron ! CronSchedule(Cron(0, 5, 1, aster, aster), _ => deleteMonthlyQuest())
     cron ! CronSchedule(Cron(17, 3, aster, aster, aster), _ => cutMaterialRecord())
-    // cron ! CronSchedule(Cron(aster, aster, aster, aster, aster), sample)
     Akka.system().scheduler.schedule(0.seconds, 45.seconds, cron, "minutes")
   }
 
   private def deleteDailyQuest(): Unit = {
     Logger.info("Delete Daily Quest")
-    Quest.deleteAllBy(sqls"typ = 2")
+    Quest.deleteAllBy(sqls"typ in(2, 4, 5)")
   }
 
   private def deleteWeeklyQuest(): Unit = {
     Logger.info("Delete Weekly Quest")
     Quest.deleteAllBy(sqls"typ = 3")
+  }
+
+  private def deleteMonthlyQuest(): Unit = {
+    Logger.info("Delete Monthly Quest")
+    Quest.deleteAllBy(sqls"type = 6")
   }
 
   private def cutMaterialRecord(): Unit = {
@@ -50,9 +55,5 @@ object Global extends GlobalSettings {
         daily.filterNot(mat => rest.contains(mat.id)).foreach(_.destroy())
       }
     }
-  }
-
-  private def sample(cron: Cron): Unit = {
-    Logger.info(s"Sample EXEC: ${cron.hour}:${cron.minutes}")
   }
 }
