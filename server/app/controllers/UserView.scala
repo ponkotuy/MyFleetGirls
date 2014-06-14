@@ -40,6 +40,14 @@ object UserView {
     Ok(views.html.user.user(user, yome, best, flagship))
   }
 
+  def registerSnap(memberId: Long, deckId: Int) = userView(memberId) { user =>
+    val ships = models.DeckShip.findAllByDeck(memberId, deckId)
+    models.DeckPort.find(memberId, deckId) match {
+      case Some(deck) =>
+        Ok(views.html.user.register_snap(user, ships, deck))
+    }
+  }
+
   def material(memberId: Long) = userView(memberId) { user =>
     Ok(views.html.user.material(user))
   }
@@ -120,7 +128,7 @@ object UserView {
     Ok(views.html.user.quest(user))
   }
 
-  val stype = Map(6 -> 5, 9 -> 8, 10 -> 8, 14 -> 13, 16 -> 7, 18 -> 11).withDefault(identity)
+  val stype = Map(6 -> 5, 9 -> 8, 10 -> 8, 14 -> 13, 16 -> 7, 18 -> 11, 20 -> 7).withDefault(identity)
   def statistics(memberId: Long) = userView(memberId) { user =>
     val ships = models.Ship.findAllByUserWithName(memberId)
     val stypeExps = ships.groupBy(s => stype(s.stype.id))

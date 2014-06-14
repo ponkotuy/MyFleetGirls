@@ -22,7 +22,8 @@ POST    /post/v1/slotitem           controllers.Post.slotItem
 POST    /post/v1/battle_result      controllers.Post.battleResult
 POST    /post/v1/map_route          controllers.Post.mapRoute
 POST    /post/v1/questlist          controllers.Post.questlist
-POST    /passwd/v1/settings         controllers.Post.settings
+# POST    /passwd/post/v1/register_snap controllers.Post.registerSnap
+POST    /passwd/post/v1/settings    controllers.Post.settings
 POST    /post/v1/master/ship        controllers.PostMaster.ship
 POST    /post/v1/master/mission     controllers.PostMaster.mission
 POST    /post/v1/master/slotitem    controllers.PostMaster.slotitem
@@ -80,10 +81,11 @@ GET     /u/:user                    controllers.UserView.name(user: String)
 GET     /user/:userId               controllers.UserView.user2(userId: Long)
 GET     /user/:userId/              controllers.UserView.user(userId: Long)
 GET     /user/:userId/top           controllers.UserView.top(userId: Long)
+GET     /passwd/user/:userId/register_snap/:deckId controllers.UserView.registerSnap(userId: Long, deckId: Int)
 GET     /user/:userId/material      controllers.UserView.material(userId: Long)
 GET     /user/:userId/ship          controllers.UserView.ship(userId: Long)
 GET     /user/:userId/ship_page/:shipId controllers.UserView.shipPage(userId: Long, shipId: Int)
-GET     /passwd/:userId/settings      controllers.UserView.settings(userId: Long)
+GET     /passwd/user/:userId/settings      controllers.UserView.settings(userId: Long)
 GET     /user/:userId/book          controllers.UserView.book(userId: Long)
 GET     /user/:userId/dock          controllers.UserView.dock(userId: Long)
 GET     /user/:userId/create        controllers.UserView.create(userId: Long)
