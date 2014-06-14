@@ -6,7 +6,7 @@
   <script src="@routes.Assets.at("javascript/quest.js")"></script>
 } {
   @head_content(user) {
-    @usertab("quest") {
+    @usertab(user,"quest") {
       <div id="quest">
         <div id="daily_quest" v-if="daily_quests.length > 0">
           <h3>Daily</h3>
