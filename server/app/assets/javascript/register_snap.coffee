@@ -1,14 +1,16 @@
 $(document).ready ->
   userId = parseInt($('#userid').val())
+  deckport = parseInt($('#deckport').val())
   vue = new Vue
     el: '#snapshot'
     data:
+      title: ""
       comment: ""
       password: ""
       errorMsg: {}
     methods:
       submit: () ->
-        data = {comment: comment, userId: userId, password: @password}
-        $.post('/passwd/v1/register', data)
-          .done( => location.href = "/user/#{@userId}")
+        data = {title: @title, comment: @comment, userId: userId, password: @password, deckport: deckport}
+        $.post('/passwd/post/v1/register_snap', data)
+          .done( => location.href = "/user/#{userId}")
           .fail((str) => @errorMsg = str)

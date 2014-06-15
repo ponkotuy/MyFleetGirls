@@ -1,0 +1,54 @@
+@(user: dat.User, snaps: Seq[dat.DeckSnapshotWithShip])
+
+@main {
+  <title>艦隊スナップショット -@{user.admiral.nickname}提督-</title>
+} {
+  @head_content(user) {
+    @usertab(user, "snapshot") {
+      <div class="page-header">
+        <h1>艦隊スナップショット</h1>
+      </div>
+
+      @snaps.map { snap =>
+        <div class="panel panel-default">
+          <div class="panel-heading"><h3 class="panel-title">@snap.title</h3></div>
+          <div class="panel-body">@snap.comment</div>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>艦種</th>
+                <th>名前</th>
+                <th>Lv</th>
+                <th>HP</th>
+                <th>装備1</th>
+                <th>装備2</th>
+                <th>装備3</th>
+                <th>装備4</th>
+              </tr>
+            </thead>
+            <tbody>
+              @snap.ships.map { ship =>
+                <tr>
+                  <td>@ship.id</td>
+                  <td>@ship.stAbbName</td>
+                  <td class="nowrap"><a data-toggle="modal" href="aship/@ship.id" class="modal_link" data-target="#modal">@ship.name</a></td>
+                  <td style="@if(ship.expRate > 0){background-color:#D9EDF7;display:block;width:@{(ship.expRate*100).toInt}%}">@ship.lv</td>
+                  <td style="padding:0px;"><div style="background-color:@ship.hpRGB.toString;width:@{(ship.hpRate*100).toInt}%;padding:5px;">@ship.nowhp/@ship.maxhp</div></td>
+                  @ship.slotMaster.map { slot => <td>@slot.name</td> }
+                  @{(0 until (4 - ship.slotMaster.size)).map { _ => <td></td> }}
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="modal fade bs-example-modal-lg" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content"></div>
+          </div>
+        </div>
+      }
+    }
+  }
+}

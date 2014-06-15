@@ -40,6 +40,11 @@ object UserView {
     Ok(views.html.user.user(user, yome, best, flagship))
   }
 
+  def snapshot(memberId: Long) = userView(memberId) { user =>
+    val snaps = models.DeckSnapshot.findAllByWithShip(sqls"member_id = ${memberId}")
+    Ok(views.html.user.snapshot(user, snaps))
+  }
+
   def registerSnap(memberId: Long, deckId: Int) = userView(memberId) { user =>
     val ships = models.DeckShip.findAllByDeck(memberId, deckId)
     models.DeckPort.find(memberId, deckId) match {

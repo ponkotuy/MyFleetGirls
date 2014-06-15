@@ -132,4 +132,10 @@ object Common extends Controller {
       f
     }
   }
+
+  def formAsync(f: Request[Map[String, Seq[String]]] => Result) = Action.async(parse.urlFormEncoded) { request =>
+    Future {
+      f(request)
+    }
+  }
 }

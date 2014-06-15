@@ -3,7 +3,7 @@ package controllers
 import com.ponkotuy.data._
 import com.ponkotuy.value.KCServer
 import controllers.Common._
-import dat.Settings
+import dat.{RegisterSnapshot, Settings}
 import play.api.mvc._
 import tool.Authentication
 
@@ -142,19 +142,37 @@ object Post extends Controller {
     Ok("Success")
   }
 
-  def settings = Action.async(parse.urlFormEncoded) { request =>
-    Future {
-      Settings.fromReq(request.body) match {
-        case Some(set: Settings) =>
-          if(Authentication.myfleetAuth(set.userId, set.password)) {
-            models.UserSettings.setYome(set.userId, set.shipId)
-            Ok("Success")
-          } else {
-            Unauthorized("Authentication failure")
+  def registerSnap = formAsync { request =>
+    RegisterSnapshot.fromReq(request.body) match {
+      case Some(snap) =>
+        if(Authentication.myfleetAuth(snap.userId, snap.password)) {
+          models.DeckPort.find(snap.userId, snap.deckport) match {
+            case Some(deck) =>
+              val current = System.currentTimeMillis()
+              val deckSnap = models.DeckSnapshot.create(snap.userId, deck.name, snap.title, snap.comment, current)
+              val ships = models.DeckShip.findAllByDeck(snap.userId, snap.deckport)
+              models.DeckShipSnapshot.bulkInsert(ships.map(_.ship), deckSnap.id)
+              Ok("Success")
+            case None => BadRequest("Invalid deckport")
           }
-        case None =>
-          BadRequest("Failure")
-      }
+        } else {
+          Unauthorized("Authentication failure")
+        }
+      case None => BadRequest("Invalid data")
+    }
+  }
+
+  def settings = formAsync { request =>
+    Settings.fromReq(request.body) match {
+      case Some(set: Settings) =>
+        if(Authentication.myfleetAuth(set.userId, set.password)) {
+          models.UserSettings.setYome(set.userId, set.shipId)
+          Ok("Success")
+        } else {
+          Unauthorized("Authentication failure")
+        }
+      case None =>
+        BadRequest("Failure")
     }
   }
 }
