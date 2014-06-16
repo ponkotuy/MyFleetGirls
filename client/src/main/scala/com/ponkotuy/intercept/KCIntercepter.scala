@@ -6,6 +6,9 @@ import com.ponkotuy.util.Log
 import com.ponkotuy.value.KCServer
 import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
 
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits._
+
 /**
  *
  * @author ponkotuy
@@ -14,12 +17,14 @@ import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
 class KCIntercepter extends Intercepter with Log {
   val controller = new ResponseController
   override def input(req: HttpRequest, res: HttpResponse, uri: Uri): Unit = {
-    if(!valid(req)) return
-    try {
-      val q = Query(req, res, uri)
-      if(q.parsable) controller.query(q)
-    } catch {
-      case e: Throwable => error((e.getMessage +: e.getStackTrace).mkString("\n"))
+    Future {
+      if(!valid(req)) return
+      try {
+        val q = Query(req, res, uri)
+        if(q.parsable) controller.query(q)
+      } catch {
+        case e: Throwable => error((e.getMessage +: e.getStackTrace).mkString("\n"))
+      }
     }
   }
 
