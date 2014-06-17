@@ -2,9 +2,10 @@
 
 @main {
   <title>艦隊スナップショット -@{user.admiral.nickname}提督-</title>
+  <script src="@routes.Assets.at("javascript/snapshot.js")"></script>
 } {
   @head_content(user) {
-    @usertab(user, "snapshot") {
+    @usertab(user, "snap") {
       <div class="page-header">
         <h1>艦隊スナップショット</h1>
       </div>
@@ -32,7 +33,7 @@
                 <tr>
                   <td>@ship.id</td>
                   <td>@ship.stAbbName</td>
-                  <td class="nowrap"><a data-toggle="modal" href="aship/@ship.id" class="modal_link" data-target="#modal">@ship.name</a></td>
+                  <td class="nowrap"><a data-toggle="modal" href="@routes.UserView.snapAship(user.admiral.id, ship.id)" class="modal_link" data-target="#modal">@ship.name</a></td>
                   <td style="@if(ship.expRate > 0){background-color:#D9EDF7;display:block;width:@{(ship.expRate*100).toInt}%}">@ship.lv</td>
                   <td style="padding:0px;"><div style="background-color:@ship.hpRGB.toString;width:@{(ship.hpRate*100).toInt}%;padding:5px;">@ship.nowhp/@ship.maxhp</div></td>
                   @ship.slotMaster.map { slot => <td>@slot.name</td> }

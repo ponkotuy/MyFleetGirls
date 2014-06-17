@@ -143,6 +143,18 @@ object DeckShipSnapshot extends SQLSyntaxSupport[DeckShipSnapshot] {
     }.map(DeckShipSnapshot(dss.resultName)).single().apply()
   }
 
+  def findWithName(id: Long)(implicit session: DBSession = autoSession): Option[ShipSnapshotWithName] = {
+    withSQL {
+      select.from(DeckShipSnapshot as dss)
+        .innerJoin(MasterShipBase as ms).on(dss.shipId, ms.id)
+        .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .where.eq(dss.id, id)
+    }.map { rs =>
+      val ship = DeckShipSnapshot(dss)(rs).toShip
+      ShipSnapshotWithName(ship, MasterShipBase(ms)(rs), MasterStype(mst)(rs), ShipSnapshotRest(dss)(rs))
+    }.single().apply()
+  }
+
   def findAll()(implicit session: DBSession = autoSession): List[DeckShipSnapshot] = {
     withSQL(select.from(DeckShipSnapshot as dss)).map(DeckShipSnapshot(dss.resultName)).list().apply()
   }

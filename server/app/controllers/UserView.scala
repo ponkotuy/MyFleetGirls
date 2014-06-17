@@ -88,6 +88,13 @@ object UserView {
     }
   }
 
+  def snapAship(memberId: Long, shipId: Int) = userView(memberId) { user =>
+    models.DeckShipSnapshot.findWithName(shipId) match {
+      case Some(ship) => Ok(views.html.user.modal_ship(ship))
+      case _ => NotFound("艦娘が見つかりませんでした")
+    }
+  }
+
   def fleet(memberId: Long, deckId: Int) = userView(memberId) { user =>
     val fleet = models.DeckShip.findAllByDeck(memberId, deckId)
     models.DeckPort.find(memberId, deckId) match {
