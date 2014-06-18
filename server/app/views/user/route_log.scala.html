@@ -3,12 +3,12 @@
 @main {
   <title>海戦記録 -@{user.admiral.nickname}提督-</title>
   <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.6.0/moment-with-langs.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.4/vue.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.5/vue.min.js"></script>
   <script src="@routes.Assets.at("javascript/common.js")"></script>
   <script src="@routes.Assets.at("javascript/route_log.js")"></script>
 } {
   @head_content(user) {
-    @usertab("route") {
+    @usertab(user,"route") {
       <div class="page-header">
         <h1>羅針盤履歴</h1>
       </div>

@@ -1,7 +1,7 @@
 package dat
 
+import dat.ShipParameter.RGB
 import scalikejdbc._
-import dat.ShipWithName.RGB
 import models._
 
 /**
@@ -10,7 +10,7 @@ import models._
  * Date: 14/04/15.
  */
 case class DeckShipWithName(deckId: Int, num: Int, memberId: Long, shipId: Int, lv: Int, cond: Int, name: String) {
-  def rgb: RGB = ShipWithName.rgb(cond)
+  def rgb: RGB = ShipParameter.rgb(cond)
 }
 
 object DeckShipWithName {

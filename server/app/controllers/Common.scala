@@ -103,7 +103,7 @@ object Common extends Controller {
     } yield result
   }
 
-  private def getUser(memberId: Long): Option[User] = {
+  def getUser(memberId: Long): Option[User] = {
     for {
       auth <- models.Admiral.find(memberId)
       basic <- models.Basic.findByUser(memberId)
@@ -130,6 +130,12 @@ object Common extends Controller {
   def actionAsync(f: => Result) = Action.async {
     Future {
       f
+    }
+  }
+
+  def formAsync(f: Request[Map[String, Seq[String]]] => Result) = Action.async(parse.urlFormEncoded) { request =>
+    Future {
+      f(request)
     }
   }
 }

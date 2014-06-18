@@ -1,0 +1,81 @@
+@(user: dat.User, snaps: Seq[dat.DeckSnapshotWithShip])
+
+@main {
+  <title>艦隊スナップショット -@{user.admiral.nickname}提督-</title>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.barRenderer.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.categoryAxisRenderer.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.pointLabels.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.highlighter.min.js"></script>
+  <script src="@routes.Assets.at("javascript/common.js")"></script>
+  <script src="@routes.Assets.at("javascript/snapshot.js")"></script>
+} {
+  @head_content(user) {
+    @usertab(user, "snap") {
+      <div class="page-header">
+        <h1>艦隊スナップショット</h1>
+      </div>
+
+      @snaps.map { snap =>
+        <div class="panel panel-default">
+          <div class="panel-heading"><h3 class="panel-title">@snap.title</h3></div>
+          <div class="panel-body">@snap.comment</div>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>艦種</th>
+                <th>名前</th>
+                <th>Lv</th>
+                <th>HP</th>
+                <th>装備1</th>
+                <th>装備2</th>
+                <th>装備3</th>
+                <th>装備4</th>
+              </tr>
+            </thead>
+            <tbody>
+              @snap.ships.map { ship =>
+                <tr>
+                  <td>@ship.id</td>
+                  <td>@ship.stAbbName</td>
+                  <td class="nowrap"><a data-toggle="modal" href="@routes.UserView.snapAship(user.admiral.id, ship.id)" class="modal_link" data-target="#modal">@ship.name</a></td>
+                  <td style="@if(ship.expRate > 0){background-color:#D9EDF7;display:block;width:@{(ship.expRate*100).toInt}%}">@ship.lv</td>
+                  <td style="padding:0px;"><div style="background-color:@ship.hpRGB.toString;width:@{(ship.hpRate*100).toInt}%;padding:5px;">@ship.nowhp/@ship.maxhp</div></td>
+                  @ship.slotMaster.map { slot => <td>@slot.name</td> }
+                  @{(0 until (4 - ship.slotMaster.size)).map { _ => <td></td> }}
+                </tr>
+              }
+            </tbody>
+          </table>
+          <div class="panel-footer" style="text-align:right;">
+            <button class="btn btn-danger" onclick='location.href="@routes.UserView.deleteSnap(snap.id)";return false'>削除</button>
+          </div>
+        </div>
+
+      }
+
+      <div class="row">
+        <div class="col-sm-3">
+          <button type="button" class="btn btn-default" onclick="location.href='@routes.UserView.registerSnap(user.admiral.id, 1)';return false">第一艦隊を登録</button>
+        </div>
+        <div class="col-sm-3">
+          <button type="button" class="btn btn-default" onclick="location.href='@routes.UserView.registerSnap(user.admiral.id, 2)';return false">第二艦隊を登録</button>
+        </div>
+        <div class="col-sm-3">
+          <button type="button" class="btn btn-default" onclick="location.href='@routes.UserView.registerSnap(user.admiral.id, 3)';return false">第三艦隊を登録</button>
+        </div>
+        <div class="col-sm-3">
+          <button type="button" class="btn btn-default" onclick="location.href='@routes.UserView.registerSnap(user.admiral.id, 4)';return false">第四艦隊を登録</button>
+        </div>
+      </div>
+
+      <div class="modal fade bs-example-modal-lg" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content"></div>
+        </div>
+      </div>
+    }
+  }
+}

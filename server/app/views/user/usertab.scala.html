@@ -1,38 +1,41 @@
-@(active: String)(body: Html)
+@(user: dat.User, active: String)(body: Html)
 
   <ul class="nav nav-tabs">
     <li class="@if(active=="top"){active}">
-      <a href="top">Top</a>
+      <a href="@{routes.UserView.top(user.admiral.id)}">Top</a>
+    </li>
+    <li class="@if(active=="snap"){active}">
+      <a href="@{routes.UserView.snapshot(user.admiral.id)}">スナップショット</a>
     </li>
     <li class="@if(active=="material"){active}">
-      <a href="material">資源</a>
+      <a href="@{routes.UserView.material(user.admiral.id)}">資源</a>
     </li>
     <li class="@if(active=="ship"){active}">
-      <a href="ship">艦娘</a>
+      <a href="@{routes.UserView.ship(user.admiral.id)}">艦娘</a>
     </li>
     <li class="@if(active=="slotitem"){active}">
-      <a href="slotitem">装備</a>
+      <a href="@{routes.UserView.slotitem(user.admiral.id)}">装備</a>
     </li>
     <li class="@if(active=="book"){active}">
-      <a href="book">図鑑</a>
+      <a href="@{routes.UserView.book(user.admiral.id)}">図鑑</a>
     </li>
     <li class="@if(active=="dock"){active}">
-      <a href="dock">ドック</a>
+      <a href="@{routes.UserView.dock(user.admiral.id)}">ドック</a>
     </li>
     <li class="@if(active=="create"){active}">
-      <a href="create">建造</a>
+      <a href="@{routes.UserView.create(user.admiral.id)}">建造</a>
     </li>
     <li class="@if(active=="naval"){active}">
-      <a href="naval_battle">海戦</a>
+      <a href="@{routes.UserView.navalBattle(user.admiral.id)}">海戦</a>
     </li>
     <li class="@if(active=="route"){active}">
-      <a href="route_log">羅針盤</a>
+      <a href="@{routes.UserView.routeLog(user.admiral.id)}">羅針盤</a>
     </li>
     <li class="@if(active=="quest"){active}">
-      <a href="quest">任務</a>
+      <a href="@{routes.UserView.quest(user.admiral.id)}">任務</a>
     </li>
     <li class="@if(active=="sta"){active}">
-      <a href="statistics">統計</a>
+      <a href="@{routes.UserView.statistics(user.admiral.id)}">統計</a>
     </li>
   </ul>
 
