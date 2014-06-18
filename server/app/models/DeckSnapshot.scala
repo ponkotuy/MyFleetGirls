@@ -45,6 +45,14 @@ object DeckSnapshot extends SQLSyntaxSupport[DeckSnapshot] {
     }.map(DeckSnapshot(ds.resultName)).single().apply()
   }
 
+  def findWithShip(id: Long)(implicit session: DBSession = autoSession): Option[DeckSnapshotWithShip] = {
+    val deck = find(id)
+    deck.map { d =>
+      val ships = DeckShipSnapshot.findAllByWithName(sqls"deck_id = ${d.id}")
+      DeckSnapshotWithShip(d, ships)
+    }
+  }
+
   def findAll()(implicit session: DBSession = autoSession): List[DeckSnapshot] = {
     withSQL(select.from(DeckSnapshot as ds)).map(DeckSnapshot(ds.resultName)).list().apply()
   }

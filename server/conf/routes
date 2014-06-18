@@ -23,6 +23,7 @@ POST    /post/v1/battle_result      controllers.Post.battleResult
 POST    /post/v1/map_route          controllers.Post.mapRoute
 POST    /post/v1/questlist          controllers.Post.questlist
 POST    /passwd/post/v1/register_snap controllers.Post.registerSnap
+POST    /passwd/post/v1/delete_snap controllers.Post.deleteSnap
 POST    /passwd/post/v1/settings    controllers.Post.settings
 POST    /post/v1/master/ship        controllers.PostMaster.ship
 POST    /post/v1/master/mission     controllers.PostMaster.mission
@@ -83,6 +84,7 @@ GET     /user/:userId/              controllers.UserView.user(userId: Long)
 GET     /user/:userId/top           controllers.UserView.top(userId: Long)
 GET     /user/:userId/snapshot      controllers.UserView.snapshot(userId: Long)
 GET     /passwd/user/:userId/register_snap/:deckId controllers.UserView.registerSnap(userId: Long, deckId: Int)
+GET     /passwd/user/delete_snap/:snapId controllers.UserView.deleteSnap(snapId: Long)
 GET     /user/:userId/material      controllers.UserView.material(userId: Long)
 GET     /user/:userId/ship          controllers.UserView.ship(userId: Long)
 GET     /user/:userId/ship_page/:shipId controllers.UserView.shipPage(userId: Long, shipId: Int)

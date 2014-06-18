@@ -53,6 +53,18 @@ object UserView {
     }
   }
 
+  def deleteSnap(snapId: Long) = actionAsync {
+    models.DeckSnapshot.findWithShip(snapId) match {
+      case Some(snap) =>
+        getUser(snap.memberId) match {
+          case Some(user) =>
+            Ok(views.html.user.snap_delete_pass(user, snap))
+          case None => BadRequest(s"Not found userId = ${snap.memberId}")
+        }
+      case None => BadRequest(s"Not found snapId = ${snapId}")
+    }
+  }
+
   def material(memberId: Long) = userView(memberId) { user =>
     Ok(views.html.user.material(user))
   }

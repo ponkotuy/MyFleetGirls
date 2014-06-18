@@ -1,0 +1,43 @@
+@(user: dat.User, snap: dat.DeckSnapshotWithShip)
+
+@main {
+  <title>艦隊スナップショット削除</title>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.5/vue.js"></script>
+  <script src="@routes.Assets.at("javascript/snap_delete_pass.js")"></script>
+} {
+  @head_content(user) {
+    @usertab(user, "snap") {
+      <h4>@snap.title</h4>
+      <p>@snap.comment</p>
+      <ul>
+        @snap.ships.map { ship =>
+          <li>@ship.name <small>Lv@ship.lv</small></li>
+        }
+      </ul>
+
+      <p>以上のデータを削除します</p>
+
+      <div id="delete_snap">
+        <div class="alert alert-warning alert-dismissable" v-show="errorMsg.status">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          <strong>{{ errorMsg.status }} {{ errorMsg.statusText }}</strong>: {{ errorMsg.responseText }}
+        </div>
+
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label for="passwd" class="col-sm-2 control-label">Password</label>
+            <div class="col-sm-10">
+              <input type="password" class="form-control" id="passwd" v-model="passwd" />
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="button" class="btn btn-danger" id="submit" v-on="click: submit()">削除</button>
+            </div>
+          </div>
+          <input type="hidden" id="snapid" value="@snap.deck.id">
+        </form>
+      </div>
+    }
+  }
+}

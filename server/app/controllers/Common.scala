@@ -103,7 +103,7 @@ object Common extends Controller {
     } yield result
   }
 
-  private def getUser(memberId: Long): Option[User] = {
+  def getUser(memberId: Long): Option[User] = {
     for {
       auth <- models.Admiral.find(memberId)
       basic <- models.Basic.findByUser(memberId)

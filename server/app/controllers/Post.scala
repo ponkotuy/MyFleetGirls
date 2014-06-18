@@ -3,7 +3,7 @@ package controllers
 import com.ponkotuy.data._
 import com.ponkotuy.value.KCServer
 import controllers.Common._
-import dat.{RegisterSnapshot, Settings}
+import dat.{DeleteSnapshot, RegisterSnapshot, Settings}
 import play.api.mvc._
 import tool.Authentication
 
@@ -142,7 +142,7 @@ object Post extends Controller {
     Ok("Success")
   }
 
-  def registerSnap = formAsync { request =>
+  def registerSnap() = formAsync { request =>
     RegisterSnapshot.fromReq(request.body) match {
       case Some(snap) =>
         if(Authentication.myfleetAuth(snap.userId, snap.password)) {
@@ -157,6 +157,23 @@ object Post extends Controller {
           }
         } else {
           Unauthorized("Authentication failure")
+        }
+      case None => BadRequest("Invalid data")
+    }
+  }
+
+  def deleteSnap() = formAsync { request =>
+    DeleteSnapshot.fromReq(request.body) match {
+      case Some(snap) =>
+        if(Authentication.myfleetAuth(snap.userId, snap.password)) {
+          models.DeckSnapshot.find(snap.snapId) match {
+            case Some(deck) =>
+              deck.destroy()
+              Ok("Success")
+            case None => BadRequest("Invalid snapId")
+          }
+        } else {
+          Unauthorized("Authorication failure")
         }
       case None => BadRequest("Invalid data")
     }
