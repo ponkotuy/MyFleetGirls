@@ -7,7 +7,7 @@
   <script src="@routes.Assets.at("javascript/dock.js")"></script>
 } {
   @head_content(user) {
-    @usertab("dock") {
+    @usertab(user,"dock") {
       <section id="messages">
         <div id="mes">
           <div class="alert alert-info" v-repeat="mes: messages.slice(0, 3)">
@@ -36,7 +36,7 @@
           </div>
 
           <div class="col-lg-4 col-md-7 col-sm-7">
-            <div class="mission">
+            <div class="page-header">
               <h1>遠征</h1>
             </div>
             <table class="table table-striped">

@@ -1,18 +1,27 @@
-@(user: dat.User)
+@(user: dat.User, ships: Seq[dat.ShipWithName], deckport: DeckPort)
 
 @main {
-  <title>嫁艦設定</title>
+  <title>艦隊スナップショット登録</title>
   <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.5/vue.js"></script>
-  <script src="@routes.Assets.at("javascript/common.js")"></script>
-  <script src="@routes.Assets.at("javascript/settings.js")"></script>
+  <script src="@routes.Assets.at("javascript/register_snap.js")"></script>
 } {
   @head_content(user) {
-    @usertab(user,"ship") {
+    @usertab(user,"snap") {
       <div class="page-header">
-        <h1>嫁艦設定</h1>
+        <h1>艦隊スナップショット登録</h1>
       </div>
 
-      <div id="settings">
+      <h3>@deckport.name</h3>
+      <ul class="list-inline">
+        @ships.map { ship =>
+          <li>@ship.name <small>Lv@ship.lv</small></li>
+        }
+      </ul>
+      <p>以上の編成を登録します。</p>
+
+      <h3>登録フォーム</h3>
+
+      <div id="snapshot">
         <div class="alert alert-warning alert-dismissable" v-show="errorMsg.status">
           <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
           <strong>{{ errorMsg.status }} {{ errorMsg.statusText }}</strong>: {{ errorMsg.responseText }}
@@ -20,15 +29,15 @@
 
         <form class="form-horizontal" role="form">
           <div class="form-group">
-            <label for="ship_id" class="col-sm-2 control-label">ShipID</label>
+            <label for="title" class="col-sm-2 control-label">タイトル</label>
             <div class="col-sm-10">
-              <input type="number" class="form-control" id="ship_id" v-model="shipId" placeholder="嫁艦ID" />
+              <input type="text" class="form-control" id="title" v-model="title" maxlength="40" placeholder="タイトル" />
             </div>
           </div>
           <div class="form-group">
-            <label for="user_id" class="col-sm-2 control-label">UserID</label>
+            <label for="comment" class="col-sm-2 control-label">コメント</label>
             <div class="col-sm-10">
-              <input type="number" class="form-control" id="user_id" v-model="userId" placeholder="UserID" />
+              <input type="text" class="form-control" id="comment" v-model="comment" maxlength="10000" placeholder="コメント" />
             </div>
           </div>
           <div class="form-group">
@@ -46,6 +55,8 @@
           </div>
         </form>
       </div>
+
+      <input type="hidden" id="deckport" value="@deckport.id" />
     }
   }
 }

@@ -40,6 +40,31 @@ object UserView {
     Ok(views.html.user.user(user, yome, best, flagship))
   }
 
+  def snapshot(memberId: Long) = userView(memberId) { user =>
+    val snaps = models.DeckSnapshot.findAllByWithShip(sqls"member_id = ${memberId}")
+    Ok(views.html.user.snapshot(user, snaps))
+  }
+
+  def registerSnap(memberId: Long, deckId: Int) = userView(memberId) { user =>
+    val ships = models.DeckShip.findAllByDeck(memberId, deckId)
+    models.DeckPort.find(memberId, deckId) match {
+      case Some(deck) =>
+        Ok(views.html.user.register_snap(user, ships, deck))
+    }
+  }
+
+  def deleteSnap(snapId: Long) = actionAsync {
+    models.DeckSnapshot.findWithShip(snapId) match {
+      case Some(snap) =>
+        getUser(snap.memberId) match {
+          case Some(user) =>
+            Ok(views.html.user.snap_delete_pass(user, snap))
+          case None => BadRequest(s"Not found userId = ${snap.memberId}")
+        }
+      case None => BadRequest(s"Not found snapId = ${snapId}")
+    }
+  }
+
   def material(memberId: Long) = userView(memberId) { user =>
     Ok(views.html.user.material(user))
   }
@@ -70,6 +95,13 @@ object UserView {
 
   def aship(memberId: Long, shipId: Int) = userView(memberId) { user =>
     models.Ship.findByIDWithName(memberId, shipId) match {
+      case Some(ship) => Ok(views.html.user.modal_ship(ship))
+      case _ => NotFound("艦娘が見つかりませんでした")
+    }
+  }
+
+  def snapAship(memberId: Long, shipId: Int) = userView(memberId) { user =>
+    models.DeckShipSnapshot.findWithName(shipId) match {
       case Some(ship) => Ok(views.html.user.modal_ship(ship))
       case _ => NotFound("艦娘が見つかりませんでした")
     }
@@ -120,7 +152,7 @@ object UserView {
     Ok(views.html.user.quest(user))
   }
 
-  val stype = Map(6 -> 5, 9 -> 8, 10 -> 8, 14 -> 13, 16 -> 7, 18 -> 11).withDefault(identity)
+  val stype = Map(6 -> 5, 9 -> 8, 10 -> 8, 14 -> 13, 16 -> 7, 18 -> 11, 20 -> 7).withDefault(identity)
   def statistics(memberId: Long) = userView(memberId) { user =>
     val ships = models.Ship.findAllByUserWithName(memberId)
     val stypeExps = ships.groupBy(s => stype(s.stype.id))
