@@ -5,6 +5,7 @@ import scala.concurrent.ExecutionContext.Implicits._
 import play.api.mvc._
 import scalikejdbc._
 import org.json4s.native.Serialization.write
+import com.github.nscala_time.time.Imports._
 
 /**
  *
@@ -66,7 +67,17 @@ object UserView {
   }
 
   def material(memberId: Long) = userView(memberId) { user =>
-    Ok(views.html.user.material(user))
+    val day20ago = DateTime.now - 20.days
+    val materials = models.Material.findAllByUser(memberId, from = day20ago.millis)
+    val days = materials.groupBy(m => (new DateTime(m.created) - 5.hours).toLocalDate)
+      .mapValues(_.maxBy(_.created))
+      .toSeq.sortBy(_._1).reverse
+    val materialDays = days.sliding(2).map { case Seq(x, y) =>
+      val (day, xMat) = x
+      val (_, yMat) = y
+      MaterialDays.fromMaterials(day, xMat, yMat)
+    }.toSeq
+    Ok(views.html.user.material(user, materialDays))
   }
 
   def ship(memberId: Long) = userView(memberId) { user =>
