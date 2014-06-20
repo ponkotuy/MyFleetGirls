@@ -107,7 +107,7 @@ object ShipSlotItem extends SQLSyntaxSupport[ShipSlotItem] {
 
   def bulkInserts(slots: Seq[Seq[Int]], memberId: Long, shipId: Seq[Int])(
       implicit session: DBSession = autoSession): Seq[ShipSlotItem] = {
-    if(slots.isEmpty || shipId.isEmpty) Nil
+    if(slots.flatten.filter(0 <= _).isEmpty || shipId.isEmpty) Nil
     else {
       val filtered = slots.map(_.filter(0 <= _))
       val shipIds = filtered.zip(shipId).flatMap { case (slot, sid) =>
