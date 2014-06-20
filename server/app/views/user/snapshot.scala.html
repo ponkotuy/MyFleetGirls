@@ -24,7 +24,6 @@
           <table class="table table-striped">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>艦種</th>
                 <th>名前</th>
                 <th>Lv</th>
@@ -38,7 +37,6 @@
             <tbody>
               @snap.ships.map { ship =>
                 <tr>
-                  <td>@ship.id</td>
                   <td>@ship.stAbbName</td>
                   <td class="nowrap"><a data-toggle="modal" href="@routes.UserView.snapAship(user.admiral.id, ship.id)" class="modal_link" data-target="#modal">@ship.name</a></td>
                   <td style="@if(ship.expRate > 0){background-color:#D9EDF7;display:block;width:@{(ship.expRate*100).toInt}%}">@ship.lv</td>
