@@ -53,9 +53,10 @@ class DependentPost {
 
   def createship(req: Req, obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     synchronized {
-      val id = (obj \ "api_ship_id").extract[Int]
-      createShips.remove(req("api_kdock_id").toInt).foreach { cship =>
-        val withId = CreateShipWithId(cship, id)
+      val kdock = DeleteKDock.fromReq(req, obj)
+      MFGHttp.post("/delete_kdock", write(kdock))
+      createShips.remove(kdock.kDockId).foreach { cship =>
+        val withId = CreateShipWithId(cship, kdock.shipId)
         MFGHttp.post("/createship", write(withId), 2)
         println(withId.summary)
       }

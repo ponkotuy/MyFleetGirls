@@ -1,4 +1,4 @@
-@(user: dat.User)
+@(user: dat.User, days: Seq[MaterialDays])
 
 @main {
   <title>@{user.admiral.nickname}提督 -資源-</title>
@@ -33,6 +33,36 @@
       </div>
       <div id="material_chart" class="chart"></div>
       <div id="material_overview" class="overview"></div>
+
+      <h3>資源収支</h3>
+      <table class="table table-condensed table-striped">
+        <thead>
+          <tr>
+            <th>日付</th>
+            <th>燃料</th>
+            <th>弾薬</th>
+            <th>鉄鋼</th>
+            <th>ボーキサイト</th>
+            <th>高速建造材</th>
+            <th>高速修復材</th>
+            <th>開発資材</th>
+          </tr>
+        </thead>
+        <tbody>
+          @days.map { x =>
+            <tr>
+              <td>@x.prettyDay</td>
+              @x.fuel.cell
+              @x.ammo.cell
+              @x.steel.cell
+              @x.bauxite.cell
+              @x.instant.cell
+              @x.bucket.cell
+              @x.develop.cell
+            </tr>
+          }
+        </tbody>
+      </table>
     }
   }
 }

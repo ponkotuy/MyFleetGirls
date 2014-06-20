@@ -95,6 +95,11 @@ object Post extends Controller {
     Ok("Success")
   }
 
+  def deleteKDock = authAndParse[DeleteKDock] { case (auth, kdock) =>
+    models.KDock.destroy(auth.id, kdock.kDockId)
+    Ok("Success")
+  }
+
   def deckPort = authAndParse[List[DeckPort]] { case (auth, decks) =>
     try {
       models.DeckPort.deleteByUser(auth.id)

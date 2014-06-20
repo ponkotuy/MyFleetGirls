@@ -82,6 +82,10 @@ object KDock extends SQLSyntaxSupport[KDock] {
   def deleteByUser(memberId: Long)(implicit session: DBSession = KDock.autoSession): Unit = applyUpdate {
     delete.from(KDock).where.eq(KDock.column.memberId, memberId)
   }
+
+  def destroy(memberId: Long, kDockId: Int)(implicit session: DBSession = autoSession): Unit = applyUpdate {
+    delete.from(KDock).where.eq(column.memberId, memberId).and.eq(column.id, kDockId)
+  }
 }
 
 case class KDockWithName(
