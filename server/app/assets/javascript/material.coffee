@@ -5,11 +5,13 @@ option =
   xaxis: { mode: 'time', timezone: 'browser' }
   yaxes: [{}, { alignTicksWithAxis: 1, position: 'right' }]
   selection: { mode: 'x' }
+  legend: { position: 'nw' }
 optionO =
   series: { lines: { show: true, lineWidth: 1 }, shadowSize: 0 }
   xaxis: { mode: 'time', timezone: 'browser' }
   yaxes: [{}, { alignTicksWithAxis: 1, position: 'right' }]
   selection: { mode: 'x' }
+  legend: { position: 'nw' }
 
 plot = null
 table = []
