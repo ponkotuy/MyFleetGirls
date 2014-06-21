@@ -1,6 +1,6 @@
 package controllers
 
-import tool.{HistgramShipLv, MaterialDays, STypeExp}
+import tool.{BestShipExp, HistgramShipLv, MaterialDays, STypeExp}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
@@ -51,8 +51,8 @@ object UserView {
   def registerSnap(memberId: Long, deckId: Int) = userView(memberId) { user =>
     val ships = models.DeckShip.findAllByDeck(memberId, deckId)
     models.DeckPort.find(memberId, deckId) match {
-      case Some(deck) =>
-        Ok(views.html.user.register_snap(user, ships, deck))
+      case Some(deck) => Ok(views.html.user.register_snap(user, ships, deck))
+      case None => BadRequest(s"Not found deck. memberId = ${memberId}, deckId = ${deckId}")
     }
   }
 
@@ -170,6 +170,7 @@ object UserView {
     val stypeExps = STypeExp.fromShips(ships)
     val stypeExpJson = stypeExps.map(_.toJsonElem)
     val histgramJson = HistgramShipLv.fromShips(ships).map(_.toJsonElem)
-    Ok(views.html.user.statistics(user, stypeExps, write(stypeExpJson), write(histgramJson)))
+    val bestShipExpJson = BestShipExp.fromShips(ships).map(_.toJsonElem)
+    Ok(views.html.user.statistics(user, stypeExps, write(stypeExpJson), write(histgramJson), write(bestShipExpJson)))
   }
 }

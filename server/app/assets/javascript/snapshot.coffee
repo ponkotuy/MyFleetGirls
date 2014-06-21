@@ -5,7 +5,6 @@ $(document).ready ->
 
   $('#modal').on 'shown.bs.modal', (e) ->
     $('.ship_hbar').each ->
-      console.log("plot")
       id = JSON.parse($(this).attr('data-id'))
       location.hash = toURLParameter({modal: true, id: id})
       data = JSON.parse($(this).attr('data-json'))

@@ -1,7 +1,6 @@
 $(document).ready ->
   userId = parseInt($('#userid').val())
   snapId = parseInt($('#snapid').val())
-  console.log(snapId)
   vue = new Vue
     el: '#delete_snap'
     data:

@@ -1,4 +1,10 @@
 @()
-<div style="float:right;">
+<div style="float:right;" id="tweet_button">
   <a href="https://twitter.com/share" class="twitter-share-button" data-lang="ja" id="tweet" data-hashtag="MyFleetGirls">ツイート</a>
 </div>
+
+<script>
+$(function() {
+if ( location.protocol === 'https:' ) { $('#tweet_button' ).remove(); };
+});
+</script>
