@@ -6,7 +6,7 @@ $(document).ready ->
     sortDesc: 'icon-chevron-down glyphicon glyphicon-chevron-down'
 
   param = fromURLParameter(location.hash.replace(/^\#/, ''))
-  param.lv ?= ""
+  param.lv = if param.lv? then decodeURIComponent(param.lv) else ""
   if param.modal?
     if param.fleet?
       $('#modal').modal({remote: "fleet/#{param.id}"})
