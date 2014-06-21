@@ -22,7 +22,12 @@ $(document).ready ->
         clickable: true
 
     $.plot($(this), data, option)
-    clickable = $(this).attr('data-clickable') != "false"
+    clickable = $(this).attr('data-clickable') != 'false'
     if clickable
-      $(this).bind "plotclick", (event, pos, item) ->
+      $(this).bind 'plotclick', (event, pos, item) ->
         location.href = "/entire/sta/from_ship#query=#{item.series.label}"
+      $(this).bind 'plothover', (event, pos, item) ->
+        if item?
+          document.body.style.cursor = 'pointer'
+        else
+          document.body.style.cursor = 'default'

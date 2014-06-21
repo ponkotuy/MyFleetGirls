@@ -5,6 +5,15 @@ $(document).ready ->
     sortAsc: 'icon-chevron-up glyphicon glyphicon-chevron-up'
     sortDesc: 'icon-chevron-down glyphicon glyphicon-chevron-down'
 
+  param = fromURLParameter(location.hash.replace(/^\#/, ''))
+  param.lv ?= ""
+  if param.modal?
+    if param.fleet?
+      $('#modal').modal({remote: "fleet/#{param.id}"})
+    else
+      $('#modal').modal({remote: "aship/#{param.id}"})
+
+  console.log(param)
   $('#ship_table').tablesorter
     sortList: [[3, 1], [4, 1]]
     theme: 'bootstrap'
@@ -12,13 +21,7 @@ $(document).ready ->
     widgets: ['uitheme', 'filter']
     widgetOptions:
       filter_hideFilters: true
-
-  param = fromURLParameter(location.hash.replace(/^\#/, ''))
-  if param.modal?
-    if param.fleet?
-      $('#modal').modal({remote: "fleet/#{param.id}"})
-    else
-      $('#modal').modal({remote: "aship/#{param.id}"})
+  $.tablesorter.setFilters($('#ship_table'), ['', '', '', param.lv], true)
 
   $('#modal').on 'shown.bs.modal', (e) ->
     $('.ship_hbar').each () ->
