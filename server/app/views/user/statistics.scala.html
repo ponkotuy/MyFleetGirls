@@ -1,4 +1,4 @@
-@(user: dat.User, stypeExp: Seq[tool.STypeExp] ,stypeExpJson: String, histgramJson: String)
+@(user: dat.User, stypeExp: Seq[tool.STypeExp] ,stypeExpJson: String, histgramJson: String, bestShipExpJson: String)
 
 @main {
   <title>統計 -@{user.admiral.nickname}提督-</title>
@@ -45,7 +45,12 @@
 
       <div>
         <h3>艦娘Lvヒストグラム</h3>
-        <div style="width: 680px ;height: 400px;" class="stacked" data-json="@histgramJson"></div>
+        <div style="width: 680px ;height: 400px;" class="stacked" data-json="@histgramJson" data-type="bars" data-xaxis="Lv" data-yaxis="Count"></div>
+      </div>
+
+      <div>
+        <h3>上位n艦の経験値取得に占める割合</h3>
+        <div style="width: 680px ;height: 400px;" class="stacked" data-json="@bestShipExpJson" data-type="lines" data-ymax="100" data-xaxis="" data-yaxis="%" data-clickable="false"></div>
       </div>
     }
   }
