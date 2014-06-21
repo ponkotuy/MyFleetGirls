@@ -13,7 +13,6 @@ $(document).ready ->
     else
       $('#modal').modal({remote: "aship/#{param.id}"})
 
-  console.log(param)
   $('#ship_table').tablesorter
     sortList: [[3, 1], [4, 1]]
     theme: 'bootstrap'

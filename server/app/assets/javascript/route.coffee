@@ -36,7 +36,6 @@ $(document).ready () ->
         @info = parseInt($(el).attr('data-info'))
       fromHash: () ->
         param = fromURLParameter(location.hash.replace(/^\#/, ''))
-        console.log(param)
         if param.modal?
           $('#modal').modal({remote: "/entire/sta/route_fleet/#{@area}/#{@info}/#{param.dep}/#{param.dest}"})
     created: () ->
