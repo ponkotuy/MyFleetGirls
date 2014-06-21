@@ -22,6 +22,9 @@ $(document).ready ->
       filter_hideFilters: true
   $.tablesorter.setFilters($('#ship_table'), ['', '', '', param.lv], true)
 
+  $('#clear').click (e) ->
+    $.tablesorter.setFilters($('#ship_table'), '' for i in [1..15], true)
+
   $('#modal').on 'shown.bs.modal', (e) ->
     $('.ship_hbar').each () ->
       id = JSON.parse($(this).attr('data-id'))
