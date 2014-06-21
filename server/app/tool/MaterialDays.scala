@@ -1,18 +1,11 @@
-package controllers
+package tool
 
-import models.Material
 import com.github.nscala_time.time.Imports._
+import models.Material
 
 /**
  * Date: 14/06/21.
  */
-case class MatDiff(now: Int, diff: Int) {
-  def cell = {
-    if(diff < 0) <td>{now} <span class="text-danger">{diff}</span></td>
-    else <td>{now} <span class="text-primary">+{diff}</span></td>
-  }
-}
-
 case class MaterialDays(
     day: LocalDate,
     fuel: MatDiff,
@@ -21,8 +14,7 @@ case class MaterialDays(
     bauxite: MatDiff,
     instant: MatDiff,
     bucket: MatDiff,
-    develop: MatDiff
-) {
+    develop: MatDiff) {
   def prettyDay: String = day.toString("M月d日")
 }
 

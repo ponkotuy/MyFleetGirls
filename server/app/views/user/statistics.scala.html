@@ -1,10 +1,18 @@
-@(user: dat.User, stypeExpJson: String)
+@(user: dat.User, stypeExp: Seq[tool.STypeExp] ,stypeExpJson: String, histgramJson: String)
 
 @main {
   <title>統計 -@{user.admiral.nickname}提督-</title>
   <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.pie.min.js"></script>
+  <script src="@routes.Assets.at("javascript/lib/jquery.flot.axislabels.js")"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.stack.min.js"></script>
   <script src="@routes.Assets.at("javascript/pie.js")"></script>
+  <script src="@routes.Assets.at("javascript/stacked_chart.js")"></script>
+
+  <style>
+    .tickLabel { font-size: 150%; }
+    .axisLabels { font-size: 150%; }
+  </style>
 } {
   @head_content(user) {
     @usertab(user,"sta") {
@@ -12,8 +20,33 @@
         <h1>統計情報</h1>
       </div>
 
-      <h3>経験値取得比率</h3>
-      <div style="width: 500px ;height: 400px;" class="pie" data-json="@stypeExpJson" data-clickable="false"></div>
+      <div class="row">
+        <div class="col-sm-8 col-md-6">
+          <h3>経験値取得比率</h3>
+          <div style="width: 500px ;height: 400px;" class="pie" data-json="@stypeExpJson" data-clickable="false"></div>
+        </div>
+
+        <div class="col-sm-4 col-md-6">
+          <table class="table table-condensed table-striped">
+            <thead>
+              <tr><th>艦種</th><th>経験値</th></tr>
+            </thead>
+            <tbody>
+              @stypeExp.map { st =>
+                <tr>
+                  <td>@st.name</td>
+                  <td>@st.exp</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <h3>艦娘Lvヒストグラム</h3>
+        <div style="width: 680px ;height: 400px;" class="stacked" data-json="@histgramJson"></div>
+      </div>
     }
   }
 }

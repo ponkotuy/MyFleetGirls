@@ -1,4 +1,4 @@
-@(user: dat.User, days: Seq[MaterialDays])
+@(user: dat.User, days: Seq[tool.MaterialDays])
 
 @main {
   <title>@{user.admiral.nickname}提督 -資源-</title>
@@ -63,6 +63,7 @@
           }
         </tbody>
       </table>
+      <p>翌日朝5時で次の日に変わる時間帯を採用しています（UTC+4）</p>
     }
   }
 }
