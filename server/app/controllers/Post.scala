@@ -1,9 +1,11 @@
 package controllers
 
+import java.util.UUID
+
 import com.ponkotuy.data._
 import com.ponkotuy.value.KCServer
 import controllers.Common._
-import dat.{DeleteSnapshot, RegisterSnapshot, Settings}
+import dat.{AuthDataImpl, DeleteSnapshot, RegisterSnapshot, Settings}
 import play.api.mvc._
 import tool.Authentication
 
@@ -95,7 +97,7 @@ object Post extends Controller {
     Ok("Success")
   }
 
-  def deleteKDock = authAndParse[DeleteKDock] { case (auth, kdock) =>
+  def deleteKDock() = authAndParse[DeleteKDock] { case (auth, kdock) =>
     models.KDock.destroy(auth.id, kdock.kDockId)
     Ok("Success")
   }
@@ -196,5 +198,22 @@ object Post extends Controller {
       case None =>
         BadRequest("Failure")
     }
+  }
+
+  def setSession() = formAsync { request =>
+    AuthDataImpl.fromReq(request.body).map { auth =>
+      if(Authentication.myfleetAuth(auth)) {
+        val uuid = models.Session.findByUser(auth.userId)
+          .map(_.uuid)
+          .getOrElse {
+            val uuid = UUID.randomUUID()
+            models.Session.createByUUID(uuid, auth.userId)
+            uuid
+          }
+        Ok("Success").withSession("key" -> uuid.toString)
+      } else {
+        Unauthorized("Authentication failure")
+      }
+    }.getOrElse { BadRequest("Invalid data") }
   }
 }

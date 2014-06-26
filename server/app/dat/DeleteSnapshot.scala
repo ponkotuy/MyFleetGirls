@@ -3,7 +3,7 @@ package dat
 /**
  * Date: 14/06/19.
  */
-case class DeleteSnapshot(userId: Long, password: String, snapId: Long)
+case class DeleteSnapshot(userId: Long, password: String, snapId: Long) extends AuthData
 
 object DeleteSnapshot {
   def fromReq(req: Map[String, Seq[String]]): Option[DeleteSnapshot] = {

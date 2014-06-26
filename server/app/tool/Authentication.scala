@@ -1,5 +1,7 @@
 package tool
 
+import dat.AuthData
+
 import scala.util.Random
 import java.security.MessageDigest
 import play.Logger
@@ -26,6 +28,8 @@ object Authentication {
       toHash(pass, auth.salt) sameElements auth.hash
     }.isDefined
   }
+
+  def myfleetAuth(auth: AuthData): Boolean = myfleetAuth(auth.userId, auth.password)
 
   def myfleetAuthOrCreate(auth: MyFleetAuth): Boolean = {
     models.MyFleetAuth.find(auth.id) match {

@@ -19,7 +19,10 @@
         </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#" on-click="return false;"><span id="toggle_sound" class="glyphicon glyphicon-volume-up" style="color: #fff; font-size: 1.5em;"></span></a></li>
+        <li class="@if(active == "login") {active}">
+          <a href="@routes.View.login">Login</a>
+        </li>
+        <li><a href="#" on-click="return false;"><span id="toggle_sound" class="glyphicon glyphicon-volume-up" style="color: #fff; font-size: 1.2em;"></span></a></li>
       </ul>
     </div>
   </div>

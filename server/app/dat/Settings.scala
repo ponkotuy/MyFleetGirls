@@ -5,7 +5,7 @@ package dat
  * @author ponkotuy
  * Date: 14/05/27.
  */
-case class Settings(userId: Long, password: String, shipId: Int)
+case class Settings(userId: Long, password: String, shipId: Int) extends AuthData
 
 object Settings {
   def fromReq(req: Map[String, Seq[String]]): Option[Settings] = {

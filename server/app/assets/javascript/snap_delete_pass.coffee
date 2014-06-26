@@ -5,7 +5,7 @@ $(document).ready ->
     el: '#delete_snap'
     data:
       passwd: ""
-      errorMsg: {}
+      errorMsg: ""
     methods:
       submit: () ->
         data = {userId: userId, snapId: snapId, password: @passwd}

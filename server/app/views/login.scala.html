@@ -1,0 +1,35 @@
+@()
+
+@main {
+  <title>MyFleetGirls Login</title>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.5/vue.js"></script>
+  <script src="@routes.Assets.at("javascript/login.js")"></script>
+} {
+  @navbar("login")
+  <div id="login_form">
+    <div class="alert alert-warning alert-dismissable" v-show="errorMsg.status">
+      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+      <strong>{{ errorMsg.status }} {{ errorMsg.statusText }}</strong>: {{ errorMsg.responseText }}
+    </div>
+
+    <form class="form-horizontal" role="form">
+      <div class="form-group">
+        <label for="userId" class="col-sm-2 control-label">UserID(数字)</label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" id="userId" v-model="userId" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="password" class="col-sm-2 control-label">Password</label>
+        <div class="col-sm-10">
+          <input type="password" class="form-control" id="password" v-model="password" />
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="button" class="btn btn-primary" id="submit" v-on="click: submit()">Login</button>
+        </div>
+      </div>
+    </form>
+  </div>
+}
