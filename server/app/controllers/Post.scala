@@ -1,9 +1,11 @@
 package controllers
 
+import java.util.UUID
+
 import com.ponkotuy.data._
 import com.ponkotuy.value.KCServer
 import controllers.Common._
-import dat.{DeleteSnapshot, RegisterSnapshot, Settings}
+import dat.{AuthDataImpl, DeleteSnapshot, RegisterSnapshot, Settings}
 import play.api.mvc._
 import tool.Authentication
 
@@ -95,7 +97,7 @@ object Post extends Controller {
     Ok("Success")
   }
 
-  def deleteKDock = authAndParse[DeleteKDock] { case (auth, kdock) =>
+  def deleteKDock() = authAndParse[DeleteKDock] { case (auth, kdock) =>
     models.KDock.destroy(auth.id, kdock.kDockId)
     Ok("Success")
   }
@@ -150,7 +152,7 @@ object Post extends Controller {
   def registerSnap() = formAsync { request =>
     RegisterSnapshot.fromReq(request.body) match {
       case Some(snap) =>
-        if(Authentication.myfleetAuth(snap.userId, snap.password)) {
+        if(uuidCheck(snap.userId, request.session.get("key"))) {
           models.DeckPort.find(snap.userId, snap.deckport) match {
             case Some(deck) =>
               val current = System.currentTimeMillis()
@@ -170,7 +172,7 @@ object Post extends Controller {
   def deleteSnap() = formAsync { request =>
     DeleteSnapshot.fromReq(request.body) match {
       case Some(snap) =>
-        if(Authentication.myfleetAuth(snap.userId, snap.password)) {
+        if(uuidCheck(snap.userId, request.session.get("key"))) {
           models.DeckSnapshot.find(snap.snapId) match {
             case Some(deck) =>
               deck.destroy()
@@ -187,14 +189,31 @@ object Post extends Controller {
   def settings = formAsync { request =>
     Settings.fromReq(request.body) match {
       case Some(set: Settings) =>
-        if(Authentication.myfleetAuth(set.userId, set.password)) {
+        if(uuidCheck(set.userId, request.session.get("key"))) {
           models.UserSettings.setYome(set.userId, set.shipId)
           Ok("Success")
         } else {
           Unauthorized("Authentication failure")
         }
       case None =>
-        BadRequest("Failure")
+        BadRequest("Invalid data")
     }
+  }
+
+  def setSession() = formAsync { request =>
+    AuthDataImpl.fromReq(request.body).map { auth =>
+      if(Authentication.myfleetAuth(auth)) {
+        val uuid = models.Session.findByUser(auth.userId)
+          .map(_.uuid)
+          .getOrElse {
+            val uuid = UUID.randomUUID()
+            models.Session.createByUUID(uuid, auth.userId)
+            uuid
+          }
+        Ok("Success").withSession("key" -> uuid.toString)
+      } else {
+        Unauthorized("Authentication failure")
+      }
+    }.getOrElse { BadRequest("Invalid data") }
   }
 }

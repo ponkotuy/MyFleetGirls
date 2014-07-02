@@ -26,6 +26,7 @@ POST    /post/v1/questlist          controllers.Post.questlist
 POST    /passwd/post/v1/register_snap controllers.Post.registerSnap
 POST    /passwd/post/v1/delete_snap controllers.Post.deleteSnap
 POST    /passwd/post/v1/settings    controllers.Post.settings
+POST    /passwd/post/v1/set_session controllers.Post.setSession
 POST    /post/v1/master/ship        controllers.PostMaster.ship
 POST    /post/v1/master/mission     controllers.PostMaster.mission
 POST    /post/v1/master/slotitem    controllers.PostMaster.slotitem
@@ -69,6 +70,7 @@ HEAD    /rest/v1/sound/ship_obf/:shipKey/:soundId.mp3 controllers.RestSound.ship
 # View
 GET     /                           controllers.View.index
 GET     /entire/about               controllers.View.about
+GET     /passwd/entire/login        controllers.View.login
 GET     /entire/statistics          controllers.ViewSta.statistics
 GET     /entire/sta/cship/:fuel/:ammo/:steel/:bauxite/:develop controllers.ViewSta.cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int)
 GET     /entire/sta/citem/:fuel/:ammo/:steel/:bauxite/:sType controllers.ViewSta.citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: Int)

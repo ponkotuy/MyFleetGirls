@@ -22,5 +22,7 @@ object View extends Controller {
     }
   }
 
-  def about = Action { Ok(views.html.about()) }
+  def about = Common.actionAsync { Ok(views.html.about()) }
+
+  def login = Common.actionAsync { Ok(views.html.login()) }
 }

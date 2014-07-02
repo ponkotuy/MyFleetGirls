@@ -1,4 +1,4 @@
-@(ship: dat.ShipParameter)
+@(ship: dat.ShipParameter, user: dat.User)
 
 <!-- Require jqPlot -->
 
@@ -54,7 +54,9 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-  <buttton type="button" class="btn btn-primary" onclick="yome()">嫁艦にする</buttton>
+  @if(user.logined) {
+    <buttton type="button" class="btn btn-primary" onclick="yome()">嫁艦にする</buttton>
+  }
   <a type="button" class="btn btn-primary" onclick="tweet()" target="_blank">Tweet</a>
   <script>
     var tweet = function(){

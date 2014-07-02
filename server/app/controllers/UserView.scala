@@ -56,12 +56,14 @@ object UserView {
     }
   }
 
-  def deleteSnap(snapId: Long) = actionAsync {
+  def deleteSnap(snapId: Long) = actionAsync { request =>
     models.DeckSnapshot.findWithShip(snapId) match {
       case Some(snap) =>
-        getUser(snap.memberId) match {
-          case Some(user) =>
+        val id = snap.memberId
+        getUser(id, uuidCheck(id, request.session.get("key"))) match {
+          case Some(user) if user.logined =>
             Ok(views.html.user.snap_delete_pass(user, snap))
+          case Some(_) => Unauthorized("Need login.")
           case None => BadRequest(s"Not found userId = ${snap.memberId}")
         }
       case None => BadRequest(s"Not found snapId = ${snapId}")
@@ -74,10 +76,13 @@ object UserView {
     val days = materials.groupBy(m => (new DateTime(m.created) - 5.hours).toLocalDate)
       .mapValues(_.maxBy(_.created))
       .toSeq.sortBy(_._1).reverse
-    val materialDays = days.sliding(2).map { case Seq(x, y) =>
-      val (day, xMat) = x
-      val (_, yMat) = y
-      MaterialDays.fromMaterials(day, xMat, yMat)
+    val materialDays = days.sliding(2).flatMap {
+      case Seq(x, y) =>
+        val (day, xMat) = x
+        val (_, yMat) = y
+        Some(MaterialDays.fromMaterials(day, xMat, yMat))
+      case _ =>
+        None
     }.toSeq
     Ok(views.html.user.material(user, materialDays))
   }
@@ -108,14 +113,14 @@ object UserView {
 
   def aship(memberId: Long, shipId: Int) = userView(memberId) { user =>
     models.Ship.findByIDWithName(memberId, shipId) match {
-      case Some(ship) => Ok(views.html.user.modal_ship(ship))
+      case Some(ship) => Ok(views.html.user.modal_ship(ship, user))
       case _ => NotFound("艦娘が見つかりませんでした")
     }
   }
 
   def snapAship(memberId: Long, shipId: Int) = userView(memberId) { user =>
     models.DeckShipSnapshot.findWithName(shipId) match {
-      case Some(ship) => Ok(views.html.user.modal_ship(ship))
+      case Some(ship) => Ok(views.html.user.modal_ship(ship, user))
       case _ => NotFound("艦娘が見つかりませんでした")
     }
   }
@@ -123,14 +128,14 @@ object UserView {
   def fleet(memberId: Long, deckId: Int) = userView(memberId) { user =>
     val fleet = models.DeckShip.findAllByDeck(memberId, deckId)
     models.DeckPort.find(memberId, deckId) match {
-      case Some(deck) => Ok(views.html.user.modal_fleet(fleet, deck))
+      case Some(deck) => Ok(views.html.user.modal_fleet(fleet, deck, user))
       case _ => NotFound("艦隊が見つかりませんでした")
     }
   }
 
   def shipPage(memberId: Long, shipId: Int) = userView(memberId) { user =>
     models.Ship.findByIDWithName(memberId, shipId) match {
-      case Some(ship) => Ok(views.html.user.modal_ship(ship))
+      case Some(ship) => Ok(views.html.user.modal_ship(ship, user))
       case _ => NotFound("艦娘が見つかりませんでした")
     }
   }

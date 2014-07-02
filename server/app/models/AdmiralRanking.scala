@@ -18,7 +18,7 @@ object AdmiralRanking {
   lazy val ib = ItemBook.syntax("ib")
   lazy val us = UserSettings.syntax("us")
 
-  def findAllOrderByMaterial(limit: Int = 10, from: Long = 0)(
+  def findAllOrderByMaterial(limit: Int = 10, from: Long = 0L)(
     implicit session: DBSession = Admiral.autoSession): List[(Admiral, Int)] = {
     withSQL {
       select.from(Admiral as a)
@@ -33,7 +33,7 @@ object AdmiralRanking {
     }.list().apply()
   }
 
-  def findAllOrderByYomeExp(limit: Int = 10, from: Long = 0)(
+  def findAllOrderByYomeExp(limit: Int = 10, from: Long = 0L)(
       implicit session: DBSession = Ship.autoSession): List[(Admiral, ShipWithName)] = {
     withSQL {
       select.from(Ship as s)
@@ -49,7 +49,7 @@ object AdmiralRanking {
     }.list().apply()
   }
 
-  def findAllByOrderByExp(where: SQLSyntax, limit: Int = 10, from: Long = 0)(
+  def findAllByOrderByExp(where: SQLSyntax, limit: Int = 10, from: Long = 0L)(
       implicit session: DBSession = Ship.autoSession): List[(Admiral, ShipWithName)] = {
     withSQL {
       select.from(Ship as s)
@@ -64,19 +64,17 @@ object AdmiralRanking {
     }.list().apply()
   }
 
-  def findAllOrderByShipBookCount(limit: Int = 10, from: Long = 0)(
+  def findAllOrderByShipBookCount(limit: Int = 10, from: Long = 0L)(
       implicit session: DBSession = ShipBook.autoSession): List[(Admiral, Long)] = {
     val normal = shipBookCountBy(from=from)
     val damaged = shipBookCountBy(sqls"sb.is_dameged = true", from)
-    val married = shipBookCountBy(sqls"sb.is_married = true", from)
     val dCounts: Map[Long, Long] = damaged.map { case (admin, cnt) => admin.id -> cnt }.toMap.withDefaultValue(0L)
-    val mCounts: Map[Long, Long] = married.map { case (admin, cnt) => admin.id -> cnt }.toMap.withDefaultValue(0L)
     normal.map { case (admin, cnt) =>
-      admin -> (cnt + dCounts(admin.id) + mCounts(admin.id))
+      admin -> (cnt + dCounts(admin.id))
     }.sortBy(_._2).reverse.take(limit)
   }
 
-  private def shipBookCountBy(where: SQLSyntax = sqls"1", from: Long = 0)(
+  private def shipBookCountBy(where: SQLSyntax = sqls"1", from: Long = 0L)(
       implicit session: DBSession = ShipBook.autoSession): List[(Admiral, Long)] = {
     withSQL {
       select(sb.resultAll, a.resultAll, sqls"count(1) as cnt").from(ShipBook as sb)
@@ -86,7 +84,12 @@ object AdmiralRanking {
     }.map { rs => Admiral(a)(rs) -> rs.long("cnt") }.list().apply()
   }
 
-  def findAllOrderByItemBookCount(limit: Int = 10, from: Long = 0)(
+  def findAllOrderByMarriedCount(limit: Int = 10, from: Long = 0L)(
+      implicit session: DBSession = ShipBook.autoSession): List[(Admiral, Long)] = {
+    shipBookCountBy(sqls"sb.is_married = true", from)
+  }
+
+  def findAllOrderByItemBookCount(limit: Int = 10, from: Long = 0L)(
       implicit session: DBSession = ItemBook.autoSession): List[(Admiral, Long)] = {
     withSQL {
       select(ib.resultAll, a.resultAll, sqls"count(1) as cnt").from(ItemBook as ib)
@@ -99,7 +102,7 @@ object AdmiralRanking {
   }
 
 
-  def findAllOrderByShipExpSum(limit: Int = 10, from: Long = 0)(
+  def findAllOrderByShipExpSum(limit: Int = 10, from: Long = 0L)(
       implicit session: DBSession = Ship.autoSession): List[(Admiral, Long)] = {
     withSQL {
       select(a.resultAll, sqls"sum(s.exp) as sum").from(Ship as s)

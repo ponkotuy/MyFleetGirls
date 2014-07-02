@@ -3,6 +3,7 @@
   yomeLv: Seq[(models.Admiral, dat.ShipWithName)],
   firstLv: Seq[(models.Admiral, dat.ShipWithName)],
   bookCounts: Seq[(models.Admiral, Long)],
+  married: Seq[(models.Admiral, Long)],
   shipExp: Seq[(models.Admiral, Long)],
   itemCounts: Seq[(models.Admiral, Long)]
 )
@@ -59,6 +60,20 @@
         <table class="table table-striped table-condensed">
           <tbody>
             @bookCounts.map { case (admin, count) =>
+            <tr>
+              <th><a href="@routes.UserView.book(admin.id)">@admin.nickname</a></th>
+              <td>@count</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col-md-3 col-sm-4">
+        <h2>ケッコン数</h2>
+        <table class="table table-striped table-condensed">
+          <tbody>
+            @married.map { case (admin, count) =>
             <tr>
               <th><a href="@routes.UserView.book(admin.id)">@admin.nickname</a></th>
               <td>@count</td>
