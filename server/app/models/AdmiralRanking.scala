@@ -86,7 +86,7 @@ object AdmiralRanking {
 
   def findAllOrderByMarriedCount(limit: Int = 10, from: Long = 0L)(
       implicit session: DBSession = ShipBook.autoSession): List[(Admiral, Long)] = {
-    shipBookCountBy(sqls"sb.is_married = true", from)
+    shipBookCountBy(sqls"sb.is_married = true", from).sortBy(_._2).reverse.take(limit)
   }
 
   def findAllOrderByItemBookCount(limit: Int = 10, from: Long = 0L)(
