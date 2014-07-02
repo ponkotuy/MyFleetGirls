@@ -83,7 +83,7 @@ object Common extends Controller {
   }
 
   def userView(memberId: Long)(f: User => Result): Action[AnyContent] = actionAsync { request =>
-    getUser(memberId, hashCheck(memberId, request.session.get("key"))) match {
+    getUser(memberId, uuidCheck(memberId, request.session.get("key"))) match {
       case Some(user) => f(user)
       case _ => NotFound("ユーザが見つかりませんでした")
     }
@@ -119,7 +119,7 @@ object Common extends Controller {
     }
   }
 
-  def hashCheck(memberId: Long, key: Option[String]): Boolean = {
+  def uuidCheck(memberId: Long, key: Option[String]): Boolean = {
     val result = for {
       k <- key
       session <- models.Session.findByUser(memberId)

@@ -4,11 +4,10 @@ $(document).ready ->
     data:
       shipId: null
       userId: null
-      password: ""
       errorMsg: {}
     methods:
       submit: () ->
-        data = {shipId: parseInt(@shipId), userId: parseInt(@userId), password: @password}
+        data = {shipId: parseInt(@shipId), userId: parseInt(@userId)}
         $.post('/passwd/post/v1/settings', data)
           .done( => location.href = "/user/#{@userId}")
           .fail((str) => @errorMsg = str)
@@ -16,6 +15,5 @@ $(document).ready ->
         param = fromURLParameter(location.hash.replace(/^\#/, ''))
         @shipId = param.shipId
         @userId = param.userId
-        @password = param.password
     created: () ->
       @fromHash()

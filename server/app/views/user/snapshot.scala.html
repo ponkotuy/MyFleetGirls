@@ -47,9 +47,12 @@
               }
             </tbody>
           </table>
-          <div class="panel-footer" style="text-align:right;">
-            <button class="btn btn-danger" onclick='location.href="@routes.UserView.deleteSnap(snap.id)";return false'>削除</button>
-          </div>
+          @if(user.logined) {
+            <div class="panel-footer" style="text-align : right ;">
+              <button class="btn btn-danger" onclick='location.href = " @routes.UserView.deleteSnap(snap.id) ";return false'>
+                削除</button>
+            </div>
+          }
         </div>
 
       }
