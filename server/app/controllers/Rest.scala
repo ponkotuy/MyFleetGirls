@@ -1,10 +1,10 @@
 package controllers
 
+import dat.ShipDrop
+import org.json4s.JsonDSL._
+import org.json4s._
 import play.api.mvc.Controller
 import scalikejdbc._
-import org.json4s._
-import org.json4s.JsonDSL._
-import dat.ShipDrop
 
 /**
  *
@@ -12,7 +12,7 @@ import dat.ShipDrop
  * Date: 14/02/23
  */
 object Rest extends Controller {
-  import Common._
+  import controllers.Common._
 
   def searchUser(q: String) = returnJson(models.Admiral.findAllByLike(s"%$q%", limit = 20))
 

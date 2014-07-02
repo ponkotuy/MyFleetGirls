@@ -1,6 +1,7 @@
 package controllers
 
 import dat.ShipWithName
+import models.MasterShipBase
 import org.json4s._
 import org.json4s.native.Serialization.write
 import play.api.mvc._
@@ -41,7 +42,7 @@ object ViewSta extends Controller {
       val classes = counts.filter(it => sTypeName(it._1.stype) == sname)
       val classCounts = classes.groupBy(_._1.ctype).mapValues(_.map(_._2).sum)
       val children = classCounts.map { case (ctype, cCount) =>
-        val children = counts.filter(_._1.ctype == ctype).map { case (msb, count) =>
+        val children = counts.filter(_._1.ctype == ctype).map { case (msb: MasterShipBase, count: Long) =>
           Map("name" -> s"${msb.name} $count(${toP(count/sum)}%)", "count" -> count)
         }
         Map("name" -> s"${className(ctype)} $cCount(${toP(cCount/sum)}%)", "children" -> children)

@@ -1,8 +1,7 @@
 package models
 
-import scalikejdbc._
-import scalikejdbc._
 import com.ponkotuy.data
+import scalikejdbc._
 
 case class ItemBook(
   memberId: Long,
@@ -94,7 +93,7 @@ object ItemBook extends SQLSyntaxSupport[ItemBook] {
 
   def bulkUpsert(xs: Seq[data.ItemBook], memberId: Long)(implicit session: DBSession = autoSession): Seq[ItemBook] = {
     val now = System.currentTimeMillis()
-    val params = xs.map { x => Seq(memberId, x.id, x.indexNo, x.name, now) }
+    val params = xs.map { x => Seq[Any](memberId, x.id, x.indexNo, x.name, now) }
     sql"""replace into item_book (member_id, id, index_no, name, updated)
           values (?, ?, ?, ?, ?)""".batch(params:_*).apply()
     xs.map { x => ItemBook(memberId, x.id, x.indexNo, x.name, now) }
