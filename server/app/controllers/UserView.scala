@@ -56,12 +56,14 @@ object UserView {
     }
   }
 
-  def deleteSnap(snapId: Long) = actionAsync {
+  def deleteSnap(snapId: Long) = actionAsync { request =>
     models.DeckSnapshot.findWithShip(snapId) match {
       case Some(snap) =>
-        getUser(snap.memberId) match {
-          case Some(user) =>
+        val id = snap.memberId
+        getUser(id, hashCheck(id, request.session.get("key"))) match {
+          case Some(user) if user.logined =>
             Ok(views.html.user.snap_delete_pass(user, snap))
+          case Some(_) => Unauthorized("Need login.")
           case None => BadRequest(s"Not found userId = ${snap.memberId}")
         }
       case None => BadRequest(s"Not found snapId = ${snapId}")

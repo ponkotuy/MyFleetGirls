@@ -54,21 +54,26 @@
 
       }
 
-      <div class="row">
-        <div class="col-sm-3">
-          <button type="button" class="btn btn-default" onclick="location.href='@routes.UserView.registerSnap(user.admiral.id, 1)';return false">第一艦隊を登録</button>
+      @if(user.logined) {
+        <div class="row">
+          <div class="col-sm-3">
+            <button type="button" class="btn btn-default" onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 1) ';return false">
+              第一艦隊を登録</button>
+          </div>
+          <div class="col-sm-3">
+            <button type="button" class="btn btn-default" onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 2) ';return false">
+              第二艦隊を登録</button>
+          </div>
+          <div class="col-sm-3">
+            <button type="button" class="btn btn-default" onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 3) ';return false">
+              第三艦隊を登録</button>
+          </div>
+          <div class="col-sm-3">
+            <button type="button" class="btn btn-default" onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 4) ';return false">
+              第四艦隊を登録</button>
+          </div>
         </div>
-        <div class="col-sm-3">
-          <button type="button" class="btn btn-default" onclick="location.href='@routes.UserView.registerSnap(user.admiral.id, 2)';return false">第二艦隊を登録</button>
-        </div>
-        <div class="col-sm-3">
-          <button type="button" class="btn btn-default" onclick="location.href='@routes.UserView.registerSnap(user.admiral.id, 3)';return false">第三艦隊を登録</button>
-        </div>
-        <div class="col-sm-3">
-          <button type="button" class="btn btn-default" onclick="location.href='@routes.UserView.registerSnap(user.admiral.id, 4)';return false">第四艦隊を登録</button>
-        </div>
-      </div>
-
+      }
       <div class="modal fade bs-example-modal-lg" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
         <div class="modal-dialog modal-lg">
           <div class="modal-content"></div>

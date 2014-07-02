@@ -82,8 +82,8 @@ object Common extends Controller {
     result.getOrElse(BadRequest("Request Error(JSON Parse Error? Header?)"))
   }
 
-  def userView(memberId: Long)(f: User => Result): Action[AnyContent] = actionAsync {
-    getUser(memberId) match {
+  def userView(memberId: Long)(f: User => Result): Action[AnyContent] = actionAsync { request =>
+    getUser(memberId, hashCheck(memberId, request.session.get("key"))) match {
       case Some(user) => f(user)
       case _ => NotFound("ユーザが見つかりませんでした")
     }
@@ -103,7 +103,7 @@ object Common extends Controller {
     } yield result
   }
 
-  def getUser(memberId: Long): Option[User] = {
+  def getUser(memberId: Long, logined: Boolean): Option[User] = {
     for {
       auth <- models.Admiral.find(memberId)
       basic <- models.Basic.findByUser(memberId)
@@ -115,8 +115,16 @@ object Common extends Controller {
         notClear.map(_.abbr).mkString("", ", ", "海域の攻略中")
       }
       val settings = models.UserSettings.find(memberId).getOrElse(models.UserSettings.empty(memberId))
-      User(auth, basic, nextMapView, settings)
+      User(auth, basic, nextMapView, settings, logined)
     }
+  }
+
+  def hashCheck(memberId: Long, key: Option[String]): Boolean = {
+    val result = for {
+      k <- key
+      session <- models.Session.findByUser(memberId)
+    } yield session.uuid.toString == k
+    result.getOrElse(false)
   }
 
   def returnJson[A <: AnyRef](f: => A) = Action.async {
@@ -127,10 +135,12 @@ object Common extends Controller {
 
   def returnString[A](f: => A) = actionAsync { Ok(f.toString) }
 
-  def actionAsync(f: => Result) = Action.async {
-    Future {
-      f
-    }
+  def actionAsync(f: => Result) = Action.async { request =>
+    Future { f }
+  }
+
+  def actionAsync(f: (Request[AnyContent]) => Result) = Action.async { request =>
+    Future { f(request) }
   }
 
   def formAsync(f: Request[Map[String, Seq[String]]] => Result) = Action.async(parse.urlFormEncoded) { request =>
