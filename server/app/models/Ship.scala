@@ -105,7 +105,7 @@ object Ship extends SQLSyntaxSupport[Ship] {
     }.map { rs =>
       val id = rs.int(s.resultName.id)
       val slot = slots.filter(_.shipId == id).map(_.slotitemId)
-        Ship(s, slot)(rs)
+      Ship(s, slot)(rs)
     }.toList().apply()
   }
 
@@ -172,7 +172,7 @@ object Ship extends SQLSyntaxSupport[Ship] {
     ShipSlotItem.bulkInserts(ss.map(_.slot), memberId, ss.map(_.id))
     val created = System.currentTimeMillis()
     val params = ss.map { x =>
-      Seq(
+      Seq[Any](
         x.id, x.shipId, memberId, x.lv, x.exp, x.nowhp, x.fuel, x.bull, x.dockTime, x.cond,
         x.karyoku, x.raisou, x.taiku, x.soukou, x.kaihi, x.taisen, x.sakuteki, x.lucky, x.locked, created, x.maxhp
       )

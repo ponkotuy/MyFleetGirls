@@ -39,7 +39,7 @@ object Global extends GlobalSettings {
 
   private def deleteMonthlyQuest(): Unit = {
     Logger.info("Delete Monthly Quest")
-    Quest.deleteAllBy(sqls"type = 6")
+    Quest.deleteAllBy(sqls"typ = 6")
   }
 
   private def cutMaterialRecord(): Unit = {

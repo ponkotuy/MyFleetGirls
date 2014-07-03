@@ -44,7 +44,7 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-  @if(user.logined) {
+  @if(user.logined.isEmpty || user.isMine) {
     <button type="button" class="btn btn-primary" onclick="location.href='@routes.UserView.registerSnap(decks(0).memberId, deckport.id)'; return false;">
   }
     スナップショット

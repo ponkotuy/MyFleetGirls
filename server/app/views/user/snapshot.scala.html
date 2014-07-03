@@ -47,7 +47,7 @@
               }
             </tbody>
           </table>
-          @if(user.logined) {
+          @if(user.logined.isEmpty || user.isMine) {
             <div class="panel-footer" style="text-align : right ;">
               <button class="btn btn-danger" onclick='location.href = " @routes.UserView.deleteSnap(snap.id) ";return false'>
                 削除</button>
@@ -57,7 +57,7 @@
 
       }
 
-      @if(user.logined) {
+      @if(user.logined.isEmpty || user.isMine) {
         <div class="row">
           <div class="col-sm-3">
             <button type="button" class="btn btn-default" onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 1) ';return false">

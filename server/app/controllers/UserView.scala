@@ -51,7 +51,9 @@ object UserView {
   def registerSnap(memberId: Long, deckId: Int) = userView(memberId) { user =>
     val ships = models.DeckShip.findAllByDeck(memberId, deckId)
     models.DeckPort.find(memberId, deckId) match {
-      case Some(deck) => Ok(views.html.user.register_snap(user, ships, deck))
+      case Some(deck) =>
+        if(user.isMine) Ok(views.html.user.register_snap(user, ships, deck))
+        else Redirect(routes.View.login(user.admiral.id.toString, routes.UserView.registerSnap(memberId, deckId).url))
       case None => BadRequest(s"Not found deck. memberId = ${memberId}, deckId = ${deckId}")
     }
   }
@@ -61,10 +63,10 @@ object UserView {
       case Some(snap) =>
         val id = snap.memberId
         getUser(id, uuidCheck(id, request.session.get("key"))) match {
-          case Some(user) if user.logined =>
+          case Some(user) if user.isMine =>
             Ok(views.html.user.snap_delete_pass(user, snap))
-          case Some(_) => Unauthorized("Need login.")
-          case None => BadRequest(s"Not found userId = ${snap.memberId}")
+          case Some(_) => Redirect(routes.View.login(id.toString, routes.UserView.deleteSnap(snapId).url))
+          case None => BadRequest(s"Not found userId = ${id}")
         }
       case None => BadRequest(s"Not found snapId = ${snapId}")
     }
@@ -94,7 +96,10 @@ object UserView {
     Ok(views.html.user.ship(user, ships, decks, deckports))
   }
 
-  def settings(memberId: Long) = userView(memberId) { user => Ok(views.html.user.settings(user)) }
+  def settings(memberId: Long) = userView(memberId) { user =>
+    if(user.isMine) Ok(views.html.user.settings(user))
+    else Redirect(routes.View.login(user.admiral.id.toString, routes.UserView.settings(memberId).url))
+  }
 
   def book(memberId: Long) = userView(memberId) { user =>
     val sBooks = models.ShipBook.findAllBy(sqls"member_id = ${memberId}").sortBy(_.indexNo)

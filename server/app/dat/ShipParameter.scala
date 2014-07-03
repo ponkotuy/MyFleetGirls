@@ -45,15 +45,15 @@ trait ShipParameter extends GraphData {
     "水上機母艦" -> "水母"
   ).withDefault(identity)
 
-  lazy val slot: List[SlotItem] = SlotItem.findIn(ship.slot, memberId)
-  lazy val slotMaster: List[MasterSlotItem] = {
+  lazy val slot: Seq[SlotItem] = SlotItem.findIn(ship.slot, memberId)
+  lazy val slotMaster: Seq[MasterSlotItem] = {
     val ids = slot.map(_.slotitemId)
     val map = MasterSlotItem.findIn(ids).map(it => it.id -> it).toMap
     ids.map(map(_))
   }
   lazy val spec: MasterShipSpecs = MasterShipSpecs.find(shipId).get
 
-  def slotNames: List[String] = slot.map(_.name)
+  def slotNames: Seq[String] = slot.map(_.name)
 
   def hpRate: Double = nowhp / maxhp.toDouble
 

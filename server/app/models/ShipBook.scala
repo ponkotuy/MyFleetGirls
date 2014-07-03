@@ -107,7 +107,7 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
   def bulkUpsert(xs: Seq[data.ShipBook], memberId: Long)(implicit session: DBSession = autoSession): Unit = {
     val now = System.currentTimeMillis()
     val params = xs.map { x =>
-      Seq(memberId, x.id, x.indexNo, x.isDamaged, x.name, now, x.isMarried.getOrElse(false))
+      Seq[Any](memberId, x.id, x.indexNo, x.isDamaged, x.name, now, x.isMarried.getOrElse(false))
     }
     sql"replace into ship_book (member_id, id, index_no, is_dameged, name, updated, is_married) values (?, ?, ?, ?, ?, ?, ?)"
       .batch(params:_*).apply()

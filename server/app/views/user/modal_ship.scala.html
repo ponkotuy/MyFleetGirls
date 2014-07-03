@@ -54,7 +54,7 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-  @if(user.logined) {
+  @if(user.logined.isEmpty || user.isMine) {
     <buttton type="button" class="btn btn-primary" onclick="yome()">嫁艦にする</buttton>
   }
   <a type="button" class="btn btn-primary" onclick="tweet()" target="_blank">Tweet</a>

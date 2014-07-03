@@ -1,4 +1,4 @@
-@()
+@(initUser: String, back: String)
 
 @main {
   <title>MyFleetGirls Login</title>
@@ -13,6 +13,8 @@
     </div>
 
     <form class="form-horizontal" role="form">
+      <input type="hidden" id="initUser" value="@initUser" />
+      <input type="hidden" id="back" value="@back" />
       <div class="form-group">
         <label for="userId" class="col-sm-2 control-label">UserID(数字)</label>
         <div class="col-sm-10">
@@ -20,7 +22,9 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="password" class="col-sm-2 control-label">Password</label>
+        <label for="password" class="col-sm-2 control-label">
+          <a href="@routes.View.about()#password">Password</a>
+        </label>
         <div class="col-sm-10">
           <input type="password" class="form-control" id="password" v-model="password" />
         </div>
