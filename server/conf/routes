@@ -70,7 +70,7 @@ HEAD    /rest/v1/sound/ship_obf/:shipKey/:soundId.mp3 controllers.RestSound.ship
 # View
 GET     /                           controllers.View.index
 GET     /entire/about               controllers.View.about
-GET     /passwd/entire/login        controllers.View.login
+GET     /passwd/entire/login  controllers.View.login(init: String ?= "", back: String ?= "/")
 GET     /entire/statistics          controllers.ViewSta.statistics
 GET     /entire/sta/cship/:fuel/:ammo/:steel/:bauxite/:develop controllers.ViewSta.cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int)
 GET     /entire/sta/citem/:fuel/:ammo/:steel/:bauxite/:sType controllers.ViewSta.citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: Int)

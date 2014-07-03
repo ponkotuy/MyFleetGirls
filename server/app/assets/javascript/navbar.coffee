@@ -2,9 +2,6 @@ $(document).ready ->
   now = (localStorage.getItem('sound') != 'false')
   change(now)
 
-  href = $('#loginA').attr('href') + '#' + encodeURI(location.pathname)
-  $('#loginA').attr('href', href)
-
   $('#toggle_sound').click () ->
     now = !now
     change(now)

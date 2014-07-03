@@ -13,6 +13,8 @@ import scala.io.Source
  * Date 14/02/24
  */
 object View extends Controller {
+  import Common._
+
   def index = Action.async {
     Future {
       val newest = models.Admiral.findNewest(limit = 20)
@@ -24,5 +26,11 @@ object View extends Controller {
 
   def about = Common.actionAsync { Ok(views.html.about()) }
 
-  def login = Common.actionAsync { Ok(views.html.login()) }
+  def login(init: String, back: String) = actionAsync { request =>
+    request.session.get("key").map { key =>
+      Redirect(back).withNewSession
+    }.getOrElse {
+      Ok(views.html.login(init, back))
+    }
+  }
 }
