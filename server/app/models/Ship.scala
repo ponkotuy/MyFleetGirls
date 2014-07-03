@@ -105,7 +105,7 @@ object Ship extends SQLSyntaxSupport[Ship] {
     }.map { rs =>
       val id = rs.int(s.resultName.id)
       val slot = slots.filter(_.shipId == id).map(_.slotitemId)
-        Ship(s, slot)(rs)
+      Ship(s, slot)(rs)
     }.toList().apply()
   }
 

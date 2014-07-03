@@ -45,14 +45,15 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
     }.map(SlotItem(si.resultName)).single().apply()
   }
 
-  def findIn(xs: Seq[Int], memberId: Long)(implicit session: DBSession = autoSession): List[SlotItem] = {
+  def findIn(xs: Seq[Int], memberId: Long)(implicit session: DBSession = autoSession): Seq[SlotItem] = {
     xs match {
       case Seq() => Nil
       case _ =>
-        withSQL {
+        val result = withSQL {
           select.from(SlotItem as si)
             .where.in(si.id, xs).and.eq(si.memberId, memberId)
         }.map(SlotItem(si.resultName)).list().apply()
+        xs.flatMap(id => result.find(_.id == id)) // sort
     }
   }
 

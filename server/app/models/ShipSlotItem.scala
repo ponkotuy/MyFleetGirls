@@ -6,7 +6,7 @@ import util.scalikejdbc.BulkInsert._
 case class ShipSlotItem(
   memberId: Long,
   shipId: Int,
-  id: Int,
+  id: Int, // 1 to 4
   slotitemId: Int) {
 
   def save()(implicit session: DBSession = ShipSlotItem.autoSession): ShipSlotItem = ShipSlotItem.save(this)(session)
@@ -50,13 +50,13 @@ object ShipSlotItem extends SQLSyntaxSupport[ShipSlotItem] {
   def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[ShipSlotItem] = {
     withSQL {
       select.from(ShipSlotItem as ssi).where.append(sqls"${where}")
-        .orderBy(ssi.id)
+        .orderBy(ssi.memberId, ssi.shipId, ssi.id)
     }.map(ShipSlotItem(ssi.resultName)).list().apply()
   }
 
   def findAllInShip(memberId: Long, ships: Seq[Int])(implicit session: DBSession = autoSession): List[ShipSlotItem] = {
     withSQL {
-      select.from(ShipSlotItem as ssi).where.in(ssi.shipId, ships).and.eq(ssi.memberId, memberId)
+      select.from(ShipSlotItem as ssi).where.in(ssi.shipId, ships).and.eq(ssi.memberId, memberId).orderBy(ssi.shipId, ssi.id)
     }.map(ShipSlotItem(ssi.resultName)).list().apply()
   }
 
