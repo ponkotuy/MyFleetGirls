@@ -17,7 +17,7 @@
         </div>
 
         <div class="row">
-          <div class="col-lg-3 col-md-5 col-sm-5">
+          <div class="col-lg-3 col-md-4 col-sm-5">
             <div class="page-header">
               <h1>入渠</h1>
             </div>
@@ -28,14 +28,14 @@
               <tbody>
                 <tr v-repeat="dock: ndocks">
                   <td>{{dock.id}}</td>
-                  <td><a href="/user/@user.admiral.id/ship#modal=true&id={{dock.shipId}}">{{dock.name}}</a></td>
+                  <td><a href="@routes.UserView.ship(user.admiral.id)#modal=true&id={{dock.shipId}}">{{dock.name}}</a></td>
                   <td>{{timeView(dock.completeTime, '修復完了')}}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <div class="col-lg-4 col-md-7 col-sm-7">
+          <div class="col-lg-4 col-md-6 col-sm-7">
             <div class="page-header">
               <h1>遠征</h1>
             </div>
@@ -54,7 +54,7 @@
             </table>
           </div>
 
-          <div class="col-lg-5 col-md-12 col-sm-12">
+          <div class="col-lg-5 col-md-7 col-sm-9">
             <div class="page-header">
               <h1>建造</h1>
             </div>
@@ -71,6 +71,24 @@
                   <td>{{dock.steel}}</td>
                   <td>{{dock.bauxite}}</td>
                   <td>{{timeView(dock.completeTime, '建造完了')}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="col-lg-3 col-md-4 col-sm-5">
+            <div class="page-header">
+              <h1>Condition回復</h1>
+            </div>
+            <table class="table table-striped">
+              <thead>
+                <tr><th>名前</th><th>Cond</th><th>残り時間</th></tr>
+              </thead>
+              <tbody>
+                <tr v-repeat="ship: conds">
+                  <td><a href="@routes.UserView.ship(user.admiral.id)#modal=true&id={{ship.id}}">{{ship.name}}</a></td>
+                  <td>{{ship.cond}}</td>
+                  <td>約{{ship.rest}}分</td>
                 </tr>
               </tbody>
             </table>

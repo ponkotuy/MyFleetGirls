@@ -1,15 +1,15 @@
 package controllers
 
+import org.json4s.JsonDSL._
+import org.json4s._
 import play.api.mvc.Controller
 import scalikejdbc._
-import org.json4s._
-import org.json4s.JsonDSL._
 
 /**
  * Date: 14/06/12.
  */
 object RestUser extends Controller {
-  import Common._
+  import controllers.Common._
 
   def materials(userId: Long) = returnJson(models.Material.findAllByUser(userId))
 
@@ -20,6 +20,20 @@ object RestUser extends Controller {
   def kdocks(memberId: Long) = returnJson(models.KDock.findAllByUserWithName(memberId))
 
   def missions(memberId: Long) = returnJson(models.Mission.findByUserWithFlagship(memberId))
+
+  def conds(memberId: Long) = returnJson {
+    val ships = models.Ship.findAllByUserWithName(memberId)
+    val now = System.currentTimeMillis()
+    for {
+      ship <- ships
+      cond = ship.cond + ((now - ship.created) / (3L * 60 * 1000) * 3).toInt
+      if cond < 49
+    } yield {
+      Map[String, Any](
+        "id" -> ship.id, "name" -> ship.name, "stype" -> ship.stName, "cond" -> cond, "rest" -> (49 - cond)
+      )
+    }
+  }
 
   def createShips(memberId: Long, limit: Int, offset: Int, large: Boolean) = returnJson {
     models.CreateShip.findAllByUserWithName(memberId, large, limit, offset)
