@@ -30,6 +30,8 @@ class ResponseController extends Log {
         lazyPost { (a, b) => Post.material(obj)(a, b) }
       case Basic =>
         basic(obj, q.uri)
+      case Ship2 =>
+        lazyPost { (a, b) => Post.ship(obj)(a, b) }
       case Ship3 =>
         lazyPost { (a, b) => Post.update_ship(obj)(a, b) }
       case NDock =>
@@ -68,7 +70,7 @@ class ResponseController extends Log {
         lazyPost { (a, b) => dependent.deckport(obj \ "api_deck_port")(a, b) }
       case QuestList =>
         lazyPost { (a, b) => Post.questlist(obj)(a, b) }
-      case LoginCheck | Ship2 | Deck | UseItem | Practice | Record | MapCell | UpdateDeckName | Charge | MissionStart |
+      case LoginCheck | Deck | UseItem | Practice | Record | MapCell | UpdateDeckName | Charge | MissionStart |
            KaisouPowerup | PracticeBattle | PracticeMidnightBattle | PracticeBattleResult |
            HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
            MasterFurniture => // No Need
