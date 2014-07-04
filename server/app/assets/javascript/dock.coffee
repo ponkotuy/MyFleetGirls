@@ -9,6 +9,7 @@ $(document).ready ->
       ndocks: []
       kdocks: []
       missions: []
+      conds: []
     methods:
       onNdock: (data) ->
         @ndocks = data
@@ -28,6 +29,9 @@ $(document).ready ->
           if @checkTime(elem.completeTime)
             @messages.unshift({title: '艦隊帰投', mes: "#{elem.deckName}が#{elem.missionName}から帰投しました"})
             @sound(elem.flagshipId, 7)
+      onCond: (data) ->
+        @conds = data.sort (a, b) -> a.cond - b.cond
+
       checkTime: (time) ->
         now = moment().valueOf()
         now <= time && time < (now + 60*1000)
@@ -52,6 +56,8 @@ $(document).ready ->
             that.onKdock(data)
           $.getJSON "/rest/v1/#{userId}/missions", (data) ->
             that.onMission(data)
+          $.getJSON "/rest/v1/#{userId}/conds", (data) ->
+            that.onCond(data)
     created: ->
       @checkdata(this)()
       setInterval(@checkdata(this), 60*1000)
