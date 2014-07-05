@@ -36,6 +36,7 @@ POST    /post/v1/mp3/kc/:shipKey/:soundId controllers.PostFile.sound(shipKey: St
 
 # Rest
 GET     /rest/v1/search_user        controllers.Rest.searchUser(q: String)
+GET     /rest/v1/search_base_user/:serverId controllers.Rest.searchBaseUser(serverId: Int)
 GET     /rest/v1/search_master      controllers.Rest.searchMaster(q: String)
 GET     /rest/v1/search_master_ship controllers.Rest.searchMasterShip(q: String)
 GET     /rest/v1/recipe/from_ship/:shipId controllers.Rest.recipeFromShip(shipId: Int)
