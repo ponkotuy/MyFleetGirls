@@ -2,7 +2,8 @@
   version: String,
   newest: Seq[Admiral],
   highLv: Seq[AdmiralWithLv],
-  message: TraversableOnce[String]
+  message: TraversableOnce[String],
+  baseCounts: Seq[(UserSettings, Long)]
 )
 
 @import com.ponkotuy.value.KCServer
@@ -41,8 +42,10 @@
       <h2>所属基地別提督</h2>
       <form>
         <select class="form-control" id="base_select">
-        @KCServer.values.map { server =>
-          <option value="@server.number">@server.name</option>
+        @baseCounts.map { case (u, count) =>
+          @u.server.map { server =>
+            <option value="@server.number">@server.name <small>@count</small></option>
+          }
         }
         </select>
       </form>

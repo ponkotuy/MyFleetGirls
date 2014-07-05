@@ -1,5 +1,6 @@
 package models
 
+import com.ponkotuy.value.KCServer
 import scalikejdbc._
 import dat.ShipWithName
 
@@ -11,6 +12,8 @@ case class UserSettings(
   def save()(implicit session: DBSession = UserSettings.autoSession): UserSettings = UserSettings.save(this)(session)
 
   def destroy()(implicit session: DBSession = UserSettings.autoSession): Unit = UserSettings.destroy(this)(session)
+
+  def server: Option[KCServer] = base.flatMap(KCServer.fromNumber)
 
 }
 
@@ -60,6 +63,15 @@ object UserSettings extends SQLSyntaxSupport[UserSettings] {
 
   def countAll()(implicit session: DBSession = autoSession): Long = {
     withSQL(select(sqls"count(1)").from(UserSettings as us)).map(rs => rs.long(1)).single().apply().get
+  }
+
+  def countAllByBase()(implicit session: DBSession = autoSession): Seq[(UserSettings, Long)] = {
+    withSQL {
+      select(us.resultAll, sqls"count(base) as cnt").from(UserSettings as us)
+        .groupBy(us.base)
+    }.map { rs =>
+      UserSettings(us)(rs) -> rs.long("cnt")
+    }.list().apply()
   }
 
   def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[UserSettings] = {
