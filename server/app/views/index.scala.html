@@ -1,8 +1,16 @@
-@(version: String, newest: Seq[Admiral], highLv: Seq[AdmiralWithLv], message: TraversableOnce[String])
+@(
+  version: String,
+  newest: Seq[Admiral],
+  highLv: Seq[AdmiralWithLv],
+  message: TraversableOnce[String],
+  baseCounts: Seq[(UserSettings, Long)]
+)
+
+@import com.ponkotuy.value.KCServer
 
 @main {
 <title>MyFleetGirls</title>
-<script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.3/vue.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.5/vue.min.js"></script>
 <script src="@routes.Assets.at("javascript/index.js")"></script>
 } {
 @navbar("top")
@@ -15,7 +23,7 @@
   </div>
 
   <div class="row">
-    <div class="col-lg-6 col-md-5 col-sm-4" id="search_user">
+    <div class="col-lg-3 col-md-5 col-sm-4" id="search_user">
       <h2>お知らせ</h2>
       @message.map { m =>
         <p>@m</p>
@@ -24,6 +32,24 @@
       <h2>提督検索</h2>
       <input type="text" class="form-control" placeholder="Search Admiral" v-model="query" />
       <ul>
+        <li v-repeat="user: users">
+          <a href="/user/{{user.id}}">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-lg-3 col-md-4 col-sm-4">
+      <h2>所属基地別提督</h2>
+      <form>
+        <select class="form-control" id="base_select">
+        @baseCounts.map { case (u, count) =>
+          @u.server.map { server =>
+            <option value="@server.number">@server.name <small>@count</small></option>
+          }
+        }
+        </select>
+      </form>
+      <ul id="base_user">
         <li v-repeat="user: users">
           <a href="/user/{{user.id}}">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
         </li>

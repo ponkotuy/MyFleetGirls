@@ -16,6 +16,8 @@ object Rest extends Controller {
 
   def searchUser(q: String) = returnJson(models.Admiral.findAllByLike(s"%$q%", limit = 20))
 
+  def searchBaseUser(serverId: Int) = returnJson(models.Admiral.findAllByServer(serverId, limit = 20))
+
   /** Createされた記録のあるMasterShipとMasterSlotItemを検索 */
   def searchMaster(q: String) = returnJson {
     val ships = models.CreateShip.findAllShipByNameLike(s"%$q%") ++

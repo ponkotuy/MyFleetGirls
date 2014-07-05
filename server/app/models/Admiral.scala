@@ -26,6 +26,7 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
   lazy val a = Admiral.syntax("a")
   lazy val b = Basic.syntax("b")
   lazy val x = SubQuery.syntax("x", b.resultName)
+  lazy val us = UserSettings.syntax("us")
 
   def find(id: Long)(implicit session: DBSession = Admiral.autoSession): Option[Admiral] = {
     withSQL {
@@ -59,6 +60,17 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
       .where.like(a.nickname, q)
       .and.eq(b.created, sqls"(select MAX(${b.created}) from ${Basic.table} as b where ${a.id} = ${b.memberId})")
   }.map(AdmiralWithLv(a, b)).list().apply()
+
+  def findAllByServer(serverId: Int, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session: DBSession = autoSession): List[AdmiralWithLv] =
+    withSQL {
+      select(a.id, a.nickname, a.created, b.lv).from(Admiral as a)
+        .innerJoin(Basic as b).on(a.id, b.memberId)
+        .innerJoin(UserSettings as us).on(a.id, us.memberId)
+        .where.eq(us.base, serverId)
+          .and.eq(b.created, sqls"(select MAX(${b.created}) from ${Basic.table} as b where ${a.id} = ${b.memberId})")
+        .orderBy(b.lv).desc
+    }.map(AdmiralWithLv(a, b)).list().apply()
 
   def findAllLvTop(limit: Int = Int.MaxValue, offset: Int = 0)(
       implicit session: DBSession = Admiral.autoSession): List[AdmiralWithLv] = withSQL {
