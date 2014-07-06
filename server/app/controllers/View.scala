@@ -21,7 +21,6 @@ object View extends Controller {
       val lvTops = models.Admiral.findAllLvTop(limit = 20)
       val message = Source.fromFile("server/public/message").getLines()
       val baseCounts = models.UserSettings.countAllByBase()
-      println(baseCounts)
       Ok(views.html.index(BuildInfo.version, newest, lvTops, message, baseCounts))
     }
   }

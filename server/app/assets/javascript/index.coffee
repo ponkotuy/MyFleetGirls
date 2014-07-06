@@ -1,4 +1,16 @@
 $(document).ready ->
+  searchAdmiral()
+
+  baseAdmiral()
+
+  new CommandWatcher([38, 38, 40, 40, 37, 39, 37, 39, 66, 65]).watch ->
+    if localStorage.getItem('sound') != 'false'
+      audio = (new Audio('/rest/v1/sound/random'))
+      audio.volume = 0.3
+      audio.play()
+
+
+searchAdmiral = ->
   url = '/rest/v1/search_user'
   timeout = 0
   search = new Vue
@@ -17,26 +29,27 @@ $(document).ready ->
           clearTimeout(timeout)
           timeout = setTimeout(@search(this, q), 500)
 
+baseAdmiral = ->
+  storageKey = 'base_select_number'
   baseUser = new Vue
     el: '#base_user'
     data:
       users: []
     methods:
-      getUsers: () ->
-        number = $('#base_select option:selected')[0].value
+      getNumber: () ->
+        $('#base_select option:selected')[0].value
+      getUsers: (number) ->
         $.getJSON("/rest/v1/search_base_user/#{number}")
         .done (data) -> baseUser.$set('users', data)
     ready: ->
-      @getUsers()
+      number = localStorage.getItem(storageKey) ? @getNumber()
+      $('#base_select').val(number)
+      @getUsers(number)
 
   $('#base_select').change ->
-    baseUser.getUsers()
-
-  new CommandWatcher([38, 38, 40, 40, 37, 39, 37, 39, 66, 65]).watch ->
-    if localStorage.getItem('sound') != 'false'
-      audio = (new Audio('/rest/v1/sound/random'))
-      audio.volume = 0.3
-      audio.play()
+    number = baseUser.getNumber()
+    localStorage.setItem(storageKey, number)
+    baseUser.getUsers(number)
 
 class CommandWatcher
   constructor: (commands) ->
