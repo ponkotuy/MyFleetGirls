@@ -11,6 +11,7 @@ import models.ShipSound
  * Date: 14/03/22.
  */
 object RestSound extends Controller {
+  import Common._
   def ship(shipId: Int, soundId: Int) = Action.async {
     Future {
       models.ShipSound.find(shipId, soundId) match {
@@ -36,5 +37,9 @@ object RestSound extends Controller {
         case _ => NotFound(s"Not Found Image (shipKey=$shipKey, soundId=$soundId)")
       }
     }
+  }
+
+  def random() = actionAsync {
+    Ok(ShipSound.findRandom().sound).as("audio/mp3")
   }
 }

@@ -3,6 +3,8 @@ package models
 import scalikejdbc._
 import scalikejdbc.{AutoSession, WrappedResultSet, DBSession}
 
+import scala.util.Random
+
 case class ShipSound(
   shipId: Int,
   soundId: Int,
@@ -44,6 +46,15 @@ object ShipSound extends SQLSyntaxSupport[ShipSound] {
         .innerJoin(MasterShipBase as ms).on(ss.shipId, ms.id)
         .where.eq(ms.filename, shipKey).and.eq(ss.soundId, soundId)
     }.map(ShipSound(ss.resultName)).single().apply()
+  }
+
+  def findRandom()(implicit session: DBSession = autoSession): ShipSound = {
+    val count = countAll()
+    val rand = Random.nextInt(count.toInt - 1)
+    withSQL {
+      select.from(ShipSound as ss)
+        .limit(1).offset(rand)
+    }.map(ShipSound(ss.resultName)).single().apply().get
   }
 
   def findAll()(implicit session: DBSession = autoSession): List[ShipSound] = {

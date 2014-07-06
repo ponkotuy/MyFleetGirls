@@ -68,6 +68,7 @@ HEAD    /rest/v1/image/ship/:shipId.jpg controllers.RestImage.shipHead(shipId: I
 HEAD    /rest/v1/image/ship_obf/:shipKey.jpg controllers.RestImage.shipKeyHead(shipKey: String)
 HEAD    /rest/v1/sound/ship/:shipId/:soundId.mp3 controllers.RestSound.shipHead(shipId: Int, soundId: Int)
 HEAD    /rest/v1/sound/ship_obf/:shipKey/:soundId.mp3 controllers.RestSound.shipKeyHead(shipKey: String, soundId: Int)
+GET     /rest/v1/sound/random       controllers.RestSound.random()
 
 # View
 GET     /                           controllers.View.index
