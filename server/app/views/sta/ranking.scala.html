@@ -5,11 +5,12 @@
   bookCounts: Seq[(models.Admiral, Long)],
   married: Seq[(models.Admiral, Long)],
   shipExp: Seq[(models.Admiral, Long)],
+  expByShip: Seq[(models.MasterShipBase, Long)],
   itemCounts: Seq[(models.Admiral, Long)]
 )
 
 @main {
-  <title>提督ランキング -MyFleetGirls-</title>
+  <title>ランキング -MyFleetGirls-</title>
 } {
   @statistics_head("ranking") {
     <div class="row">
@@ -94,6 +95,18 @@
             </tr>
             }
           </tbody>
+        </table>
+      </div>
+
+      <div class="col-md-3 col-sm-4">
+        <h2>艦娘別Exp</h2>
+        <table class="table table-striped table-condensed">
+          @expByShip.map { case (ship, exp) =>
+          <tr>
+            <th>@ship.name</th>
+            <td>@exp</td>
+          </tr>
+          }
         </table>
       </div>
 

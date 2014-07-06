@@ -109,8 +109,9 @@ object ViewSta extends Controller {
     val bookCounts = models.AdmiralRanking.findAllOrderByShipBookCount(20, agoMillis(30.days))
     val married = models.AdmiralRanking.findAllOrderByMarriedCount(20, agoMillis(30.days)).filter(_._2 > 1)
     val shipExp = models.AdmiralRanking.findAllOrderByShipExpSum(20, agoMillis(7.days))
+    val expByShip = models.ShipRanking.findAllOrderByExpSum(20)
     val itemBook = models.AdmiralRanking.findAllOrderByItemBookCount(20, agoMillis(30.days))
-    Ok(views.html.sta.ranking(materials, yomeLv, firstLv, bookCounts, married, shipExp, itemBook))
+    Ok(views.html.sta.ranking(materials, yomeLv, firstLv, bookCounts, married, shipExp, expByShip, itemBook))
   }
 
   private def agoMillis(d: Duration): Long = {
