@@ -79,15 +79,17 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
 
   def bulkInsert(deckId: Int, memberId: Long, ships: List[Int])(
     implicit session: DBSession = DeckShip.autoSession): List[DeckShip] = {
-    require(ships.nonEmpty)
-    deleteByDeck(deckId, memberId)
-    applyUpdate {
-      insert.into(DeckShip)
-        .columns(column.deckId, column.num, column.memberId, column.shipId)
-        .multiValues(Seq.fill(ships.size)(deckId), Seq.range(0, ships.size), Seq.fill(ships.size)(memberId), ships)
-    }
-    ships.zip(Stream.from(0)).map { case (ship, num) =>
-      DeckShip(deckId, num, memberId, ship)
+    if(ships.isEmpty) Nil
+    else {
+      deleteByDeck(deckId, memberId)
+      applyUpdate {
+        insert.into(DeckShip)
+          .columns(column.deckId, column.num, column.memberId, column.shipId)
+          .multiValues(Seq.fill(ships.size)(deckId), Seq.range(0, ships.size), Seq.fill(ships.size)(memberId), ships)
+      }
+      ships.zip(Stream.from(0)).map { case (ship, num) =>
+        DeckShip(deckId, num, memberId, ship)
+      }
     }
   }
 
