@@ -56,7 +56,8 @@ object RestUser extends Controller {
 
   def battleResultCount(memberId: Long, boss: Boolean, drop: Boolean, rank: String) = returnString {
     val where = battleResultWhere(memberId, boss, drop, rank)
-    models.BattleResult.countBy(where)
+    if(boss) models.BattleResult.countByWithCellInfo(where)
+    else models.BattleResult.countBy(where)
   }
 
   private def battleResultWhere(memberId: Long, boss: Boolean, drop: Boolean, rank: String) =

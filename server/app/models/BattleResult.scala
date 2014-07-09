@@ -87,7 +87,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
     withSQL {
       select.from(BattleResult as br)
         .leftJoin(CellInfo as ci)
-        .on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
+          .on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
         .where.append(sqls"${where}")
         .orderBy(br.created).desc
         .limit(limit).offset(offset)
@@ -105,6 +105,15 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(BattleResult as br).where.append(sqls"${where}")
+    }.map(_.long(1)).single().apply().get
+  }
+
+  def countByWithCellInfo(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
+    withSQL {
+      select(sqls"count(1)").from(BattleResult as br)
+        .leftJoin(CellInfo as ci)
+          .on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
+        .where.append(sqls"${where}")
     }.map(_.long(1)).single().apply().get
   }
 
