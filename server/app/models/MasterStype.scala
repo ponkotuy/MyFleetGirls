@@ -1,9 +1,8 @@
 package models
 
-import scalikejdbc._
+import com.ponkotuy.data.master
 import scalikejdbc._
 import util.scalikejdbc.BulkInsert._
-import com.ponkotuy.data.master
 
 case class MasterStype(
   id: Int,

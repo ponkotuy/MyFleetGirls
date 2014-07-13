@@ -8,14 +8,14 @@ import play._
 
 object MyFleetGirlsBuild extends Build {
 
-  val ver = "0.16.5"
+  val ver = "0.16.6"
 
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .aggregate(server, client, library)
 
   lazy val rootSettings = Defaults.defaultSettings ++ settings ++ Seq(
-    commands ++= Seq(proxy, assembl, run, stage, start, zip, genMapper)
+    commands ++= Seq(proxy, assembl, run, stage, start, dist, zip, genMapper)
   )
 
   lazy val server = Project(id = "server", base = file("server"))
@@ -45,7 +45,7 @@ object MyFleetGirlsBuild extends Build {
   override lazy val settings = super.settings ++ Seq(
     version := ver,
     scalaVersion := "2.11.1",
-    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions", "-Xlint"),
+    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions"),
     jarName in assembly := "MyFleetGirls.jar",
     incOptions := incOptions.value.withNameHashing(true)
   )
@@ -79,6 +79,12 @@ object MyFleetGirlsBuild extends Build {
   def start = Command.command("start") { state =>
     val subState = Command.process("project server", state)
     Command.process("start", subState)
+    state
+  }
+
+  def dist = Command.command("dist") { state =>
+    val subState = Command.process("project server", state)
+    Command.process("dist", subState)
     state
   }
 

@@ -16,12 +16,15 @@ project/plugins/project/
 .idea_modules/
 
 # Deploy
+myfleetgirlsserver-*/
 MyFleetGirls-assembly*
 MyFleetGirls*.zip
 server/public/message
 server/public/client/LICENSE
 server/public/client/MyFleetGirls*
 server/public/client/application.conf.sample
+newrelic.yml
+newrelic/
 
 # Settings
 application.conf

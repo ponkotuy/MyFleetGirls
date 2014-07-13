@@ -42,7 +42,7 @@ object ViewSta extends Controller {
       val classes = counts.filter(it => sTypeName(it._1.stype) == sname)
       val classCounts = classes.groupBy(_._1.ctype).mapValues(_.map(_._2).sum)
       val children = classCounts.map { case (ctype, cCount) =>
-        val children = counts.filter(_._1.ctype == ctype).map { case (msb: MasterShipBase, count: Long) =>
+        val children = counts.filter(_._1.ctype == ctype).map { case (msb, count) =>
           Map("name" -> s"${msb.name} $count(${toP(count/sum)}%)", "count" -> count)
         }
         Map("name" -> s"${className(ctype)} $cCount(${toP(cCount/sum)}%)", "children" -> children)
@@ -52,10 +52,10 @@ object ViewSta extends Controller {
     write(Map("name" -> title, "children" -> data))
   }
 
-  def citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: Int) = actionAsync {
-    val mat = models.ItemMat(fuel, ammo, steel, bauxite, sType, "")
+  def citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: String) = actionAsync {
+    val mat = models.ItemMat(fuel, ammo, steel, bauxite, -1, sType)
     val citems = models.CreateItem.findAllByWithName(
-      sqls"ci.fuel = $fuel and ci.ammo = $ammo and ci.steel = $steel and ci.bauxite = $bauxite and ms.stype = $sType",
+      sqls"ci.fuel = $fuel and ci.ammo = $ammo and ci.steel = $steel and ci.bauxite = $bauxite and mst.name = $sType",
       limit = 100
     )
     val counts = models.CreateItem.countItemByMat(mat)
@@ -64,8 +64,7 @@ object ViewSta extends Controller {
     val countJsonRaw = counts.map { case (item, count) =>
       Map("label" -> item.name, "data" -> count)
     }
-    val st = models.MasterStype.find(sType).get
-    val title = s"${st.name}/$fuel/$ammo/$steel/$bauxite"
+    val title = s"${sType}/$fuel/$ammo/$steel/$bauxite"
     Ok(views.html.sta.citem(title, write(countJsonRaw), withRate, citems))
   }
 

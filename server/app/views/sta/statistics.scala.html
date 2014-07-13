@@ -42,9 +42,9 @@
           </thead>
           <tbody>
             @iCounts.map { case (mat, count) =>
-            <tr onclick="location.href='@routes.ViewSta.citem(mat.fuel, mat.ammo, mat.steel, mat.bauxite, mat.sType)'" class="clickable">
+            <tr onclick="location.href='@routes.ViewSta.citem(mat.fuel, mat.ammo, mat.steel, mat.bauxite, mat.sTypeName)'" class="clickable">
               <td>@count</td>
-              <td>@mat.sTypeName
+              <td>@mat.sTypeName</td>
               <td>@mat.fuel</td>
               <td>@mat.ammo</td>
               <td>@mat.steel</td>
