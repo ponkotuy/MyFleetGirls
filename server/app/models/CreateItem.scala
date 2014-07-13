@@ -1,11 +1,8 @@
 package models
 
-import scalikejdbc._
-import scalikejdbc._
 import com.ponkotuy.data
+import scalikejdbc._
 import scalikejdbc.interpolation.SQLSyntax._
-import scala.Some
-import scalikejdbc.WrappedResultSet
 
 case class CreateItem(
   memberId: Long,
@@ -85,6 +82,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
         .leftJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
         .leftJoin(Ship as s).on(sqls"ci.flagship = s.id and ci.member_id = s.member_id")
         .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where(where)
         .orderBy(ci.created).desc
         .limit(limit).offset(offset)
@@ -115,7 +113,8 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
         .innerJoin(Ship as s).on(sqls"ci.flagship = s.id and ci.member_id = s.member_id")
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .leftJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
-        .where(sqls"""ci.fuel = ${mat.fuel} and ci.ammo = ${mat.ammo} and ci.steel = ${mat.steel} and ci.bauxite = ${mat.bauxite} and ms.stype = ${mat.sType}""")
+        .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .where(sqls"""ci.fuel = ${mat.fuel} and ci.ammo = ${mat.ammo} and ci.steel = ${mat.steel} and ci.bauxite = ${mat.bauxite} and mst.name = ${mat.sTypeName}""")
         .groupBy(ci.slotitemId)
         .orderBy(sqls"count").desc
     }.map { rs => fromRStoMiniItem(rs) -> rs.long(3) }.list().apply()
