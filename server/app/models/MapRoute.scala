@@ -1,9 +1,8 @@
 package models
 
-import scalikejdbc._
 import com.ponkotuy.data
-import scalikejdbc.WrappedResultSet
-import dat.{Stage, ShipWithName}
+import dat.{RouteWithAdmiral, ShipWithName, Stage}
+import scalikejdbc._
 
 case class MapRoute(
   id: Long,
@@ -18,6 +17,10 @@ case class MapRoute(
   def save()(implicit session: DBSession = MapRoute.autoSession): MapRoute = MapRoute.save(this)(session)
 
   def destroy()(implicit session: DBSession = MapRoute.autoSession): Unit = MapRoute.destroy(this)(session)
+
+  def start: Option[CellInfo] = CellInfo.find(areaId, infoNo, dep)
+
+  def end: Option[CellInfo] = CellInfo.find(areaId, infoNo, dest)
 
 }
 
@@ -42,6 +45,7 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
   val mr = MapRoute.syntax("mr")
   val s = Ship.syntax("s")
   val ms = MasterShipBase.syntax("ms")
+  val a = Admiral.syntax("a")
 
   override val autoSession = AutoSession
 
@@ -51,8 +55,12 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
     }.map(MapRoute(mr.resultName)).single().apply()
   }
 
-  def findAll()(implicit session: DBSession = autoSession): List[MapRoute] = {
-    withSQL(select.from(MapRoute as mr)).map(MapRoute(mr.resultName)).list().apply()
+  def findAll(limit: Int = Int.MaxValue, offset: Int = 0)(implicit session: DBSession = autoSession): List[MapRoute] = {
+    withSQL {
+      select.from(MapRoute as mr)
+        .limit(limit).offset(offset)
+        .orderBy(mr.created).desc
+    }.map(MapRoute(mr.resultName)).list().apply()
   }
 
   def countAll()(implicit session: DBSession = autoSession): Long = {
@@ -67,6 +75,19 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
         .orderBy(mr.created).desc
         .limit(limit).offset(offset)
     }.map(MapRoute(mr.resultName)).list().apply()
+  }
+
+  def findWithUserBy(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session: DBSession = autoSession): List[RouteWithAdmiral] = {
+    withSQL {
+      select.from(MapRoute as mr)
+        .innerJoin(Admiral as a).on(mr.memberId, a.id)
+        .where.append(sqls"${where}")
+        .orderBy(mr.created).desc
+        .limit(limit).offset(offset)
+    }.map { rs =>
+      RouteWithAdmiral(MapRoute(mr.resultName)(rs), Admiral(a)(rs))
+    }.list().apply()
   }
 
   def findFleetBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[Vector[ShipWithName]] = {

@@ -1,7 +1,6 @@
 package controllers
 
 import dat.ShipWithName
-import models.MasterShipBase
 import org.json4s._
 import org.json4s.native.Serialization.write
 import play.api.mvc._
@@ -22,7 +21,7 @@ object ViewSta extends Controller {
   }
 
   def cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int) = actionAsync {
-    val mat = models.Mat(fuel, ammo, steel, bauxite, develop)
+    val mat = dat.Mat(fuel, ammo, steel, bauxite, develop)
     val counts = models.CreateShip.countByMatWithMaster(mat)
     val title = s"$fuel/$ammo/$steel/$bauxite/$develop"
     val graphJson = cshipGraphJson(counts, title)
@@ -53,7 +52,7 @@ object ViewSta extends Controller {
   }
 
   def citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: String) = actionAsync {
-    val mat = models.ItemMat(fuel, ammo, steel, bauxite, -1, sType)
+    val mat = dat.ItemMat(fuel, ammo, steel, bauxite, -1, sType)
     val citems = models.CreateItem.findAllByWithName(
       sqls"ci.fuel = $fuel and ci.ammo = $ammo and ci.steel = $steel and ci.bauxite = $bauxite and mst.name = $sType",
       limit = 100

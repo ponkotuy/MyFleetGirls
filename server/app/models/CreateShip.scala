@@ -4,7 +4,7 @@ import scalikejdbc._
 import com.ponkotuy.data
 import scalikejdbc.{WrappedResultSet, DBSession}
 import sqls.distinct
-import dat.{CreateShipWithName2, CreateShipWithName}
+import dat.{CShipWithAdmiral, Mat, CreateShipWithName2, CreateShipWithName}
 
 /** 建造ログ
   *
@@ -38,6 +38,7 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
   lazy val cs = CreateShip.syntax("cs")
   lazy val ms = MasterShipBase.syntax("ms")
   lazy val msb = MasterShipBase.syntax("msb") // MasterShipBaseを2種類使い分ける必要がある時用
+  lazy val a = Admiral.syntax("a")
 
   def findAllByUser(memberId: Long)(implicit session: DBSession = CreateShip.autoSession): List[CreateShip] = withSQL {
     select.from(CreateShip as cs)
@@ -72,6 +73,18 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
         .innerJoin(MasterShipBase as ms).on(cs.resultShip, ms.id)
         .where.like(ms.name, q)
     }.map(MasterShipBase(ms)).toList().apply()
+  }
+
+  def findWithUserBy(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session: DBSession = autoSession): List[CShipWithAdmiral] = {
+    withSQL {
+      select.from(CreateShip as cs)
+        .innerJoin(Admiral as a).on(cs.memberId, a.id)
+        .innerJoin(MasterShipBase as ms).on(cs.resultShip, ms.id)
+        .where(where)
+        .limit(limit).offset(offset)
+        .orderBy(cs.created).desc
+    }.map(CShipWithAdmiral(cs, a, ms)).list().apply()
   }
 
   def countByMatWithMaster(m: Mat)(implicit session: DBSession = autoSession): List[(MasterShipBase, Long)] = withSQL {
@@ -123,17 +136,4 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
   }
 }
 
-case class Mat(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int)
 
-object Mat {
-  def apply(cs: SyntaxProvider[CreateShip])(rs: WrappedResultSet): Mat =
-    new Mat(
-      rs.int(cs.fuel),
-      rs.int(cs.ammo),
-      rs.int(cs.steel),
-      rs.int(cs.bauxite),
-      rs.int(cs.develop)
-    )
-}
-
-case class MiniShip(id: Int, name: String)

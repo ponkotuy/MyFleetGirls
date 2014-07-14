@@ -14,7 +14,7 @@ import com.github.nscala_time.time.Imports._
  * @author ponkotuy
  * Date: 14/04/01.
  */
-object UserView {
+object UserView extends Controller {
   import Common._
 
   def name(user: String) = Action.async {

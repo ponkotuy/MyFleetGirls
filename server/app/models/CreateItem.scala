@@ -1,6 +1,7 @@
 package models
 
 import com.ponkotuy.data
+import dat.{ItemWithAdmiral, CreateItemWithName, ItemMat}
 import scalikejdbc._
 import scalikejdbc.interpolation.SQLSyntax._
 
@@ -51,6 +52,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
   lazy val s = Ship.syntax("s")
   lazy val ms = MasterShipBase.syntax("ms")
   lazy val mst = MasterStype.syntax("mst")
+  lazy val a = Admiral.syntax("a")
 
   override val autoSession = AutoSession
 
@@ -95,6 +97,18 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
         .innerJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
         .where(where)
     }.map(MasterSlotItem(mi)).toList().apply()
+  }
+
+  def findWithUserBy(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session: DBSession = autoSession): List[ItemWithAdmiral] = {
+    withSQL {
+      select.from(CreateItem as ci)
+        .innerJoin(Admiral as a).on(ci.memberId, a.id)
+        .innerJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
+        .where(where)
+        .orderBy(ci.created)
+        .limit(limit).offset(offset)
+    }.map(ItemWithAdmiral(ci, a, mi)).list().apply()
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
@@ -233,39 +247,4 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
     }
   }
 
-}
-
-case class CreateItemWithName(
-    slotitemId: Option[Int], fuel: Int, ammo: Int, steel: Int, bauxite: Int,
-    shizaiFlag: Boolean, flagshipId: Int, created: Long, name: String, flagshipName: String)
-
-object CreateItemWithName {
-  def apply(ci: SyntaxProvider[CreateItem], mi: SyntaxProvider[MasterSlotItem], ms: SyntaxProvider[MasterShipBase])(
-      rs: WrappedResultSet): CreateItemWithName =
-    new CreateItemWithName(
-      rs.intOpt(ci.slotitemId),
-      rs.int(ci.fuel),
-      rs.int(ci.ammo),
-      rs.int(ci.steel),
-      rs.int(ci.bauxite),
-      rs.boolean(ci.shizaiFlag),
-      rs.int(ci.flagship),
-      rs.long(ci.created),
-      rs.stringOpt(mi.name).getOrElse("失敗"),
-      rs.string(ms.name)
-    )
-}
-
-case class ItemMat(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: Int, sTypeName: String)
-
-object ItemMat {
-  def apply(ci: SyntaxProvider[CreateItem], mst: SyntaxProvider[MasterStype])(rs: WrappedResultSet): ItemMat =
-    new ItemMat(
-      rs.int(ci.fuel),
-      rs.int(ci.ammo),
-      rs.int(ci.steel),
-      rs.int(ci.bauxite),
-      rs.int(mst.id),
-      rs.string(mst.name)
-    )
 }

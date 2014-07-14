@@ -93,4 +93,11 @@ object Rest extends Controller {
     models.MapRoute.findStageUnique()
   }
 
+  def activities(from: Long, limit: Int, offset: Int) = returnJson {
+    val started = models.MapRoute.findWithUserBy(sqls"created > ${from}", limit*4, offset)
+      .filter(_.start.exists(_.start))
+    val createItems = models.CreateItem.findWithUserBy(sqls"created > ${from}", limit, offset)
+    val createShips = models.CreateShip.findWithUserBy(sqls"created > ${from}", limit, offset)
+    (started ++ createItems ++ createShips).map(_.toJSON)
+  }
 }
