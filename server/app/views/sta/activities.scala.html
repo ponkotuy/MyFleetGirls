@@ -1,0 +1,26 @@
+@()
+
+@main {
+  <title>Activities -統計-</title>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.5/vue.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js"></script>
+  <script src="@routes.Assets.at("javascript/activities.js")"></script>
+  <style>
+    .trans {
+      transition: all 1.0s ease;
+    }
+    .trans.v-enter, .trans.v-leave {
+      opacity: 0;
+    }
+  </style>
+} {
+  @statistics_head("activities") {
+    <table class="table table-hover" id="activities_list">
+      <tr v-repeat="acts | orderBy created reverse" class="clickable trans" v-on="click: jump(url)" v-transition>
+        <th>{{ title }}</th>
+        <td>{{ message }}</td>
+        <td>{{ tformat(created) }}</td>
+      </tr>
+    </table>
+  }
+}

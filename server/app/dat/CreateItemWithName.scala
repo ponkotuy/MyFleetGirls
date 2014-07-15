@@ -56,6 +56,7 @@ case class ItemWithAdmiral(createItem: CreateItem, admiral: Admiral, masterItem:
   override def title: String = "装備開発"
   override def message: String = s"${nickname}提督が${itemName}を開発しました"
   override def url: String = controllers.routes.UserView.create(memberId).url
+  override def created: Long = createItem.created
 }
 
 object ItemWithAdmiral {

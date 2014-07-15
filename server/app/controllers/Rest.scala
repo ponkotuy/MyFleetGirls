@@ -94,10 +94,11 @@ object Rest extends Controller {
   }
 
   def activities(from: Long, limit: Int, offset: Int) = returnJson {
-    val started = models.MapRoute.findWithUserBy(sqls"created > ${from}", limit*4, offset)
+    val started = models.MapRoute.findWithUserBy(sqls"mr.created > ${from}", limit*2, offset)
       .filter(_.start.exists(_.start))
-    val createItems = models.CreateItem.findWithUserBy(sqls"created > ${from}", limit, offset)
-    val createShips = models.CreateShip.findWithUserBy(sqls"created > ${from}", limit, offset)
-    (started ++ createItems ++ createShips).map(_.toJSON)
+    val createItems = models.CreateItem.findWithUserBy(sqls"ci.created > ${from}", limit/2, offset)
+    val createShips = models.CreateShip.findWithUserBy(sqls"cs.created > ${from}", limit/2, offset)
+    (started ++ createItems ++ createShips)
+      .sortBy(_.created).reverse.take(20).map(_.toJSON)
   }
 }

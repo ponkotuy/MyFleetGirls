@@ -14,6 +14,10 @@ import scala.concurrent.duration._
 object ViewSta extends Controller {
   import controllers.Common._
 
+  def activities = actionAsync {
+    Ok(views.html.sta.activities())
+  }
+
   def statistics = actionAsync {
     val sCounts = models.CreateShip.materialCount().takeWhile(_._2 > 1)
     val iCounts = models.CreateItem.materialCount().takeWhile(_._2 > 1)

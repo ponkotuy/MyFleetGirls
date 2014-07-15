@@ -9,6 +9,9 @@
   </div>
 
   <ul class="nav nav-tabs">
+    <li class="@if(active=="activities"){active}">
+      <a href="@routes.ViewSta.activities()">トップ</a>
+    </li>
     <li class="@if(active=="from_recipe"){active}">
       <a href="@routes.ViewSta.statistics()">建造開発レシピ</a>
     </li>

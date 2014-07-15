@@ -82,8 +82,8 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
         .innerJoin(Admiral as a).on(cs.memberId, a.id)
         .innerJoin(MasterShipBase as ms).on(cs.resultShip, ms.id)
         .where(where)
-        .limit(limit).offset(offset)
         .orderBy(cs.created).desc
+        .limit(limit).offset(offset)
     }.map(CShipWithAdmiral(cs, a, ms)).list().apply()
   }
 
