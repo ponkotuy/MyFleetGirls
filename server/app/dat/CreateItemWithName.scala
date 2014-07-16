@@ -51,6 +51,7 @@ object ItemMat {
 }
 
 case class ItemWithAdmiral(createItem: CreateItem, admiral: Admiral, masterItem: MasterSlotItem) extends Activity {
+  def itemId: Int = masterItem.id
   def itemName: String = masterItem.name
 
   override def title: String = "装備開発"

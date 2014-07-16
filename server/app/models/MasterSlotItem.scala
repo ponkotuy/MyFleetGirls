@@ -1,8 +1,7 @@
 package models
 
-import scalikejdbc._
-import scalikejdbc._
 import com.ponkotuy.data.master
+import scalikejdbc._
 import util.scalikejdbc.BulkInsert._
 
 case class MasterSlotItem(

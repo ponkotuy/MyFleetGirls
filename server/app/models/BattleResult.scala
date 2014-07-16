@@ -4,7 +4,7 @@ import scala.util.Try
 import scalikejdbc._
 import sqls.distinct
 import com.ponkotuy.data
-import dat.{CellWithRank, BattleResultWithCell, Stage, ShipDrop}
+import dat._
 
 case class BattleResult(
   id: Long,
@@ -57,6 +57,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
   val br = BattleResult.syntax("br")
   val ci = CellInfo.syntax("ci")
   val ms = MasterShipBase.syntax("ms")
+  val a = Admiral.syntax("a")
 
   override val autoSession = AutoSession
 
@@ -100,6 +101,17 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
         .innerJoin(MasterShipBase as ms).on(br.getShipId, ms.id)
         .where.like(ms.name, q)
     }.map(MasterShipBase(ms)).list().apply()
+  }
+
+  def findWithUserBy(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session: DBSession = autoSession): List[BattleResultWithUser] = {
+    withSQL {
+      select.from(BattleResult as br)
+        .innerJoin(Admiral as a).on(br.memberId, a.id)
+        .where(where)
+        .orderBy(br.created).desc
+        .limit(limit).offset(offset)
+    }.map(BattleResultWithUser(br, a)).list().apply()
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {

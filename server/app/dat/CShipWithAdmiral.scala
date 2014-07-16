@@ -7,6 +7,7 @@ import scalikejdbc._
  * Date: 14/07/15.
  */
 case class CShipWithAdmiral(createShip: CreateShip, admiral: Admiral, masterShip: MasterShipBase) extends Activity {
+  def shipId: Int = createShip.resultShip
   def shipName: String = masterShip.name
 
   override def title: String = "艦娘建造"

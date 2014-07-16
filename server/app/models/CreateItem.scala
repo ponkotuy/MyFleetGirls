@@ -106,7 +106,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
         .innerJoin(Admiral as a).on(ci.memberId, a.id)
         .innerJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
         .where(where)
-        .orderBy(ci.created)
+        .orderBy(ci.created).desc
         .limit(limit).offset(offset)
     }.map(ItemWithAdmiral(ci, a, mi)).list().apply()
   }
