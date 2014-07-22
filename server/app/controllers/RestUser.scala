@@ -75,7 +75,7 @@ object RestUser extends Controller {
         ships.get(sid).map { ship =>
           ("id" -> ship.id) ~ ("name" -> ship.name) ~ ("stype" -> ship.stName)
         }.getOrElse {
-          ("id" -> sid) ~ ("name" -> "轟沈艦") ~ ("stype" -> "不明")
+          ("id" -> sid) ~ ("name" -> "喪失") ~ ("stype" -> "不明")
         }
       }
       Extraction.decompose(route).asInstanceOf[JObject] ~ ("ships" -> xs)

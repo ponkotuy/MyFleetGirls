@@ -113,7 +113,7 @@ object DeckShipSnapshot extends SQLSyntaxSupport[DeckShipSnapshot] {
     lv = rs.get(dss.lv),
     exp = rs.get(dss.exp),
     nowhp = rs.get(dss.nowhp),
-    slot = rs.string(dss.slot).split(',').toList.map(_.toInt),
+    slot = rs.string(dss.slot).split(',').toList.filter(_.nonEmpty).map(_.toInt),
     fuel = rs.get(dss.fuel),
     bull = rs.get(dss.bull),
     dockTime = rs.get(dss.dockTime),

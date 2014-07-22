@@ -95,11 +95,11 @@ object Rest extends Controller {
 
   val NGStage = Set((1, 1), (2, 2), (2, 3))
   def activities(from: Long, limit: Int, offset: Int) = returnJson {
-    val started = models.MapRoute.findWithUserBy(sqls"mr.created > ${from}", limit*4, offset)
+    val started = models.MapRoute.findWithUserBy(sqls"mr.created > ${from}", limit*8, offset)
       .filter(_.start.exists(_.start))
       .filterNot { it => NGStage.contains((it.areaId, it.infoNo)) }
     val rares = models.MasterShipOther.findAllBy(sqls"mso.backs >= 5").map(_.id).toSet
-    val drops = models.BattleResult.findWithUserBy(sqls"br.created > ${from} and br.get_ship_id is not null", limit*4, offset)
+    val drops = models.BattleResult.findWithUserBy(sqls"br.created > ${from} and br.get_ship_id is not null", limit*8, offset)
       .filter(_.getShipId.exists(rares.contains))
     val rareItems = models.MasterSlotItem.findAllBy(sqls"msi.rare >= 1").map(_.id).toSet
     val createItems = models.CreateItem.findWithUserBy(sqls"ci.created > ${from}", limit, offset)

@@ -74,10 +74,10 @@ object Mission extends SQLSyntaxSupport[Mission] {
   def findByUserWithFlagship(memberId: Long)(implicit session: DBSession = autoSession): List[MissionWithFlagship] =
     withSQL {
       select(m.number, mm.name, m.deckId, dp.name, m.completeTime, s.shipId).from(Mission as m)
-        .leftJoin(MasterMission as mm).on(m.number, mm.id)
-        .leftJoin(DeckPort as dp).on(sqls"${m.memberId} = ${dp.memberId} and ${m.deckId} = ${dp.id}")
-        .leftJoin(DeckShip as ds).on(sqls"${m.memberId} = ${ds.memberId} and ${m.deckId} = ${ds.deckId}")
-        .leftJoin(Ship as s).on(sqls"${m.memberId} = ${s.memberId} and ${ds.shipId} = ${s.id}")
+        .innerJoin(MasterMission as mm).on(m.number, mm.id)
+        .innerJoin(DeckPort as dp).on(sqls"${m.memberId} = ${dp.memberId} and ${m.deckId} = ${dp.id}")
+        .innerJoin(DeckShip as ds).on(sqls"${m.memberId} = ${ds.memberId} and ${m.deckId} = ${ds.deckId}")
+        .innerJoin(Ship as s).on(sqls"${m.memberId} = ${s.memberId} and ${ds.shipId} = ${s.id}")
         .where.eq(m.memberId, memberId).and.eq(ds.num, 0)
     }.map(MissionWithFlagship(m, mm, dp, s)).list().apply()
 
