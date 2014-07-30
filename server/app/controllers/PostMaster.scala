@@ -2,7 +2,7 @@ package controllers
 
 import play.api.mvc._
 import Common._
-import com.ponkotuy.data.master.{MasterSType, MasterMission, MasterShip, MasterSlotItem}
+import com.ponkotuy.data.master._
 
 /**
  *
@@ -16,6 +16,7 @@ object PostMaster extends Controller {
     models.MasterShipSpecs.deleteAll()
     models.MasterShipSpecs.bulkInsert(ships.map(_.specs))
     models.MasterShipAfter.deleteAll()
+    println(ships.map(_.after))
     models.MasterShipAfter.bulkInsert(ships.map(_.after))
     models.MasterShipOther.deleteAll()
     models.MasterShipOther.bulkInsert(ships.map(_.other))

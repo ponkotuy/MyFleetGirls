@@ -46,6 +46,7 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
   val s = Ship.syntax("s")
   val ms = MasterShipBase.syntax("ms")
   val a = Admiral.syntax("a")
+  val ci = CellInfo.syntax("ci")
 
   override val autoSession = AutoSession
 

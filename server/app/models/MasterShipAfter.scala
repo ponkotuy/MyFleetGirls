@@ -1,8 +1,7 @@
 package models
 
-import scalikejdbc._
-import scalikejdbc._
 import com.ponkotuy.data.master
+import scalikejdbc._
 import util.scalikejdbc.BulkInsert._
 
 case class MasterShipAfter(
@@ -94,7 +93,8 @@ object MasterShipAfter extends SQLSyntaxSupport[MasterShipAfter] {
   }
 
   def bulkInsert(xs: Seq[master.MasterShipAfter])(implicit session: DBSession = autoSession): Unit = {
-    withSQL {
+    require(xs.nonEmpty)
+    applyUpdate {
       insert.into(MasterShipAfter)
         .columns(column.id, column.afterlv, column.aftershipid, column.afterfuel, column.afterbull)
         .multiValues(xs.map(_.id), xs.map(_.afterlv), xs.map(_.aftershipid), xs.map(_.afterfuel), xs.map(_.afterbull))

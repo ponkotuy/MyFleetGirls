@@ -5,7 +5,7 @@
   bookCounts: Seq[(models.Admiral, Long)],
   married: Seq[(models.Admiral, Long)],
   shipExp: Seq[(models.Admiral, Long)],
-  expByShip: Seq[(models.MasterShipBase, Long)],
+  expByShip: Seq[(String, Long)],
   itemCounts: Seq[(models.Admiral, Long)]
 )
 
@@ -103,7 +103,7 @@
         <table class="table table-striped table-condensed">
           @expByShip.map { case (ship, exp) =>
           <tr>
-            <th>@ship.name</th>
+            <th>@ship</th>
             <td>@exp</td>
           </tr>
           }
@@ -129,6 +129,7 @@
         <ul>
           <li>7日以内にデータ更新のあった提督に限ります（図鑑登録は30日以内に図鑑を開いて登録）</li>
           <li>図鑑登録は中破絵をカウントに含めています</li>
+          <li>艦娘別Expは進化前で集計しています</li>
         </ul>
       </div>
     </div>
