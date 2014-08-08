@@ -11,6 +11,10 @@ object DiffCalc {
   def ratio[T <% Double](x: T, y: T): Double =
     (if(x > y) x / y else y / x) - 1.0
 
+  /** 差のbaseからの比を取る */
+  def diffRatio[T <% Double](base: Double)(x: T, y: T): Double =
+    math.abs(x - y) / base
+
   def neq(x: Any, y: Any): Double =
     if(x == y) 0.0 else Double.MaxValue
 }

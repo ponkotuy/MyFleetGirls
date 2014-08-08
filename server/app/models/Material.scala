@@ -23,14 +23,14 @@ case class Material(
   def diff(x: data.Material): Double = {
     import DiffCalc._
     Iterator(
-      ratio(fuel, x.fuel),
-      ratio(ammo, x.ammo),
-      ratio(steel, x.steel),
-      ratio(bauxite, x.bauxite),
-      ratio(instant, x.instant),
-      ratio(bucket, x.bucket),
-      ratio(develop, x.develop)
-    ).max
+      diffRatio(10000.0)(fuel, x.fuel),
+      diffRatio(10000.0)(ammo, x.ammo),
+      diffRatio(10000.0)(steel, x.steel),
+      diffRatio(10000.0)(bauxite, x.bauxite),
+      diffRatio(100.0)(instant, x.instant),
+      diffRatio(100.0)(bucket, x.bucket),
+      diffRatio(100.0)(develop, x.develop)
+    ).sum
   }
 
   def destroy()(implicit session: DBSession = Material.autoSession): Unit = Material.destroy(id)(session)

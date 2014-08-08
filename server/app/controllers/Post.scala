@@ -34,7 +34,7 @@ object Post extends Controller {
   }
 
   def material = authAndParse[Material] { case (auth, material) =>
-    val isChange = !models.Material.findByUser(auth.id).exists(_.diff(material) < 0.01)
+    val isChange = !models.Material.findByUser(auth.id).exists(_.diff(material) < 0.03)
     if(isChange) {
       models.Material.create(material, auth.id)
       Ok("Success")
