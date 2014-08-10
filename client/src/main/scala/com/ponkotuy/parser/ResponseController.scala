@@ -56,7 +56,7 @@ class ResponseController extends Log {
         lazyPost { (a, b) => dependent.createitem(req, obj)(a, b) }
       case HenseiChange =>
         lazyPost { (a, b) => dependent.henseiChange(req) }
-      case SortieBattleResult =>
+      case SortieBattleResult | CombinedBattleResult =>
         lazyPost { (a, b) => dependent.battleResult(obj)(a, b) }
       case MapStart =>
         lazyPost { (a, b) => dependent.mapStart(obj)(a, b) }

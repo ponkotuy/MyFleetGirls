@@ -30,6 +30,7 @@ object ResType extends Log {
   val ReqQuest = s"$Api/api_req_quest"
   val ReqNyukyo = s"$Api/api_req_nyukyo"
   val ReqRanking = s"$Api/api_req_ranking"
+  val ReqCombined = s"$Api/api_req_combined_battle"
 
   case object LoginCheck extends ResType(s"\\A$AuthMember/logincheck\\z".r) // 取るべきではない
   case object ApiStart2 extends ResType(s"\\A$Api/api_start2\\z".r) // Master含む新API
@@ -71,6 +72,7 @@ object ResType extends Log {
   case object ClearItemGet extends ResType(s"\\A$ReqQuest/clearitemget\\z".r)
   case object NyukyoStart extends ResType(s"\\A$ReqNyukyo/start\\z".r)
   case object RankingList extends ResType(s"\\A$ReqRanking/getlist\\z".r) // 基地のランキング。取るべきではない
+  case object CombinedBattleResult extends ResType(s"\\A$ReqCombined/battleresult\\z".r)
   case object MasterPractice extends ResType(s"\\A$GetMaster/practice\\z".r)
   case object MasterUseItem extends ResType(s"\\A$GetMaster/useitem\\z".r) // 高速修復材とかの説明
   case object MasterFurniture extends ResType(s"\\A$GetMaster/furniture\\z".r) // 家具の説明
@@ -86,7 +88,7 @@ object ResType extends Log {
     UpdateDeckName, CreateShip, GetShip, CreateItem,
     Charge, HenseiChange, HenseiLock, MissionStart, KaisouPowerup, Remodeling, Marriage,
     PracticeBattle, PracticeMidnightBattle, PracticeBattleResult, GetOthersDeck,
-    MapStart, MapNext, SortieBattle, SortieBattleResult, ClearItemGet, NyukyoStart, RankingList,
+    MapStart, MapNext, SortieBattle, SortieBattleResult, ClearItemGet, NyukyoStart, RankingList, CombinedBattleResult,
     MasterPractice, MasterUseItem, MasterFurniture, MasterSlotItem, MasterMapArea,
     Port, ShipSWF, SoundMP3
   )
