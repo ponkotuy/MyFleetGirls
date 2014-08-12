@@ -33,7 +33,11 @@ object BattleResult {
     val mvp = (obj \ "api_mvp").extract[Int]
     val baseExp = (obj \ "api_get_base_exp").extract[Int]
     val shipExp = toIntList(obj \ "api_get_ship_exp").tail
-    val lostFlag = toIntList(obj \ "api_lost_flag").tail.map(_ != 0)
+    val lostFlag = {
+      val result = toIntList(obj \ "api_lost_flag")
+      if(result.isEmpty) Nil
+      else result.tail.map(_ != 0)
+    }
     val JString(questName) = obj \ "api_quest_name"
     val questLevel = (obj \ "api_quest_level").extract[Int]
     val JString(enemyDeck) = obj \ "api_enemy_info" \ "api_deck_name"
@@ -45,8 +49,10 @@ object BattleResult {
   }
 
   def toIntList(obj: JValue): List[Int] = {
-    val JArray(xs) = obj
-    xs.map(_.extract[Int])
+    Try {
+      val JArray(xs) = obj
+      xs.flatMap(_.extractOpt[Int])
+    }.getOrElse(Nil)
   }
 }
 
