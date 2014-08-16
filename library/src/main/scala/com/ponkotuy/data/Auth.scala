@@ -12,9 +12,15 @@ case class Auth(id: Long, nickname: String, memberId: Long)
 
 object Auth {
   def fromJSON(json: JValue): Auth = {
-    val JString(id) = json \ "api_nickname_id"
-    val JString(nickname) = json \ "api_nickname"
-    val JString(memberId) = json \ "api_member_id"
-    Auth(id.toLong, nickname, memberId.toLong)
+    try {
+      val JString(id) = json \ "api_nickname_id"
+      val JString(nickname) = json \ "api_nickname"
+      val JString(memberId) = json \ "api_member_id"
+      Auth(id.toLong, nickname, memberId.toLong)
+    } catch {
+      case e: Exception =>
+        e.printStackTrace()
+        throw new RuntimeException("ログイン情報取得エラー。間違えて他のマシンから繋いじゃったとか？")
+    }
   }
 }

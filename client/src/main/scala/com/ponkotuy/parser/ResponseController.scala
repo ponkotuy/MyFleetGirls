@@ -1,10 +1,11 @@
 package com.ponkotuy.parser
 
 import com.github.theon.uri.Uri
-import org.json4s._
-import com.ponkotuy.value.KCServer
-import com.ponkotuy.util.Log
 import com.ponkotuy.data
+import com.ponkotuy.util.Log
+import com.ponkotuy.value.KCServer
+import org.json4s.JsonAST.JValue
+import org.json4s._
 
 /**
  *
@@ -22,7 +23,14 @@ class ResponseController extends Log {
   def query(q: Query): Unit = {
     val typ = q.resType.get
     lazy val req = q.reqMap
-    lazy val obj = q.resJson.get
+    lazy val obj: JValue = {
+      q.resJson match {
+        case Left(value) => value
+        case Right(message) =>
+          println(message)
+          JObject()
+      }
+    }
     typ match {
       case ApiStart2 =>
         lazyPost { (a, b) => Post.master(obj)(a, b) }
@@ -81,7 +89,7 @@ class ResponseController extends Log {
       case _ =>
         info(s"ResType: $typ")
         info(s"Req: ${q.reqCont}")
-        q.resJson.map(jsonInfo(_))
+        q.resJson.left.map(jsonInfo(_))
     }
   }
 

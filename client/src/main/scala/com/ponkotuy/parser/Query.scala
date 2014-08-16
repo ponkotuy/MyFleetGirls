@@ -21,7 +21,7 @@ case class Query(req: HttpRequest, res: HttpResponse, uri: Uri) {
   def host = Uri.parseUri(uri).host
   lazy val resType = ResType.fromUri(uri)
   def resCont: String = Query.toString(res.getContent)
-  def resJson: Option[JValue] = KCJson.toAst(resCont)
+  def resJson: Either[JValue, String] = KCJson.toAst(resCont)
   def reqCont: String = Query.toString(req.getContent)
   def reqMap: Map[String, String] = parseKeyValue(reqCont)
   def parsable: Boolean = resType.isDefined
