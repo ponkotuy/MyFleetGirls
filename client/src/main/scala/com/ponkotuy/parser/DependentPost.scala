@@ -19,12 +19,18 @@ class DependentPost {
   implicit val formats = DefaultFormats
   type Req = Map[String, String]
 
+  val FleetMax = 4
+
   // 現在進行中のStage情報がBattleResultで必要なので置いておく
   private[this] var mapNext: Option[data.MapStart] = None
+  // 出撃中の艦隊番号
+  private[this] var startFleet: Int = 0
   // 艦隊情報がRoute等で必要なので溜めておく
+  private[this] var fleets: Seq[List[Int]] = Nil
   private[this] var firstFleet: List[Int] = Nil
   // KDock + CreateShipのデータが欲しいのでKDockIDをKeyにCreateShipを溜めておく
   private[this] val createShips: mutable.Map[Int, data.CreateShip] = mutable.Map()
+
 
   /** 第一艦隊の情報のみ変更。めんどいので特にサーバは更新しない */
   def henseiChange(req: Map[String, String]): Unit = {
@@ -91,16 +97,21 @@ class DependentPost {
   def deckport(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     synchronized {
       val decks = DeckPort.fromJson(obj)
-      firstFleet = decks.find(_.id == 1).map(_.ships).getOrElse(Nil)
+      firstFleet = extractFleetShips(decks)(1)
+      fleets = (1 to FleetMax).map(extractFleetShips(decks))
       if(decks.nonEmpty) MFGHttp.post("/deckport", write(decks))
       decks.map(_.summary).foreach(println)
     }
   }
 
-  def mapStart(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
+  private def extractFleetShips(decks: Iterable[DeckPort])(num: Int): List[Int] =
+    decks.find(_.id == num).map(_.ships).getOrElse(Nil)
+
+  def mapStart(req: Req, obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     synchronized {
       val next = data.MapStart.fromJson(obj)
       mapNext = Some(next)
+      startFleet = req("api_deck_id").toInt
       println(next.summary)
     }
   }
@@ -109,7 +120,8 @@ class DependentPost {
     synchronized {
       val next = data.MapStart.fromJson(obj)
       mapNext.foreach { dep =>
-        val route = MapRoute.fromMapNext(dep, next, firstFleet)
+        val route = MapRoute.fromMapNext(dep, next, fleets(startFleet - 1))
+        println(route)
         MFGHttp.post("/map_route", write(route))
         println(route.summary)
       }

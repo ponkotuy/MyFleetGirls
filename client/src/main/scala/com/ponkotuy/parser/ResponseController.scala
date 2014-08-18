@@ -67,7 +67,7 @@ class ResponseController extends Log {
       case SortieBattleResult | CombinedBattleResult =>
         lazyPost { (a, b) => dependent.battleResult(obj)(a, b) }
       case MapStart =>
-        lazyPost { (a, b) => dependent.mapStart(obj)(a, b) }
+        lazyPost { (a, b) => dependent.mapStart(req, obj)(a, b) }
       case MapNext =>
         lazyPost { (a, b) => dependent.mapRoute(obj)(a, b) }
       case Port =>
