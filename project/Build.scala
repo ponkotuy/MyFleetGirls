@@ -8,7 +8,7 @@ import play._
 
 object MyFleetGirlsBuild extends Build {
 
-  val ver = "0.16.14"
+  val ver = "0.16.15"
 
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
