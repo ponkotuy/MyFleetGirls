@@ -7,7 +7,7 @@ case class KCServer(number: Int, ip: String, name: String)
 
 object KCServer {
   val values = List(
-    KCServer(1, "203.104.105.167", "横須賀鎮守府"),
+    KCServer(1, "203.104.209.71", "横須賀鎮守府"),
     KCServer(2, "125.6.184.15", "呉鎮守府"),
     KCServer(3, "125.6.184.16", "佐世保鎮守府"),
     KCServer(4, "125.6.187.205", "舞鶴鎮守府"),
