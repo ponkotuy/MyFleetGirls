@@ -2,12 +2,14 @@
 
 @main {
   <title>ランキング -MyFleetGirls-</title>
+  <script src="@routes.Assets.at("javascript/common.js")"></script>
+  <script src="@routes.Assets.at("javascript/ranking.js")"></script>
 } {
   @statistics_head("ranking") {
     <div class="row">
       @rankings.map { ranking =>
         <div class="@ranking.divClass">
-          <h2>@ranking.title</h2>
+          <h2><a data-toggle="modal" href="rank/@ranking.toString" class="modal_link" data-target="#modal" data-name="@ranking">@ranking.title</a></h2>
           <table class="table table-striped table-condensed">
             <tbody>
               @ranking.rankingQuery(20).map { case elem =>
@@ -33,6 +35,12 @@
             <li>@comment</li>
           }
         </ul>
+      </div>
+    </div>
+
+    <div class="modal fade bs-example-modal-sm" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content"></div>
       </div>
     </div>
   }

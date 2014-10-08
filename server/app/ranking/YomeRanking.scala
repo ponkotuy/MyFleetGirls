@@ -11,7 +11,7 @@ import scala.concurrent.duration._
  * @author ponkotuy
  * Date: 14/10/09.
  */
-object YomeRanking extends Ranking {
+case object YomeRanking extends Ranking {
   import Ranking._
 
   def a = Admiral.a

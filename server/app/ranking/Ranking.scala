@@ -34,6 +34,8 @@ object Ranking {
     ItemBookRanking
   )
 
+  def fromString(str: String): Option[Ranking] = values.find(_.toString == str)
+
   def agoMillis(d: Duration): Long = System.currentTimeMillis() - d.toMillis
   def toElem(ship: ShipWithName): Elem = <span>{ship.name}<small>{"Lv" + ship.lv}</small></span>
 }

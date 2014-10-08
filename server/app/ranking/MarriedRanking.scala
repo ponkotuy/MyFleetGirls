@@ -10,7 +10,7 @@ import scala.concurrent.duration._
  * @author ponkotuy
  * Date: 14/10/09.
  */
-object MarriedRanking extends Ranking {
+case object MarriedRanking extends Ranking {
   import Ranking._
 
   override val title: String = "ケッコン数（図鑑）"

@@ -103,12 +103,12 @@ object ViewSta extends Controller {
       .toList.sortBy(_._2).reverse.take(30)
   }
 
-  def ranking() = actionAsync {
-    Ok(views.html.sta.ranking(Ranking.values))
-/*
-    val itemBook = models.AdmiralRanking.findAllOrderByItemBookCount(20, agoMillis(30.days))
-    Ok(views.html.sta.ranking(materials, yomeLv, firstLv, bookCounts, married, shipExp, expByShip, itemBook))
-    */
+  def ranking() = actionAsync { Ok(views.html.sta.ranking(Ranking.values)) }
+
+  def rankingDetails(_ranking: String) = actionAsync {
+    Ranking.fromString(_ranking).map { ranking =>
+      Ok(views.html.sta.modal_ranking(ranking))
+    }.getOrElse(NotFound("そのようなRankingは見つかりません"))
   }
 
   private def toP(d: Double): String = f"${d*100}%.1f"

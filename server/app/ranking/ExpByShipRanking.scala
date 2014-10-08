@@ -9,7 +9,7 @@ import scala.collection.mutable
  * @author ponkotuy
  * Date: 14/10/09.
  */
-object ExpByShipRanking extends Ranking {
+case object ExpByShipRanking extends Ranking {
   import Ranking._
 
   lazy val s = Ship.syntax("s")
