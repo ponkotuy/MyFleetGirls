@@ -4,9 +4,8 @@ import dat.ShipWithName
 import org.json4s._
 import org.json4s.native.Serialization.write
 import play.api.mvc._
+import ranking.Ranking
 import scalikejdbc._
-
-import scala.concurrent.duration._
 
 /**
  * Date: 14/06/11.
@@ -105,19 +104,11 @@ object ViewSta extends Controller {
   }
 
   def ranking() = actionAsync {
-    val materials = models.AdmiralRanking.findAllOrderByMaterial(20, agoMillis(7.days))
-    val yomeLv = models.AdmiralRanking.findAllOrderByYomeExp(20, agoMillis(7.days))
-    val firstLv = models.AdmiralRanking.findAllByOrderByExp(sqls"s.id = 1", 20, agoMillis(7.days))
-    val bookCounts = models.AdmiralRanking.findAllOrderByShipBookCount(20, agoMillis(30.days))
-    val married = models.AdmiralRanking.findAllOrderByMarriedCount(20, agoMillis(30.days)).filter(_._2 > 1)
-    val shipExp = models.AdmiralRanking.findAllOrderByShipExpSum(20, agoMillis(7.days))
-    val expByShip = models.ShipRanking.findAllOrderByExpSum(20)
+    Ok(views.html.sta.ranking(Ranking.values))
+/*
     val itemBook = models.AdmiralRanking.findAllOrderByItemBookCount(20, agoMillis(30.days))
     Ok(views.html.sta.ranking(materials, yomeLv, firstLv, bookCounts, married, shipExp, expByShip, itemBook))
-  }
-
-  private def agoMillis(d: Duration): Long = {
-    System.currentTimeMillis() - d.toMillis
+    */
   }
 
   private def toP(d: Double): String = f"${d*100}%.1f"

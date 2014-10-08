@@ -1,135 +1,37 @@
-@(
-  materials: Seq[(models.Admiral, Int)],
-  yomeLv: Seq[(models.Admiral, dat.ShipWithName)],
-  firstLv: Seq[(models.Admiral, dat.ShipWithName)],
-  bookCounts: Seq[(models.Admiral, Long)],
-  married: Seq[(models.Admiral, Long)],
-  shipExp: Seq[(models.Admiral, Long)],
-  expByShip: Seq[(String, Long)],
-  itemCounts: Seq[(models.Admiral, Long)]
-)
+@(rankings: Seq[_root_.ranking.Ranking])
 
 @main {
   <title>ランキング -MyFleetGirls-</title>
 } {
   @statistics_head("ranking") {
     <div class="row">
-      <div class="col-md-3 col-sm-4">
-        <h2>資源保有量</h2>
-        <table class="table table-striped table-condensed">
-          <tbody>
-            @materials.map { case (admin, count) =>
-            <tr>
-              <th><a href="@routes.UserView.material(admin.id)">@admin.nickname</a></th>
-              <td>@count</td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-
-      <div class="col-lg-3 col-md-4 col-sm-4">
-        <h2>嫁艦Lv</h2>
-        <table class="table table-striped table-condensed">
-          <tbody>
-          @yomeLv.map { case (admin, ship) =>
-          <tr>
-            <th><a href="@routes.UserView.top(admin.id)">@admin.nickname</a></th>
-            <td>@ship.name<small>Lv@ship.lv</small></td>
-          </tr>
-          }
-          </tbody>
-        </table>
-      </div>
-
-      <div class="col-lg-3 col-md-4 col-sm-4">
-        <h2>初期艦Lv</h2>
-        <table class="table table-striped table-condensed">
-          <tbody>
-            @firstLv.map { case (admin, ship) =>
-            <tr>
-              <th><a href="@routes.UserView.top(admin.id)">@admin.nickname</a></th>
-              <td>@ship.name<small>Lv@ship.lv</small></td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-
-      <div class="col-md-3 col-sm-4">
-        <h2>艦娘図鑑登録</h2>
-        <table class="table table-striped table-condensed">
-          <tbody>
-            @bookCounts.map { case (admin, count) =>
-            <tr>
-              <th><a href="@routes.UserView.book(admin.id)">@admin.nickname</a></th>
-              <td>@count</td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-
-      <div class="col-md-3 col-sm-4">
-        <h2>ケッコン数</h2>
-        <table class="table table-striped table-condensed">
-          <tbody>
-            @married.map { case (admin, count) =>
-            <tr>
-              <th><a href="@routes.UserView.book(admin.id)">@admin.nickname</a></th>
-              <td>@count</td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-
-      <div class="col-md-3 col-sm-4">
-        <h2>艦娘合計Exp</h2>
-        <table class="table table-striped table-condensed">
-          <tbody>
-            @shipExp.map { case (admin, exp) =>
-            <tr>
-              <th><a href="@routes.UserView.ship(admin.id)">@admin.nickname</a></th>
-              <td>@exp</td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-
-      <div class="col-md-3 col-sm-4">
-        <h2>艦娘別Exp</h2>
-        <table class="table table-striped table-condensed">
-          @expByShip.map { case (ship, exp) =>
-          <tr>
-            <th>@ship</th>
-            <td>@exp</td>
-          </tr>
-          }
-        </table>
-      </div>
-
-      <div class="col-md-3 col-sm-4">
-        <h2>装備図鑑登録</h2>
-        <table class="table table-striped table-condensed">
-          <tbody>
-          @itemCounts.map { case (admin, count) =>
-          <tr>
-            <th><a href="@routes.UserView.book(admin.id)">@admin.nickname</a></th>
-            <td>@count</td>
-          </tr>
-          }
-          </tbody>
-        </table>
-      </div>
+      @rankings.map { ranking =>
+        <div class="@ranking.divClass">
+          <h2>@ranking.title</h2>
+          <table class="table table-striped table-condensed">
+            <tbody>
+              @ranking.rankingQuery(20).map { case elem =>
+                <tr>
+                  <th>
+                    @elem.url match {
+                      case Some(url) => { <a href="@url">@elem.name</a> }
+                      case None => { @elem.name }
+                    }
+                  </th>
+                  <td>@elem.value</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
 
       <div class="col-md-3 col-sm-4">
         <h2>注釈</h2>
         <ul>
-          <li>7日以内にデータ更新のあった提督に限ります（図鑑登録は30日以内に図鑑を開いて登録）</li>
-          <li>図鑑登録は中破絵をカウントに含めています</li>
-          <li>艦娘別Expは進化前で集計しています</li>
+          @rankings.flatMap(_.comment).distinct.map { comment =>
+            <li>@comment</li>
+          }
         </ul>
       </div>
     </div>

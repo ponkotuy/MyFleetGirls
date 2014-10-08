@@ -1,17 +1,28 @@
-package models
+package ranking
 
 import scalikejdbc._
+import models._
 import scala.collection.mutable
 
 /**
  *
- * Date: 14/07/07.
+ * @author ponkotuy
+ * Date: 14/10/09.
  */
-object ShipRanking {
+object ExpByShipRanking extends Ranking {
+  import Ranking._
+
   lazy val s = Ship.syntax("s")
   lazy val ms = MasterShipBase.syntax("ms")
 
-  def findAllOrderByExpSum(limit: Int = 10)(
+  override val title: String = "艦娘別Exp"
+  override val comment: List[String] = List("艦娘別Expは進化前で集計しています")
+  override val divClass: String = colmd3
+
+  override def rankingQuery(limit: Int): List[RankingElement] =
+    findAllOrderByExpSum(limit).map { case (name, exp) => RankingElement(name, <span>{exp}</span>) }
+
+  private def findAllOrderByExpSum(limit: Int = 10)(
       implicit session: DBSession = Ship.autoSession): List[(String, Long)] = {
     val result = withSQL {
       select(ms.resultAll, sqls"sum(s.exp) as sum").from(Ship as s)
@@ -35,10 +46,11 @@ object ShipRanking {
     map.map { case (id, count) => masters(id) -> count }.toList.sortBy(_._2).reverse
   }
 
-  lazy val afters = MasterShipAfter.findAll()
+  private lazy val afters = MasterShipAfter.findAll()
     .filterNot(_.aftershipid == 0)
     .map(ship => ship.aftershipid -> ship.id).toMap
-  def evolutionBase(shipId: Int): Int = {
+
+  private def evolutionBase(shipId: Int): Int = {
     afters.get(shipId) match {
       case Some(afterId) => evolutionBase(afterId)
       case None => shipId
