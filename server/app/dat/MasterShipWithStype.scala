@@ -12,8 +12,6 @@ case class MasterShipWithStype(ms: MasterShipBase, stype: MasterStype) {
   def shipId = ms.id
   def name = ms.name
   def stypeId = ms.stype
-  def ctype = ms.ctype
-  def cnum = ms.cnum
   def stypeName = stype.name
 }
 

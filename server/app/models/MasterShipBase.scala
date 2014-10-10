@@ -1,9 +1,8 @@
 package models
 
-import scalikejdbc._
-import scalikejdbc.{WrappedResultSet, DBSession}
 import com.ponkotuy.data.master
-import dat.{MasterShipWithStype, MasterShipWithClass}
+import dat.MasterShipWithStype
+import scalikejdbc.{DBSession, WrappedResultSet, _}
 
 /**
  *
@@ -11,7 +10,7 @@ import dat.{MasterShipWithStype, MasterShipWithClass}
  * Date: 14/02/25.
  */
 case class MasterShipBase(
-    id: Int, name: String, yomi: String, sortno: Int, stype: Int, ctype: Int, cnum: Int, filename: String
+    id: Int, name: String, yomi: String, sortno: Int, stype: Int, filename: String
 )
 
 object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
@@ -23,8 +22,6 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
     rs.string(x.yomi),
     rs.int(x.sortno),
     rs.int(x.stype),
-    rs.int(x.ctype),
-    rs.int(x.cnum),
     rs.string(x.filename)
   )
 
@@ -44,24 +41,6 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
     select.from(MasterShipBase as ms).where.like(ms.name, q)
   }.map(MasterShipBase(ms)).toList().apply()
 
-  def findAllWithClass()(implicit session: DBSession = autoSession): List[MasterShipWithClass] = withSQL {
-    select.from(MasterShipBase as ms)
-      .leftJoin(MasterShipBase as msb).on(sqls"ms.ctype = msb.ctype and msb.cnum = 1 and msb.sortno != 0")
-  }.map(MasterShipWithClass(ms, msb))
-    .list().apply()
-    .groupBy(_.shipId).map { case (_, ships) => ships.head } // 改などを外す
-    .toList
-
-  def findInWithClass(shipIds: Seq[Int])(implicit session: DBSession = autoSession): List[MasterShipWithClass] =
-    withSQL {
-      select.from(MasterShipBase as ms)
-        .leftJoin(MasterShipBase as msb).on(sqls"ms.ctype = msb.ctype and msb.cnum = 1 and msb.sortno != 0")
-        .where.in(ms.id, shipIds)
-    }.map(MasterShipWithClass(ms, msb))
-      .list().apply()
-      .groupBy(_.shipId).map { case (_, ships) => ships.head } // 改などを外す
-      .toList
-
   def findInWithStype(shipIds: List[Int])(implicit session: DBSession = autoSession): List[MasterShipWithStype] =
     withSQL {
       select.from(MasterShipBase as ms)
@@ -77,11 +56,11 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
     withSQL {
       insert.into(MasterShipBase).namedValues(
         column.id -> ms.id, column.name -> ms.name, column.yomi -> ms.yomi,
-        column.sortno -> ms.sortno, column.stype -> ms.stype, column.ctype -> ms.ctype, column.cnum -> ms.cnum,
+        column.sortno -> ms.sortno, column.stype -> ms.stype,
         column.filename -> ms.filename
       )
     }.update().apply()
-    MasterShipBase(ms.id, ms.name, ms.yomi, ms.sortno, ms.stype, ms.ctype, ms.cnum, ms.filename)
+    MasterShipBase(ms.id, ms.name, ms.yomi, ms.sortno, ms.stype, ms.filename)
   }
 
   def deleteAll()(implicit session: DBSession = MasterShipBase.autoSession): Unit =

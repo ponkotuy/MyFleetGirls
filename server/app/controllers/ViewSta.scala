@@ -38,16 +38,11 @@ object ViewSta extends Controller {
     implicit val formats: Formats = DefaultFormats
     val sum = counts.map(_._2).sum.toDouble
     val sTypeName = models.MasterStype.findAll().map(ms => ms.id -> ms.name).toMap
-    val className = models.MasterShipBase.findAllWithClass().map(msb => msb.ctype -> msb.cls).toMap
     val sTypeCounts = counts.groupBy(it => sTypeName(it._1.stype)).mapValues(_.map(_._2).sum)
     val data = sTypeCounts.map { case (sname, sCount) =>
-      val classes = counts.filter(it => sTypeName(it._1.stype) == sname)
-      val classCounts = classes.groupBy(_._1.ctype).mapValues(_.map(_._2).sum)
-      val children = classCounts.map { case (ctype, cCount) =>
-        val children = counts.filter(_._1.ctype == ctype).map { case (msb, count) =>
-          Map("name" -> s"${msb.name} $count(${toP(count/sum)}%)", "count" -> count)
-        }
-        Map("name" -> s"${className(ctype)} $cCount(${toP(cCount/sum)}%)", "children" -> children)
+      val countByShip = counts.filter { case (ship, _) => sTypeName(ship.stype) == sname }
+      val children = countByShip.map { case (ship, count) =>
+        Map("name" -> s"${ship.name} $count(${toP(count/sum)}%)", "count" -> count)
       }
       Map("name" -> s"${sname} $sCount(${toP(sCount/sum)}%)", "children" -> children)
     }

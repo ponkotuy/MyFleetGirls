@@ -41,13 +41,8 @@ object MasterShip {
   }
 }
 
-/**
- *
- * @param ctype : Class IDだと思われる
- * @param cnum : N番艦 * @param id
- */
 case class MasterShipBase(
-    id: Int, sortno: Int, name: String, yomi: String, stype: Int, ctype: Int, cnum: Int, filename: String
+    id: Int, sortno: Int, name: String, yomi: String, stype: Int, filename: String
 )
 
 object MasterShipBase {
@@ -58,9 +53,7 @@ object MasterShipBase {
     val JString(name) = x \ "api_name"
     val JString(yomi) = x \ "api_yomi"
     val stype = toInt(x \ "api_stype")
-    val ctype = toInt(x \ "api_ctype")
-    val cnum = toInt(x \ "api_cnum")
-    MasterShipBase(id, sortno, name, yomi, stype, ctype, cnum, filenames(id))
+    MasterShipBase(id, sortno, name, yomi, stype, filenames(id))
   }
 }
 

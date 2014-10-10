@@ -13,7 +13,7 @@ import scala.concurrent.duration._
 case object MarriedRanking extends Ranking {
   import Ranking._
 
-  override val title: String = "ケッコン数（図鑑）"
+  override val title: String = "図鑑ケッコン数"
   override val comment: List[String] = List(comment30days)
   override val divClass: String = colmd3
 
