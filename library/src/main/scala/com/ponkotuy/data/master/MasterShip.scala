@@ -59,15 +59,13 @@ object MasterShipBase {
 
 /**
  *
- * @param sokuh : 高速1 低速0
  * @param soku : 謎のパラメータ
  * @param length : 射程
  */
 case class MasterShipSpecs(
-    id: Int, hp: Int, soukoMin: Int, soukoMax: Int, tousai: Int, karyokuMin: Int, karyokuMax: Int,
-    raisouMin: Int, raisouMax: Int, taikuMin: Int, taikuMax: Int, taisenMin: Int, taisenMax: Int,
-    kaihiMin: Int, kaihiMax: Int, sakutekiMin: Int, sakutekiMax: Int, luckyMin: Int, luckyMax: Int,
-    sokuh: Int, soku: Int, length: Int)
+    id: Int, hp: Int, soukoMin: Int, soukoMax: Int, karyokuMin: Int, karyokuMax: Int,
+    raisouMin: Int, raisouMax: Int, taikuMin: Int, taikuMax: Int, luckyMin: Int, luckyMax: Int,
+    soku: Int, length: Int)
 
 object MasterShipSpecs {
   import MasterShip._
@@ -75,21 +73,15 @@ object MasterShipSpecs {
     val id = toInt(x \ "api_id")
     val (hp, _) = toDoubleInt(x \ "api_taik")
     val (soukouMin, soukouMax) = toDoubleInt(x \ "api_souk")
-    val (tousai, _) = toDoubleInt(x \ "api_tous")
     val (karyokuMin, karyokuMax) = toDoubleInt(x \ "api_houg")
     val (raisouMin, raisouMax) = toDoubleInt(x \ "api_raig")
     val (taikuMin, taikuMax) = toDoubleInt(x \ "api_tyku")
-    val (taisenMin, taisenMax) = toDoubleInt(x \ "api_tais")
-    val (kaihiMin, kaihiMax) = toDoubleInt(x \ "api_kaih")
-    val (sakutekiMin, sakutekiMax) = toDoubleInt(x \ "api_saku")
     val (luckyMin, luckyMax) = toDoubleInt(x \ "api_luck")
-    val sokuh = toInt(x \ "api_sokuh")
     val soku = toInt(x \ "api_soku")
     val length = toInt(x \ "api_leng")
     MasterShipSpecs(
-      id, hp, soukouMin, soukouMax, tousai, karyokuMin, karyokuMax, raisouMin, raisouMax, taikuMin, taikuMax,
-      taisenMin, taisenMax, kaihiMin, kaihiMax, sakutekiMin, sakutekiMax, luckyMin, luckyMax,
-      sokuh, soku, length
+      id, hp, soukouMin, soukouMax, karyokuMin, karyokuMax, raisouMin, raisouMax, taikuMin, taikuMax,
+      luckyMin, luckyMax, soku, length
     )
   }
 }
@@ -115,13 +107,12 @@ object MasterShipAfter {
 
 /**
  *
- * @param defeq : 初期装備
  * @param buildtime : 建造時間
  * @param backs : 入手時背景画像（Rarity）
  * @param fuelMax : MAX所持燃料
  */
 case class MasterShipOther(
-    id: Int, defeq: List[Int], buildtime: Int,
+    id: Int, buildtime: Int,
     brokenFuel: Int, brokenAmmo: Int, brokenSteel: Int, brokenBauxite: Int,
     powupFuel: Int, powupAmmo: Int, powupSteel: Int, powupBauxite: Int,
     backs: Int, fuelMax: Int, bullMax: Int, slotNum: Int)
@@ -131,7 +122,6 @@ object MasterShipOther {
 
   def fromJson(x: JValue): MasterShipOther = {
     val id = toInt(x \ "api_id")
-    val JArray(defeq) = x \ "api_defeq"
     val buildtime = toInt(x \ "api_buildtime")
     val List(brokenFuel, brokenAmmo, brokenSteel, brokenBauxite) = toListInt(x \ "api_broken")
     val List(powupFuel, powupAmmo, powupSteel, powupBauxite) = toListInt(x \ "api_powup")
@@ -140,7 +130,7 @@ object MasterShipOther {
     val bullMax = toInt(x \ "api_bull_max")
     val slotNum = toInt(x \ "api_slot_num")
     MasterShipOther(
-      id, defeq.map(_.extract[Int]), buildtime,
+      id, buildtime,
       brokenFuel, brokenAmmo, brokenSteel, brokenBauxite, powupFuel, powupAmmo, powupSteel, powupBauxite,
       backs, fuelMax, bullMax, slotNum
     )

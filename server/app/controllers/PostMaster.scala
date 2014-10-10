@@ -16,7 +16,6 @@ object PostMaster extends Controller {
     models.MasterShipSpecs.deleteAll()
     models.MasterShipSpecs.bulkInsert(ships.map(_.specs))
     models.MasterShipAfter.deleteAll()
-    println(ships.map(_.after))
     models.MasterShipAfter.bulkInsert(ships.map(_.after))
     models.MasterShipOther.deleteAll()
     models.MasterShipOther.bulkInsert(ships.map(_.other))

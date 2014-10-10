@@ -6,7 +6,6 @@ import util.scalikejdbc.BulkInsert._
 
 case class MasterShipOther(
   id: Int,
-  defeq: String,
   buildtime: Int,
   brokenFuel: Int,
   brokenAmmo: Int,
@@ -32,11 +31,10 @@ object MasterShipOther extends SQLSyntaxSupport[MasterShipOther] {
 
   override val tableName = "master_ship_other"
 
-  override val columns = Seq("id", "defeq", "buildtime", "broken_fuel", "broken_ammo", "broken_steel", "broken_bauxite", "powup_fuel", "powup_ammo", "powup_steel", "powup_bauxite", "backs", "fuel_max", "bull_max", "slot_num")
+  override val columns = Seq("id", "buildtime", "broken_fuel", "broken_ammo", "broken_steel", "broken_bauxite", "powup_fuel", "powup_ammo", "powup_steel", "powup_bauxite", "backs", "fuel_max", "bull_max", "slot_num")
 
   def apply(mso: ResultName[MasterShipOther])(rs: WrappedResultSet): MasterShipOther = new MasterShipOther(
     id = rs.int(mso.id),
-    defeq = rs.string(mso.defeq),
     buildtime = rs.int(mso.buildtime),
     brokenFuel = rs.int(mso.brokenFuel),
     brokenAmmo = rs.int(mso.brokenAmmo),
@@ -84,7 +82,6 @@ object MasterShipOther extends SQLSyntaxSupport[MasterShipOther] {
 
   def create(
     id: Int,
-    defeq: String,
     buildtime: Int,
     brokenFuel: Int,
     brokenAmmo: Int,
@@ -101,7 +98,6 @@ object MasterShipOther extends SQLSyntaxSupport[MasterShipOther] {
     withSQL {
       insert.into(MasterShipOther).columns(
         column.id,
-        column.defeq,
         column.buildtime,
         column.brokenFuel,
         column.brokenAmmo,
@@ -117,7 +113,6 @@ object MasterShipOther extends SQLSyntaxSupport[MasterShipOther] {
         column.slotNum
       ).values(
           id,
-          defeq,
           buildtime,
           brokenFuel,
           brokenAmmo,
@@ -136,7 +131,6 @@ object MasterShipOther extends SQLSyntaxSupport[MasterShipOther] {
 
     MasterShipOther(
       id = id,
-      defeq = defeq,
       buildtime = buildtime,
       brokenFuel = brokenFuel,
       brokenAmmo = brokenAmmo,
@@ -154,17 +148,16 @@ object MasterShipOther extends SQLSyntaxSupport[MasterShipOther] {
 
   def bulkInsert(xs: Seq[master.MasterShipOther])(implicit session: DBSession = autoSession): Unit = {
     require(xs.nonEmpty)
-    val defeq = xs.map(_.defeq.mkString(","))
     applyUpdate {
       insert.into(MasterShipOther)
         .columns(
-          column.id, column.defeq, column.buildtime,
+          column.id, column.buildtime,
           column.brokenFuel, column.brokenAmmo, column.brokenSteel, column.brokenBauxite,
           column.powupFuel, column.powupAmmo, column.powupSteel, column.powupBauxite,
           column.backs, column.fuelMax, column.bullMax, column.slotNum
         )
         .multiValues(
-          xs.map(_.id), defeq, xs.map(_.buildtime),
+          xs.map(_.id), xs.map(_.buildtime),
           xs.map(_.brokenFuel), xs.map(_.brokenAmmo), xs.map(_.brokenSteel), xs.map(_.brokenBauxite),
           xs.map(_.powupFuel), xs.map(_.powupAmmo), xs.map(_.powupSteel), xs.map(_.powupBauxite),
           xs.map(_.backs), xs.map(_.fuelMax), xs.map(_.bullMax), xs.map(_.slotNum)
@@ -176,7 +169,6 @@ object MasterShipOther extends SQLSyntaxSupport[MasterShipOther] {
     withSQL {
       update(MasterShipOther).set(
         column.id -> entity.id,
-        column.defeq -> entity.defeq,
         column.buildtime -> entity.buildtime,
         column.brokenFuel -> entity.brokenFuel,
         column.brokenAmmo -> entity.brokenAmmo,
