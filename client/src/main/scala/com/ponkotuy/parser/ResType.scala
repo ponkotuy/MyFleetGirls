@@ -61,6 +61,7 @@ object ResType extends Log {
   case object KaisouPowerup extends ResType(s"\\A$ReqKaisou/powerup\\z".r)
   case object Remodeling extends ResType(s"\\A$ReqKaisou/remodeling\\z".r)
   case object Marriage extends ResType(s"\\A$ReqKaisou/marriage\\z".r) // ケッコンカッコカリ（はぁと
+  case object KaisouLock extends ResType(s"\\A$ReqKaisou/lock\\z".r) // 装備ロック
   case object PracticeBattle extends ResType(s"\\A$ReqPractice/battle\\z".r)
   case object PracticeMidnightBattle extends ResType(s"\\A$ReqPractice/midnight_battle\\z".r)
   case object PracticeBattleResult extends ResType(s"\\A$ReqPractice/battle_result\\z".r)
@@ -86,7 +87,7 @@ object ResType extends Log {
     LoginCheck, ApiStart2, Material, Basic, Record, Ship2, Ship3, NDock, KDock,
     Deck, DeckPort, UseItem, SlotItem, Practice, PictureBook, MapInfo, MapCell, QuestList,
     UpdateDeckName, CreateShip, GetShip, CreateItem,
-    Charge, HenseiChange, HenseiLock, MissionStart, KaisouPowerup, Remodeling, Marriage,
+    Charge, HenseiChange, HenseiLock, MissionStart, KaisouPowerup, Remodeling, Marriage, KaisouLock,
     PracticeBattle, PracticeMidnightBattle, PracticeBattleResult, GetOthersDeck,
     MapStart, MapNext, SortieBattle, SortieBattleResult, ClearItemGet, NyukyoStart, RankingList, CombinedBattleResult,
     MasterPractice, MasterUseItem, MasterFurniture, MasterSlotItem, MasterMapArea,

@@ -79,8 +79,8 @@ class ResponseController extends Log {
       case QuestList =>
         lazyPost { (a, b) => Post.questlist(obj)(a, b) }
       case LoginCheck | Deck | UseItem | Practice | Record | MapCell | UpdateDeckName | Charge | MissionStart |
-           KaisouPowerup | PracticeBattle | PracticeMidnightBattle | PracticeBattleResult |
-           HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
+           KaisouPowerup | Remodeling | Marriage | KaisouLock | PracticeBattle | PracticeMidnightBattle |
+           PracticeBattleResult | HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
            MasterFurniture => // No Need
       case ShipSWF =>
         lazyPost { (a, b) => Post.swfShip(q)(a, b) }
