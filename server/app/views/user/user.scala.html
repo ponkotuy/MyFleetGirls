@@ -2,7 +2,24 @@
 
 @main {
   <title>@{user.admiral.nickname}提督 -MyFleetGirls-</title>
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.time.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.selection.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment-with-locales.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+  <script src="@routes.Assets.at("javascript/common.js")"></script>
+  <script src="@routes.Assets.at("javascript/user.js")"></script>
+  <style>
+    div.chart {
+      width: 900px;
+      height: 500px;
+    }
+
+    div.overview {
+      width: 900px;
+      height: 200px;
+    }
+  </style>
 } {
   @head_content(user) {
     @usertab(user,"top") {
@@ -60,6 +77,10 @@
         }
         </tbody>
       </table>
+
+      <h2>提督経験値</h2>
+      <div id="admiral_exp" class="chart"></div>
+      <div id="admiral_exp_overview" class="overview"></div>
     }
   }
 }
