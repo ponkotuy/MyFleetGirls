@@ -1,0 +1,49 @@
+@()
+
+@main {
+  <title>About MyFleetGirls</title>
+} {
+  @navbar("about")
+
+  <div class="container theme-showcase" role="main">
+    <div class="jumbotron">
+      <h1>MyFleetGirls とは</h1>
+      @tweet()
+      <ul>
+        <li><a href="@routes.Assets.at("zip/MyFleetGirls.zip")">Downloader Download</a></li>
+        <li><a href="https://github.com/ponkotuy/MyFleetGirls">GitHub(ponkotuy/MyFleetGirls)</a></li>
+        <li><a href="https://mobislenotes.com/preview/0f70fa89801b7bb075e2">TODOリスト</a></li>
+        <li><a href="https://twitter.com/ponkotuy/">作者のTwitter(@@ponkotuy)</a></li>
+      </ul>
+    </div>
+        <section id="password">
+          <h2>パスワードについて</h2>
+          <h4>概要</h4>
+          <p>パスワード機能が追加されました。MyFleetGirlsのパスワードは、ClientからのPOSTや設定変更で必要です。</p>
+          <p>一度パスワードでログインすると、以後大体の操作にはパスワードが必須になります。ご注意下さい。</p>
+          <h4>設定の仕方</h4>
+          <p>application.confへ、application.conf.sampleを参考に、auth.passを設定して下さい。application.confが無い場合はapplication.conf.sampleをコピーして作成して下さい。</p>
+        </section>
+
+        <section id="attension">
+          <h2>注意事項</h2>
+          <ul>
+            <li>艦これのデータはぽんこつさんや他の人に丸見えになります。（パスワード類は除く）</li>
+            <li>Token等認証系の情報はこちらの鯖に送らないように気をつけましたが、技術的には全然できてしまうので、ぽんこつさんを信用するか、コード読める人じゃない限りやめましょう</li>
+          </ul>
+        </section>
+
+      <div class="col-md-3">
+        <div class="side-navbar" data-spy="affix" id="sidebar" data-offset-top="200">
+          <ul class="nav">
+            <li class="active"><a href="#about">なにこれ</a></li>
+            <li><a href="#getstarted">インストール・使い方</a></li>
+            <li><a href="#password">Passwordについて</a></li>
+            <li><a href="#change_log">Change Log</a></li>
+            <li><a href="#old_change_log">過去のChange Log</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,34 @@
+@(active: String)(body: Html)
+
+@navbar("about")
+<div class="container theme-showcase" role="main">
+
+  <div class="jumbotron">
+    <h1>About MyFleetGirls</h1>
+    @tweet()
+    <ul>
+      <li><a href="@routes.Assets.at("zip/MyFleetGirls.zip")">Downloader Download</a></li>
+      <li><a href="https://github.com/ponkotuy/MyFleetGirls">GitHub(ponkotuy/MyFleetGirls)</a></li>
+      <li><a href="https://mobislenotes.com/preview/0f70fa89801b7bb075e2">TODOリスト</a></li>
+      <li><a href="https://twitter.com/MyFleetGirls/">公式Twitter(@@MyFleetGirls)</a></li>
+      <li><a href="https://twitter.com/ponkotuy/">作者のTwitter(@@ponkotuy)</a></li>
+    </ul>
+  </div>
+
+  <ul class="nav nav-tabs">
+    <li class="@if(active=="about"){active}">
+      <a href="@routes.ViewAbout.setup()">インストール</a>
+    </li>
+    <li class="@if(active=="faq"){active}">
+      <a href="@routes.ViewAbout.faq()">FAQ</a>
+    </li>
+    <li class="@if(active=="change"){active}">
+      <a href="@routes.ViewAbout.changeLog()">更新履歴</a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    @body
+  </div>
+
+</div>

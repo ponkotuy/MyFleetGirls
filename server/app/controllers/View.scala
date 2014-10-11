@@ -26,8 +26,6 @@ object View extends Controller {
     }
   }
 
-  def about = Common.actionAsync { Ok(views.html.about()) }
-
   def login(init: String, back: String) = actionAsync { request =>
     request.session.get("key").map { key =>
       Redirect(back).withNewSession

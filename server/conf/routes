@@ -73,8 +73,10 @@ GET     /rest/v1/sound/random       controllers.RestSound.random()
 
 # View
 GET     /                           controllers.View.index
-GET     /entire/about               controllers.View.about
 GET     /passwd/entire/login  controllers.View.login(init: String ?= "", back: String ?= "/")
+GET     /entire/about               controllers.ViewAbout.setup
+GET     /entire/about/change        controllers.ViewAbout.changeLog
+GET     /entire/about/faq           controllers.ViewAbout.faq
 GET     /entire/activities          controllers.ViewSta.activities
 GET     /entire/statistics          controllers.ViewSta.statistics
 GET     /entire/sta/cship/:fuel/:ammo/:steel/:bauxite/:develop controllers.ViewSta.cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int)
