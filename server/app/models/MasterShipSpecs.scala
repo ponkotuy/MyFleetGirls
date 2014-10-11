@@ -37,6 +37,7 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
 
   override val columns = Seq("id", "hp", "souko_min", "souko_max", "karyoku_min", "karyoku_max", "raisou_min", "raisou_max", "taiku_min", "taiku_max", "lucky_min", "lucky_max", "soku", "length")
 
+  def apply(mss: SyntaxProvider[MasterShipSpecs])(rs: WrappedResultSet): MasterShipSpecs = apply(mss.resultName)(rs)
   def apply(mss: ResultName[MasterShipSpecs])(rs: WrappedResultSet): MasterShipSpecs = new MasterShipSpecs(
     id = rs.int(mss.id),
     hp = rs.int(mss.hp),

@@ -3,7 +3,7 @@ package models
 import scalikejdbc._
 import com.ponkotuy.data
 import util.scalikejdbc.BulkInsert._
-import dat.ShipWithName
+import dat.{ShipWithAdmiral, ShipWithName}
 
 /**
  *
@@ -53,6 +53,7 @@ object Ship extends SQLSyntaxSupport[Ship] {
   lazy val ds = DeckShip.syntax("ds")
   lazy val ssi = ShipSlotItem.syntax("ssi")
   lazy val mst = MasterStype.syntax("mst")
+  lazy val a = Admiral.syntax("a")
 
   def findByUserMaxLvWithName(memberId: Long)(implicit session: DBSession = autoSession): Option[ShipWithName] = {
     withSQL {
@@ -79,6 +80,16 @@ object Ship extends SQLSyntaxSupport[Ship] {
       ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
     }.first().apply()
   }
+
+  // Slotは常にNil
+  def findByWithAdmiral(sid: Int, limit: Int = 50)(implicit session: DBSession = autoSession): List[ShipWithAdmiral] = withSQL {
+    select.from(Ship as s)
+      .innerJoin(Admiral as a).on(s.memberId, a.id)
+      .where.eq(s.shipId, sid).and.gt(s.lv, 10).orderBy(s.exp).desc
+      .limit(limit)
+  }.map { rs =>
+    ShipWithAdmiral(Ship(s, Nil)(rs), Admiral(a)(rs))
+  }.toList().apply()
 
   def findIn(memberId: Long, ids: Seq[Int])(implicit session: DBSession = autoSession): List[ShipWithName] =
     ids match {

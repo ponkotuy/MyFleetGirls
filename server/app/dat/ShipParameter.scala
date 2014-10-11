@@ -39,12 +39,6 @@ trait ShipParameter extends GraphData {
   def stName = stype.name
   def stAbbName = stAbbNames(stName)
 
-  val stAbbNames = Map(
-    "重雷装巡洋艦" -> "雷巡", "重巡洋艦" -> "重巡", "軽巡洋艦" -> "軽巡",
-    "航空巡洋艦" -> "航巡", "航空戦艦" -> "航戦",
-    "水上機母艦" -> "水母"
-  ).withDefault(identity)
-
   lazy val slot: Seq[SlotItem] = SlotItem.findIn(ship.slot, memberId)
   lazy val slotMaster: Seq[MasterSlotItem] = {
     val ids = slot.map(_.slotitemId)
@@ -84,6 +78,12 @@ trait ShipParameter extends GraphData {
 }
 
 object ShipParameter {
+  val stAbbNames = Map(
+    "重雷装巡洋艦" -> "雷巡", "重巡洋艦" -> "重巡", "軽巡洋艦" -> "軽巡",
+    "航空巡洋艦" -> "航巡", "航空戦艦" -> "航戦",
+    "水上機母艦" -> "水母"
+  ).withDefault(identity)
+
   case class RGB(r: Int, g: Int, b: Int) {
     def blend(other: RGB, rate: Double): RGB = {
       def f(x: Int, y: Int, yrate: Double): Int = (x * (1.0 - yrate) + y * yrate).toInt

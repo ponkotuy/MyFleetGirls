@@ -110,6 +110,10 @@ object MasterShipAfter {
  * @param buildtime : 建造時間
  * @param backs : 入手時背景画像（Rarity）
  * @param fuelMax : MAX所持燃料
+ * @param powupFuel : 燃料ではなく火力
+ * @param powupAmmo : 弾薬ではなく雷装
+ * @param powupSteel : 鋼鉄ではなく対空
+ * @param powupBauxite : ボーキサイトではなく装甲
  */
 case class MasterShipOther(
     id: Int, buildtime: Int,

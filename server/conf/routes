@@ -89,6 +89,8 @@ GET     /entire/sta/route/:area/:info controllers.ViewSta.route(area: Int, info:
 GET     /entire/sta/route_fleet/:area/:info/:dep/:dest controllers.ViewSta.routeFleet(area: Int, info: Int, dep: Int, dest: Int)
 GET     /entire/sta/ranking         controllers.ViewSta.ranking()
 GET     /entire/sta/rank/:ranking   controllers.ViewSta.rankingDetails(ranking: String)
+GET     /entire/sta/book            controllers.ViewSta.shipList()
+GET     /entire/sta/book/:sid       controllers.ViewSta.shipBook(sid: Int)
 GET     /u/:user                    controllers.UserView.name(user: String)
 GET     /user/:userId               controllers.UserView.user2(userId: Long)
 GET     /user/:userId/              controllers.UserView.user(userId: Long)

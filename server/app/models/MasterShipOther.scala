@@ -33,6 +33,7 @@ object MasterShipOther extends SQLSyntaxSupport[MasterShipOther] {
 
   override val columns = Seq("id", "buildtime", "broken_fuel", "broken_ammo", "broken_steel", "broken_bauxite", "powup_fuel", "powup_ammo", "powup_steel", "powup_bauxite", "backs", "fuel_max", "bull_max", "slot_num")
 
+  def apply(mso: SyntaxProvider[MasterShipOther])(rs: WrappedResultSet): MasterShipOther = apply(mso.resultName)(rs)
   def apply(mso: ResultName[MasterShipOther])(rs: WrappedResultSet): MasterShipOther = new MasterShipOther(
     id = rs.int(mso.id),
     buildtime = rs.int(mso.buildtime),

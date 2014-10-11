@@ -24,6 +24,7 @@ object MasterShipAfter extends SQLSyntaxSupport[MasterShipAfter] {
 
   override val columns = Seq("id", "afterlv", "aftershipid", "afterfuel", "afterbull")
 
+  def apply(msa: SyntaxProvider[MasterShipAfter])(rs: WrappedResultSet): MasterShipAfter = apply(msa.resultName)(rs)
   def apply(msa: ResultName[MasterShipAfter])(rs: WrappedResultSet): MasterShipAfter = new MasterShipAfter(
     id = rs.int(msa.id),
     afterlv = rs.int(msa.afterlv),

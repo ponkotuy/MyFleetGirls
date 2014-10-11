@@ -1,7 +1,7 @@
 package models
 
 import com.ponkotuy.data.master
-import dat.MasterShipWithStype
+import dat.{MasterShipAll, MasterShipWithStype}
 import scalikejdbc.{DBSession, WrappedResultSet, _}
 
 /**
@@ -26,8 +26,27 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
   )
 
   lazy val ms = MasterShipBase.syntax("ms")
+  lazy val mss = MasterShipSpecs.syntax("mss")
   lazy val mst = MasterStype.syntax("mst")
+  lazy val msa = MasterShipAfter.syntax("msa")
+  lazy val mso = MasterShipOther.syntax("mso")
   lazy val msb = MasterShipBase.syntax("msb") // 2つのMasterShipBaseを区別する必要がある時用
+
+  def findAllInOneBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[MasterShipAll] = withSQL {
+    select.from(MasterShipBase as ms)
+      .innerJoin(MasterShipSpecs as mss).on(ms.id, mss.id)
+      .innerJoin(MasterShipAfter as msa).on(ms.id, msa.id)
+      .innerJoin(MasterShipOther as mso).on(ms.id, mso.id)
+      .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+      .where(sqls"$where")
+  }.map { rs =>
+    val _msb = MasterShipBase(ms)(rs)
+    val _mss = MasterShipSpecs(mss)(rs)
+    val _msa = MasterShipAfter(msa)(rs)
+    val _mso = MasterShipOther(mso)(rs)
+    val _mst = MasterStype(mst)(rs)
+    MasterShipAll(_msb, _mss, _msa, _mso, _mst)
+  }.list().apply()
 
   def findByFilename(key: String)(implicit session: DBSession = autoSession): Option[MasterShipBase] = withSQL {
     select.from(MasterShipBase as ms).where.eq(ms.filename, key)
@@ -47,6 +66,14 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
         .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where.in(ms.id, shipIds)
     }.map(MasterShipWithStype(ms, mst)).list().apply()
+
+  def findAllWithStype(where: SQLSyntax)(implicit session: DBSession = autoSession): List[MasterShipWithStype] = {
+    withSQL {
+      select.from(MasterShipBase as ms)
+        .leftJoin(MasterStype as mst).on(ms.stype, mst.id).where(sqls"$where")
+        .orderBy(ms.sortno)
+    }.map(MasterShipWithStype(ms, mst)).list().apply()
+  }
 
   def count()(implicit session: DBSession = MasterShipBase.autoSession): Long = withSQL {
     select(sqls"count(1)").from(MasterShipBase as ms)

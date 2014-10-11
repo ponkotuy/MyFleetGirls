@@ -106,5 +106,17 @@ object ViewSta extends Controller {
     }.getOrElse(NotFound("そのようなRankingは見つかりません"))
   }
 
+  def shipList() = actionAsync {
+    val ships = models.MasterShipBase.findAllWithStype(sqls"ms.sortno > 0")
+    Ok(views.html.sta.ship_list(ships))
+  }
+
+  def shipBook(sid: Int) = actionAsync {
+    models.MasterShipBase.findAllInOneBy(sqls"ms.id = $sid").headOption.map { master =>
+      val ships = models.Ship.findByWithAdmiral(sid)
+      Ok(views.html.sta.ship_book(master, ships))
+    }.getOrElse(NotFound(s"Not Found ShipID: $sid"))
+  }
+
   private def toP(d: Double): String = f"${d*100}%.1f"
 }

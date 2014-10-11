@@ -1,5 +1,6 @@
 package ranking
 
+import controllers.routes
 import scalikejdbc._
 import models._
 import scala.collection.mutable
@@ -20,10 +21,13 @@ case object ExpByShipRanking extends Ranking {
   override val divClass: String = colmd3
 
   override def rankingQuery(limit: Int): List[RankingElement] =
-    findAllOrderByExpSum(limit).map { case (name, exp) => RankingElement(name, <span>{exp}</span>) }
+    findAllOrderByExpSum(limit).map { case (id, name, exp) =>
+      val url = routes.ViewSta.shipBook(id).toString()
+      RankingElement(name, <span>{exp}</span>, url)
+    }
 
   private def findAllOrderByExpSum(limit: Int = 10)(
-      implicit session: DBSession = Ship.autoSession): List[(String, Long)] = {
+      implicit session: DBSession = Ship.autoSession): List[(Int, String, Long)] = {
     val result = withSQL {
       select(ms.resultAll, sqls"sum(s.exp) as sum").from(Ship as s)
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
@@ -43,7 +47,7 @@ case object ExpByShipRanking extends Ranking {
     // 名前付与
     val masters = MasterShipBase.findAll()
       .map(ship => ship.id -> ship.name).toMap
-    map.map { case (id, count) => masters(id) -> count }.toList.sortBy(_._2).reverse
+    map.map { case (id, count) => (id, masters(id), count) }.toList.sortBy(_._3).reverse
   }
 
   private lazy val afters = MasterShipAfter.findAll()
