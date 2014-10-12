@@ -1,10 +1,11 @@
 @(user: dat.User)
+@import views.Js
 
 @main {
   <title>ドック -@{user.admiral.nickname}提督-</title>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment-with-langs.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.6/vue.min.js"></script>
-  <script src="@routes.Assets.at("javascript/dock.js")"></script>
+  <script src="@Js.MomentLocales"></script>
+  <script src="@Js.Vue"></script>
+  <script src="@Js.Coffee("dock")"></script>
 } {
   @head_content(user) {
     @usertab(user,"dock") {
