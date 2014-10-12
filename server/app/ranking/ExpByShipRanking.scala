@@ -23,7 +23,7 @@ case object ExpByShipRanking extends Ranking {
   override def rankingQuery(limit: Int): List[RankingElement] =
     findAllOrderByExpSum(limit).map { case (id, name, exp) =>
       val url = routes.ViewSta.shipBook(id).toString()
-      RankingElement(name, <span>{exp}</span>, url)
+      RankingElement(name, <span>{f"$exp%,d"}</span>, url)
     }
 
   private def findAllOrderByExpSum(limit: Int = 10)(

@@ -1,7 +1,7 @@
 @(ships: Seq[dat.MasterShipWithStype])
 
 @main {
-  <title>鑑娘一覧 -鑑娘図鑑-</title>
+  <title>艦娘一覧 -艦娘図鑑-</title>
 } {
   @statistics_head("ship_book") {
     @ships.groupBy(_.stypeName).toList.sortBy(_._2.size).reverse.map { case (stype, xs) =>

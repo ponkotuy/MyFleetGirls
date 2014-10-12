@@ -35,7 +35,7 @@
               @stypeExp.map { st =>
                 <tr>
                   <td>@st.name</td>
-                  <td>@st.exp</td>
+                  <td>@{f"${st.exp}%,d"}</td>
                 </tr>
               }
             </tbody>

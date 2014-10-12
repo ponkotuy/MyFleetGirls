@@ -23,7 +23,7 @@ case object SumShipExpRanking extends Ranking {
   override def rankingQuery(limit: Int): List[RankingElement] = {
     findAllOrderByShipExpSum(limit, agoMillis(7.days)).map { case (admiral, exp) =>
       val url = routes.UserView.ship(admiral.id).toString()
-      RankingElement(admiral.nickname, <span>{exp}</span>, url)
+      RankingElement(admiral.nickname, <span>{f"$exp%,d"}</span>, url)
     }
   }
 
