@@ -1,10 +1,11 @@
 @()
+@import views.Js
 
 @main {
   <title>Activities -統計-</title>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.6/vue.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
-  <script src="@routes.Assets.at("javascript/activities.js")"></script>
+  <script src="@Js.Vue"></script>
+  <script src="@Js.MomentLocales"></script>
+  <script src="@Js.Coffee("activities")"></script>
   <style>
     .trans {
       transition: all 1.0s ease;

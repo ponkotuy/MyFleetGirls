@@ -1,11 +1,12 @@
 @(user: dat.User, ships: Seq[dat.CreateShipWithName])
+@import views.Js
 
 @main {
   <title>建造履歴 -@{user.admiral.nickname}提督-</title>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment-with-locales.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.6/vue.min.js"></script>
-  <script src="@routes.Assets.at("javascript/time.js")"></script>
-  <script src="@routes.Assets.at("javascript/create.js")"></script>
+  <script src="@Js.MomentLocales"></script>
+  <script src="@Js.Vue"></script>
+  <script src="@Js.Coffee("time")"></script>
+  <script src="@Js.Coffee("create")"></script>
 } {
   @head_content(user) {
     @usertab(user,"create") {

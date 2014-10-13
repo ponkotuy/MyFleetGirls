@@ -1,8 +1,9 @@
 @(ship: dat.ShipParameter, user: dat.User)
+@import views.Js
 
 <!-- Require jqPlot -->
 
-<script src="@routes.Assets.at("javascript/bar.js")"></script>
+<script src="@Js.Coffee("bar")"></script>
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
   <h3 class="modal-title">@ship.name<small>Lv@ship.lv</small></h3>

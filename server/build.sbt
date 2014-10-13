@@ -26,3 +26,5 @@ buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
 buildInfoPackage := "build"
 
 scalikejdbcSettings
+
+TwirlKeys.templateImports ++= Seq("views.Js", "dat._", "models._")

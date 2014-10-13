@@ -1,14 +1,12 @@
-@(user: dat.User, yome: Option[dat.ShipWithName], best: Option[dat.ShipWithName], flagship: Option[dat.ShipWithName])
+@(user: dat.User, yome: Option[ShipWithName], best: Option[ShipWithName], flagship: Option[ShipWithName])
 
 @main {
   <title>@{user.admiral.nickname}提督 -MyFleetGirls-</title>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.time.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.selection.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment-with-locales.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
-  <script src="@routes.Assets.at("javascript/common.js")"></script>
-  <script src="@routes.Assets.at("javascript/user.js")"></script>
+  @Js.ScriptFlot("time", "selection")
+  <script src="@Js.MomentLocales"></script>
+  <script src="@Js.Lodash"></script>
+  <script src="@Js.Common"></script>
+  <script src="@Js.Coffee("user")"></script>
   <style>
     div.chart {
       width: 900px;

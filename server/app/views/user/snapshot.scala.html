@@ -1,15 +1,11 @@
 @(user: dat.User, snaps: Seq[dat.DeckSnapshotWithShip])
+@import views.Js
 
 @main {
   <title>艦隊スナップショット -@{user.admiral.nickname}提督-</title>
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.css">
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.barRenderer.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.categoryAxisRenderer.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.pointLabels.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/plugins/jqplot.highlighter.min.js"></script>
-  <script src="@routes.Assets.at("javascript/common.js")"></script>
-  <script src="@routes.Assets.at("javascript/snapshot.js")"></script>
+  @Js.ImportJqplot("barRenderer", "categoryAxisRenderer, pointLabels, highlighter")
+  <script src="@Js.Common"></script>
+  <script src="@Js.Coffee("snapshot")"></script>
 } {
   @head_content(user) {
     @usertab(user, "snap") {

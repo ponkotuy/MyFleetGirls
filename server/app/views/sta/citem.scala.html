@@ -1,12 +1,11 @@
-@(title: String, countJson: String, counts: Seq[(String, Long, Double)], history: Seq[dat.CreateItemWithName])
+@(title: String, countJson: String, counts: Seq[(String, Long, Double)], history: Seq[CreateItemWithName])
 
 @main {
   <title>開発結果 @title</title>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment-with-langs.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.pie.min.js"></script>
-  <script src="@routes.Assets.at("javascript/pie.js")"></script>
-  <script src="@routes.Assets.at("javascript/time.js")"></script>
+  <script src="@Js.MomentLocales"></script>
+  @Js.ScriptFlot("pie")
+  <script src="@Js.Coffee("pie")"></script>
+  <script src="@Js.Coffee("time")"></script>
 } {
   @statistics_head("from_recipe") {
     <div class="page-header">

@@ -2,12 +2,10 @@
 
 @main {
   <title>統計 -@{user.admiral.nickname}提督-</title>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.pie.min.js"></script>
-  <script src="@routes.Assets.at("javascript/lib/jquery.flot.axislabels.js")"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.stack.min.js"></script>
-  <script src="@routes.Assets.at("javascript/pie.js")"></script>
-  <script src="@routes.Assets.at("javascript/stacked_chart.js")"></script>
+  @Js.ScriptFlot("pie", "stack")
+  <script src="@Js.Lib("jquery.flot.axislabels")"></script>
+  <script src="@Js.Coffee("pie")"></script>
+  <script src="@Js.Coffee("chart")"></script>
 
   <style>
     .tickLabel { font-size: 150%; }
