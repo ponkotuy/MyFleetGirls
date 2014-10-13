@@ -13,7 +13,7 @@ object Js {
   val D3 = "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.12/d3.min.js"
 
   def ScriptFlot(adds: String*) = {
-    <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script> ++
     adds.map { add =>
       <script src={s"//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.$add.min.js"}></script>
     }

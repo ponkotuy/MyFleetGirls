@@ -32,13 +32,12 @@ wholePlot = -> mainPlot 'whole', moment().subtract(1, 'months').valueOf()
 
 mainPlot = (active, min, max = moment().valueOf()) ->
   min_ = min ?= 0
-  console.log(min_)
-  console.log(exps[0].data)
   rangeData = exps[0].data.filter (x) -> min_ < x[0] and x[0] < max
   rangeExps = rangeData.map (x) -> x[1]
   option.yaxis = {min: _.min(rangeExps)}
-  console.log(option.yaxis)
+  first = _.min(rangeData.map (x) -> x[0])
   if min?
+    min = Math.max(min, first)
     newOpt = $.extend true, {}, option,
       xaxis: { min: min, max: max }
     plot = $.plot(chart, exps, newOpt)
