@@ -2,6 +2,8 @@
 
 @main {
   <title>艦娘図鑑</title>
+  <script src="@Js.Vue"></script>
+  <script src="@Js.Coffee("st_ship_book")"></script>
 } {
   @statistics_head("ship_book") {
     <h1>@master.stName @master.name<small>@master.yomi</small></h1>
@@ -10,7 +12,7 @@
       <img src="@routes.RestImage.ship(master.id)" style="margin: 25px;"/>
     </div>
 
-    <div class="row">
+    <div class="row" id="from_name" data-ship-id="@master.id">
       <div class="col-md-3 col-sm-5">
         <table class="table table-condensed table-striped">
           <tr>
@@ -44,7 +46,8 @@
         </table>
       </div>
 
-      <div class="col-md-4 col-md-offset-0 col-sm-5 col-sm-offset-3" style="text-align: center;">
+      <div class="col-md-4 col-sm-5">
+        <h3>所持ユーザ</h3>
         <table class="table table-condensed table-striped">
         @ships.zipWithIndex.map { case (ship, i) =>
           <tr>
@@ -53,7 +56,49 @@
             <td>@master.name<small>Lv@ship.lv</small></td>
           </tr>
         }
-      </table>
+        </table>
+      </div>
+
+      <div v-show="sCounts.length > 0" class="col-sm-7">
+        <h3>建造レシピ</h3>
+        <table class="table table-hover table-condensed" v-show="sCounts.length > 0">
+          <thead>
+            <tr>
+              <th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>資材</th><th>回数</th><th>比率</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-repeat="c: sCounts" onclick="location.href='/entire/sta/cship/{{c.mat.fuel}}/{{c.mat.ammo}}/{{c.mat.steel}}/{{c.mat.bauxite}}/{{c.mat.develop}}'" class="clickable">
+              <td>{{c.mat.fuel}}</td>
+              <td>{{c.mat.ammo}}</td>
+              <td>{{c.mat.steel}}</td>
+              <td>{{c.mat.bauxite}}</td>
+              <td>{{c.mat.develop}}</td>
+              <td>{{c.count}}</td>
+              <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div v-show="dropCounts.length > 0" class="col-sm-5">
+        <h3>ドロップ</h3>
+        <table class="table table-hover table-condensed">
+          <thead>
+            <tr>
+              <th>Stage</th><th>Rank</th><th>ドロップ数</th><th>比率</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-repeat="c: dropCounts" class="clickable" onclick="location.href='/entire/sta/drop/{{c.cell.area}}/{{c.cell.info}}#cell={{c.cell.area}}-{{c.cell.info}}-{{c.cell.cell}}&rank={{c.cell.rank}}'">
+              <td>{{c.cell.area}}-{{c.cell.info}}-{{c.cell.cell}}</td>
+              <td>{{c.cell.rank}}</td>
+              <td>{{c.count}}</td>
+              <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   }
 }
