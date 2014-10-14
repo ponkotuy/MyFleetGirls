@@ -20,7 +20,8 @@ case class MasterShipSpecs(
   luckyMin: Int,
   luckyMax: Int,
   soku: Int,
-  length: Int) {
+  length: Int,
+  maxeq: Seq[Int]) {
 
   def save()(implicit session: DBSession = MasterShipSpecs.autoSession): MasterShipSpecs = MasterShipSpecs.save(this)(session)
 
@@ -35,7 +36,7 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
 
   override val tableName = "master_ship_specs"
 
-  override val columns = Seq("id", "hp", "souko_min", "souko_max", "karyoku_min", "karyoku_max", "raisou_min", "raisou_max", "taiku_min", "taiku_max", "lucky_min", "lucky_max", "soku", "length")
+  override val columns = Seq("id", "hp", "souko_min", "souko_max", "karyoku_min", "karyoku_max", "raisou_min", "raisou_max", "taiku_min", "taiku_max", "lucky_min", "lucky_max", "soku", "length", "maxeq")
 
   def apply(mss: SyntaxProvider[MasterShipSpecs])(rs: WrappedResultSet): MasterShipSpecs = apply(mss.resultName)(rs)
   def apply(mss: ResultName[MasterShipSpecs])(rs: WrappedResultSet): MasterShipSpecs = new MasterShipSpecs(
@@ -52,7 +53,8 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
     luckyMin = rs.int(mss.luckyMin),
     luckyMax = rs.int(mss.luckyMax),
     soku = rs.int(mss.soku),
-    length = rs.int(mss.length)
+    length = rs.int(mss.length),
+    maxeq = rs.string(mss.maxeq).split(',').map(_.toInt)
   )
 
   val mss = MasterShipSpecs.syntax("mss")
@@ -100,7 +102,8 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
     luckyMin: Int,
     luckyMax: Int,
     soku: Int,
-    length: Int)(implicit session: DBSession = autoSession): MasterShipSpecs = {
+    length: Int,
+    maxeq: Seq[Int])(implicit session: DBSession = autoSession): MasterShipSpecs = {
     withSQL {
       insert.into(MasterShipSpecs).columns(
         column.id,
@@ -116,7 +119,8 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
         column.luckyMin,
         column.luckyMax,
         column.soku,
-        column.length
+        column.length,
+        column.maxeq
       ).values(
           id,
           hp,
@@ -131,7 +135,8 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
           luckyMin,
           luckyMax,
           soku,
-          length
+          length,
+          maxeq.mkString(",")
         )
     }.update().apply()
 
@@ -149,7 +154,8 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
       luckyMin = luckyMin,
       luckyMax = luckyMax,
       soku = soku,
-      length = length)
+      length = length,
+      maxeq = maxeq)
   }
 
   def bulkInsert(xs: Seq[master.MasterShipSpecs])(implicit session: DBSession = autoSession): Unit = {
@@ -159,13 +165,13 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
         .columns(
           column.id, column.hp, column.soukoMin, column.soukoMax, column.karyokuMin, column.karyokuMax,
           column.raisouMin, column.raisouMax, column.taikuMin, column.taikuMax, column.luckyMin, column.luckyMax,
-          column.soku, column.length
+          column.soku, column.length, column.maxeq
         )
         .multiValues(
           xs.map(_.id), xs.map(_.hp), xs.map(_.soukoMin), xs.map(_.soukoMax),
           xs.map(_.karyokuMin), xs.map(_.karyokuMax), xs.map(_.raisouMin), xs.map(_.raisouMax),
           xs.map(_.taikuMin), xs.map(_.taikuMax),
-          xs.map(_.luckyMin), xs.map(_.luckyMax), xs.map(_.soku), xs.map(_.length)
+          xs.map(_.luckyMin), xs.map(_.luckyMax), xs.map(_.soku), xs.map(_.length), xs.map(_.maxeq.mkString(","))
         )
     }
   }
@@ -186,7 +192,8 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
         column.luckyMin -> entity.luckyMin,
         column.luckyMax -> entity.luckyMax,
         column.soku -> entity.soku,
-        column.length -> entity.length
+        column.length -> entity.length,
+        column.maxeq -> entity.maxeq.mkString(",")
       ).where.eq(column.id, entity.id)
     }.update().apply()
     entity

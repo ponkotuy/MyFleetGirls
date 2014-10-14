@@ -1,10 +1,9 @@
 @(user: dat.User, ships: Seq[dat.ShipWithName], decks: Seq[dat.DeckShipWithName], deckports: Seq[DeckPort])
 @import views.html.user.{head_content, usertab}
-@import views.Js
 
 @main {
   <title>艦娘 -@{user.admiral.nickname}提督-</title>
-  @Js.ImportJqplot("barRenderer", "categoryAxisRenderer, pointLabels, highlighter")
+  @Js.ImportJqplot("barRenderer", "categoryAxisRenderer", "pointLabels", "highlighter")
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.bootstrap.css" />
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.widgets.min.js"></script>
@@ -19,6 +18,14 @@
             <h3>
               <a data-toggle="modal" href="fleet/@deckport.id" class="modal_link" data-target="#modal">@deckport.name</a>
             </h3>
+            <p style="margin: 5px ;">
+              <small>制空値</small>
+              @{
+                decks.filter(_.deckId == deckport.id)
+                  .flatMap { it => ships.find(_.id == it.shipId) }
+                  .map(_.airSuperiority).sum
+              }
+            </p>
             <ol>
               @decks.filter(_.deckId == deckport.id).map { ship =>
                 <li style="background-color: @ship.rgb.toString">

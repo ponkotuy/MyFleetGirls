@@ -65,7 +65,7 @@ object MasterShipBase {
 case class MasterShipSpecs(
     id: Int, hp: Int, soukoMin: Int, soukoMax: Int, karyokuMin: Int, karyokuMax: Int,
     raisouMin: Int, raisouMax: Int, taikuMin: Int, taikuMax: Int, luckyMin: Int, luckyMax: Int,
-    soku: Int, length: Int)
+    soku: Int, length: Int, maxeq: List[Int])
 
 object MasterShipSpecs {
   import MasterShip._
@@ -79,9 +79,10 @@ object MasterShipSpecs {
     val (luckyMin, luckyMax) = toDoubleInt(x \ "api_luck")
     val soku = toInt(x \ "api_soku")
     val length = toInt(x \ "api_leng")
+    val maxeq = toListInt(x \ "api_maxeq")
     MasterShipSpecs(
       id, hp, soukouMin, soukouMax, karyokuMin, karyokuMax, raisouMin, raisouMax, taikuMin, taikuMax,
-      luckyMin, luckyMax, soku, length
+      luckyMin, luckyMax, soku, length, maxeq
     )
   }
 }

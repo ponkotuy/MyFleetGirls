@@ -47,6 +47,12 @@ trait ShipParameter extends GraphData {
   }
   lazy val spec: MasterShipSpecs = MasterShipSpecs.find(shipId).get
 
+  lazy val airSuperiority: Int = {
+    slotMaster.zip(spec.maxeq).filter(_._1.category == 6).map { case (fighter, slotCount) =>
+      Math.floor(fighter.antiair * math.sqrt(slotCount)).toInt
+    }.sum
+  }
+
   def slotNames: Seq[String] = slot.map(_.name)
 
   def hpRate: Double = nowhp / maxhp.toDouble

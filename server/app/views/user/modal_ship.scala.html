@@ -18,6 +18,7 @@
       <td>
         <div>
           <img src="@routes.RestImage.ship(ship.shipId)" alt="@ship.name" class="img-rounded" />
+          @if(ship.airSuperiority > 0) { <p style="margin: 5px;"><small>制空値</small>@ship.airSuperiority</p> }
           <ul>
             @ship.slotNames.map { slot =>
               <li>@slot</li>
