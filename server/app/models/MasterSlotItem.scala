@@ -2,6 +2,7 @@ package models
 
 import com.ponkotuy.data.master
 import scalikejdbc._
+import tool.EquipType
 import util.scalikejdbc.BulkInsert._
 
 case class MasterSlotItem(
@@ -23,8 +24,8 @@ case class MasterSlotItem(
 
   def destroy()(implicit session: DBSession = MasterSlotItem.autoSession): Unit = MasterSlotItem.destroy(this)(session)
 
-  /** typのうち3番目の値。アイコンの元になってる種別 */
-  def category: Int = typ.split(',')(2).toInt
+  /** typのうち3番目の値より。アイコンの元になってる種別 */
+  def category: Option[EquipType] = EquipType.fromInt(typ.split(',')(2).toInt)
 
 }
 

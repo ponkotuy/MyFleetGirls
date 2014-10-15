@@ -25,6 +25,12 @@
                   .flatMap { it => ships.find(_.id == it.shipId) }
                   .map(_.airSuperiority).sum
               }
+              <small>索敵値</small>
+              @{
+                val deckShips = decks.filter(_.deckId == deckport.id)
+                  .flatMap { it => ships.find(_.id == it.shipId) }
+                tool.Calc.spotter(deckShips)
+              }
             </p>
             <ol>
               @decks.filter(_.deckId == deckport.id).map { ship =>

@@ -7,7 +7,8 @@ import tool.ShipExperience
  * Date: 14/06/16.
  */
 trait ShipParameter extends GraphData {
-  import ShipParameter._
+  import dat.ShipParameter._
+  import tool.EquipType.Fighter
 
   def ship: Ship
   def master: MasterShipBase
@@ -48,7 +49,7 @@ trait ShipParameter extends GraphData {
   lazy val spec: MasterShipSpecs = MasterShipSpecs.find(shipId).get
 
   lazy val airSuperiority: Int = {
-    slotMaster.zip(spec.maxeq).filter(_._1.category == 6).map { case (fighter, slotCount) =>
+    slotMaster.zip(spec.maxeq).filter(_._1.category.contains(Fighter)).map { case (fighter, slotCount) =>
       Math.floor(fighter.antiair * math.sqrt(slotCount)).toInt
     }.sum
   }
@@ -80,7 +81,6 @@ trait ShipParameter extends GraphData {
   /** LvMAX(100 or 150)までに必要な経験値の取得率 */
   def entireExpRate: Double =
     if(lv > 99) exp.toDouble/ShipExperience.sum(150) else exp.toDouble/ShipExperience.sum(100)
-
 }
 
 object ShipParameter {
