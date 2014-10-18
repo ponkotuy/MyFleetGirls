@@ -103,7 +103,7 @@ object ShipParameter {
 
   val Red = RGB(242, 222, 222)
   val Blue = RGB(217, 237, 247)
-  val White = RGB(255, 255, 255)
+  val White = RGB(231, 227, 223)
   val Yellow = RGB(252, 251, 227)
 
   def rgb(cond: Int): RGB = {

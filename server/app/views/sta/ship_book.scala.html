@@ -15,34 +15,36 @@
     <div class="row" id="from_name" data-ship-id="@master.id">
       <div class="col-md-3 col-sm-5">
         <table class="table table-condensed table-striped">
-          <tr>
-            <th>改造</th>
-            <td>
-              @if(master.beforeShip.nonEmpty) {
-                @master.beforeShip.map { b => <a href="@routes.ViewSta.shipBook(b.id)">@b.name <small>
-                  Lv@b.afterLv</small></a>
+          <tbody>
+            <tr>
+              <th>改造</th>
+              <td>
+                @if(master.beforeShip.nonEmpty) {
+                  @master.beforeShip.map { b => <a href="@routes.ViewSta.shipBook(b.id)">@b.name <small>
+                    Lv@b.afterLv</small></a>
+                  }
+                  →
                 }
-                →
-              }
-              @master.name
-              @master.afterShip.map { a => <small>Lv@master.afterLv</small>→<a href="@routes.ViewSta.shipBook(a.id)">@a.name</a> }
-            </td>
-          </tr>
-          @master.afterResource.map { res =>
-            <tr><th>改造資源</th><td>@res.mkString("/")</td></tr>
-          }
-          <tr><th>HP</th><td>@master.hp</td></tr>
-          <tr><th>火力</th><td>@master.karyoku.mkString("/")</td></tr>
-          <tr><th>雷装</th><td>@master.raisou.mkString("/")</td></tr>
-          <tr><th>対空</th><td>@master.taiku.mkString("/")</td></tr>
-          <tr><th>装甲</th><td>@master.souko.mkString("/")</td></tr>
-          <tr><th>運</th><td>@master.lucky.mkString("/")</td></tr>
-          <tr><th>射程</th><td>@{master.length}射程</td></tr>
-          <tr><th>燃料/弾薬</th><td>@master.fuel/@master.bull</td></tr>
-          <tr><th>解体時資源</th><td>@master.broken.mkString("/")</td></tr>
-          <tr><th>近代化能力</th><td>@master.powerup.mkString("/")</td></tr>
-          <tr><th>建造時間</th><td>@{master.buildtime}分</td></tr>
-          <tr><th>レアリティ</th><td>@master.backs</td></tr>
+                @master.name
+                @master.afterShip.map { a => <small>Lv@master.afterLv</small>→<a href="@routes.ViewSta.shipBook(a.id)">@a.name</a> }
+              </td>
+            </tr>
+            @master.afterResource.map { res =>
+              <tr><th>改造資源</th><td>@res.mkString("/")</td></tr>
+            }
+            <tr><th>HP</th><td>@master.hp</td></tr>
+            <tr><th>火力</th><td>@master.karyoku.mkString("/")</td></tr>
+            <tr><th>雷装</th><td>@master.raisou.mkString("/")</td></tr>
+            <tr><th>対空</th><td>@master.taiku.mkString("/")</td></tr>
+            <tr><th>装甲</th><td>@master.souko.mkString("/")</td></tr>
+            <tr><th>運</th><td>@master.lucky.mkString("/")</td></tr>
+            <tr><th>射程</th><td>@{master.length}射程</td></tr>
+            <tr><th>燃料/弾薬</th><td>@master.fuel/@master.bull</td></tr>
+            <tr><th>解体時資源</th><td>@master.broken.mkString("/")</td></tr>
+            <tr><th>近代化能力</th><td>@master.powerup.mkString("/")</td></tr>
+            <tr><th>建造時間</th><td>@{master.buildtime}分</td></tr>
+            <tr><th>レアリティ</th><td>@master.backs</td></tr>
+          </tbody>
         </table>
       </div>
 
