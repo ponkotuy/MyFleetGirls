@@ -1,13 +1,13 @@
 @(active: String)
 <script src="@routes.Assets.at("javascript/navbar.js")"></script>
-<div class="navbar navbar-inverse" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
+  <div style="margin-top: 0px; margin-bottom: 10px;">
+    <div class="container">
+    <div class="header">
       <button type="button" class="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse"></button>
-      <a class="navbar-brand" href="@routes.View.index()">MyFleetGirls</a>
+      <a class="navbar-brand" href="//myfleet.moe"><img src="@routes.Assets.at("MFGsTitle.png")" width="106px" height="51px" alt="MyFleetGirls" style="margin-top: -10px; margin-left: -10px; margin-right: 20px;"/></a>
     </div>
-    <div class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
+    <div>
+      <ul class="nav nav-pills" style="margin-top: 10px">
         <li class="@if(active == "top") {active}">
           <a href="@routes.View.index()">Top</a>
         </li>
@@ -17,17 +17,15 @@
         <li class="@if(active == "about") {active}">
           <a href="@routes.ViewAbout.setup()">About</a>
         </li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li class="@if(active == "login") {active}">
+        <li class="@if(active == "login") {active}" style="margin-left: 80px">
           <a href="@routes.View.login("")" id="loginA">Login/Logout</a>
         </li>
         <li>
           <a href="#" on-click="return false;">
-            <span id="toggle_sound" class="glyphicon glyphicon-volume-up" style="color: #fff; font-size: 1.2em;"></span>
+            <span id="toggle_sound" class="glyphicon glyphicon-volume-up" style="color: #000; font-size: 1.5em;"></span>
           </a>
         </li>
       </ul>
     </div>
+    </div>
   </div>
-</div>

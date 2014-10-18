@@ -7,19 +7,21 @@
 )
 
 @main {
-<title>MyFleetGirls</title>
-<script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.6/vue.min.js"></script>
-<script src="@routes.Assets.at("javascript/index.js")"></script>
+  <title>MyFleetGirls</title>
+  <script src="@Js.Vue"></script>
+  <script src="@Js.Coffee("index")"></script>
 } {
-@navbar("top")
 
-<div class="container theme-showcase" role="main">
-  <div class="jumbotron">
-    <h1>MyFleetGirls<small>Ver@version</small></h1>
-    @tweet()
-    <p>自分の艦娘を自慢したい提督に送る艦これ公開ツール</p>
-  </div>
+  @navbar("top")
+    <div class="jumbotron">
+      <div class="container">
+      <h1>MyFleetGirls<small>Ver@version</small></h1>
+      @tweet()
+      <p><a href="@routes.ViewAbout.setup()">README</a></p>
+    </div>
+    </div>
 
+  <div class="container" role="main">
   <div class="row">
     <div class="col-lg-3 col-md-3 col-sm-4" id="search_user">
       <h2>お知らせ</h2>

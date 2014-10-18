@@ -11,8 +11,8 @@
 }
 @navbar("user")
 <input type="text" id="userid" value=@user.admiral.id hidden="hidden" />
-<div class="container theme-showcase" role="main">
-  <div class="jumbotron">
+<div class="jumbotron">
+  <div class="container">
     <h1>@{user.admiral.nickname}@rank(user.basic.rank)<small>Lv@{user.basic.lv}</small></h1>
     @tweet()
     <p>
@@ -26,5 +26,7 @@
     }
     @user.map</p>
   </div>
+</div>
+<div class="container theme-showcase" role="main">
   @body
 </div>

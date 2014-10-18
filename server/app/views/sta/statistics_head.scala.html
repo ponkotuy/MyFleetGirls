@@ -1,13 +1,15 @@
 @(active: String)(body: Html)
 
 @navbar("statistics")
-<div class="container theme-showcase" role="main">
 
-  <div class="jumbotron">
+<div class="jumbotron">
+  <div class="container">
     <h1>Statistics<small>統計</small></h1>
     @tweet()
   </div>
+</div>
 
+<div class="container theme-showcase" role="main">
   <ul class="nav nav-tabs">
     <li class="@if(active=="activities"){active}">
       <a href="@routes.ViewSta.activities()">トップ</a>

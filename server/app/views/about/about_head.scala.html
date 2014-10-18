@@ -1,9 +1,9 @@
 @(active: String)(body: Html)
 
 @navbar("about")
-<div class="container theme-showcase" role="main">
 
-  <div class="jumbotron">
+<div class="jumbotron">
+  <div class="container">
     <h1>About MyFleetGirls</h1>
     @tweet()
     <ul>
@@ -14,7 +14,9 @@
       <li><a href="https://twitter.com/ponkotuy/">作者のTwitter(@@ponkotuy)</a></li>
     </ul>
   </div>
+</div>
 
+<div class="container theme-showcase" role="main">
   <ul class="nav nav-tabs">
     <li class="@if(active=="about"){active}">
       <a href="@routes.ViewAbout.setup()">インストール</a>
