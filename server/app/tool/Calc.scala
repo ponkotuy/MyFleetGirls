@@ -18,7 +18,7 @@ object Calc {
     }
     val scots = spots.filter { case (cat, _) => Scouts.contains(cat)}.map(_._2).sum
     val radars = spots.filter { case (cat, _) => Radars.contains(cat)}.map(_._2).sum
-    val aircrafts = spots.filter { case (cat, _) => OtherAircraft.contains(cat)}.map(_._2).sum
+    val aircrafts = spots.filter { case (cat, _) => OtherAircraft.contains(cat) }.map(_._2).sum
     val sum = ships.map(_.sakuteki).sum
     scots*2 + radars + aircrafts*2 + math.sqrt(sum - radars - scots).toInt
   }
@@ -72,5 +72,8 @@ object EquipType {
 
   val Scouts: Array[EquipType] = Array(Scout, ScoutSeaplane)
   val Radars: Array[EquipType] = Array(RadarS, RadarL)
-  val Aircraft: Array[EquipType] = Array()
+  val Aircraft: Array[EquipType] = Array(
+    Fighter, Bomber, TorpedoBomber, Scout, ScoutSeaplane, SeaBasedBomber, MaritimePartrolAircraft
+  )
+  val CarrierBased: Array[EquipType] = Array(Fighter, Bomber, Scout, MaritimePartrolAircraft)
 }

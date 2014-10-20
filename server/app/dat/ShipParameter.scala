@@ -1,14 +1,13 @@
 package dat
 
 import models._
-import tool.ShipExperience
+import tool.{EquipType, ShipExperience}
 
 /**
  * Date: 14/06/16.
  */
 trait ShipParameter extends GraphData {
   import dat.ShipParameter._
-  import tool.EquipType.Fighter
 
   def ship: Ship
   def master: MasterShipBase
@@ -48,8 +47,9 @@ trait ShipParameter extends GraphData {
   }
   lazy val spec: MasterShipSpecs = MasterShipSpecs.find(shipId).get
 
+
   lazy val airSuperiority: Int = {
-    slotMaster.zip(spec.maxeq).filter(_._1.category.contains(Fighter)).map { case (fighter, slotCount) =>
+    slotMaster.zip(spec.maxeq).filter(_._1.category.exists(EquipType.CarrierBased.contains)).map { case (fighter, slotCount) =>
       Math.floor(fighter.antiair * math.sqrt(slotCount)).toInt
     }.sum
   }
