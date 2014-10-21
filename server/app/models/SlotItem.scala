@@ -3,7 +3,7 @@ package models
 import scalikejdbc._
 import util.scalikejdbc.BulkInsert._
 import com.ponkotuy.data
-import dat.ShipWithName
+import dat.{SlotItemWithMaster, ShipWithName}
 
 case class SlotItem(
   memberId: Long,
@@ -24,6 +24,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
 
   override val columns = Seq("member_id", "id", "slotitem_id", "name")
 
+  def apply(si: SyntaxProvider[SlotItem])(rs: WrappedResultSet): SlotItem = SlotItem(si.resultName)(rs)
   def apply(si: ResultName[SlotItem])(rs: WrappedResultSet): SlotItem = new SlotItem(
     memberId = rs.long(si.memberId),
     id = rs.int(si.id),
@@ -36,6 +37,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
   lazy val s = Ship.syntax("s")
   lazy val ms = MasterShipBase.syntax("ms")
   lazy val mst = MasterStype.syntax("mst")
+  lazy val msi = MasterSlotItem.syntax("msi")
 
   override val autoSession = AutoSession
 
@@ -93,12 +95,17 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
     }.map(_.long(1)).single().apply().get
   }
 
-  def countItemBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[(MiniItem, Long)] = {
+  def countItemBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[(SlotItemWithMaster, Long)] = {
     withSQL {
       select(si.slotitemId, si.name, sqls"count(1) as count").from(SlotItem as si)
+        .innerJoin(MasterSlotItem as msi).on(si.slotitemId, msi.id)
         .where.append(sqls"${where}")
         .groupBy(si.slotitemId)
-    }.map(rs => MiniItem(rs.int(1), rs.string(2)) -> rs.long(3)).toList().apply()
+    }.map { rs =>
+      val item = SlotItem(si)(rs)
+      val master = MasterSlotItem(msi)(rs)
+      SlotItemWithMaster(item, master) -> rs.long("count")
+    }.toList().apply()
   }
 
   def create(
