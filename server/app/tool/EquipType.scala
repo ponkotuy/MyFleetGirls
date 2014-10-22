@@ -56,5 +56,5 @@ object EquipType {
   val Aircraft: Array[EquipType] = Array(
     Fighter, Bomber, TorpedoBomber, Scout, ScoutSeaplane, SeaBasedBomber, MaritimePartrolAircraft
   )
-  val CarrierBased: Array[EquipType] = Array(Fighter, Bomber, Scout, MaritimePartrolAircraft)
+  val CarrierBased: Array[EquipType] = Array(Fighter, Bomber, TorpedoBomber, SeaBasedBomber)
 }
