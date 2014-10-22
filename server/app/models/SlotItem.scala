@@ -97,7 +97,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
 
   def countItemBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[(SlotItemWithMaster, Long)] = {
     withSQL {
-      select(si.slotitemId, si.name, sqls"count(1) as count").from(SlotItem as si)
+      select(si.resultAll, msi.resultAll, sqls"count(1) as count").from(SlotItem as si)
         .innerJoin(MasterSlotItem as msi).on(si.slotitemId, msi.id)
         .where.append(sqls"${where}")
         .groupBy(si.slotitemId)
