@@ -32,3 +32,9 @@ body { background-color: #E7E3DF; }
 .modal-content { background-color: #E7E3DF; }
 .modal-header { border-bottom-color: #D0D0D0; }
 .modal-footer { border-top-colfror: #D0D0D0; }
+
+.version {
+    display: inline-block;
+    margin: 0 10px;
+    font-size: small;
+}
