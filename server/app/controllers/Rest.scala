@@ -52,7 +52,7 @@ object Rest extends Controller {
     val allCounts = models.CreateItem.materialCount().toMap
     val counts = models.CreateItem.materialCount(sqls"slotitem_id = ${itemId}")
     counts.map { case (mat, count) =>
-      Map("mat" -> mat, "count" -> count, "sum" -> allCounts(mat))
+      Map("mat" -> mat, "count" -> count, "sum" -> allCounts.lift(mat).getOrElse(Long.MaxValue))
     }
   }
 
