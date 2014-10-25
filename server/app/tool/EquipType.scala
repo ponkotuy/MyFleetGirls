@@ -58,3 +58,42 @@ object EquipType {
   )
   val CarrierBased: Array[EquipType] = Array(Fighter, Bomber, TorpedoBomber, SeaBasedBomber)
 }
+
+sealed abstract class EquipIconType(val v: Int)
+object EquipIconType {
+  case object MainGunS extends EquipIconType(1)
+  case object MainGunM extends EquipIconType(2)
+  case object MainGunL extends EquipIconType(3)
+  case object SubGun extends EquipIconType(4)
+  case object Torpedo extends EquipIconType(5)
+  case object Fighter extends EquipIconType(6)
+  case object Bomber extends EquipIconType(7)
+  case object TorpedoBomber extends EquipIconType(8)
+  case object Scout extends EquipIconType(9)
+  case object ScoutSeaplane extends EquipIconType(10)
+  case object Radar extends EquipIconType(11)
+  case object AntiAirBullet extends EquipIconType(12)
+  case object AntiShipBullet extends EquipIconType(13)
+  case object DamageControl extends EquipIconType(14)
+  case object CaliberGun extends EquipIconType(15)
+  case object AntiAirGun extends EquipIconType(16)
+  case object DepthBomb extends EquipIconType(17)
+  case object Sonar extends EquipIconType(18)
+  case object EngineChamber extends EquipIconType(19)
+  case object LandingCraft extends EquipIconType(20)
+  case object Autogiro extends EquipIconType(21)
+  case object MaritimePartrolAircraft extends EquipIconType(22)
+  case object Armor extends EquipIconType(23)
+  case object Searchlight extends EquipIconType(24)
+  case object SimplifiedPackage extends EquipIconType(25)
+  case object RepairFacility extends EquipIconType(26)
+  case object Flare extends EquipIconType(27)
+  case object Command extends EquipIconType(28)
+  case object Pilot extends EquipIconType(29)
+
+  val values = Array(MainGunS, MainGunM, MainGunL, SubGun, Torpedo, Fighter, Bomber, TorpedoBomber, Scout,
+    ScoutSeaplane, Radar, AntiAirBullet, AntiShipBullet, DamageControl, CaliberGun, AntiAirGun, DepthBomb, Sonar,
+    EngineChamber, LandingCraft, Autogiro, MaritimePartrolAircraft, Armor, Searchlight, SimplifiedPackage, RepairFacility,
+    Flare, Command, Pilot)
+  def fromInt(v: Int): Option[EquipIconType] = values.find(_.v == v)
+}

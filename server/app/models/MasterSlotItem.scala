@@ -2,13 +2,13 @@ package models
 
 import com.ponkotuy.data.master
 import scalikejdbc._
-import tool.EquipType
+import tool.{EquipIconType, EquipType}
 import util.scalikejdbc.BulkInsert._
 
 case class MasterSlotItem(
   id: Int,
   name: String,
-  typ: String,
+  typ: Array[Int],
   power: Int,
   torpedo: Int,
   bomb: Int,
@@ -24,8 +24,11 @@ case class MasterSlotItem(
 
   def destroy()(implicit session: DBSession = MasterSlotItem.autoSession): Unit = MasterSlotItem.destroy(this)(session)
 
-  /** typのうち3番目の値より。アイコンの元になってる種別 */
-  def category: Option[EquipType] = EquipType.fromInt(typ.split(',')(2).toInt)
+  /** typのうち3番目の値より。種別 */
+  def category: Option[EquipType] = typ.lift(2).flatMap(EquipType.fromInt)
+
+  /** typeの4番目の値より。アイコン色の元となっている種別 */
+  def iconType: Option[EquipIconType] = typ.lift(3).flatMap(EquipIconType.fromInt)
 
 }
 
@@ -40,7 +43,7 @@ object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
   def apply(msi: ResultName[MasterSlotItem])(rs: WrappedResultSet): MasterSlotItem = new MasterSlotItem(
     id = rs.int(msi.id),
     name = rs.string(msi.name),
-    typ = rs.string(msi.typ),
+    typ = rs.string(msi.typ).split(',').map(_.toInt),
     power = rs.int(msi.power),
     torpedo = rs.int(msi.torpedo),
     bomb = rs.int(msi.bomb),
@@ -97,7 +100,7 @@ object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
   def create(
     id: Int,
     name: String,
-    typ: String,
+    typ: List[Int],
     power: Int,
     torpedo: Int,
     bomb: Int,
@@ -126,7 +129,7 @@ object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
       ).values(
           id,
           name,
-          typ,
+          typ.mkString(","),
           power,
           torpedo,
           bomb,
@@ -143,7 +146,7 @@ object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
     MasterSlotItem(
       id = id,
       name = name,
-      typ = typ,
+      typ = typ.toArray,
       power = power,
       torpedo = torpedo,
       bomb = bomb,
@@ -167,7 +170,7 @@ object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
           xs.map(_.search), xs.map(_.hit), xs.map(_.length), xs.map(_.rare), xs.map(_.info))
     }
     xs.map { x =>
-      MasterSlotItem(x.id, x.name, x.typ.mkString(","), x.power, x.torpedo, x.bomb, x.antiAir, x.antiSub,
+      MasterSlotItem(x.id, x.name, x.typ.toArray, x.power, x.torpedo, x.bomb, x.antiAir, x.antiSub,
         x.search, x.hit, x.length, x.rare, x.info)
     }
   }

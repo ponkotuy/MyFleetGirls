@@ -8,12 +8,12 @@ body { background-color: #E7E3DF; }
     background-color: #FFBC3A;
     color: #000000;
 }
-.nav-tabs > li > a:hover { background-color: #FFD790; }
+.nav-tabs > li > a:hover { background-color: #F5F5F5; }
 .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
     background-color: #FFBC3A;
     color: #000000;
 }
-.nav-pills > li > a:hover { background-color: #FFD790; }
+.nav-pills > li > a:hover { background-color: #F5F5F5; }
 .page-header { border-bottom-color: #D0D0D0; }
 .table-striped > tbody > tr:nth-child(2n + 1) > th {
     background-color: #F9F1EF;
@@ -32,3 +32,10 @@ body { background-color: #E7E3DF; }
 .modal-content { background-color: #E7E3DF; }
 .modal-header { border-bottom-color: #D0D0D0; }
 .modal-footer { border-top-colfror: #D0D0D0; }
+a.list-group-item-purple {
+    color: #9932cc;
+    background-color: #FFD8FF;
+}
+a.list-group-item-purple:hover, a.list-group-item-purple:focus {
+    background-color: #F0C0F0;
+}

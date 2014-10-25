@@ -101,6 +101,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
         .innerJoin(MasterSlotItem as msi).on(si.slotitemId, msi.id)
         .where.append(sqls"${where}")
         .groupBy(si.slotitemId)
+        .orderBy(msi.typ, msi.id)
     }.map { rs =>
       val item = SlotItem(si)(rs)
       val master = MasterSlotItem(msi)(rs)
