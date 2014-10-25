@@ -147,7 +147,8 @@ object UserView extends Controller {
 
   def slotitem(memberId: Long) = userView(memberId) { user =>
     val counts = models.SlotItem.countItemBy(sqls"member_id = ${memberId}")
-    Ok(views.html.user.slotitem(user, counts))
+    val leveled = models.SlotItem.findAllWithArmedShipBy(sqls"si.member_id = ${memberId} and level > 0")
+    Ok(views.html.user.slotitem(user, counts, leveled))
   }
 
   def shipslotitem(memberId: Long, itemId: Int) = Action.async {

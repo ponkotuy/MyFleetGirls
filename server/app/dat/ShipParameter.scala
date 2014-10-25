@@ -54,7 +54,7 @@ trait ShipParameter extends GraphData {
     }.sum
   }
 
-  def slotNames: Seq[String] = slot.map(_.name)
+  def slotNames: Seq[String] = slot.map(_.nameWithLevel)
 
   def hpRate: Double = nowhp / maxhp.toDouble
 

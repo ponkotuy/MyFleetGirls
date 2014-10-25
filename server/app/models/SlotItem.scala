@@ -1,9 +1,9 @@
 package models
 
+import com.ponkotuy.data
+import dat._
 import scalikejdbc._
 import util.scalikejdbc.BulkInsert._
-import com.ponkotuy.data
-import dat.{SlotItemWithMaster, ShipWithName}
 
 case class SlotItem(
     memberId: Long,
@@ -17,6 +17,10 @@ case class SlotItem(
 
   def destroy()(implicit session: DBSession = SlotItem.autoSession): Unit = SlotItem.destroy(this)(session)
 
+  def nameWithLevel: String = {
+    val lv = if(level > 0) s"+$level" else ""
+    name + lv
+  }
 }
 
 
@@ -90,6 +94,26 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
       val shipId = rs.int(s.resultName.shipId)
       val slot = Ship.findSlot(memberId, shipId)
       ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+    }.toList().apply()
+  }
+
+  def findAllWithArmedShipBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[ItemWithShip] = {
+    withSQL {
+      select.from(SlotItem as si)
+        .leftJoin(ShipSlotItem as ssi).on(sqls"${si.id} = ${ssi.slotitemId} and ${si.memberId} = ${ssi.memberId}")
+        .leftJoin(Ship as s).on(sqls"${ssi.shipId} = ${s.id} and ${ssi.memberId} = ${s.memberId}")
+        .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .where.append(where)
+    }.map { rs =>
+      val slotItem = SlotItem(si)(rs)
+      val shipId = rs.intOpt(s.resultName.shipId)
+      val slot = shipId.map { id => Ship.findSlot(slotItem.memberId, id) }
+      val ship = slot.map { sl => Ship(s, sl)(rs) }
+      val withName = ship.map { s =>
+        ShipWithName(s, MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      }
+      ItemWithShip(slotItem, withName)
     }.toList().apply()
   }
 
