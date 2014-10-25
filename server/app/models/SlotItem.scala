@@ -6,10 +6,12 @@ import com.ponkotuy.data
 import dat.{SlotItemWithMaster, ShipWithName}
 
 case class SlotItem(
-  memberId: Long,
-  id: Int,
-  slotitemId: Int,
-  name: String) {
+    memberId: Long,
+    id: Int,
+    slotitemId: Int,
+    name: String,
+    locked: Boolean,
+    level: Int) {
 
   def save()(implicit session: DBSession = SlotItem.autoSession): SlotItem = SlotItem.save(this)(session)
 
@@ -22,14 +24,16 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
 
   override val tableName = "slot_item"
 
-  override val columns = Seq("member_id", "id", "slotitem_id", "name")
+  override val columns = Seq("member_id", "id", "slotitem_id", "name", "locked", "level")
 
   def apply(si: SyntaxProvider[SlotItem])(rs: WrappedResultSet): SlotItem = SlotItem(si.resultName)(rs)
   def apply(si: ResultName[SlotItem])(rs: WrappedResultSet): SlotItem = new SlotItem(
     memberId = rs.long(si.memberId),
     id = rs.int(si.id),
     slotitemId = rs.int(si.slotitemId),
-    name = rs.string(si.name)
+    name = rs.string(si.name),
+    locked = rs.boolean(si.locked),
+    level = rs.int(si.level)
   )
 
   lazy val si = SlotItem.syntax("si")
@@ -113,26 +117,26 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
     memberId: Long,
     id: Int,
     slotitemId: Int,
-    name: String)(implicit session: DBSession = autoSession): SlotItem = {
+    name: String,
+    locked: Boolean = false,
+    level: Int = 0)(implicit session: DBSession = autoSession): Unit = {
     withSQL {
       insert.into(SlotItem).columns(
         column.memberId,
         column.id,
         column.slotitemId,
-        column.name
+        column.name,
+        column.locked,
+        column.level
       ).values(
           memberId,
           id,
           slotitemId,
-          name
+          name,
+          locked,
+          level
         )
     }.update().apply()
-
-    SlotItem(
-      memberId = memberId,
-      id = id,
-      slotitemId = slotitemId,
-      name = name)
   }
 
   def bulkInsert(xs: Seq[data.SlotItem], memberId: Long)(implicit session: DBSession = autoSession): Unit = {
@@ -140,8 +144,10 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
     val names = xs.map(x => masterNames(x.slotitemId))
     applyUpdate {
       insert.into(SlotItem)
-        .columns(column.memberId, column.id, column.slotitemId, column.name)
-        .multiValues(Seq.fill(xs.size)(memberId), xs.map(_.id), xs.map(_.slotitemId), names)
+        .columns(column.memberId, column.id, column.slotitemId, column.name, column.locked, column.level)
+        .multiValues(
+          Seq.fill(xs.size)(memberId), xs.map(_.id), xs.map(_.slotitemId), names, xs.map(_.locked), xs.map(_.level)
+        )
     }
   }
 
@@ -151,7 +157,9 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
         column.memberId -> entity.memberId,
         column.id -> entity.id,
         column.slotitemId -> entity.slotitemId,
-        column.name -> entity.name
+        column.name -> entity.name,
+        column.locked -> entity.locked,
+        column.level -> entity.level
       ).where.eq(column.id, entity.id).and.eq(column.memberId, entity.memberId)
     }.update().apply()
     entity
