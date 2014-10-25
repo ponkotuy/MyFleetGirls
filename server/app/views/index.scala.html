@@ -15,7 +15,7 @@
   @navbar("top")
     <div class="jumbotron">
       <div class="container">
-      <h1>MyFleetGirls<small>Ver@version</small></h1>
+      <h1>MyFleetGirls<small class="version">Ver@version</small></h1>
       @tweet()
       <p><a href="@routes.ViewAbout.setup()">README</a></p>
     </div>
@@ -23,23 +23,9 @@
 
   <div class="container" role="main">
   <div class="row">
-    <div class="col-lg-3 col-md-3 col-sm-4" id="search_user">
-      <h2>お知らせ</h2>
-      @message.map { m =>
-        <p>@m</p>
-      }
-
-      <h2>提督検索</h2>
-      <input type="text" class="form-control" placeholder="Search Admiral" v-model="query" />
-      <ul>
-        <li v-repeat="user: users">
-          <a href="/user/{{user.id}}">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
-        </li>
-      </ul>
-    </div>
-
-    <div class="col-lg-3 col-md-3 col-sm-4">
-      <h2>所属基地別提督</h2>
+    <div class="col-sm-8">
+    <div class="col-sm-4">
+      <h2>所属基地</h2>
       <form>
         <select class="form-control" id="base_select">
         @baseCounts.map { case (u, count) =>
@@ -54,9 +40,19 @@
           <a href="/user/{{user.id}}">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
         </li>
       </ul>
+
+      <div id="search_user">
+      <h2>提督検索</h2>
+      <input type="text" class="form-control" placeholder="Search Admiral" v-model="query" />
+      <ul>
+        <li v-repeat="user: users">
+          <a href="/user/{{user.id}}">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
+        </li>
+      </ul>
+      </div>
     </div>
 
-    <div class="col-lg-3 col-md-3 col-sm-4">
+    <div class="col-sm-4">
       <h2>New</h2>
       <ul>
         @newest.map { a =>
@@ -65,13 +61,20 @@
       </ul>
     </div>
 
-    <div class="col-lg-3 col-md-3 col-sm-4">
+    <div class="col-sm-4">
       <h2>提督Lv順</h2>
       <ul>
         @highLv.map { a =>
           <li><a href="@routes.UserView.user(a.id)">@a.nickname</a><small>Lv@a.lv</small></li>
         }
       </ul>
+    </div>
+    </div>
+
+    <div class="col-sm-4">
+      <a class="twitter-timeline" href="https://twitter.com/MyFleetGirls" data-widget-id="525054289803108355">@@MyFleetGirls からのツイート</a>
+      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+    </div>
     </div>
   </div>
 </div>

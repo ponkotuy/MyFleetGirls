@@ -39,3 +39,8 @@ a.list-group-item-purple {
 a.list-group-item-purple:hover, a.list-group-item-purple:focus {
     background-color: #F0C0F0;
 }
+
+.version {
+    display: inline-block;
+    margin: 0 10px;
+}
