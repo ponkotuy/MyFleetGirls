@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-#+AUTHOR: ポンコツ戦艦山本
+#+AUTHOR: ぽんこつ戦艦
 #+EMAIL: web@ponkotuy.com
 #+OPTIONS: toc:nil num:nil author:nil creator:nil
 #+STYLE: <link rel="stylesheet" type="text/css" href="org.css"></link>
@@ -12,3 +12,34 @@
   [[http://myfleet.moe/]]
 
   こんな感じで見れるようにするツールです。
+
+  以下ではGitHub cloneした人が動かすための方法になります。
+  普通に使いたいだけの人は http://myfleet.moe/entire/about を参照してください。
+
+** MyFleetGirls Client
+   基本的には http://myfleet.moe/entire/about 参照。ただし、起動は
+
+#+BEGIN_SRC
+$ sbt "+ proxy"
+#+END_SRC
+
+  とします。sbtが必要です。設定はトップディレクトリに置きます。
+
+** MyFleetGirls Server
+   + sbtとMariaDBをインストール
+   + server/conf/application.confを適宜設定（.sampleをコピーして、DB設定を適宜すればいいでしょう）
+   + server/public/message にテキストファイル置かないと弊害があるかも
+
+   sbtには以下のコマンドがあります。
+
+   - run :: サーバを立ち上げます。ただし開発モード
+   - start :: 同上。ただし本番モード
+   - proxy :: client立ち上げ。ただし通常は+が必要
+   - assembl :: MyFleetGirls ClientのダウンローダとClient本体をone-packageのjarに固める
+   - zip :: assemblyののちに、publicにそれらを配置する
+   - prof :: profilerを立ち上げる（メンテされてないので動くか不明）
+
+** 実運用で必要なこと
+   - server/public/MFGsTitle.pngにTitle画像を置く
+   - server/public/clientディレクトリ以下にclientの自動ダウンロードに必要なファイルを置く
+   - server/public/zip/MyFleetGirls.zipにDownloaderのzipファイルを置く。
