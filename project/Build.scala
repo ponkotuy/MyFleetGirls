@@ -22,7 +22,7 @@ object MyFleetGirlsBuild extends Build {
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .dependsOn(library)
     .enablePlugins(PlayScala).settings(
-      scalaVersion := "2.11.1"
+      scalaVersion := "2.11.2"
     )
 
   lazy val client = Project(id = "client", base = file("client"))
@@ -32,7 +32,7 @@ object MyFleetGirlsBuild extends Build {
 
   lazy val library = Project(id = "library", base = file("library"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
-    .settings(crossScalaVersions := Seq("2.10.4", "2.11.1"))
+    .settings(crossScalaVersions := Seq("2.10.4", "2.11.2"))
 
   lazy val update = Project(id = "update", base = file("update"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
@@ -44,7 +44,7 @@ object MyFleetGirlsBuild extends Build {
 
   override lazy val settings = super.settings ++ Seq(
     version := ver,
-    scalaVersion := "2.11.1",
+    scalaVersion := "2.11.2",
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions"),
     jarName in assembly := "MyFleetGirls.jar",
     incOptions := incOptions.value.withNameHashing(true)

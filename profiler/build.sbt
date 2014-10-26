@@ -1,9 +1,9 @@
 
-scalaVersion := "2.11.1"
+scalaVersion := "2.11.2"
 
 libraryDependencies ++= Seq(
   "net.databinder.dispatch" %% "dispatch-core" % "0.11.0",
-  "org.json4s" %% "json4s-native" % "3.2.6",
+  "org.json4s" %% "json4s-native" % "3.2.11",
   "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current
 )
 
