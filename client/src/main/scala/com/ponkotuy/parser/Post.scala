@@ -91,7 +91,9 @@ object Post extends Log {
 
   def questlist(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     val qList = QuestList.fromJson(obj)
-    MFGHttp.post("/questlist", write(qList))
+    if (qList.nonEmpty) {
+      MFGHttp.post("/questlist", write(qList))
+    }
   }
 
   def swfShip(q: Query)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
