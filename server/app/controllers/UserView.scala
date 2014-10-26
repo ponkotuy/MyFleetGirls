@@ -1,13 +1,13 @@
 package controllers
 
-import tool.{BestShipExp, HistgramShipLv, MaterialDays, STypeExp}
-
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits._
+import com.github.nscala_time.time.Imports._
+import org.json4s.native.Serialization.write
 import play.api.mvc._
 import scalikejdbc._
-import org.json4s.native.Serialization.write
-import com.github.nscala_time.time.Imports._
+import tool.{BestShipExp, HistgramShipLv, MaterialDays, STypeExp}
+
+import scala.concurrent.ExecutionContext.Implicits._
+import scala.concurrent.Future
 
 /**
  *
@@ -15,7 +15,7 @@ import com.github.nscala_time.time.Imports._
  * Date: 14/04/01.
  */
 object UserView extends Controller {
-  import Common._
+  import controllers.Common._
 
   def name(user: String) = Action.async {
     Future {
@@ -74,7 +74,7 @@ object UserView extends Controller {
 
   def material(memberId: Long) = userView(memberId) { user =>
     val day20ago = DateTime.now - 20.days
-    val materials = models.Material.findAllByUser(memberId, from = day20ago.millis)
+    val materials = models.Material.findAllByUser(memberId, from = day20ago.getMillis)
     val days = materials.groupBy(m => (new DateTime(m.created) - 5.hours).toLocalDate)
       .mapValues(_.maxBy(_.created))
       .toSeq.sortBy(_._1).reverse
