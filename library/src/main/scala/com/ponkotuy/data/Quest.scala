@@ -53,7 +53,8 @@ object QuestMaterial {
 
 object QuestList {
   def fromJson(obj: JValue): List[Quest] = {
-    val JArray(xs) = obj \ "api_list"
-    xs.filter(_.isInstanceOf[JObject]).map(Quest.fromJson)
+    (obj \ "api_list").children.collect {
+      case o: JObject => Quest.fromJson(o)
+    }
   }
 }
