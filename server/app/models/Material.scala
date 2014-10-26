@@ -9,13 +9,14 @@ import tool.DiffCalc
  *
  * @param instant : Instant Construction
  * @param develop : Development Material
+ * @param revamping : Revamping(Upgrade) Material
  * @author ponkotuy
  * Date: 14/02/19.
  */
 case class Material(
     id: Long, memberId: Long,
     fuel: Int, ammo: Int, steel: Int, bauxite: Int,
-    instant: Int, bucket: Int, develop: Int,
+    instant: Int, bucket: Int, develop: Int, revamping: Int,
     created: Long) {
   def save()(implicit session: DBSession = Material.autoSession): Material =
     Material.save(this)
@@ -29,7 +30,8 @@ case class Material(
       diffRatio(10000.0)(bauxite, x.bauxite),
       diffRatio(100.0)(instant, x.instant),
       diffRatio(100.0)(bucket, x.bucket),
-      diffRatio(100.0)(develop, x.develop)
+      diffRatio(100.0)(develop, x.develop),
+      diffRatio(100.0)(revamping, x.revamping)
     ).sum
   }
 
@@ -50,6 +52,7 @@ object Material extends SQLSyntaxSupport[Material] {
     instant = rs.int(m.instant),
     bucket = rs.int(m.bucket),
     develop = rs.int(m.develop),
+    revamping = rs.int(m.revamping),
     created = rs.long(m.created)
   )
 
@@ -58,7 +61,7 @@ object Material extends SQLSyntaxSupport[Material] {
       update(Material).set(
         column.memberId -> m.memberId,
         column.fuel -> m.fuel, column.ammo -> m.ammo, column.steel -> m.steel, column.bauxite -> m.bauxite,
-        column.instant -> m.instant, column.bucket -> m.bucket, column.develop -> m.develop
+        column.instant -> m.instant, column.bucket -> m.bucket, column.develop -> m.develop, column.revamping -> m.revamping
       )
     }.update()
     m
@@ -71,7 +74,7 @@ object Material extends SQLSyntaxSupport[Material] {
       insert.into(Material).namedValues(
         column.memberId -> memberId,
         column.fuel -> m.fuel, column.ammo -> m.ammo, column.steel -> m.steel, column.bauxite -> m.bauxite,
-        column.instant -> m.instant, column.bucket -> m.bucket, column.develop -> m.develop,
+        column.instant -> m.instant, column.bucket -> m.bucket, column.develop -> m.develop, column.revamping -> m.revamping,
         column.created -> created
       )
     }.updateAndReturnGeneratedKey().apply()
