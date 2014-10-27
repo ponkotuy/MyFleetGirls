@@ -6,18 +6,21 @@ option =
   yaxes: [{}, { alignTicksWithAxis: 1, position: 'right' }]
   selection: { mode: 'x' }
   legend: { position: 'nw' }
+  colors: ["red"]
 optionO =
   series: { lines: { show: true, lineWidth: 1 }, shadowSize: 0 }
   xaxis: { mode: 'time', timezone: 'browser' }
   yaxes: [{}, { alignTicksWithAxis: 1, position: 'right' }]
   selection: { mode: 'x' }
   legend: { position: 'nw' }
+  colors: ["red"]
 
 plot = null
 exps = []
 
 $(document).ready ->
   userid = $('#userid').val()
+  fixWidth()
   $.getJSON "/rest/v1/#{userid}/basics", (data) ->
     exps = translate(data)
     plotO = $.plot(overview, exps, optionO)
@@ -43,3 +46,7 @@ mainPlot = (active, min, max = moment().valueOf()) ->
     plot = $.plot(chart, exps, newOpt)
   else
     plot = $.plot(chart, exps, option)
+
+fixWidth = ->
+  width = $('div.tab-content').width()
+  $('.width-adj').width(width)

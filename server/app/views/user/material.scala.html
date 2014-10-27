@@ -8,12 +8,10 @@
   <script src="@Js.Coffee("material")"></script>
   <style>
     div.chart {
-      width: 900px;
       height: 500px;
     }
 
     div.overview {
-      width: 900px;
       height: 200px;
     }
   </style>
@@ -29,8 +27,10 @@
         <button type="button" class="btn btn-default" id="week">1週間</button>
         <button type="button" class="btn btn-default" id="day">1日</button>
       </div>
-      <div id="material_chart" class="chart"></div>
-      <div id="material_overview" class="overview"></div>
+      <div id="material_chart" class="chart width-adj"></div>
+      <div id="material_overview" class="overview width-adj"></div>
+      <div id="material_chart2" class="chart width-adj"></div>
+      <div id="material_overview2" class="overview width-adj"></div>
 
       <h3>資源収支</h3>
       <table class="table table-condensed table-striped">
@@ -44,6 +44,7 @@
             <th>高速建造材</th>
             <th>高速修復材</th>
             <th>開発資材</th>
+            <th>改修資材</th>
           </tr>
         </thead>
         <tbody>
@@ -57,6 +58,7 @@
               @x.instant.cell
               @x.bucket.cell
               @x.develop.cell
+              @x.revamping.cell
             </tr>
           }
         </tbody>

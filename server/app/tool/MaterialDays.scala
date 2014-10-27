@@ -14,7 +14,8 @@ case class MaterialDays(
     bauxite: MatDiff,
     instant: MatDiff,
     bucket: MatDiff,
-    develop: MatDiff) {
+    develop: MatDiff,
+    revamping: MatDiff) {
   def prettyDay: String = day.toString("M月d日")
 }
 
@@ -27,7 +28,8 @@ object MaterialDays {
       f(x.bauxite, y.bauxite),
       f(x.instant, y.instant),
       f(x.bucket, y.bucket),
-      f(x.develop, y.develop)
+      f(x.develop, y.develop),
+      f(x.revamping, y.revamping)
     )
   }
 
