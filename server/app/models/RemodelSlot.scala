@@ -1,8 +1,11 @@
 package models
 
 import com.ponkotuy.data
+import dat.RemodelWithShip
 import scalikejdbc._
 import util.scalikejdbc.BulkInsert._
+
+import scala.util.Try
 
 case class RemodelSlot(
   id: Int,
@@ -50,6 +53,7 @@ object RemodelSlot extends SQLSyntaxSupport[RemodelSlot] {
   )
 
   val r = RemodelSlot.syntax("r")
+  val ms = MasterShipBase.syntax("ms")
 
   override val autoSession = AutoSession
 
@@ -65,6 +69,21 @@ object RemodelSlot extends SQLSyntaxSupport[RemodelSlot] {
     withSQL {
       select.from(RemodelSlot as r).where.append(sqls"${where}")
     }.map(RemodelSlot(r.resultName)).list().apply()
+  }
+
+  def findAllUniqueSlotId()(implicit session: DBSession = autoSession): List[Int] = {
+    sql"select distinct ${r.slotId} from ${RemodelSlot as r}"
+      .map(_.int(1)).list().apply()
+  }
+
+  def findAllWithSecondShipBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[RemodelWithShip] = {
+    withSQL {
+      select.from(RemodelSlot as r)
+        .leftJoin(MasterShipBase as ms).on(r.secondShip, ms.id)
+        .where.append(sqls"${where}").limit(20)
+    }.map { rs =>
+      RemodelWithShip(RemodelSlot(r)(rs), Try { MasterShipBase(ms)(rs) }.toOption)
+    }.list().apply()
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
