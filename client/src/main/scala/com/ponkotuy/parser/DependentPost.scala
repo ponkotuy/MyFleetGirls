@@ -137,4 +137,11 @@ class DependentPost {
       println(result.summary)
     }
   }
+
+  def remodelSlotList(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
+    synchronized {
+      val result = RemodelSlotlist.fromJson(obj, firstFleet.lift(1))
+      MFGHttp.post("/remodel_slot", write(result))
+    }
+  }
 }

@@ -118,5 +118,11 @@ object ViewSta extends Controller {
     }.getOrElse(NotFound(s"Not Found ShipID: $sid"))
   }
 
+  def remodelSlot() = actionAsync {
+    val ids = models.RemodelSlot.findAllUniqueSlotId()
+    val slots = models.MasterSlotItem.findIn(ids)
+    Ok(views.html.sta.remodel_slot(slots))
+  }
+
   private def toP(d: Double): String = f"${d*100}%.1f"
 }

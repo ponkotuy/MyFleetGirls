@@ -109,4 +109,8 @@ object Rest extends Controller {
     (started ++ drops ++ createItems ++ createShips)
       .sortBy(_.created).reverse.take(limit).map(_.toJSON)
   }
+
+  def remodelLog(slotId: Int) = returnJson {
+    models.RemodelSlot.findAllWithSecondShipBy(sqls"r.slot_id = ${slotId}").sortBy(-_.remodel.created)
+  }
 }

@@ -78,6 +78,8 @@ class ResponseController extends Log {
         lazyPost { (a, b) => dependent.deckport(obj \ "api_deck_port")(a, b) }
       case QuestList =>
         lazyPost { (a, b) => Post.questlist(obj)(a, b) }
+      case RemodelSlotlist =>
+        lazyPost { (a, b) => dependent.remodelSlotList(obj)(a, b) }
       case LoginCheck | Deck | UseItem | Practice | Record | MapCell | UpdateDeckName | Charge | MissionStart |
            KaisouPowerup | Remodeling | Marriage | KaisouLock | PracticeBattle | PracticeMidnightBattle |
            PracticeBattleResult | HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |

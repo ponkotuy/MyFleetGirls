@@ -54,6 +54,7 @@ object ResType extends Log {
   case object CreateShip extends ResType(s"\\A$ReqKousyou/createship\\z".r)
   case object GetShip extends ResType(s"\\A$ReqKousyou/getship\\z".r) // IDとshipIDのみ
   case object CreateItem extends ResType(s"\\A$ReqKousyou/createitem\\z".r)
+  case object RemodelSlotlist extends ResType(s"\\A$ReqKousyou/remodel_slotlist\\z".r)
   case object Charge extends ResType(s"\\A$ReqHokyu/charge\\z".r) // 特に要らない
   case object HenseiChange extends ResType(s"\\A$ReqHensei/change\\z".r)
   case object HenseiLock extends ResType(s"\\A$ReqHensei/lock\\z".r)
@@ -86,7 +87,7 @@ object ResType extends Log {
   val values = Set(
     LoginCheck, ApiStart2, Material, Basic, Record, Ship2, Ship3, NDock, KDock,
     Deck, DeckPort, UseItem, SlotItem, Practice, PictureBook, MapInfo, MapCell, QuestList,
-    UpdateDeckName, CreateShip, GetShip, CreateItem,
+    UpdateDeckName, CreateShip, GetShip, CreateItem, RemodelSlotlist,
     Charge, HenseiChange, HenseiLock, MissionStart, KaisouPowerup, Remodeling, Marriage, KaisouLock,
     PracticeBattle, PracticeMidnightBattle, PracticeBattleResult, GetOthersDeck,
     MapStart, MapNext, SortieBattle, SortieBattleResult, ClearItemGet, NyukyoStart, RankingList, CombinedBattleResult,

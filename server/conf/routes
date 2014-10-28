@@ -23,6 +23,7 @@ POST    /post/v1/slotitem           controllers.Post.slotItem
 POST    /post/v1/battle_result      controllers.Post.battleResult
 POST    /post/v1/map_route          controllers.Post.mapRoute
 POST    /post/v1/questlist          controllers.Post.questlist
+POST    /post/v1/remodel_slot       controllers.Post.remodelSlot
 POST    /passwd/post/v1/register_snap controllers.Post.registerSnap
 POST    /passwd/post/v1/delete_snap controllers.Post.deleteSnap
 POST    /passwd/post/v1/settings    controllers.Post.settings
@@ -48,6 +49,7 @@ GET     /rest/v1/cell_info          controllers.Rest.cellInfo(area: Int ?= -1, i
 GET     /rest/v1/maps               controllers.Rest.maps()
 GET     /rest/v1/drop_from_ship/:shipId  controllers.Rest.dropFromShip(shipId: Int)
 GET     /rest/v1/activities         controllers.Rest.activities(from: Long ?= 0L, limit: Int ?= 20, offset: Int ?= 0)
+GET     /rest/v1/remodel/log/:slotId controllers.Rest.remodelLog(slotId: Int)
 GET     /rest/v1/:userId/materials  controllers.RestUser.materials(userId: Long)
 GET     /rest/v1/:userId/basics     controllers.RestUser.basics(userId: Long)
 GET     /rest/v1/:userId/ndocks     controllers.RestUser.ndocks(userId: Long)
@@ -91,6 +93,7 @@ GET     /entire/sta/ranking         controllers.ViewSta.ranking()
 GET     /entire/sta/rank/:ranking   controllers.ViewSta.rankingDetails(ranking: String)
 GET     /entire/sta/book            controllers.ViewSta.shipList()
 GET     /entire/sta/book/:sid       controllers.ViewSta.shipBook(sid: Int)
+GET     /entire/sta/remodel_slot    controllers.ViewSta.remodelSlot()
 GET     /u/:user                    controllers.UserView.name(user: String)
 GET     /user/:userId               controllers.UserView.user2(userId: Long)
 GET     /user/:userId/              controllers.UserView.user(userId: Long)

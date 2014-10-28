@@ -55,6 +55,10 @@ object Ship extends SQLSyntaxSupport[Ship] {
   lazy val mst = MasterStype.syntax("mst")
   lazy val a = Admiral.syntax("a")
 
+  def findShipId(memberId: Long, sid: Int)(implicit session: DBSession = autoSession): Option[Int] = withSQL {
+    select(s.shipId).from(Ship as s).where.eq(s.memberId, memberId).and.eq(s.id, sid)
+  }.map(_.intOpt(1)).single().apply().flatten
+
   def findByUserMaxLvWithName(memberId: Long)(implicit session: DBSession = autoSession): Option[ShipWithName] = {
     withSQL {
       select.from(Ship as s)
