@@ -149,6 +149,11 @@ object Post extends Controller {
     Ok("Success")
   }
 
+  def remodelSlot() = authAndParse[RemodelSlotlist] { case (auth, request) =>
+    models.RemodelSlot.bulkInsert(request, auth.id)
+    Ok("Success")
+  }
+
   def registerSnap() = formAsync { request =>
     RegisterSnapshot.fromReq(request.body) match {
       case Some(snap) =>
