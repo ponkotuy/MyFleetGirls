@@ -26,6 +26,7 @@ POST    /post/v1/questlist          controllers.Post.questlist
 POST    /post/v1/remodel_slot       controllers.Post.remodelSlot
 POST    /passwd/post/v1/register_snap controllers.Post.registerSnap
 POST    /passwd/post/v1/delete_snap controllers.Post.deleteSnap
+POST    /passwd/post/v1/update_snap controllers.Post.updateSnap
 POST    /passwd/post/v1/settings    controllers.Post.settings
 POST    /passwd/post/v1/set_session controllers.Post.setSession
 POST    /post/v1/master/ship        controllers.PostMaster.ship
@@ -65,6 +66,7 @@ GET     /rest/v1/:userId/battle_result_count controllers.RestUser.battleResultCo
 GET     /rest/v1/:userId/route_log  controllers.RestUser.routeLog(userId: Long, limit: Int ?= 10, offset: Int ?= 0, area: Int ?= -1, info: Int ?= -1)
 GET     /rest/v1/:userId/route_log_count controllers.RestUser.routeLogCount(userId: Long, area: Int ?= -1, info: Int ?= -1)
 GET     /rest/v1/:userId/quest      controllers.RestUser.quest(userId: Long)
+GET     /rest/v1/:userId/snap/:snapId controllers.RestUser.snap(userId: Long, snapId: Long)
 GET     /rest/v1/image/ship/:shipId.jpg controllers.RestImage.ship(shipId: Int)
 GET     /rest/v1/sound/ship/:shipId/:soundId.mp3 controllers.RestSound.ship(shipId: Int, soundId: Int)
 HEAD    /rest/v1/image/ship/:shipId.jpg controllers.RestImage.shipHead(shipId: Int)

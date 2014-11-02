@@ -3,9 +3,18 @@
 
 @main {
   <title>艦隊スナップショット -@{user.admiral.nickname}提督-</title>
-  @Js.ImportJqplot("barRenderer", "categoryAxisRenderer, pointLabels, highlighter")
+  @Js.ImportJqplot("barRenderer", "categoryAxisRenderer", "pointLabels", "highlighter")
   <script src="@Js.Common"></script>
+  <script src="@Js.Vue"></script>
   <script src="@Js.Coffee("snapshot")"></script>
+  <script src="@Js.Coffee("edit_snap")"></script>
+  <script>
+    var tweet = function(title){
+      var here = encodeURIComponent(location.href);
+      var url = "https://twitter.com/intent/tweet?original_referer=" + here + "&url=" + here + "&text=" + title + "&hashtags=MyFleetGirls";
+      window.open(url);
+    }
+  </script>
 } {
   @head_content(user) {
     @usertab(user, "snap") {
@@ -14,8 +23,8 @@
       </div>
 
       @snaps.map { snap =>
-        <div class="panel panel-default">
-          <div class="panel-heading"><h3 class="panel-title">@snap.title</h3></div>
+        <div class="panel panel-default" id="snap@snap.id">
+          <div class="panel-heading"><h3 class="panel-title"><a href="#snap@snap.id">@snap.title</a></h3></div>
           <div class="panel-body">@snap.comment</div>
           <table class="table table-striped">
             <thead>
@@ -43,12 +52,14 @@
               }
             </tbody>
           </table>
-          @if(user.logined.isEmpty || user.isMine) {
-            <div class="panel-footer" style="text-align : right ;">
-              <button class="btn btn-danger" onclick='location.href = " @routes.UserView.deleteSnap(snap.id) ";return false'>
-                削除</button>
-            </div>
-          }
+
+          <div class="panel-footer" style="text-align : right ;">
+            <button type="button" class="btn btn-default" onclick="tweet('@snap.title')" target="_blank">Tweet</button>
+            <a data-toggle="modal" class="btn btn-default" @if(!user.isMine){disabled="disabled"} onclick="modal_edit(@user.admiral.id, @snap.id)">
+              編集</a>
+            <button class="btn btn-warning" @if(!user.isMine){disabled="disabled"} onclick='location.href = "@routes.UserView.deleteSnap(snap.id)";return false'>
+              削除</button>
+          </div>
         </div>
 
       }
@@ -73,9 +84,48 @@
           </div>
         </div>
       }
+
       <div class="modal fade bs-example-modal-lg" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
         <div class="modal-dialog modal-lg">
           <div class="modal-content"></div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="mini-modal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h3 class="modal-title">{{title}}の編集</h3>
+            </div>
+
+            <div class="modal-body">
+              <div class="alert alert-warning alert-dismissable" v-show="errorMsg.status">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <strong>{{ errorMsg.status }} {{ errorMsg.statusText }}</strong>: {{ errorMsg.responseText }}
+              </div>
+
+              <form class="form-horizontal" role="form">
+                <div class="form-group">
+                  <label for="title" class="col-sm-2 control-label">タイトル</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="title" v-model="title" maxlength="40" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="comment" class="col-sm-2 control-label">コメント</label>
+                  <div class="col-sm-10">
+                    <textarea class="form-control" id="comment" v-model="comment" maxlength="10000" rows="3" >t</textarea>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10">
+                    <button type="button" class="btn btn-primary" id="submit" v-on="click: submit()">Submit</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     }

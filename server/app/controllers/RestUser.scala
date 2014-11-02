@@ -93,4 +93,8 @@ object RestUser extends Controller {
   }
 
   def quest(memberId: Long) = returnJson { models.Quest.findAllBy(sqls"member_id = ${memberId}") }
+
+  def snap(memberId: Long, snapId: Long) = returnJson {
+    models.DeckSnapshot.find(snapId).filter(_.memberId == memberId).get
+  }
 }

@@ -5,7 +5,7 @@ import java.util.UUID
 import com.ponkotuy.data._
 import com.ponkotuy.value.KCServer
 import controllers.Common._
-import dat.{AuthDataImpl, DeleteSnapshot, RegisterSnapshot, Settings}
+import dat._
 import play.api.mvc._
 import tool.Authentication
 
@@ -189,6 +189,17 @@ object Post extends Controller {
         }
       case None => BadRequest("Invalid data")
     }
+  }
+
+  def updateSnap() = formAsync { request =>
+    UpdateSnapshot.fromReq(request.body).map { update =>
+      if(uuidCheck(update.userId, request.session.get("key"))) {
+        models.DeckSnapshot.find(update.snapId).map { snap =>
+          models.DeckSnapshot(snap.id, snap.memberId, snap.name, update.title, update.comment, snap.created).save()
+          Ok("Success")
+        }.getOrElse(BadRequest("Invalid snapId"))
+      } else { Unauthorized("Authentication failure") }
+    }.getOrElse(BadRequest("Invalid data"))
   }
 
   def settings = formAsync { request =>
