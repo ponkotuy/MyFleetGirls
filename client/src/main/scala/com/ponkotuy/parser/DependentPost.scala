@@ -40,8 +40,12 @@ class DependentPost {
         if(change.shipId == -1) firstFleet = firstFleet.filterNot(_ == firstFleet(change.shipIdx))
         else {
           firstFleet = Try {
+            // 入れ替えの場合、元いた奴を先に移しておく
+            val sourceIdx = firstFleet.indexOf(change.shipId)
+            if(sourceIdx >= 0) firstFleet = firstFleet.updated(sourceIdx, firstFleet(change.shipIdx))
+            // update
             firstFleet.updated(change.shipIdx, change.shipId)
-          }.getOrElse {
+          }.getOrElse { // 例外が来たら追記
             firstFleet = firstFleet.filterNot(_ == change.shipId)
             firstFleet :+ change.shipId
           }
