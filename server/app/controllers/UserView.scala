@@ -179,7 +179,7 @@ object UserView extends Controller {
   def statistics(memberId: Long) = userView(memberId) { user =>
     val ships = models.Ship.findAllByUserWithName(memberId)
     val stypeExps = STypeExp.fromShips(ships)
-    val stypeExpJson = stypeExps.map(_.toJsonElem)
+    val stypeExpJson = stypeExps.map(_.toJson(memberId))
     val histgramJson = HistgramShipLv.fromShips(ships).map(_.toJsonElem)
     val bestShipExpJson = BestShipExp.fromShips(ships).map(_.toJsonElem)
     Ok(views.html.user.statistics(user, stypeExps, write(stypeExpJson), write(histgramJson), write(bestShipExpJson)))

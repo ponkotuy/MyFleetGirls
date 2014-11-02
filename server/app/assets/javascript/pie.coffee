@@ -2,6 +2,7 @@ $(document).ready ->
   $('div.pie').each ->
     json = $(this).attr('data-json')
     data = JSON.parse(json)
+    urls = data.map (obj) -> obj.url
     option =
       series:
         pie:
@@ -25,7 +26,7 @@ $(document).ready ->
     clickable = $(this).attr('data-clickable') != 'false'
     if clickable
       $(this).bind 'plotclick', (event, pos, item) ->
-        location.href = "/entire/sta/from_ship#query=#{item.series.label}"
+        location.href = urls[item.seriesIndex]
       $(this).bind 'plothover', (event, pos, item) ->
         if item?
           document.body.style.cursor = 'pointer'

@@ -59,7 +59,8 @@ object ViewSta extends Controller {
     val sum = counts.map(_._2).sum.toDouble
     val withRate = counts.map { case (item, count) => (item.name, count, count/sum) }
     val countJsonRaw = counts.map { case (item, count) =>
-      Map("label" -> item.name, "data" -> count)
+      val url = routes.ViewSta.fromShip().toString() + s"#query=${item.name}"
+      Map("label" -> item.name, "data" -> count, "url" -> url)
     }
     val title = s"${sType}/$fuel/$ammo/$steel/$bauxite"
     Ok(views.html.sta.citem(title, write(countJsonRaw), withRate, citems))

@@ -1,14 +1,20 @@
 package tool
 
-import dat.ShipWithName
+import dat.{ShipParameter, ShipWithName}
 import models.MasterStype
+import org.json4s._
+import controllers.routes
 
 /**
  * Date: 14/06/21.
  */
 case class STypeExp(stype: MasterStype, exp: Long) {
   def name = stype.name
-  def toJsonElem = Map[String, Any]("label" -> name, "data" -> exp)
+  def abbName = ShipParameter.stAbbNames(name)
+  def toJson(memberId: Long) = {
+    val url = routes.UserView.ship(memberId).toString() + s"""#filters=["","$abbName","","","","","","","","","","","","",""]"""
+    JObject("label" -> JString(name), "data" -> JInt(exp), "url" -> JString(url))
+  }
 }
 
 object STypeExp {
