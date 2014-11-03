@@ -30,7 +30,8 @@ object View extends Controller {
     request.session.get("key").map { key =>
       Redirect(back).withNewSession
     }.getOrElse {
-      Ok(views.html.login(init, back))
+      val baseCounts = models.UserSettings.countAllByBase()
+      Ok(views.html.login(init, back, baseCounts))
     }
   }
 }

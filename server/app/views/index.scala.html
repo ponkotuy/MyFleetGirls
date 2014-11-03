@@ -11,71 +11,69 @@
   <script src="@Js.Vue"></script>
   <script src="@Js.Coffee("index")"></script>
 } {
-
   @navbar("top")
     <div class="jumbotron">
       <div class="container">
-      <h1>MyFleetGirls<small class="version">Ver@version</small></h1>
-      @tweet()
-      <p><a href="@routes.ViewAbout.setup()">README</a></p>
-    </div>
-    </div>
-
-  <div class="container" role="main">
-  <div class="row">
-    <div class="col-sm-8">
-    <div class="col-sm-4">
-      <h2>所属基地</h2>
-      <form>
-        <select class="form-control" id="base_select">
-        @baseCounts.map { case (u, count) =>
-          @u.server.map { server =>
-            <option value="@server.number">@server.name <small>@count</small></option>
-          }
-        }
-        </select>
-      </form>
-      <ul id="base_user">
-        <li v-repeat="user: users">
-          <a href="/user/{{user.id}}">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
-        </li>
-      </ul>
-
-      <div id="search_user">
-      <h2>提督検索</h2>
-      <input type="text" class="form-control" placeholder="Search Admiral" v-model="query" />
-      <ul>
-        <li v-repeat="user: users">
-          <a href="/user/{{user.id}}">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
-        </li>
-      </ul>
+        <h1>MyFleetGirls<small class="version">Ver@version</small></h1>
+        @tweet()
+        <p><a href="@routes.ViewAbout.setup()">README</a></p>
       </div>
     </div>
 
-    <div class="col-sm-4">
-      <h2>New</h2>
-      <ul>
-        @newest.map { a =>
-          <li><a href="@routes.UserView.user(a.id)">@a.nickname</a></li>
-        }
-      </ul>
-    </div>
+  <div class="container" role="main">
+    <div class="row">
+      <div class="col-sm-8">
+        <div class="col-sm-4">
+          <h2>所属基地</h2>
+          <form>
+            <select class="form-control" id="base_select">
+              @baseCounts.map { case (u, count) =>
+                @u.server.map { server =>
+                  <option value="@server.number">@server.name @count</option>
+                }
+              }
+            </select>
+          </form>
+          <ul id="base_user">
+            <li v-repeat="user: users">
+              <a href="/user/{{user.id}}">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
+            </li>
+          </ul>
 
-    <div class="col-sm-4">
-      <h2>提督Lv順</h2>
-      <ul>
-        @highLv.map { a =>
-          <li><a href="@routes.UserView.user(a.id)">@a.nickname</a><small>Lv@a.lv</small></li>
-        }
-      </ul>
-    </div>
-    </div>
+          <div id="search_user">
+            <h2>提督検索</h2>
+            <input type="text" class="form-control" placeholder="Search Admiral" v-model="query" />
+            <ul>
+              <li v-repeat="user: users">
+                <a href="/user/{{user.id}}">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
+              </li>
+            </ul>
+          </div>
+        </div>
 
-    <div class="col-sm-4">
-      <a class="twitter-timeline" href="https://twitter.com/MyFleetGirls" data-widget-id="525054289803108355">@@MyFleetGirls からのツイート</a>
-      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-    </div>
+        <div class="col-sm-4">
+          <h2>New</h2>
+          <ul>
+            @newest.map { a =>
+              <li><a href="@routes.UserView.user(a.id)">@a.nickname</a></li>
+            }
+          </ul>
+        </div>
+
+        <div class="col-sm-4">
+          <h2>提督Lv順</h2>
+          <ul>
+            @highLv.map { a =>
+              <li><a href="@routes.UserView.user(a.id)">@a.nickname</a><small>Lv@a.lv</small></li>
+            }
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-sm-4">
+        <a class="twitter-timeline" href="https://twitter.com/MyFleetGirls" data-widget-id="525054289803108355">@@MyFleetGirls からのツイート</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+      </div>
     </div>
   </div>
-</div>
 }

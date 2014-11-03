@@ -1,9 +1,9 @@
-@(initUser: String, back: String)
+@(initUser: String, back: String, baseCounts: Seq[(UserSettings, Long)])
 
 @main {
   <title>MyFleetGirls Login</title>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/0.10.5/vue.js"></script>
-  <script src="@routes.Assets.at("javascript/login.js")"></script>
+  <script src="@Js.Vue"></script>
+  <script src="@Js.Coffee("login")"></script>
 } {
   @navbar("login")
   <div id="login_form">
@@ -15,22 +15,59 @@
     <form class="form-horizontal" role="form">
       <input type="hidden" id="initUser" value="@initUser" />
       <input type="hidden" id="back" value="@back" />
+
       <div class="form-group">
         <label for="userId" class="col-sm-2 control-label">UserID(数字)</label>
-        <div class="col-sm-10">
+        <div class="col-sm-8">
           <input type="number" class="form-control" id="userId" v-model="userId" />
         </div>
       </div>
+
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-9">
+          <div class="row form-group">
+            <label for="base_select" class="col-sm-2 control-label">所属基地</label>
+            <div class="col-sm-6">
+              <select class="form-control" id="base_select">
+                <option value="-1">全基地</option>
+                @baseCounts.map { case (u, count) =>
+                  @u.server.map { server =>
+                  <option value="@server.number">@server.name @count</option>
+                  }
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="row form-group">
+            <label for="admiral-name" class="col-sm-2 control-label">提督名</label>
+            <div class="col-sm-6">
+              <input type="text" id="admiral-name" class="form-control" v-model="admiralName" />
+            </div>
+          </div>
+
+          <div class="row form-group">
+            <div class="col-sm-offset-2 col-sm-6">
+              <ul id="admirals">
+                <li v-repeat="user: users | filterBy admiralName">
+                  <a href="#" v-on="click: setAdmiral(user.id)">{{user.nickname}}<small>Lv{{user.lv}}</small></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="form-group">
         <label for="password" class="col-sm-2 control-label">
           <a href="@routes.ViewAbout.faq()#password">Password</a>
         </label>
-        <div class="col-sm-10">
+        <div class="col-sm-8">
           <input type="password" class="form-control" id="password" v-model="password" />
         </div>
       </div>
       <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
+        <div class="col-sm-offset-2 col-sm-8">
           <button type="button" class="btn btn-primary" id="submit" v-on="click: submit()">Login</button>
         </div>
       </div>
