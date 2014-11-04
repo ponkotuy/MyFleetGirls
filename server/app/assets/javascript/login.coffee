@@ -23,17 +23,22 @@ $(document).ready ->
             .fail((err) => @errorMsg = err)
       getNumber: () ->
         $('#base_select option:selected')[0].value
-      getUsers: (number) ->
-        $.getJSON("/rest/v1/search_base_user/#{number}")
-        .done (data) -> vue.$set('users', data)
+      getUsers: (number, name) ->
+        json = if number == "-1"
+          $.getJSON("/rest/v1/search_user?q=#{name}")
+        else
+          $.getJSON("/rest/v1/search_base_user?base=#{number}&q=#{name}")
+        json.done (data) -> vue.$set('users', data)
       setAdmiral: (id) ->
         @userId = id
     ready: ->
       number = localStorage.getItem(storageKey) ? @getNumber()
       $('#base_select').val(number)
-      @getUsers(number)
+      @getUsers(number, "")
+      @$watch 'admiralName', =>
+        @getUsers(@getNumber(), @admiralName)
 
   $('#base_select').change ->
     number = vue.getNumber()
     localStorage.setItem(storageKey, number)
-    vue.getUsers(number)
+    vue.getUsers(number, vue.admiralName)

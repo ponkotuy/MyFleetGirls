@@ -39,7 +39,7 @@ baseAdmiral = ->
       getNumber: () ->
         $('#base_select option:selected')[0].value
       getUsers: (number) ->
-        $.getJSON("/rest/v1/search_base_user/#{number}")
+        $.getJSON("/rest/v1/search_base_user?base=#{number}")
         .done (data) -> baseUser.$set('users', data)
     ready: ->
       number = localStorage.getItem(storageKey) ? @getNumber()

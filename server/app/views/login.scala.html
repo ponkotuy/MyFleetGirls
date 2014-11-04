@@ -48,8 +48,9 @@
 
           <div class="row form-group">
             <div class="col-sm-offset-2 col-sm-6">
-              <ul id="admirals">
-                <li v-repeat="user: users | filterBy admiralName">
+              <p v-if="users.length == 0">Not Found</p>
+              <ul id="admirals" v-if="users">
+                <li v-repeat="user: users">
                   <a href="#" v-on="click: setAdmiral(user.id)">{{user.nickname}}<small>Lv{{user.lv}}</small></a>
                 </li>
               </ul>
@@ -68,7 +69,7 @@
       </div>
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-8">
-          <button type="button" class="btn btn-primary" id="submit" v-on="click: submit()">Login</button>
+          <button type="submit" class="btn btn-primary" id="submit" v-on="click: submit()">Login</button>
         </div>
       </div>
     </form>

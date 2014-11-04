@@ -58,10 +58,12 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
     select(a.id, a.nickname, a.created, b.lv).from(Admiral as a)
       .innerJoin(Basic as b).on(a.id, b.memberId)
       .where.like(a.nickname, q)
-      .and.eq(b.created, sqls"(select MAX(${b.created}) from ${Basic.table} as b where ${a.id} = ${b.memberId})")
+        .and.eq(b.created, sqls"(select MAX(${b.created}) from ${Basic.table} as b where ${a.id} = ${b.memberId})")
+      .orderBy(b.experience).desc
+      .limit(limit).offset(offset)
   }.map(AdmiralWithLv(a, b)).list().apply()
 
-  def findAllByServer(serverId: Int, limit: Int = Int.MaxValue, offset: Int = 0)(
+  def findAllByServer(serverId: Int, where: SQLSyntax = sqls"true", limit: Int = Int.MaxValue, offset: Int = 0)(
       implicit session: DBSession = autoSession): List[AdmiralWithLv] =
     withSQL {
       select(a.id, a.nickname, a.created, b.lv).from(Admiral as a)
@@ -69,7 +71,8 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
         .innerJoin(UserSettings as us).on(a.id, us.memberId)
         .where.eq(us.base, serverId)
           .and.eq(b.created, sqls"(select MAX(${b.created}) from ${Basic.table} as b where ${a.id} = ${b.memberId})")
-        .orderBy(b.lv).desc
+          .and.append(where)
+        .orderBy(b.experience).desc
     }.map(AdmiralWithLv(a, b)).list().apply()
 
   def findAllLvTop(limit: Int = Int.MaxValue, offset: Int = 0)(
