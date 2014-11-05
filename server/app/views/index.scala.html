@@ -23,29 +23,32 @@
   <div class="container" role="main">
     <div class="row">
       <div class="col-sm-8">
-        <div class="col-sm-4">
-          <h2>所属基地</h2>
-          <form>
-            <select class="form-control" id="base_select">
-              @baseCounts.map { case (u, count) =>
-                @u.server.map { server =>
-                  <option value="@server.number">@server.name @count</option>
+        <div class="col-sm-4" id="search-admiral">
+          <h2>提督検索</h2>
+          <form role="form">
+            <div class="from-group">
+              <label for="base_select">所属基地</label>
+              <select class="form-control" id="base_select">
+                <option value="-1">全基地</option>
+                @baseCounts.map { case (u, count) =>
+                  @u.server.map { server =>
+                    <option value="@server.number">@server.name @count</option>
+                  }
                 }
-              }
-            </select>
-          </form>
-          <ul id="base_user">
-            <li v-repeat="user: users">
-              <a href="/user/{{user.id}}">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
-            </li>
-          </ul>
+              </select>
+            </div>
 
-          <div id="search_user">
-            <h2>提督検索</h2>
-            <input type="text" class="form-control" placeholder="Search Admiral" v-model="query" />
-            <ul>
+            <div class="form-group">
+              <label for="admiral-name">提督名</label>
+              <input type="text" id="admiral-name" class="form-control" v-model="admiralName" />
+            </div>
+          </form>
+
+          <div class="row form-group">
+            <p v-if="users.length == 0">Not Found</p>
+            <ul id="admirals" v-if="users">
               <li v-repeat="user: users">
-                <a href="/user/{{user.id}}">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
+                <a href="/user/{{user.id}}">{{user.nickname}}<small>Lv{{user.lv}}</small></a>
               </li>
             </ul>
           </div>
