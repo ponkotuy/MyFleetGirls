@@ -24,4 +24,12 @@ object Fav extends Controller {
   def getCount(url: String) = actionAsync {
     Ok(models.Favorite.count(url).toString)
   }
+
+  def isFaved(url: String) = actionAsync { implicit request =>
+    val memberIdOpt = request.session.get("memberId").map(_.toLong)
+    val result: Boolean = memberIdOpt.exists { memberId =>
+      models.Favorite.isFaved(memberId, url)
+    }
+    Ok(result.toString)
+  }
 }

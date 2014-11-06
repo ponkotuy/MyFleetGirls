@@ -1,11 +1,14 @@
 package models
 
+import java.util.zip.CRC32
+
 import scalikejdbc._
 
 case class Favorite(
   id: Long,
   memberId: Long,
   url: String,
+  hashUrl: Long,
   first: String,
   second: String,
   created: Long) {
@@ -21,13 +24,14 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
 
   override val tableName = "favorite"
 
-  override val columns = Seq("id", "member_id", "url", "first", "second", "created")
+  override val columns = Seq("id", "member_id", "url", "hash_url", "first", "second", "created")
 
   def apply(f: SyntaxProvider[Favorite])(rs: WrappedResultSet): Favorite = apply(f.resultName)(rs)
   def apply(f: ResultName[Favorite])(rs: WrappedResultSet): Favorite = new Favorite(
     id = rs.get(f.id),
     memberId = rs.get(f.memberId),
     url = rs.get(f.url),
+    hashUrl = rs.get(f.hashUrl),
     first = rs.get(f.first),
     second = rs.get(f.second),
     created = rs.get(f.created)
@@ -68,9 +72,15 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
     countBy(sqls"f.url = $url and f.first = $fst and f.second = $snd")
   }
 
+  def isFaved(memberId: Long, url: String)(implicit session: DBSession = autoSession): Boolean = {
+    val crc = calcCRC(url)
+    countBy(sqls"f.member_id = $memberId and f.url = $url and f.hash_url = $crc") > 0
+  }
+
   def createOrig(
     memberId: Long,
     url: String,
+    hashUrl: Long,
     first: String,
     second: String,
     created: Long)(implicit session: DBSession = autoSession): Favorite = {
@@ -78,12 +88,14 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
       insert.into(Favorite).columns(
         column.memberId,
         column.url,
+        column.hashUrl,
         column.first,
         column.second,
         column.created
       ).values(
           memberId,
           url,
+          hashUrl,
           first,
           second,
           created
@@ -94,6 +106,7 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
       id = generatedKey,
       memberId = memberId,
       url = url,
+      hashUrl = hashUrl,
       first = first,
       second = second,
       created = created)
@@ -101,7 +114,7 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
 
   def create(memberId: Long, url: String)(implicit session: DBSession = autoSession): Unit = {
     val (fst, snd) = fstSnd(url)
-    createOrig(memberId, url, fst, snd, System.currentTimeMillis())
+    createOrig(memberId, url, calcCRC(url), fst, snd, System.currentTimeMillis())
   }
 
   def save(entity: Favorite)(implicit session: DBSession = autoSession): Favorite = {
@@ -110,6 +123,7 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
         column.id -> entity.id,
         column.memberId -> entity.memberId,
         column.url -> entity.url,
+        column.hashUrl -> entity.hashUrl,
         column.first -> entity.first,
         column.second -> entity.second,
         column.created -> entity.created
@@ -129,6 +143,12 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
     val first = parts.lift(1).getOrElse("")
     val second = parts.lift(2).getOrElse("")
     (first, second)
+  }
+
+  def calcCRC(str: String): Long = {
+    val crc = new CRC32()
+    crc.update(str.getBytes)
+    crc.getValue
   }
 
 }

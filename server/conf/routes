@@ -126,6 +126,7 @@ GET     /ws/v1/user/:userId         controllers.UserWS.info(userId: Long)
 # Fav
 PUT     /passwd/put/v1/fav          controllers.Fav.put
 GET     /rest/v1/fav_count/:url     controllers.Fav.getCount(url: String)
+GET     /rest/v1/is_faved/:url      controllers.Fav.isFaved(url: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
