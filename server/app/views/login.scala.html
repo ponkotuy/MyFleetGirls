@@ -19,7 +19,7 @@
       <div class="form-group">
         <label for="userId" class="col-sm-2 control-label">UserID(数字)</label>
         <div class="col-sm-8">
-          <input type="number" class="form-control" id="userId" v-model="userId" />
+          <input type="number" class="form-control" id="userId" v-model="userId" v-on="keyup: submit() | key enter" />
         </div>
       </div>
 
@@ -51,7 +51,7 @@
               <p v-if="users.length == 0">Not Found</p>
               <ul id="admirals" v-if="users">
                 <li v-repeat="user: users">
-                  <a href="#" v-on="click: setAdmiral(user.id)">{{user.nickname}}<small>Lv{{user.lv}}</small></a>
+                  <a v-on="click: setAdmiral(user.id)" class="clickable">{{user.nickname}}<small>Lv{{user.lv}}</small></a>
                 </li>
               </ul>
             </div>
@@ -64,12 +64,12 @@
           <a href="@routes.ViewAbout.faq()#password">Password</a>
         </label>
         <div class="col-sm-8">
-          <input type="password" class="form-control" id="password" v-model="password" />
+          <input type="password" class="form-control" id="password" v-model="password" v-on="keyup: submit() | key enter" />
         </div>
       </div>
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-8">
-          <button type="submit" class="btn btn-primary" id="submit" v-on="click: submit()">Login</button>
+          <button type="button" class="btn btn-primary" id="submit" v-on="click: submit()">Login</button>
         </div>
       </div>
     </form>

@@ -13,7 +13,6 @@ $(document).ready ->
     methods:
       submit: () ->
         if isNaN(parseInt(@userId))
-          console.error('UserID is non number.')
           @errorMsg = {status: 499, statusText: 'User side error', responseText: 'UserIDが数字ではありません'}
         else
           data = {userId: @userId, password: @password}

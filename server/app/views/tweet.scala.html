@@ -1,4 +1,33 @@
 @()
-<div style="float:right;" id="tweet_button">
+<div style="float:right; margin-top: 5px; margin-left: 5px;" id="tweet_button">
   <a href="https://twitter.com/share" class="twitter-share-button" data-lang="ja" id="tweet" data-hashtags="MyFleetGirls">ツイート</a>
 </div>
+<div style="float:right;">
+  <div class="input-group input-group-sm">
+    <span class="input-group-btn">
+      <button class="btn btn-default" type="button" id="add_favorite">
+        <span class="text-warning glyphicon glyphicon-star"></span>
+      </button>
+    </span>
+    <input id="fav_count" type="text" readonly="readonly" class="form-control" size="1" style="width:35px;" />
+  </div>
+</div>
+
+<script>
+$(function(){
+  var path = location.pathname + location.search + location.hash;
+  $('#add_favorite').click(function() {
+    $.ajax({
+      type: 'put',
+      url: '/passwd/put/v1/fav',
+      data: {url: path}
+    }).fail(function(e){
+      if(e.status == 401) location.href = '/passwd/entire/login?back=' + encodeURIComponent(path);
+      else console.error(e);
+    })
+  });
+  $.get('/rest/v1/fav_count/' + encodeURIComponent(path)).done(function(data){
+    $('#fav_count').val(data)
+  })
+});
+</script>
