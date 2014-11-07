@@ -27,6 +27,7 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
   override val columns = Seq("id", "member_id", "url", "hash_url", "first", "second", "created")
 
   def apply(f: SyntaxProvider[Favorite])(rs: WrappedResultSet): Favorite = apply(f.resultName)(rs)
+
   def apply(f: ResultName[Favorite])(rs: WrappedResultSet): Favorite = new Favorite(
     id = rs.get(f.id),
     memberId = rs.get(f.memberId),
@@ -57,7 +58,7 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
 
   def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[Favorite] = {
     withSQL {
-      select.from(Favorite as f).where.append(sqls"${where}")
+      select.from(Favorite as f).where.append(sqls"${where}").orderBy(f.url)
     }.map(Favorite(f.resultName)).list().apply()
   }
 
@@ -71,6 +72,15 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
     val (fst, snd) = fstSnd(url)
     countBy(sqls"f.url = $url and f.first = $fst and f.second = $snd")
   }
+
+  def countByURL(where: SQLSyntax)(implicit session: DBSession = autoSession): List[(String, Long)] = withSQL {
+    select(f.url, sqls"count(1)").from(Favorite as f)
+      .where.append(sqls"$where")
+      .groupBy(f.url)
+      .orderBy(sqls"-count(1)", f.url)
+  }.map { rs =>
+    (rs.string(f.url), rs.long(2))
+  }.toList().apply()
 
   def isFaved(memberId: Long, url: String)(implicit session: DBSession = autoSession): Boolean = {
     val crc = calcCRC(url)

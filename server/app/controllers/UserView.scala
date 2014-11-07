@@ -43,6 +43,12 @@ object UserView extends Controller {
     Ok(views.html.user.user(user, yome, best, flagship))
   }
 
+  def favorite(memberId: Long) = userView(memberId) { user =>
+    val favs = models.Favorite.findAllBy(sqls"f.member_id = $memberId")
+    val faved = models.Favorite.countByURL(sqls"f.first = ${"user"} and f.second = ${memberId}")
+    Ok(views.html.user.favorite(user, favs, faved))
+  }
+
   def snapshot(memberId: Long) = userView(memberId) { user =>
     val snaps = models.DeckSnapshot.findAllByWithShip(sqls"member_id = ${memberId}")
     Ok(views.html.user.snapshot(user, snaps))
