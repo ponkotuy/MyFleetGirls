@@ -1,0 +1,38 @@
+@(user: dat.User, favs: Seq[Favorite], faved: Seq[(String, Long)])
+
+@main {
+  <title>Favorite -@{user.admiral.nickname}提督-</title>
+} {
+  @head_content(user) {
+    @usertab(user, "favorite") {
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="page-header">
+            <h1>あなたのFavorite</h1>
+          </div>
+
+          <div class="list-group">
+            @favs.map { fav =>
+              <a href="@fav.url" class="list-group-item">@fav.url</a>
+            }
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="page-header">
+            <h1>あなたへのFavorite</h1>
+          </div>
+
+          <div class="list-group">
+            @faved.map { case (url, count) =>
+              <a href="@url" class="list-group-item">
+                <span class="badge">@count</span>
+                @url
+              </a>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  }
+}

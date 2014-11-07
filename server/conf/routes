@@ -100,6 +100,7 @@ GET     /u/:user                    controllers.UserView.name(user: String)
 GET     /user/:userId               controllers.UserView.user2(userId: Long)
 GET     /user/:userId/              controllers.UserView.user(userId: Long)
 GET     /user/:userId/top           controllers.UserView.top(userId: Long)
+GET     /user/:userId/favorite      controllers.UserView.favorite(userId: Long)
 GET     /user/:userId/snapshot      controllers.UserView.snapshot(userId: Long)
 GET     /passwd/user/:userId/register_snap/:deckId controllers.UserView.registerSnap(userId: Long, deckId: Int)
 GET     /passwd/user/delete_snap/:snapId controllers.UserView.deleteSnap(snapId: Long)
@@ -122,6 +123,11 @@ GET     /user/:userId/statistics    controllers.UserView.statistics(userId: Long
 
 # WebSocket
 GET     /ws/v1/user/:userId         controllers.UserWS.info(userId: Long)
+
+# Fav
+PUT     /passwd/put/v1/fav          controllers.Fav.put
+GET     /rest/v1/fav_count/:url     controllers.Fav.getCount(url: String)
+GET     /rest/v1/is_faved/:url      controllers.Fav.isFaved(url: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

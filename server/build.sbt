@@ -1,7 +1,7 @@
 
 name := "MyFleetGirlsServer"
 
-scalaVersion := "2.11.2"
+scalaVersion := "2.11.4"
 
 libraryDependencies ++= Seq(
   "org.scalikejdbc" %% "scalikejdbc" % "2.1.+",

@@ -4,6 +4,9 @@
     <li class="@if(active=="top"){active}">
       <a href="@{routes.UserView.top(user.admiral.id)}">Top</a>
     </li>
+    <li class="@if(active=="favorite"){active}">
+      <a href="@{routes.UserView.favorite(user.admiral.id)}">Favorite</a>
+    </li>
     <li class="@if(active=="snap"){active}">
       <a href="@{routes.UserView.snapshot(user.admiral.id)}">スナップショット</a>
     </li>
