@@ -1,3 +1,4 @@
+
 chart = '#material_chart'
 overview = '#material_overview'
 chart2 = '#material_chart2'
@@ -25,13 +26,16 @@ $(document).ready ->
   fixWidth()
   button()
   $.getJSON "/rest/v1/#{userid}/materials", (data) ->
+    if data.length < 3
+      $('#material').replaceWith('<p>グラフ生成に必要なデータが十分にありません</p>')
+      return
     table = translate(data)
 
     param = fromURLParameter(location.hash.replace(/^\#/, ''))
     if param.max?
       mainPlot(param.active, param.min, param.max)
     else
-      if data[0].created < moment().subtract('month', 1).valueOf()
+      if data[0].created < moment().subtract(1, 'month').valueOf()
         monthPlot()
       else
         wholePlot()
@@ -55,9 +59,9 @@ translate = (data) ->
 
 transElem = (data, elem) -> data.map (x) -> [x['created'], x[elem]]
 
-monthPlot = -> mainPlot 'month', moment().subtract('months', 1).valueOf()
-weekPlot = -> mainPlot 'week', moment().subtract('weeks', 1).valueOf()
-dayPlot = -> mainPlot 'day', moment().subtract('days', 1).valueOf()
+monthPlot = -> mainPlot 'month', moment().subtract(1, 'months').valueOf()
+weekPlot = -> mainPlot 'week', moment().subtract(1, 'weeks').valueOf()
+dayPlot = -> mainPlot 'day', moment().subtract(1, 'days').valueOf()
 wholePlot = -> mainPlot 'whole'
 
 mainPlot = (active, min, max = moment().valueOf()) ->

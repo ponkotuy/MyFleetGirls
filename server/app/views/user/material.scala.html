@@ -21,49 +21,52 @@
       <div class="page-header">
         <h1>資源</h1>
       </div>
-      <div class="btn-group" id="range">
-        <button type="button" class="btn btn-default" id="whole">全体</button>
-        <button type="button" class="btn btn-default" id="month">1ヶ月</button>
-        <button type="button" class="btn btn-default" id="week">1週間</button>
-        <button type="button" class="btn btn-default" id="day">1日</button>
-      </div>
-      <div id="material_chart" class="chart width-adj"></div>
-      <div id="material_overview" class="overview width-adj"></div>
-      <div id="material_chart2" class="chart width-adj"></div>
-      <div id="material_overview2" class="overview width-adj"></div>
 
-      <h3>資源収支</h3>
-      <table class="table table-condensed table-striped">
-        <thead>
-          <tr>
-            <th>日付</th>
-            <th>燃料</th>
-            <th>弾薬</th>
-            <th>鉄鋼</th>
-            <th>ボーキサイト</th>
-            <th>高速建造材</th>
-            <th>高速修復材</th>
-            <th>開発資材</th>
-            <th>改修資材</th>
-          </tr>
-        </thead>
-        <tbody>
-          @days.map { x =>
+      <div id="material">
+        <div class="btn-group" id="range">
+          <button type="button" class="btn btn-default" id="whole">全体</button>
+          <button type="button" class="btn btn-default" id="month">1ヶ月</button>
+          <button type="button" class="btn btn-default" id="week">1週間</button>
+          <button type="button" class="btn btn-default" id="day">1日</button>
+        </div>
+        <div id="material_chart" class="chart width-adj"></div>
+        <div id="material_overview" class="overview width-adj"></div>
+        <div id="material_chart2" class="chart width-adj"></div>
+        <div id="material_overview2" class="overview width-adj"></div>
+
+        <h3>資源収支</h3>
+        <table class="table table-condensed table-striped">
+          <thead>
             <tr>
-              <td>@x.prettyDay</td>
-              @x.fuel.cell
-              @x.ammo.cell
-              @x.steel.cell
-              @x.bauxite.cell
-              @x.instant.cell
-              @x.bucket.cell
-              @x.develop.cell
-              @x.revamping.cell
+              <th>日付</th>
+              <th>燃料</th>
+              <th>弾薬</th>
+              <th>鉄鋼</th>
+              <th>ボーキサイト</th>
+              <th>高速建造材</th>
+              <th>高速修復材</th>
+              <th>開発資材</th>
+              <th>改修資材</th>
             </tr>
-          }
-        </tbody>
-      </table>
-      <p>翌日朝5時で次の日に変わる時間帯を採用しています（UTC+4）</p>
+          </thead>
+          <tbody>
+            @days.map { x =>
+              <tr>
+                <td>@x.prettyDay</td>
+                @x.fuel.cell
+                @x.ammo.cell
+                @x.steel.cell
+                @x.bauxite.cell
+                @x.instant.cell
+                @x.bucket.cell
+                @x.develop.cell
+                @x.revamping.cell
+              </tr>
+            }
+          </tbody>
+        </table>
+        <p>翌日朝5時で次の日に変わる時間帯を採用しています（UTC+4）</p>
+      </div>
     }
   }
 }

@@ -1,4 +1,4 @@
-chart = '#admiral_exp'
+chart = '#admiral_exp_graph'
 overview = '#admiral_exp_overview'
 
 option =
@@ -22,9 +22,12 @@ $(document).ready ->
   userid = $('#userid').val()
   fixWidth()
   $.getJSON "/rest/v1/#{userid}/basics", (data) ->
-    exps = translate(data)
-    plotO = $.plot(overview, exps, optionO)
-    wholePlot()
+    if data.length > 2
+      exps = translate(data)
+      plotO = $.plot(overview, exps, optionO)
+      wholePlot()
+    else
+      $('#admiral_exp').remove()
 
 translate = (data) -> [
   data: data.map (x) -> [x['created'], x['experience']]
