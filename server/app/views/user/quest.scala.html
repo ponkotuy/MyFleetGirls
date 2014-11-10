@@ -28,7 +28,6 @@
           </table>
         </div>
 
-
         <div id="weekly_quest" v-if="weekly_quests.length > 0">
           <h3>Weekly</h3>
           <table class="table table-hover table-condensed">
@@ -39,6 +38,25 @@
             </thead>
             <tbody>
               <tr v-repeat="q: weekly_quests" v-class="text-muted: q.state == 3, warning: q.state == 2" class="tltip" data-toggle="tooltip" data-placement="bottom" title="<p>{{q.detail}}</p> <p>[報酬]{{q.fuel}}/{{q.ammo}}/{{q.steel}}/{{q.bauxite}}</p>">
+                <td>{{q.id}}</td>
+                <td>{{catView(q.category)}}</td>
+                <td>{{q.title}}</td>
+                <td>{{progressView(q.state, q.progressFlag)}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="monthly_quest" v-if="monthly_quests.length > 0">
+          <h3>Monthly</h3>
+          <table class="table table-hover table-condensed">
+            <thead>
+              <tr>
+                <th>ID</th><th>カテゴリ</th><th>名前</th><th>進行</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-repeat="q: monthly_quests" v-class="text-muted: q.state == 3, warning: q.state == 2" class="tltip" data-toggle="tooltip" data-placement="bottom" title="<p>{{q.detail}}</p> <p>[報酬]{{q.fuel}}/{{q.ammo}}/{{q.steel}}/{{q.bauxite}}</p>">
                 <td>{{q.id}}</td>
                 <td>{{catView(q.category)}}</td>
                 <td>{{q.title}}</td>

@@ -5,6 +5,7 @@ $(document).ready ->
     data:
       daily_quests: []
       weekly_quests: []
+      monthly_quests: []
       once_quests: []
     methods:
       progressView: (state, progress) ->
@@ -22,7 +23,8 @@ $(document).ready ->
         $.getJSON "/rest/v1/#{userid}/quest", {}, (data) =>
           @daily_quests = data.filter (x) -> [2, 4, 5].indexOf(x.typ) >= 0
           @weekly_quests = data.filter (x) -> x.typ == 3
-          @once_quests = data.filter (x) -> [1, 6].indexOf(x.typ) >= 0
+          @monthly_quests = data.filter (x) -> x.typ == 6
+          @once_quests = data.filter (x) -> x.typ == 1
       setTooltip: () ->
         $('tr.tltip').tooltip({html: true})
     created: () ->
