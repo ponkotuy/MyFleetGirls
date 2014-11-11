@@ -2,6 +2,7 @@
 
 @main {
   <title>Favorite -@{user.admiral.nickname}提督-</title>
+  <script src="@Js.Common"></script>
   <script src="@Js.Coffee("delete_fav")"></script>
 } {
   @head_content(user) {
@@ -29,12 +30,18 @@
 
           <div class="list-group">
             @faved.map { case (url, count) =>
-              <a href="@url" class="list-group-item">
+              <a data-toggle="modal" href="@routes.UserView.favFroms(user.admiral.id, url)" data-target="#modal" class="list-group-item modal_link" data-url="@url">
                 <span class="badge">@count</span>
                 @url
               </a>
             }
           </div>
+        </div>
+      </div>
+
+      <div class="modal fade bs-example-modal-sm" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content"></div>
         </div>
       </div>
     }

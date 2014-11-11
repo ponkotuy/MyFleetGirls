@@ -62,6 +62,13 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
     }.map(Favorite(f.resultName)).list().apply()
   }
 
+  def findAllByUrl(url: String)(implicit session: DBSession = autoSession): List[Favorite] = {
+    val (fst, snd) = fstSnd(url)
+    withSQL {
+      select.from(Favorite as f).where.eq(f.first, fst).and.eq(f.second, snd).and.eq(f.url, url)
+    }.map(Favorite(f.resultName)).list().apply()
+  }
+
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(Favorite as f).where.append(sqls"${where}")

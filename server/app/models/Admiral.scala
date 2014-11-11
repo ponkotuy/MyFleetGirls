@@ -84,6 +84,10 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
       .limit(limit).offset(offset)
   }.map(AdmiralWithLv(a, b)).list().apply()
 
+  def findAllIn(ids: Seq[Long])(implicit session: DBSession = autoSession): List[Admiral] = withSQL {
+    select.from(Admiral as a).where.in(a.id, ids)
+  }.map(Admiral(a)(_)).list().apply()
+
   def save(a: Admiral)(implicit session: DBSession = Admiral.autoSession): Admiral = {
     withSQL {
       update(Admiral).set(column.id -> a.id, column.nickname -> a.nickname)

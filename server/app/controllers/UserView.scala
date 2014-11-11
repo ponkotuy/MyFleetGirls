@@ -49,6 +49,13 @@ object UserView extends Controller {
     Ok(views.html.user.favorite(user, favs, faved))
   }
 
+  def favFroms(memberId: Long, url: String) = userView(memberId) { user =>
+    val fromIds = models.Favorite.findAllByUrl(url).map(_.memberId)
+    val froms = models.Admiral.findAllIn(fromIds)
+    if(froms.nonEmpty) Ok(views.html.user.modal_fav(user, url, froms))
+    else BadRequest(s"Not found favorite: memberId = ${memberId}, url = ${url}")
+  }
+
   def snapshot(memberId: Long) = userView(memberId) { user =>
     val snaps = models.DeckSnapshot.findAllByWithShip(sqls"member_id = ${memberId}")
     Ok(views.html.user.snapshot(user, snaps))

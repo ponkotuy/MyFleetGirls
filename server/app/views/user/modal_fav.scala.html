@@ -1,0 +1,14 @@
+@(user: dat.User, url: String, froms: Seq[Admiral])
+
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+  <a href="@url">@url</a>
+</div>
+
+<div class="modal-body">
+  <ul>
+    @froms.map { from =>
+      <li><a href="@routes.UserView.user(from.id)">@from.nickname</a></li>
+    }
+  </ul>
+</div>
