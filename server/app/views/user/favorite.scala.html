@@ -2,6 +2,7 @@
 
 @main {
   <title>Favorite -@{user.admiral.nickname}提督-</title>
+  <script src="@Js.Coffee("delete_fav")"></script>
 } {
   @head_content(user) {
     @usertab(user, "favorite") {
@@ -13,7 +14,10 @@
 
           <div class="list-group">
             @favs.map { fav =>
-              <a href="@fav.url" class="list-group-item">@fav.url</a>
+              <div class="list-group-item">
+                <a href="@fav.url">@fav.url</a>
+                <button type="button" class="btn btn-danger btn-xs fav-delete" data-id="@fav.id" style="float: right;" @if(!user.isMine){disabled="disabled"}>Delete</button>
+              </div>
             }
           </div>
         </div>

@@ -18,7 +18,7 @@ object Fav extends Controller {
         models.Favorite.create(memberId, favput.url)
         Ok("Success")
       }.getOrElse(BadRequest("Duplicated etc..."))
-    }.getOrElse(Unauthorized("Authentication failure"))
+    }.getOrElse(unauthorized)
   }
 
   def getCount(url: String) = actionAsync {
@@ -32,4 +32,18 @@ object Fav extends Controller {
     }
     Ok(result.toString)
   }
+
+  def delete(id: Long) = actionAsync { request =>
+    val memberIdOpt = request.session.get("memberId").map(_.toLong)
+    memberIdOpt.filter(uuidCheck(_, request.session.get("key"))).map { memberId =>
+      models.Favorite.find(id).map { fav =>
+        if(fav.memberId == memberId) {
+          fav.destroy()
+          Ok("Success")
+        } else { unauthorized }
+      }.getOrElse(NotFound("Not Found"))
+    }.getOrElse(unauthorized)
+  }
+
+  private def unauthorized = Unauthorized("Authentication failure")
 }
