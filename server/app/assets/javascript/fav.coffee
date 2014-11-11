@@ -1,12 +1,12 @@
 $(document).ready ->
   loadFavCounter()
 
-@loadFavCounter = (path) ->
-  $('.favorite-group').each ->
-    path = $(this).attr('data-path')
-    path = if path then path else (location.pathname + location.search + location.hash)
-    btn = $(this).find('.btn-add-favorite')
-    counter = $(this).find('.fav-counter')
+@loadFavCounter = () ->
+  $('.favorite-group').each (i, elem) ->
+    path = $(elem).attr('data-path')
+    path ?= location.pathname + location.search + location.hash
+    btn = $(elem).find('.btn-add-favorite')
+    counter = $(elem).find('.fav-counter')
     btn.click -> addFavorite(btn, counter, path)
     btn.each -> checkButton(btn, path)
     counter.each -> favCounter(counter, path)
