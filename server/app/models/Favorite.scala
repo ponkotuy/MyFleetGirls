@@ -11,6 +11,7 @@ case class Favorite(
   hashUrl: Long,
   first: String,
   second: String,
+  title: String,
   created: Long) {
 
   def save()(implicit session: DBSession = Favorite.autoSession): Favorite = Favorite.save(this)(session)
@@ -24,7 +25,7 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
 
   override val tableName = "favorite"
 
-  override val columns = Seq("id", "member_id", "url", "hash_url", "first", "second", "created")
+  override val columns = Seq("id", "member_id", "url", "hash_url", "title", "first", "second", "created")
 
   def apply(f: SyntaxProvider[Favorite])(rs: WrappedResultSet): Favorite = apply(f.resultName)(rs)
 
@@ -33,6 +34,7 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
     memberId = rs.get(f.memberId),
     url = rs.get(f.url),
     hashUrl = rs.get(f.hashUrl),
+    title = rs.get(f.title),
     first = rs.get(f.first),
     second = rs.get(f.second),
     created = rs.get(f.created)
@@ -62,6 +64,13 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
     }.map(Favorite(f.resultName)).list().apply()
   }
 
+  def findAllByUrl(url: String, where: SQLSyntax = sqls"true")(implicit session: DBSession = autoSession): List[Favorite] = {
+    val (fst, snd) = fstSnd(url)
+    withSQL {
+      select.from(Favorite as f).where.eq(f.first, fst).and.eq(f.second, snd).and.eq(f.url, url).and.append(where)
+    }.map(Favorite(f.resultName)).list().apply()
+  }
+
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(Favorite as f).where.append(sqls"${where}")
@@ -73,13 +82,13 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
     countBy(sqls"f.url = $url and f.first = $fst and f.second = $snd")
   }
 
-  def countByURL(where: SQLSyntax)(implicit session: DBSession = autoSession): List[(String, Long)] = withSQL {
-    select(f.url, sqls"count(1)").from(Favorite as f)
+  def countByURL(where: SQLSyntax)(implicit session: DBSession = autoSession): List[(String, String, Long)] = withSQL {
+    select(f.url, f.title, sqls"count(1)").from(Favorite as f)
       .where.append(sqls"$where")
       .groupBy(f.url)
       .orderBy(sqls"-count(1)", f.url)
   }.map { rs =>
-    (rs.string(f.url), rs.long(2))
+    (rs.string(f.url), rs.string(f.title), rs.long(3))
   }.toList().apply()
 
   def isFaved(memberId: Long, url: String)(implicit session: DBSession = autoSession): Boolean = {
@@ -93,7 +102,8 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
     hashUrl: Long,
     first: String,
     second: String,
-    created: Long)(implicit session: DBSession = autoSession): Favorite = {
+    title: String,
+    created: Long)(implicit session: DBSession = autoSession): Unit = {
     val generatedKey = withSQL {
       insert.into(Favorite).columns(
         column.memberId,
@@ -101,6 +111,7 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
         column.hashUrl,
         column.first,
         column.second,
+        column.title,
         column.created
       ).values(
           memberId,
@@ -108,23 +119,15 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
           hashUrl,
           first,
           second,
+          title,
           created
         )
     }.updateAndReturnGeneratedKey().apply()
-
-    Favorite(
-      id = generatedKey,
-      memberId = memberId,
-      url = url,
-      hashUrl = hashUrl,
-      first = first,
-      second = second,
-      created = created)
   }
 
-  def create(memberId: Long, url: String)(implicit session: DBSession = autoSession): Unit = {
+  def create(memberId: Long, url: String, title: String)(implicit session: DBSession = autoSession): Unit = {
     val (fst, snd) = fstSnd(url)
-    createOrig(memberId, url, calcCRC(url), fst, snd, System.currentTimeMillis())
+    createOrig(memberId, url, calcCRC(url), fst, snd, title, System.currentTimeMillis())
   }
 
   def save(entity: Favorite)(implicit session: DBSession = autoSession): Favorite = {
@@ -136,6 +139,7 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
         column.hashUrl -> entity.hashUrl,
         column.first -> entity.first,
         column.second -> entity.second,
+        column.title -> entity.title,
         column.created -> entity.created
       ).where.eq(column.id, entity.id)
     }.update().apply()

@@ -218,7 +218,6 @@ object Post extends Controller {
 
   def setSession() = formAsync { request =>
     AuthDataImpl.fromReq(request.body).map { auth =>
-      println(request, auth)
       if(Authentication.myfleetAuth(auth)) {
         val uuid = models.Session.findByUser(auth.userId)
           .map(_.uuid)

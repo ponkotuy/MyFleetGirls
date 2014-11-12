@@ -1,21 +1,23 @@
 $(document).ready ->
   loadFavCounter()
 
-@loadFavCounter = (path) ->
-  $('.favorite-group').each ->
-    path = $(this).attr('data-path')
-    path = if path then path else (location.pathname + location.search + location.hash)
-    btn = $(this).find('.btn-add-favorite')
-    counter = $(this).find('.fav-counter')
-    btn.click -> addFavorite(btn, counter, path)
+@loadFavCounter = () ->
+  $('.favorite-group').each (i, elem) ->
+    path = $(elem).attr('data-path')
+    path ?= location.pathname + location.search + location.hash
+    title = $(elem).attr('data-title')
+    title ?= document.title
+    btn = $(elem).find('.btn-add-favorite')
+    counter = $(elem).find('.fav-counter')
+    btn.click -> addFavorite(btn, counter, path, title)
     btn.each -> checkButton(btn, path)
     counter.each -> favCounter(counter, path)
 
-addFavorite = (btn, counter, path) ->
+addFavorite = (btn, counter, path, title) ->
   $.ajax(
     type: 'put'
     url: '/passwd/put/v1/fav'
-    data: {url: path}
+    data: {url: path, title: title}
   ).done( ->
     checkButton(btn, path)
     favCounter(counter, path)

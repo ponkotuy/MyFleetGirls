@@ -101,6 +101,7 @@ GET     /user/:userId               controllers.UserView.user2(userId: Long)
 GET     /user/:userId/              controllers.UserView.user(userId: Long)
 GET     /user/:userId/top           controllers.UserView.top(userId: Long)
 GET     /user/:userId/favorite      controllers.UserView.favorite(userId: Long)
+GET     /user/:userId/fav_froms     controllers.UserView.favFroms(userId: Long, url: String)
 GET     /user/:userId/snapshot      controllers.UserView.snapshot(userId: Long)
 GET     /passwd/user/:userId/register_snap/:deckId controllers.UserView.registerSnap(userId: Long, deckId: Int)
 GET     /passwd/user/delete_snap/:snapId controllers.UserView.deleteSnap(snapId: Long)
@@ -128,6 +129,7 @@ GET     /ws/v1/user/:userId         controllers.UserWS.info(userId: Long)
 PUT     /passwd/put/v1/fav          controllers.Fav.put
 GET     /rest/v1/fav_count/:url     controllers.Fav.getCount(url: String)
 GET     /rest/v1/is_faved/:url      controllers.Fav.isFaved(url: String)
+DELETE  /passwd/delete/v1/fav/:id   controllers.Fav.delete(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

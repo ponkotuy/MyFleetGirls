@@ -7,5 +7,6 @@
   obj = {}
   for kv in str.split('&')
     ary = kv.split('=')
-    obj[ary[0]] = ary[1]
+    key = ary.shift()
+    obj[key] = ary.join('=')
   obj

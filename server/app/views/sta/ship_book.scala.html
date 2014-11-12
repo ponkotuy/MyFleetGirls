@@ -1,7 +1,7 @@
 @(master: dat.MasterShipAll, ships: Seq[dat.ShipWithAdmiral])
 
 @main {
-  <title>艦娘図鑑</title>
+  <title>@master.name -艦娘図鑑-</title>
   <script src="@Js.Vue"></script>
   <script src="@Js.Coffee("st_ship_book")"></script>
 } {

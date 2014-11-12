@@ -1,4 +1,4 @@
-@(ships: Seq[MasterShipWithStype])
+@(ships: Seq[MasterShipWithStype], favTable: Int => Long)
 
 @main {
   <title>艦娘一覧 -艦娘図鑑-</title>
@@ -9,7 +9,11 @@
         <h3>@stype</h3>
         <ul>
           @xs.map { x =>
-            <li><a href="@routes.ViewSta.shipBook(x.shipId)">@x.name</a></li>
+            <li>
+              <a href="@routes.ViewSta.shipBook(x.shipId)">
+                @x.name@if(favTable(x.shipId) > 0){<small>☆@favTable(x.shipId)</small>}
+              </a>
+            </li>
           }
         </ul>
       </div>

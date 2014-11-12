@@ -1,36 +1,48 @@
-@(user: dat.User, favs: Seq[Favorite], faved: Seq[(String, Long)])
+@(user: dat.User, favs: Seq[Favorite], faved: Seq[(String, String, Long)])
 
 @main {
   <title>Favorite -@{user.admiral.nickname}提督-</title>
+  <script src="@Js.Common"></script>
+  <script src="@Js.Coffee("delete_fav")"></script>
 } {
   @head_content(user) {
     @usertab(user, "favorite") {
       <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-7">
           <div class="page-header">
             <h1>あなたのFavorite</h1>
           </div>
 
           <div class="list-group">
             @favs.map { fav =>
-              <a href="@fav.url" class="list-group-item">@fav.url</a>
+              <div class="list-group-item">
+                <a href="@fav.url">@if(fav.title != ""){@fav.title}else{@fav.url}</a>
+                <button type="button" class="btn btn-warning btn-xs fav-delete" data-id="@fav.id" style="float: right;" @if(!user.isMine){disabled="disabled"}>Delete</button>
+                <button type="button" class="btn btn-info btn-xs fav-tweet" data-url="@fav.url" data-title="@fav.title" style="float: right;">Tweet</button>
+              </div>
             }
           </div>
         </div>
 
-        <div class="col-sm-6">
+        <div class="col-sm-5">
           <div class="page-header">
             <h1>あなたへのFavorite</h1>
           </div>
 
           <div class="list-group">
-            @faved.map { case (url, count) =>
-              <a href="@url" class="list-group-item">
+            @faved.map { case (url, title, count) =>
+              <a data-toggle="modal" href="@routes.UserView.favFroms(user.admiral.id, url)" data-target="#modal" class="list-group-item modal_link" data-url="@url">
                 <span class="badge">@count</span>
-                @url
+                @if(title != "") {@title} else {@url}
               </a>
             }
           </div>
+        </div>
+      </div>
+
+      <div class="modal fade bs-example-modal-sm" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content"></div>
         </div>
       </div>
     }
