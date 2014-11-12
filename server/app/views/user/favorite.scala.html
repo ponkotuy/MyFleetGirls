@@ -8,7 +8,7 @@
   @head_content(user) {
     @usertab(user, "favorite") {
       <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-7">
           <div class="page-header">
             <h1>あなたのFavorite</h1>
           </div>
@@ -17,13 +17,14 @@
             @favs.map { fav =>
               <div class="list-group-item">
                 <a href="@fav.url">@if(fav.title != ""){@fav.title}else{@fav.url}</a>
-                <button type="button" class="btn btn-danger btn-xs fav-delete" data-id="@fav.id" style="float: right;" @if(!user.isMine){disabled="disabled"}>Delete</button>
+                <button type="button" class="btn btn-warning btn-xs fav-delete" data-id="@fav.id" style="float: right;" @if(!user.isMine){disabled="disabled"}>Delete</button>
+                <button type="button" class="btn btn-info btn-xs fav-tweet" data-url="@fav.url" data-title="@fav.title" style="float: right;">Tweet</button>
               </div>
             }
           </div>
         </div>
 
-        <div class="col-sm-6">
+        <div class="col-sm-5">
           <div class="page-header">
             <h1>あなたへのFavorite</h1>
           </div>

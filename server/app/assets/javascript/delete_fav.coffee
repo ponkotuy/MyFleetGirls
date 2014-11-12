@@ -1,6 +1,7 @@
 
 $(document).ready ->
   setDeleteButtonEvent()
+  setTweetButtonEvent()
   setModalEvent()
   url = urlParam(location.hash.replace(/^\#/, ''))
   if url?
@@ -15,6 +16,15 @@ setDeleteButtonEvent = ->
         url: '/passwd/delete/v1/fav/' + id
       ).done ->
         location.reload()
+
+setTweetButtonEvent = ->
+  $('.fav-tweet').each ->
+    $(this).click ->
+      here = "#{location.protocol}//#{location.host}#{$(this).attr('data-url')}"
+      title = $(this).attr('data-title')
+      text = if title == "" then '次をFavoriteしました' else "#{title} をFavoriteしました"
+      url = "https://twitter.com/intent/tweet?original_referer=#{here}&url=#{here}&text=#{text}&hashtags=MyFleetGirls"
+      window.open(url)
 
 setModalEvent = ->
   $('#modal').on 'shown.bs.modal', (e) ->
