@@ -1,8 +1,9 @@
 package controllers
 
+import controllers.Common._
 import dat.FavPut
 import play.api.mvc.Controller
-import Common._
+import scalikejdbc._
 
 import scala.util.Try
 
@@ -15,7 +16,11 @@ object Fav extends Controller {
     val memberIdOpt = request.session.get("memberId").map(_.toLong)
     memberIdOpt.filter(uuidCheck(_, request.session.get("key"))).map { memberId =>
       Try {
-        models.Favorite.create(memberId, favput.url)
+        models.Favorite.create(memberId, favput.url, favput.title.getOrElse(""))
+        favput.title.foreach { title => // 同じURLでTitleが違うのを見つけたらupdateする
+          val olds = models.Favorite.findAllByUrl(favput.url, sqls"f.title <> ${title}")
+          olds.foreach { _.copy(title = title).save() }
+        }
         Ok("Success")
       }.getOrElse(BadRequest("Duplicated etc..."))
     }.getOrElse(unauthorized)
