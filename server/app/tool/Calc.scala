@@ -1,6 +1,6 @@
 package tool
 
-import dat.ShipParameter
+import models.join.ShipParameter
 
 /**
  *

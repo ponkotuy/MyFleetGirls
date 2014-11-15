@@ -1,4 +1,6 @@
-@(user: dat.User, days: Seq[tool.MaterialDays])
+@import models.join.User
+
+@(user: User, days: Seq[tool.MaterialDays])
 
 @main {
   <title>@{user.admiral.nickname}提督 -資源-</title>

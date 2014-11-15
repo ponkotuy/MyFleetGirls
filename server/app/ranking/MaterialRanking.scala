@@ -1,7 +1,7 @@
 package ranking
 
 import controllers.routes
-import models.{Admiral, Material}
+import models.db.{Admiral, Material}
 import scalikejdbc._
 import scala.concurrent.duration._
 

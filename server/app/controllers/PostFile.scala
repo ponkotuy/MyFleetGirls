@@ -4,7 +4,7 @@ import play.api.mvc._
 import Common._
 import java.io.{ByteArrayOutputStream, InputStream, FileInputStream}
 import tool.SWFTool
-import models.{MasterShipBase, ShipImage}
+import models.db
 
 /**
  *
@@ -18,18 +18,18 @@ object PostFile extends Controller {
       request.body.file("image") match {
         case Some(ref) =>
           findKey(shipKey) { ship =>
-            models.ShipImage.find(ship.id) match {
+            db.ShipImage.find(ship.id) match {
               case Some(si) =>
                 if(si.filename.isDefined) Ok("Already Exists")
                 else {
-                  ShipImage(si.id, si.image, Some(shipKey), si.memberId).save() // filenameをupdate
+                  db.ShipImage(si.id, si.image, Some(shipKey), si.memberId).save() // filenameをupdate
                   Ok("Updated Ship Image Key")
                 }
               case None =>
                 val swfFile = ref.ref.file
                 val imageFile = SWFTool.extractJPG(swfFile, 5)
                 val image = readAll(new FileInputStream(imageFile))
-                models.ShipImage.create(ship.id, image, shipKey, auth.id)
+                db.ShipImage.create(ship.id, image, shipKey, auth.id)
                 Ok("Success")
             }
           }
@@ -47,7 +47,7 @@ object PostFile extends Controller {
             val mp3File = ref.ref.file
             val sound = readAll(new FileInputStream(mp3File))
             try {
-              models.ShipSound.create(ship.id, soundId, sound)
+              db.ShipSound.create(ship.id, soundId, sound)
               Ok("Success")
             } catch {
               case e: Throwable => Ok("Already Exists")
@@ -69,8 +69,8 @@ object PostFile extends Controller {
     baos.toByteArray
   }
 
-  private def findKey(key: String)(f: MasterShipBase => Result) = {
-    models.MasterShipBase.findByFilename(key) match {
+  private def findKey(key: String)(f: db.MasterShipBase => Result) = {
+    db.MasterShipBase.findByFilename(key) match {
       case Some(ship) => f(ship)
       case None => BadRequest("Wrong Filename or Not Found Master Data")
     }

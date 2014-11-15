@@ -1,14 +1,15 @@
 
+import akka.actor.Props
 import com.github.nscala_time.time.StaticDateTimeZone
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits._
+import models.db.{Admiral, Material, Quest}
+import org.joda.time.{DateTimeConstants, LocalDate}
 import play.api._
 import play.libs.Akka
-import akka.actor.Props
 import scalikejdbc._
-import org.joda.time.{LocalDate, DateTimeConstants}
 import util.{Cron, CronSchedule, CronScheduler}
-import models.Quest
+
+import scala.concurrent.ExecutionContext.Implicits._
+import scala.concurrent.duration._
 
 /**
  *
@@ -16,7 +17,7 @@ import models.Quest
  * Date: 14/05/12.
  */
 object Global extends GlobalSettings {
-  import Cron._
+  import util.Cron._
 
   override def onStart(app: Application): Unit = {
     val cron = Akka.system().actorOf(Props[CronScheduler], "cron")
@@ -44,9 +45,9 @@ object Global extends GlobalSettings {
 
   private def cutMaterialRecord(): Unit = {
     Logger.info("Cut Material Record")
-    models.Admiral.findAll().map { user =>
+    Admiral.findAll().map { user =>
       val monthAgo = System.currentTimeMillis() - 30L*24*60*60*1000
-      val materials = models.Material.findAllByUser(user.id, to = monthAgo)
+      val materials = Material.findAllByUser(user.id, to = monthAgo)
       val days = materials.groupBy { mat =>
         new LocalDate(mat.created, StaticDateTimeZone.forOffsetHours(9))
       }.values

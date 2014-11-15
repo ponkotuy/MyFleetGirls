@@ -1,14 +1,14 @@
 package tool
 
-import dat.{ShipParameter, ShipWithName}
-import models.MasterStype
+import models.db
+import models.join.{ShipWithName, ShipParameter}
 import org.json4s._
 import controllers.routes
 
 /**
  * Date: 14/06/21.
  */
-case class STypeExp(stype: MasterStype, exp: Long) {
+case class STypeExp(stype: db.MasterStype, exp: Long) {
   def name = stype.name
   def abbName = ShipParameter.stAbbNames(name)
   def toJson(memberId: Long) = {
@@ -21,7 +21,7 @@ object STypeExp {
   val stype = Map(6 -> 5, 9 -> 8, 10 -> 8, 14 -> 13, 16 -> 7, 18 -> 11, 20 -> 7).withDefault(identity)
 
   def fromShips(ships: Seq[ShipWithName]): Seq[STypeExp] = {
-    val stypes = models.MasterStype.findAll().map(st => st.id -> st).toMap
+    val stypes = db.MasterStype.findAll().map(st => st.id -> st).toMap
     ships.groupBy(s => stype(s.stype.id))
       .mapValues(_.map(_.exp.toLong).sum)
       .toSeq.sortBy(_._2).reverse

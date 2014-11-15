@@ -1,6 +1,6 @@
 package ranking
 
-import dat.ShipWithName
+import models.join.ShipWithName
 
 import scala.concurrent.duration._
 import scala.xml.Elem

@@ -5,7 +5,8 @@ import java.util.UUID
 import com.ponkotuy.data._
 import com.ponkotuy.value.KCServer
 import controllers.Common._
-import dat._
+import models.req._
+import models.db
 import play.api.mvc._
 import tool.Authentication
 
@@ -19,9 +20,9 @@ import scala.concurrent.Future
  */
 object Post extends Controller {
   def basic = authAndParse[Basic] { case (auth, basic) =>
-    val isChange = !models.Basic.findByUser(auth.id).exists(_.diff(basic) < 0.01)
+    val isChange = !db.Basic.findByUser(auth.id).exists(_.diff(basic) < 0.01)
     if(isChange) {
-      models.Basic.create(basic, auth.id)
+      db.Basic.create(basic, auth.id)
       Ok("Success")
     } else {
       Ok("No Change")
@@ -29,14 +30,14 @@ object Post extends Controller {
   }
 
   def admiralSettings = authAndParse[KCServer] { case (auth, server) =>
-    models.UserSettings.setBase(auth.id, server.number)
+    db.UserSettings.setBase(auth.id, server.number)
     Ok("Success")
   }
 
   def material = authAndParse[Material] { case (auth, material) =>
-    val isChange = !models.Material.findByUser(auth.id).exists(_.diff(material) < 0.03)
+    val isChange = !db.Material.findByUser(auth.id).exists(_.diff(material) < 0.03)
     if(isChange) {
-      models.Material.create(material, auth.id)
+      db.Material.create(material, auth.id)
       Ok("Success")
     } else {
       Ok("No Change")
@@ -48,25 +49,25 @@ object Post extends Controller {
   }
 
   def ship2 = authAndParse[List[Ship]] { case (auth, ships) =>
-    models.Ship.deleteAllByUser(auth.id)
-    models.Ship.bulkInsert(ships, auth.id)
+    db.Ship.deleteAllByUser(auth.id)
+    db.Ship.bulkInsert(ships, auth.id)
     Ok("Success")
   }
 
   def updateShip() = authAndParse[List[Ship]] { case (auth, ships) =>
-    models.Ship.bulkUpsert(ships, auth.id)
+    db.Ship.bulkUpsert(ships, auth.id)
     Ok("Success")
   }
 
   def ndock = authAndParse[List[NDock]] { case (auth, docks) =>
-    models.NDock.deleteAllByUser(auth.id)
-    docks.foreach(dock => models.NDock.create(dock, auth.id))
+    db.NDock.deleteAllByUser(auth.id)
+    docks.foreach(dock => db.NDock.create(dock, auth.id))
     Ok("Success")
   }
 
   def createShip = authAndParse[CreateShipAndDock] { case (auth, CreateShipAndDock(ship, dock)) =>
     try {
-      models.CreateShip.createFromKDock(ship, dock, auth.id)
+      db.CreateShip.createFromKDock(ship, dock, auth.id)
     } catch {
       case e: Throwable =>
         Ok("Duplicate Entry")
@@ -75,37 +76,37 @@ object Post extends Controller {
   }
 
   def createShip2 = authAndParse[CreateShipWithId] { case (auth, CreateShipWithId(ship, id)) =>
-    models.CreateShip.create(ship, auth.id, id)
+    db.CreateShip.create(ship, auth.id, id)
     Ok("Success")
   }
 
   def createItem = authAndParse[CreateItem] { (auth, item) =>
-    models.CreateItem.create(item, auth.id)
+    db.CreateItem.create(item, auth.id)
     for {
       id <- item.id
       slotitemId <- item.slotitemId
-      master <- models.MasterSlotItem.find(slotitemId)
+      master <- db.MasterSlotItem.find(slotitemId)
     } {
-      models.SlotItem.create(auth.id, id, slotitemId, master.name)
+      db.SlotItem.create(auth.id, id, slotitemId, master.name)
     }
     Ok("Success")
   }
 
   def kdock = authAndParse[List[KDock]] { case (auth, docks) =>
-    models.KDock.deleteByUser(auth.id)
-    models.KDock.bulkInsert(docks.filterNot(_.completeTime == 0), auth.id)
+    db.KDock.deleteByUser(auth.id)
+    db.KDock.bulkInsert(docks.filterNot(_.completeTime == 0), auth.id)
     Ok("Success")
   }
 
   def deleteKDock() = authAndParse[DeleteKDock] { case (auth, kdock) =>
-    models.KDock.destroy(auth.id, kdock.kDockId)
+    db.KDock.destroy(auth.id, kdock.kDockId)
     Ok("Success")
   }
 
   def deckPort = authAndParse[List[DeckPort]] { case (auth, decks) =>
     try {
-      models.DeckPort.deleteByUser(auth.id)
-      models.DeckPort.bulkInsert(decks, auth.id)
+      db.DeckPort.deleteByUser(auth.id)
+      db.DeckPort.bulkInsert(decks, auth.id)
     } catch {
       case e: Exception => e.printStackTrace()
     }
@@ -113,44 +114,44 @@ object Post extends Controller {
   }
 
   def shipBook = authAndParse[List[ShipBook]] { case (auth, ships) =>
-    models.ShipBook.bulkUpsert(ships, auth.id)
+    db.ShipBook.bulkUpsert(ships, auth.id)
     Ok("Success")
   }
 
   def itemBook = authAndParse[List[ItemBook]] { case (auth, items) =>
-    models.ItemBook.bulkUpsert(items, auth.id)
+    db.ItemBook.bulkUpsert(items, auth.id)
     Ok("Success")
   }
 
   def mapInfo = authAndParse[List[MapInfo]] { case (auth, maps) =>
-    models.MapInfo.deleteAllByUser(auth.id)
-    models.MapInfo.bulkInsert(maps, auth.id)
+    db.MapInfo.deleteAllByUser(auth.id)
+    db.MapInfo.bulkInsert(maps, auth.id)
     Ok("Success")
   }
 
   def slotItem = authAndParse[List[SlotItem]] { case (auth, items) =>
-    models.SlotItem.deleteAllByUser(auth.id)
-    models.SlotItem.bulkInsert(items, auth.id)
+    db.SlotItem.deleteAllByUser(auth.id)
+    db.SlotItem.bulkInsert(items, auth.id)
     Ok("Success")
   }
 
   def battleResult = authAndParse[(BattleResult, MapStart)] { case (auth, (result, map)) =>
-    models.BattleResult.create(result, map, auth.id)
+    db.BattleResult.create(result, map, auth.id)
     Ok("Success")
   }
 
   def mapRoute = authAndParse[MapRoute] { case (auth, mapRoute) =>
-    models.MapRoute.create(mapRoute, auth.id)
+    db.MapRoute.create(mapRoute, auth.id)
     Ok("Success")
   }
 
   def questlist = authAndParse[List[Quest]] { case (auth, quests) =>
-    models.Quest.bulkUpsert(quests, auth.id)
+    db.Quest.bulkUpsert(quests, auth.id)
     Ok("Success")
   }
 
   def remodelSlot() = authAndParse[RemodelSlotlist] { case (auth, request) =>
-    models.RemodelSlot.bulkInsert(request, auth.id)
+    db.RemodelSlot.bulkInsert(request, auth.id)
     Ok("Success")
   }
 
@@ -158,12 +159,12 @@ object Post extends Controller {
     RegisterSnapshot.fromReq(request.body) match {
       case Some(snap) =>
         if(uuidCheck(snap.userId, request.session.get("key"))) {
-          models.DeckPort.find(snap.userId, snap.deckport) match {
+          db.DeckPort.find(snap.userId, snap.deckport) match {
             case Some(deck) =>
               val current = System.currentTimeMillis()
-              val deckSnap = models.DeckSnapshot.create(snap.userId, deck.name, snap.title, snap.comment, current)
-              val ships = models.DeckShip.findAllByDeck(snap.userId, snap.deckport)
-              models.DeckShipSnapshot.bulkInsert(ships.map(_.ship), deckSnap.id)
+              val deckSnap = db.DeckSnapshot.create(snap.userId, deck.name, snap.title, snap.comment, current)
+              val ships = db.DeckShip.findAllByDeck(snap.userId, snap.deckport)
+              db.DeckShipSnapshot.bulkInsert(ships.map(_.ship), deckSnap.id)
               Ok("Success")
             case None => BadRequest("Invalid deckport")
           }
@@ -178,7 +179,7 @@ object Post extends Controller {
     DeleteSnapshot.fromReq(request.body) match {
       case Some(snap) =>
         if(uuidCheck(snap.userId, request.session.get("key"))) {
-          models.DeckSnapshot.find(snap.snapId) match {
+          db.DeckSnapshot.find(snap.snapId) match {
             case Some(deck) =>
               deck.destroy()
               Ok("Success")
@@ -194,8 +195,8 @@ object Post extends Controller {
   def updateSnap() = formAsync { request =>
     UpdateSnapshot.fromReq(request.body).map { update =>
       if(uuidCheck(update.userId, request.session.get("key"))) {
-        models.DeckSnapshot.find(update.snapId).map { snap =>
-          models.DeckSnapshot(snap.id, snap.memberId, snap.name, update.title, update.comment, snap.created).save()
+        db.DeckSnapshot.find(update.snapId).map { snap =>
+          db.DeckSnapshot(snap.id, snap.memberId, snap.name, update.title, update.comment, snap.created).save()
           Ok("Success")
         }.getOrElse(BadRequest("Invalid snapId"))
       } else { Unauthorized("Authentication failure") }
@@ -206,7 +207,7 @@ object Post extends Controller {
     Settings.fromReq(request.body) match {
       case Some(set: Settings) =>
         if(uuidCheck(set.userId, request.session.get("key"))) {
-          models.UserSettings.setYome(set.userId, set.shipId)
+          db.UserSettings.setYome(set.userId, set.shipId)
           Ok("Success")
         } else {
           Unauthorized("Authentication failure")
@@ -219,11 +220,11 @@ object Post extends Controller {
   def setSession() = formAsync { request =>
     AuthDataImpl.fromReq(request.body).map { auth =>
       if(Authentication.myfleetAuth(auth)) {
-        val uuid = models.Session.findByUser(auth.userId)
+        val uuid = db.Session.findByUser(auth.userId)
           .map(_.uuid)
           .getOrElse {
             val uuid = UUID.randomUUID()
-            models.Session.createByUUID(uuid, auth.userId)
+            db.Session.createByUUID(uuid, auth.userId)
             uuid
           }
         Ok("Success").withSession("key" -> uuid.toString, "memberId" -> auth.userId.toString)

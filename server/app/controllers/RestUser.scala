@@ -1,5 +1,6 @@
 package controllers
 
+import models.db
 import org.json4s.JsonDSL._
 import org.json4s._
 import play.api.mvc.Controller
@@ -11,18 +12,18 @@ import scalikejdbc._
 object RestUser extends Controller {
   import controllers.Common._
 
-  def materials(userId: Long) = returnJson(models.Material.findAllByUser(userId))
+  def materials(userId: Long) = returnJson(db.Material.findAllByUser(userId))
 
-  def basics(userId: Long) = returnJson(models.Basic.findAllByUser(userId))
+  def basics(userId: Long) = returnJson(db.Basic.findAllByUser(userId))
 
-  def ndocks(memberId: Long) = returnJson(models.NDock.findAllByUserWithName(memberId))
+  def ndocks(memberId: Long) = returnJson(db.NDock.findAllByUserWithName(memberId))
 
-  def kdocks(memberId: Long) = returnJson(models.KDock.findAllByUserWithName(memberId))
+  def kdocks(memberId: Long) = returnJson(db.KDock.findAllByUserWithName(memberId))
 
-  def missions(memberId: Long) = returnJson(models.Mission.findByUserWithFlagship(memberId))
+  def missions(memberId: Long) = returnJson(db.Mission.findByUserWithFlagship(memberId))
 
   def conds(memberId: Long) = returnJson {
-    val ships = models.Ship.findAllByUserWithName(memberId)
+    val ships = db.Ship.findAllByUserWithName(memberId)
     val now = System.currentTimeMillis()
     for {
       ship <- ships
@@ -36,28 +37,28 @@ object RestUser extends Controller {
   }
 
   def createShips(memberId: Long, limit: Int, offset: Int, large: Boolean) = returnJson {
-    models.CreateShip.findAllByUserWithName(memberId, large, limit, offset)
+    db.CreateShip.findAllByUserWithName(memberId, large, limit, offset)
   }
 
   def createShipCount(memberId: Long, large: Boolean) =
-    returnString(models.CreateShip.countByUser(memberId, large))
+    returnString(db.CreateShip.countByUser(memberId, large))
 
   def createItems(memberId: Long, limit: Int, offset: Int) = returnJson {
-    models.CreateItem.findAllByWithName(sqls"ci.member_id = ${memberId}", limit, offset)
+    db.CreateItem.findAllByWithName(sqls"ci.member_id = ${memberId}", limit, offset)
   }
 
-  def createItemCount(memberId: Long) = returnString(models.CreateItem.countBy(sqls"member_id = ${memberId}"))
+  def createItemCount(memberId: Long) = returnString(db.CreateItem.countBy(sqls"member_id = ${memberId}"))
 
   def battleResult(memberId: Long, limit: Int, offset: Int, boss: Boolean, drop: Boolean, rank: String) = returnJson {
     val where = battleResultWhere(memberId, boss, drop, rank)
-    val result = models.BattleResult.findAllByWithCell(where, limit, offset)
+    val result = db.BattleResult.findAllByWithCell(where, limit, offset)
     JArray(result.map(_.toJson))
   }
 
   def battleResultCount(memberId: Long, boss: Boolean, drop: Boolean, rank: String) = returnString {
     val where = battleResultWhere(memberId, boss, drop, rank)
-    if(boss) models.BattleResult.countByWithCellInfo(where)
-    else models.BattleResult.countBy(where)
+    if(boss) db.BattleResult.countByWithCellInfo(where)
+    else db.BattleResult.countBy(where)
   }
 
   private def battleResultWhere(memberId: Long, boss: Boolean, drop: Boolean, rank: String) =
@@ -67,8 +68,8 @@ object RestUser extends Controller {
       .append(if(drop) sqls" and get_ship_id is not null" else sqls"")
 
   def routeLog(memberId: Long, limit: Int, offset: Int, area: Int, info: Int) = returnJson {
-    val result = models.MapRoute.findAllBy(routeLogWhere(memberId, area, info), limit, offset)
-    val ships = models.Ship.findAllByUserWithName(memberId)
+    val result = db.MapRoute.findAllBy(routeLogWhere(memberId, area, info), limit, offset)
+    val ships = db.Ship.findAllByUserWithName(memberId)
       .map(s => s.id -> s).toMap
     result.map { route =>
       val xs = route.fleet.map { sid =>
@@ -83,7 +84,7 @@ object RestUser extends Controller {
   }
 
   def routeLogCount(memberId: Long, area: Int, info: Int) = returnString {
-    models.MapRoute.countBy(routeLogWhere(memberId, area, info))
+    db.MapRoute.countBy(routeLogWhere(memberId, area, info))
   }
 
   private def routeLogWhere(memberId: Long, area: Int, info: Int) = {
@@ -92,9 +93,9 @@ object RestUser extends Controller {
       .append(if(info != -1) sqls" and info_no = ${info}" else sqls"")
   }
 
-  def quest(memberId: Long) = returnJson { models.Quest.findAllBy(sqls"member_id = ${memberId}") }
+  def quest(memberId: Long) = returnJson { db.Quest.findAllBy(sqls"member_id = ${memberId}") }
 
   def snap(memberId: Long, snapId: Long) = returnJson {
-    models.DeckSnapshot.find(snapId).filter(_.memberId == memberId).get
+    db.DeckSnapshot.find(snapId).filter(_.memberId == memberId).get
   }
 }

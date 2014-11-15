@@ -2,7 +2,7 @@
 title MyFleetGirls
 SET MFG_HOME=%~dp0
 If Defined b2eprogrampathname set MFG_HOME=%b2eprogrampathname%
-cd /d %MGF_HOME%
+cd /d %MFG_HOME%
 
 REM ŠÂ‹«•Ï” JAVA_HOME ‚Ü‚½‚Í MFG_JAVA_HOME ‚ªİ’è‚³‚ê‚Ä‚¢‚ê‚Î PATH ‚É’Ç‰Áİ’è
 If Defined JAVA_HOME path %JAVA_HOME%\bin\;%PATH%

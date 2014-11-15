@@ -27,4 +27,4 @@ buildInfoPackage := "build"
 
 scalikejdbcSettings
 
-TwirlKeys.templateImports ++= Seq("views.Js", "dat._", "models._")
+TwirlKeys.templateImports ++= Seq("views.Js", "models.db._", "models.join._")

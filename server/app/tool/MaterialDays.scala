@@ -1,7 +1,7 @@
 package tool
 
 import com.github.nscala_time.time.Imports._
-import models.Material
+import models.db.Material
 
 /**
  * Date: 14/06/21.

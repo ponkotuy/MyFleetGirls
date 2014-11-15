@@ -1,8 +1,8 @@
 package ranking
 
 import controllers.routes
-import dat.ShipWithName
-import models._
+import models.db._
+import models.join.ShipWithName
 import scalikejdbc._
 import scala.concurrent.duration._
 

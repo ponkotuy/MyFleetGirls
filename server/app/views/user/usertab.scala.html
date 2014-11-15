@@ -1,4 +1,6 @@
-@(user: dat.User, active: String)(body: Html)
+@import models.join.User
+
+@(user: User, active: String)(body: Html)
 
   <ul class="nav nav-tabs">
     <li class="@if(active=="top"){active}">

@@ -8,13 +8,14 @@ import play.api.libs.concurrent.Promise
 import org.json4s._
 import org.json4s.JsonDSL._
 import org.json4s.native.JsonMethods._
+import models.db
 
 /**
  * @author ponkotuy
  * Date: 14/04/11.
  */
 object UserWS {
-  implicit def formats = DefaultFormats
+  implicit val formats = DefaultFormats
 
   def info(memberId: Long) = WebSocket.using { request =>
     val in = Iteratee.consume[String]()
@@ -25,9 +26,9 @@ object UserWS {
   }
 
   def infoRaise(memberId: Long): Option[String] = {
-    val kdocks = models.KDock.findAllByUserWithName(memberId).map(Extraction.decompose)
-    val ndocks = models.NDock.findAllByUserWithName(memberId).map(Extraction.decompose)
-    val missions = models.Mission.findByUserWithFlagship(memberId).map(Extraction.decompose)
+    val kdocks = db.KDock.findAllByUserWithName(memberId).map(Extraction.decompose)
+    val ndocks = db.NDock.findAllByUserWithName(memberId).map(Extraction.decompose)
+    val missions = db.Mission.findByUserWithFlagship(memberId).map(Extraction.decompose)
     val json = ("kdocks" -> kdocks) ~ ("ndocks" -> ndocks) ~ ("missions" -> missions)
     Some(compact(render(json)))
   }

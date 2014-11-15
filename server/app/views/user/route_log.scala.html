@@ -1,4 +1,5 @@
-@(user: dat.User, stages: Seq[dat.Stage])
+@(user: User, stages: Seq[Stage])
+@import models.join.Stage
 @import views.Js
 @main {
   <title>海戦記録 -@{user.admiral.nickname}提督-</title>

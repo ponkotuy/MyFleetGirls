@@ -3,6 +3,7 @@ package controllers
 import scala.concurrent.ExecutionContext.Implicits._
 import play.api.mvc._
 import scala.concurrent.Future
+import models.db
 
 /**
  *
@@ -12,7 +13,7 @@ import scala.concurrent.Future
 object RestImage extends Controller {
   def ship(shipId: Int) = Action.async {
     Future {
-      models.ShipImage.find(shipId) match {
+      db.ShipImage.find(shipId) match {
         case Some(record) => Ok(record.image).as("image/jpeg")
         case _ => NotFound(s"Not Found Image (id=$shipId)")
       }
@@ -21,7 +22,7 @@ object RestImage extends Controller {
 
   def shipHead(shipId: Int) = Action.async {
     Future {
-      models.ShipImage.find(shipId) match {
+      db.ShipImage.find(shipId) match {
         case Some(record) => Ok(record.image).as("image/jpeg")
         case _ => NotFound(s"Not Found Image (id=$shipId)")
       }
@@ -30,7 +31,7 @@ object RestImage extends Controller {
 
   def shipKeyHead(shipKey: String) = Action.async {
     Future {
-      models.ShipImage.findByFilename(shipKey) match {
+      db.ShipImage.findByFilename(shipKey) match {
         case Some(record) => Ok(record.image).as("image/jpeg")
         case _ => NotFound(s"Not Found Image (key=$shipKey)")
       }

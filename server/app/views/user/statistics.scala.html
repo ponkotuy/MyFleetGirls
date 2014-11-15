@@ -1,4 +1,6 @@
-@(user: dat.User, stypeExp: Seq[tool.STypeExp] ,stypeExpJson: String, histgramJson: String, bestShipExpJson: String)
+@import models.join.User
+
+@(user: User, stypeExp: Seq[tool.STypeExp] ,stypeExpJson: String, histgramJson: String, bestShipExpJson: String)
 
 @main {
   <title>統計 -@{user.admiral.nickname}提督-</title>

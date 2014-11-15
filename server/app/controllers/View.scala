@@ -2,6 +2,7 @@ package controllers
 
 import build.BuildInfo
 import play.api.mvc._
+import models.db
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
@@ -17,11 +18,11 @@ object View extends Controller {
 
   def index = Action.async {
     Future {
-      val newest = models.Admiral.findNewest(limit = 20)
-      val lvTops = models.Admiral.findAllLvTop(limit = 20)
+      val newest = db.Admiral.findNewest(limit = 20)
+      val lvTops = db.Admiral.findAllLvTop(limit = 20)
       val source = Source.fromFile("server/public/message")
       val message = try { source.getLines().toList } finally { source.close() }
-      val baseCounts = models.UserSettings.countAllByBase()
+      val baseCounts = db.UserSettings.countAllByBase()
       Ok(views.html.index(BuildInfo.version, newest, lvTops, message, baseCounts))
     }
   }
@@ -30,7 +31,7 @@ object View extends Controller {
     request.session.get("key").map { key =>
       Redirect(back).withNewSession
     }.getOrElse {
-      val baseCounts = models.UserSettings.countAllByBase()
+      val baseCounts = db.UserSettings.countAllByBase()
       Ok(views.html.login(init, back, baseCounts))
     }
   }

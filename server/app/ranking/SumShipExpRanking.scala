@@ -2,7 +2,7 @@ package ranking
 
 import controllers.routes
 import scalikejdbc._
-import models._
+import models.db._
 import scala.concurrent.duration._
 
 /**

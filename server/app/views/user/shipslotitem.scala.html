@@ -1,4 +1,6 @@
-@(item: MasterSlotItem, ships: Seq[dat.ShipWithName], count: Long)
+@import models.join.ShipWithName
+
+@(item: MasterSlotItem, ships: Seq[ShipWithName], count: Long)
 
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>

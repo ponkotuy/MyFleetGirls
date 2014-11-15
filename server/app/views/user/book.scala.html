@@ -1,4 +1,6 @@
-@(user: dat.User, ships: Seq[ShipBook], items: Seq[ItemBook])
+@import models.join.User
+
+@(user: User, ships: Seq[ShipBook], items: Seq[ItemBook])
 
 @main {
   <title>図鑑 -@{user.admiral.nickname}提督-</title>

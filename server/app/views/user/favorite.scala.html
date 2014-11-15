@@ -1,4 +1,6 @@
-@(user: dat.User, favs: Seq[Favorite], faved: Seq[(String, String, Long)])
+@import models.join.User
+
+@(user: User, favs: Seq[Favorite], faved: Seq[(String, String, Long)])
 
 @main {
   <title>Favorite -@{user.admiral.nickname}提督-</title>
