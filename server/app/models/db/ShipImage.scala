@@ -28,6 +28,7 @@ object ShipImage extends SQLSyntaxSupport[ShipImage] {
   )
 
   val si = ShipImage.syntax("si")
+  val a = Admiral.syntax("a")
 
   override val autoSession = AutoSession
 
@@ -36,6 +37,11 @@ object ShipImage extends SQLSyntaxSupport[ShipImage] {
       select.from(ShipImage as si).where.eq(si.id, id)
     }.map(ShipImage(si.resultName)).single().apply()
   }
+
+  def findAdmiral(sid: Int)(implicit session: DBSession = autoSession): Option[Admiral] = withSQL {
+    select(a.resultAll).from(ShipImage as si)
+      .innerJoin(Admiral as a).on(si.memberId, a.id).where.eq(si.id, sid)
+  }.map(Admiral(a)).single().apply()
 
   def findByFilename(filename: String)(implicit session: DBSession = autoSession): Option[ShipImage] = {
     withSQL {

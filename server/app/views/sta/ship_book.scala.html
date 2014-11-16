@@ -1,4 +1,4 @@
-@(master: MasterShipAll, ships: Seq[ShipWithAdmiral])
+@(master: MasterShipAll, ships: Seq[ShipWithAdmiral], admiral: Option[Admiral])
 
 @main {
   <title>@master.name -艦娘図鑑-</title>
@@ -10,10 +10,14 @@
 
     <div class="col-lg-3 col-md-4 col-sm-5">
       <img src="@routes.RestImage.ship(master.id)" style="margin: 25px;"/>
+      @admiral.map { ad =>
+        <small>画像提供： <a href="@routes.UserView.user(ad.id)">@ad.nickname</a></small>
+      }
     </div>
 
     <div class="row" id="from_name" data-ship-id="@master.id">
       <div class="col-md-3 col-sm-5">
+        <h3>艦娘ステータス</h3>
         <table class="table table-condensed table-striped">
           <tbody>
             <tr>
