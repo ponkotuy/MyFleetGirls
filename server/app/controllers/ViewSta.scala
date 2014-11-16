@@ -113,11 +113,14 @@ object ViewSta extends Controller {
   val StaBookURL = "/entire/sta/book/"
   def shipList() = actionAsync {
     val ships = db.MasterShipBase.findAllWithStype(sqls"ms.sortno > 0")
+    Ok(views.html.sta.ship_list(ships, favCountTableByShip()))
+  }
+
+  def favCountTableByShip(): Map[Int, Long] = {
     val favs = db.Favorite.countByURL(sqls"f.first = ${"entire"} and f.second = ${"sta"} and f.url like ${StaBookURL + "%"}")
-    val favCounts = favs.flatMap { case (url, _, count) =>
+    favs.flatMap { case (url, _, count) =>
       Try { url.replace(StaBookURL, "").toInt }.map(_ -> count).toOption
     }.toMap.withDefaultValue(0L)
-    Ok(views.html.sta.ship_list(ships, favCounts))
   }
 
   def shipBook(sid: Int) = actionAsync {

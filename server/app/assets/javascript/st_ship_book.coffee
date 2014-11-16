@@ -14,5 +14,5 @@ $(document).ready ->
           @dropCounts = ret
 
     created: ->
-      sid = $(@$el).attr("data-ship-id")
+      sid = $(@$el).attr('data-ship-id')
       @getSCounts(sid)

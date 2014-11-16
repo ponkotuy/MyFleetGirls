@@ -2,21 +2,31 @@
 
 @main {
   <title>艦娘一覧 -艦娘図鑑-</title>
+  <script src="@Js.Vue"></script>
+  <script src="@Js.Lodash"></script>
+  <script src="@Js.Coffee("ship_list")"></script>
 } {
   @statistics_head("ship_book") {
-    @ships.groupBy(_.stypeName).toList.sortBy(_._2.size).reverse.map { case (stype, xs) =>
-      <div class="col-lg-2 col-sm-3">
-        <h3>@stype</h3>
+    <div id="ship_list">
+      <form class="form-horizontal" role="form" style="margin-top: 20px;">
+        <div class="form-group">
+          <label for="search" class="col-sm-2 control-label">絞り込み</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" v-model="search" />
+          </div>
+        </div>
+      </form>
+
+      <div class="col-lg-2 col-sm-3" v-repeat="stype: stypes">
+        <h3>{{stype.stype}}</h3>
         <ul>
-          @xs.map { x =>
-            <li>
-              <a href="@routes.ViewSta.shipBook(x.shipId)">
-                @x.name@if(favTable(x.shipId) > 0){<small>☆@favTable(x.shipId)</small>}
-              </a>
-            </li>
-          }
+          <li v-repeat="stype.ships">
+            <a href="/entire/sta/book/{{id}}">
+              {{name}}<small v-if="favCount > 0">☆{{favCount}}</small>
+            </a>
+          </li>
         </ul>
       </div>
-    }
+    </div>
   }
 }

@@ -1,7 +1,7 @@
 package controllers
 
 import models.db
-import models.join.ShipDrop
+import models.join.{ShipDrop, ShipWithFav}
 import org.json4s.JsonDSL._
 import org.json4s._
 import play.api.mvc.Controller
@@ -114,6 +114,16 @@ object Rest extends Controller {
       .filter { it => rares.contains(it.shipId) }
     (started ++ drops ++ createItems ++ createShips)
       .sortBy(_.created).reverse.take(limit).map(_.toJSON)
+  }
+
+  def bookShips(q: String) = returnJson {
+    val ships = db.MasterShipBase.findAllWithStype(sqls"ms.sortno > 0 and ms.name like ${s"%$q%"}")
+    val favCounts = ViewSta.favCountTableByShip()
+    ships.groupBy(_.stypeName).toVector.sortBy(-_._2.length)
+      .map { case (stype, xs) =>
+        ("stype", stype) ~
+          ("ships", xs.map(ShipWithFav.fromWithStype(_, favCounts).toJson))
+      }
   }
 
   def remodelLog(slotId: Int) = returnJson {
