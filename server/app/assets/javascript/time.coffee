@@ -1,6 +1,6 @@
 
 $(document).ready ->
-  moment.lang('ja')
+  moment.locale('ja')
 
   changeTime = ->
     $('.viewTimeBefore').each () ->

@@ -8,7 +8,7 @@ $(document).ready ->
       getJSON: ->
         $.getJSON "/rest/v1/book/ships", {q: @search}, (data) =>
           @stypes = data
+    watch:
+      'search': -> @getJSON()
     created: ->
-      @$watch 'search', =>
-        @getJSON()
       @getJSON()

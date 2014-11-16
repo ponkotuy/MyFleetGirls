@@ -1,7 +1,6 @@
 $(document).ready ->
-  userid = $('#userid').val()
-
   routeLog = new Vue
+    paramAttributes: ['data-userid']
     el: '#routelog'
     data:
       routes: []
@@ -20,9 +19,9 @@ $(document).ready ->
       getData: () ->
         @setHash()
         cond = $.extend({}, {limit: @count, offset: @page*@count}, @areainfo())
-        $.getJSON "/rest/v1/#{userid}/route_log_count", cond, (data) =>
+        $.getJSON "/rest/v1/#{@userid}/route_log_count", cond, (data) =>
           @allCount = data
-        $.getJSON "/rest/v1/#{userid}/route_log", cond, (data) =>
+        $.getJSON "/rest/v1/#{@userid}/route_log", cond, (data) =>
           @routes = []
           data.forEach (d) => @routes.push(d)
       viewCell: (area, info, cell) ->
@@ -53,9 +52,13 @@ $(document).ready ->
       setPage: (page) -> @page = page
       maxPage: () -> Math.min(Math.ceil(@allCount / @count), 10)
       pages: () -> [0..(@maxPage() - 1)]
-    created: () ->
+    compiled: () ->
       @getInitData()
-    ready: () ->
-      @$watch 'stage', () -> @page = 0
-      @$watch 'page', () -> @getData()
-      @$watch 'fleetType', () -> @setHash()
+    watch:
+      'stage': ->
+        if @page == 0
+          @getData()
+        else
+          @setPage(0)
+      'page': -> @getData()
+      'fleetType': -> @setHash()

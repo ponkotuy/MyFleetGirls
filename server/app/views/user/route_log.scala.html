@@ -14,7 +14,7 @@
         <h1>羅針盤履歴</h1>
       </div>
 
-      <div id="routelog">
+      <div id="routelog" data-userid="@user.admiral.id">
         <form class="form-inline" role="form">
           <div class="form-group">
             <label>Stage</label>
@@ -57,13 +57,13 @@
         </table>
 
         <ul class="pagination" v-if="allCount > count">
-          <li v-show="page != 0">
+          <li v-class="disabled: page == 0">
             <a href="#" v-on="click: setPage(page - 1)" onclick="return false;">&laquo;</a>
           </li>
           <li v-repeat="p: pages()" v-attr="class: (p == page ? 'active' : '')">
             <a v-on="click: setPage(p)" href="#" onclick="return false;">{{p + 1}}</a>
           </li>
-          <li v-show="(page + 1) != maxPage()">
+          <li v-class="disabled: (page + 1) == maxPage()">
             <a href="#" v-on="click: setPage(page + 1)" onclick="return false;">&raquo;</a>
           </li>
         </ul>

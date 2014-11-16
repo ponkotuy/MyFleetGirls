@@ -8,7 +8,7 @@ package views
  */
 object Js {
   val MomentLocales = "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment-with-locales.min.js"
-  val Vue = "//cdnjs.cloudflare.com/ajax/libs/vue/0.10.6/vue.min.js"
+  val Vue = "//cdnjs.cloudflare.com/ajax/libs/vue/0.11.0/vue.js"
   val Lodash = "//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"
   val D3 = "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.12/d3.min.js"
 
