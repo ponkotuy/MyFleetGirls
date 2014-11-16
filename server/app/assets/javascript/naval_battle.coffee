@@ -49,12 +49,14 @@ $(document).ready ->
         @page = parseInt(obj.page)
         @bossOnly = obj.bossOnly != 'false'
         @dropOnly = obj.dropOnly != 'false'
-        for str, _ of @ranks.key
+        for str, _ of @ranks
           @ranks[str] = obj.rank.indexOf(str) != -1
     created: ->
       @restoreHash()
       @getData()
     ready: ->
-      values = ['page', 'bossOnly', 'dropOnly', 'ranks']
-      values.map (v) =>
-        @$watch v, () -> @getData()
+      @$watch 'ranks', @getData, true # Deep Watch
+    watch:
+      'page': -> @getData()
+      'bossOnly': -> @getData()
+      'dropOnly': -> @getData()
