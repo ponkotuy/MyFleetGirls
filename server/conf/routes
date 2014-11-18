@@ -97,6 +97,7 @@ GET     /entire/sta/rank/:ranking   controllers.ViewSta.rankingDetails(ranking: 
 GET     /entire/sta/book            controllers.ViewSta.shipList()
 GET     /entire/sta/book/:sid       controllers.ViewSta.shipBook(sid: Int)
 GET     /entire/sta/remodel_slot    controllers.ViewSta.remodelSlot()
+GET     /entire/sta/search_snap     controllers.ViewSta.searchSnap(q: String ?= "")
 GET     /u/:user                    controllers.UserView.name(user: String)
 GET     /user/:userId               controllers.UserView.user2(userId: Long)
 GET     /user/:userId/              controllers.UserView.user(userId: Long)

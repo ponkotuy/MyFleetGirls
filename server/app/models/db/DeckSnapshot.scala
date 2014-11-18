@@ -1,6 +1,6 @@
 package models.db
 
-import models.join.DeckSnapshotWithShip
+import models.join.{DeckSnapshotWithAdmiral, DeckSnapshotWithShip}
 import scalikejdbc._
 
 case class DeckSnapshot(
@@ -36,6 +36,7 @@ object DeckSnapshot extends SQLSyntaxSupport[DeckSnapshot] {
 
   val ds = DeckSnapshot.syntax("ds")
   val dss = DeckShipSnapshot.syntax("dss")
+  val a = Admiral.syntax("a")
 
   override val autoSession = AutoSession
 
@@ -78,6 +79,28 @@ object DeckSnapshot extends SQLSyntaxSupport[DeckSnapshot] {
         val deckShip = ships.filter(_.deckId == deck.id).sortBy(_.num)
         DeckSnapshotWithShip(deck, deckShip)
       }
+    }
+  }
+
+  def findAllByWithAdmiral(where: SQLSyntax, limit: Int = Int.MaxValue)(implicit session: DBSession = autoSession): List[DeckSnapshotWithAdmiral] = {
+    val deckWithAdmiral = withSQL {
+      select.from(DeckSnapshot as ds)
+        .innerJoin(Admiral as a).on(ds.memberId, a.id)
+        .where(where)
+        .orderBy(ds.created).desc
+        .limit(limit)
+    }.map { rs =>
+      (Admiral(a)(rs), DeckSnapshot(ds)(rs))
+    }.list().apply()
+    if(deckWithAdmiral.nonEmpty) {
+      val ids = deckWithAdmiral.map(_._2.id)
+      val ships = DeckShipSnapshot.findAllByWithName(sqls"deck_id in (${ids})")
+      deckWithAdmiral.map { case (admiral, deck) =>
+        val deckShip = ships.filter(_.deckId == deck.id).sortBy(_.num)
+        DeckSnapshotWithAdmiral(deck, deckShip, admiral)
+      }
+    } else {
+      Nil
     }
   }
 

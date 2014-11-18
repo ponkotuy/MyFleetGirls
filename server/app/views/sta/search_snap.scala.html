@@ -1,0 +1,93 @@
+@(snaps: Seq[DeckSnapshotWithAdmiral], search: String)
+
+@main {
+  <title>スナップショット検索</title>
+  @Js.ImportJqplot("barRenderer", "categoryAxisRenderer", "pointLabels", "highlighter")
+  <script src="@Js.Common"></script>
+  <script src="@Js.Vue"></script>
+  <script src="@Js.Coffee("snapshot")"></script>
+  <script>
+    var tweet = function(title){
+      var here = encodeURIComponent(location.href);
+      var url = "https://twitter.com/intent/tweet?original_referer=" + here + "&url=" + here + "&text=" + title + "&hashtags=MyFleetGirls";
+      window.open(url);
+    }
+  </script>
+} {
+  @statistics_head("search_snap") {
+    <div class="page-header">
+      <h1>艦隊スナップショット検索</h1>
+    </div>
+
+    <form class="form-inline" role="form" onsubmit="var word = $('#search_input').val(); location.href = '@routes.ViewSta.searchSnap()?q=' + word; return false" style="">
+      <div class="form-group">
+        <input type="search" class="form-control" id="search_input" value="@search">
+      </div>
+      <button type="submit" class="btn btn-default">検索</button>
+    </form>
+
+    @snaps.map { snap =>
+      <div class="panel panel-default" id="snap@snap.id">
+        <div class="panel-heading">
+          <div style="float: right; margin-top: -5px">
+            <div class="input-group input-group-sm favorite-group" data-path="@routes.UserView.snapshot(snap.memberId)#snap@snap.id" data-title="@snap.title -@{snap.admiral.nickname}提督のスナップショット-">
+              <span class="input-group-btn">
+                <button class="btn btn-default btn-add-favorite" type="button">
+                  <span class="text-warning glyphicon glyphicon-star"></span>
+                </button>
+              </span>
+              <input type="text" readonly="readonly" class="form-control fav-counter" style="width:35px;" />
+            </div>
+          </div>
+          <h2 class="panel-title"><a href="#snap@snap.id">@snap.title</a>（<a href="@routes.UserView.snapshot(snap.memberId)">@{snap.admiral.nickname}提督</a>）</h2>
+        </div>
+
+        <div class="panel-body">@snap.comment</div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>艦種</th>
+              <th>名前</th>
+              <th>Lv</th>
+              <th>HP</th>
+              <th>装備1</th>
+              <th>装備2</th>
+              <th>装備3</th>
+              <th>装備4</th>
+            </tr>
+          </thead>
+          <tbody>
+            @snap.ships.map { ship =>
+              <tr>
+                <td>@ship.stAbbName</td>
+                <td class="nowrap"><a data-toggle="modal" href="@routes.UserView.snapAship(snap.memberId, ship.id)" class="modal_link" data-target="#modal">@ship.name</a></td>
+                <td style="@if(ship.expRate > 0){background-color:#D9EDF7;display:block;width:@{(ship.expRate*100).toInt}%}">@ship.lv</td>
+                <td style="padding:0px;"><div style="background-color:@ship.hpRGB.toString;width:@{(ship.hpRate*100).toInt}%;padding:5px;">@ship.nowhp/@ship.maxhp</div></td>
+                @ship.slotMaster.map { slot => <td>@slot.name</td> }
+                @{(0 until (4 - ship.slotMaster.size)).map { _ => <td></td> }}
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <div class="panel-footer" style="text-align : right ;">
+          <button type="button" class="btn btn-default" onclick="tweet('@snap.title')" target="_blank">Tweet</button>
+        </div>
+      </div>
+    }
+
+    <div class="modal fade bs-example-modal-lg" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content"></div>
+      </div>
+    </div>
+
+    <div>
+      <ul>
+        <li>検索に艦名の一部（前方一致）を入れると艦名でヒットします</li>
+        <li>それで見つからない場合はタイトルを検索します</li>
+        <li>それでも見つからない場合はコメントで検索します</li>
+      </ul>
+    </div>
+  }
+}
