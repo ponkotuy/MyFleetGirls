@@ -6,13 +6,6 @@
   <script src="@Js.Common"></script>
   <script src="@Js.Vue"></script>
   <script src="@Js.Coffee("snapshot")"></script>
-  <script>
-    var tweet = function(title){
-      var here = encodeURIComponent(location.href);
-      var url = "https://twitter.com/intent/tweet?original_referer=" + here + "&url=" + here + "&text=" + title + "&hashtags=MyFleetGirls";
-      window.open(url);
-    }
-  </script>
 } {
   @statistics_head("search_snap") {
     <div class="page-header">
@@ -39,7 +32,7 @@
               <input type="text" readonly="readonly" class="form-control fav-counter" style="width:35px;" />
             </div>
           </div>
-          <h2 class="panel-title"><a href="#snap@snap.id">@snap.title</a>（<a href="@routes.UserView.snapshot(snap.memberId)">@{snap.admiral.nickname}提督</a>）</h2>
+          <h2 class="panel-title"><a href="@routes.UserView.snapshot(snap.memberId)#snap@snap.id">@snap.title</a>（<a href="@routes.UserView.snapshot(snap.memberId)">@{snap.admiral.nickname}提督</a>）</h2>
         </div>
 
         <div class="panel-body">@snap.comment</div>
@@ -69,10 +62,6 @@
             }
           </tbody>
         </table>
-
-        <div class="panel-footer" style="text-align : right ;">
-          <button type="button" class="btn btn-default" onclick="tweet('@snap.title')" target="_blank">Tweet</button>
-        </div>
       </div>
     }
 
