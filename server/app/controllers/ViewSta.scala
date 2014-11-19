@@ -140,21 +140,21 @@ object ViewSta extends Controller {
   def searchSnap(q: String) = actionAsync {
     val result = if(q.isEmpty) Nil
     else {
-      val shipSearch = searchShipSnapshot(q)
+      val like = escapeLike(q)
+      val shipSearch = searchShipSnapshot(like)
       if(shipSearch.size > 0) shipSearch
       else {
-        val titleSearch = searchTitle(q)
-        if(titleSearch.size > 0) titleSearch else searchComment(q)
+        val titleSearch = searchTitle(like)
+        if(titleSearch.size > 0) titleSearch else searchComment(like)
       }
     }
     Ok(views.html.sta.search_snap(result, q))
   }
 
   private def searchShipSnapshot(q: String) = {
-    val shipIds = db.MasterShipBase.findAllByLike(s"$q%").map(_.id)
+    val shipIds = db.MasterShipBase.findAllByLike(q).map(_.id)
     if(shipIds.nonEmpty) {
       val deckIds = db.DeckShipSnapshot.findAllBy(sqls"dss.ship_id in (${shipIds})").map(_.deckId)
-
       if(deckIds.nonEmpty) db.DeckSnapshot.findAllByWithAdmiral(sqls"ds.id in (${deckIds})", 10) else Nil
     } else Nil
   }
@@ -162,6 +162,8 @@ object ViewSta extends Controller {
   private def searchTitle(q: String) = db.DeckSnapshot.findAllByWithAdmiral(sqls"ds.title like ${s"%$q%"}", 10)
 
   private def searchComment(q: String) = db.DeckSnapshot.findAllByWithAdmiral(sqls"ds.comment like ${s"%$q%"}", 10)
+
+  private def escapeLike(q: String) = q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
   private def toP(d: Double): String = f"${d*100}%.1f"
 }

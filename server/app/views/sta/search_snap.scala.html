@@ -12,7 +12,7 @@
       <h1>艦隊スナップショット検索</h1>
     </div>
 
-    <form class="form-inline" role="form" onsubmit="var word = $('#search_input').val(); location.href = '@routes.ViewSta.searchSnap()?q=' + word; return false" style="">
+    <form class="form-inline" role="form" onsubmit="var word = encodeURIComponent($('#search_input').val()); location.href = '@routes.ViewSta.searchSnap()?q=' + word; return false" style="">
       <div class="form-group">
         <input type="search" class="form-control" id="search_input" value="@search">
       </div>
