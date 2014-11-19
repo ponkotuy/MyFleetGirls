@@ -17,6 +17,10 @@ libraryDependencies ++= Seq(
 
 lazy val root = (project in file("server/")).enablePlugins(PlayScala)
 
+includeFilter in (Assets, LessKeys.less) := "*.less"
+
+LessKeys.compress := true
+
 buildInfoSettings
 
 sourceGenerators in Compile <+= buildInfo

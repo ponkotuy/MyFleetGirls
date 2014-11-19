@@ -1,0 +1,58 @@
+
+@base-color: #E7E3DF;
+@main-color: #FFBC3A;
+@black: #000000;
+@light-gray: #F5F5F5;
+@gray: #D0D0D0;
+
+body { background-color: @base-color; }
+.jumbotron { background-color: @main-color; }
+
+.clickable { cursor: pointer; }
+.nowrap { white-space: nowrap; }
+.version {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+// Navigation Tabs Color Settings
+.nav-tabs { border-bottom-color: @gray; }
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    background-color: @main-color;
+    color: @black;
+}
+.nav-tabs > li > a:hover { background-color: @light-gray; }
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+    background-color: @main-color;
+    color: @black;
+}
+.nav-pills > li > a:hover { background-color: @light-gray; }
+.page-header { border-bottom-color: @gray; }
+
+// Table Color Settings
+.table-striped > tbody > tr:nth-child(2n + 1) > th,
+.table-striped > tbody > tr:nth-child(2n + 1) > td {
+    background-color: #F9F1EF;
+}
+.table > thead > tr > th {
+    background-color: @main-color;
+}
+.tablesorter-bootstrap .tablesorter-header,
+.tablesorter-bootstrap tfoot th,
+.tablesorter-bootstrap tfoot td {
+    background-color: @main-color
+}
+
+// Modal Color Settings
+.modal-content { background-color: @base-color; }
+.modal-header { border-bottom-color: @gray; }
+.modal-footer { border-top-colfror: @gray; }
+
+// List Group Color Settings
+a.list-group-item-purple {
+    color: #9932cc;
+    background-color: #FFD8FF;
+}
+a.list-group-item-purple:hover, a.list-group-item-purple:focus {
+    background-color: #F0C0F0;
+}
