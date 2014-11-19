@@ -80,7 +80,7 @@
               <td>{{c.mat.steel}}</td>
               <td>{{c.mat.bauxite}}</td>
               <td>{{c.mat.develop}}</td>
-              <td>{{c.count}}</td>
+              <td><strong>{{c.count}}</strong> / {{c.sum}}</td>
               <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
             </tr>
           </tbody>
@@ -99,7 +99,7 @@
             <tr v-repeat="c: dropCounts" class="clickable" onclick="location.href='/entire/sta/drop/{{c.cell.area}}/{{c.cell.info}}#cell={{c.cell.area}}-{{c.cell.info}}-{{c.cell.cell}}&rank={{c.cell.rank}}'">
               <td>{{c.cell.area}}-{{c.cell.info}}-{{c.cell.cell}}</td>
               <td>{{c.cell.rank}}</td>
-              <td>{{c.count}}</td>
+              <td><strong>{{c.count}}</strong> / {{c.sum}}</td>
               <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
             </tr>
           </tbody>

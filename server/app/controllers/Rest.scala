@@ -78,6 +78,7 @@ object Rest extends Controller {
     val (drop, count) = sCount
     Extraction.decompose(drop).asInstanceOf[JObject] ~
       ("count" -> count) ~
+      ("sum" -> sum) ~
       ("rate" -> f"${count / sum * 100}%.1f%%")
   }
 
