@@ -2,6 +2,7 @@ package controllers
 
 import models.db
 import models.join.{ItemMat, Mat, ShipWithName}
+import models.query.SnapshotSearch
 import org.json4s._
 import org.json4s.native.Serialization.write
 import play.api.mvc._
@@ -137,33 +138,10 @@ object ViewSta extends Controller {
     Ok(views.html.sta.remodel_slot(slots))
   }
 
-  def searchSnap(q: String) = actionAsync {
-    val result = if(q.isEmpty) Nil
-    else {
-      val like = escapeLike(q)
-      val shipSearch = searchShipSnapshot(like)
-      if(shipSearch.size > 0) shipSearch
-      else {
-        val titleSearch = searchTitle(like)
-        if(titleSearch.size > 0) titleSearch else searchComment(like)
-      }
-    }
-    Ok(views.html.sta.search_snap(result, q))
+  def searchSnap(q: String, page: Int) = actionAsync {
+    val result = SnapshotSearch.search(q, page)
+    Ok(views.html.sta.search_snap(result))
   }
-
-  private def searchShipSnapshot(q: String) = {
-    val shipIds = db.MasterShipBase.findAllByLike(q).map(_.id)
-    if(shipIds.nonEmpty) {
-      val deckIds = db.DeckShipSnapshot.findAllBy(sqls"dss.ship_id in (${shipIds})").map(_.deckId)
-      if(deckIds.nonEmpty) db.DeckSnapshot.findAllByWithAdmiral(sqls"ds.id in (${deckIds})", 10) else Nil
-    } else Nil
-  }
-
-  private def searchTitle(q: String) = db.DeckSnapshot.findAllByWithAdmiral(sqls"ds.title like ${s"%$q%"}", 10)
-
-  private def searchComment(q: String) = db.DeckSnapshot.findAllByWithAdmiral(sqls"ds.comment like ${s"%$q%"}", 10)
-
-  private def escapeLike(q: String) = q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
   private def toP(d: Double): String = f"${d*100}%.1f"
 }

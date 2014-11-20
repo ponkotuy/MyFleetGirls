@@ -82,13 +82,13 @@ object DeckSnapshot extends SQLSyntaxSupport[DeckSnapshot] {
     }
   }
 
-  def findAllByWithAdmiral(where: SQLSyntax, limit: Int = Int.MaxValue)(implicit session: DBSession = autoSession): List[DeckSnapshotWithAdmiral] = {
+  def findAllByWithAdmiral(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(implicit session: DBSession = autoSession): List[DeckSnapshotWithAdmiral] = {
     val deckWithAdmiral = withSQL {
       select.from(DeckSnapshot as ds)
         .innerJoin(Admiral as a).on(ds.memberId, a.id)
         .where(where)
         .orderBy(ds.created).desc
-        .limit(limit)
+        .limit(limit).offset(offset)
     }.map { rs =>
       (Admiral(a)(rs), DeckSnapshot(ds)(rs))
     }.list().apply()
