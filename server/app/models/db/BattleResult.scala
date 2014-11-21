@@ -186,13 +186,13 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
 
   def countAllGroupByCells(where: SQLSyntax = sqls"1")(implicit session: DBSession = autoSession): List[(CellWithRank, Long)] = {
     withSQL {
-      select(br.*, sqls"count(1) as cnt")
-        .from(BattleResult as br)
+      select(br.*, ci.alphabet, sqls"count(1) as cnt").from(BattleResult as br)
+        .leftJoin(CellInfo as ci).on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
         .where.append(sqls"${where}")
         .groupBy(br.areaId, br.infoNo, br.cell, br.winRank)
         .orderBy(br.areaId, br.infoNo, br.cell, br.winRank)
     }.map { rs =>
-      CellWithRank(br)(rs) -> rs.long("cnt")
+      CellWithRank(br, ci)(rs) -> rs.long("cnt")
     }.list().apply()
   }
 
