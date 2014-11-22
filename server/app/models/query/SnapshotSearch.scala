@@ -1,8 +1,8 @@
 package models.query
 
-import scalikejdbc._
-import models.db.{MasterShipBase, DeckShipSnapshot, DeckSnapshot}
+import models.db.{DeckShipSnapshot, DeckSnapshot, MasterShipBase}
 import models.join.DeckSnapshotWithAdmiral
+import scalikejdbc._
 
 /**
  *
@@ -10,7 +10,7 @@ import models.join.DeckSnapshotWithAdmiral
  * Date: 14/11/20.
  */
 case class SnapshotSearch(q: String, snaps: Seq[DeckSnapshotWithAdmiral], count: Long, page: Int) {
-  import SnapshotSearch._
+  import models.query.SnapshotSearch._
   def enable: Boolean = snaps.nonEmpty
   def orElse(f: => SnapshotSearch) = if(enable) this else f
   def maxPage: Int = ((count + PageCount - 1)/PageCount - 1).toInt
@@ -31,7 +31,7 @@ object SnapshotSearch {
   }
 
   private def fromShipName(q: String, page: Int): SnapshotSearch = {
-    val shipIds = MasterShipBase.findAllByLike(q).map(_.id)
+    val shipIds = MasterShipBase.findAllByLike(s"$q%").map(_.id)
     if(shipIds.nonEmpty) {
       val deckIds = DeckShipSnapshot.findAllBy(sqls"dss.ship_id in (${shipIds})").map(_.deckId)
       if(deckIds.nonEmpty) {
