@@ -9,7 +9,7 @@ libraryDependencies ++= Seq(
   "org.scalikejdbc" %% "scalikejdbc-interpolation" % "2.1.+",
   "org.json4s" %% "json4s-native" % "3.2.11",
   "com.github.tototoshi" %% "play-flyway" % "1.1.2",
-  "com.github.nscala-time" %% "nscala-time" % "1.4.0",
+  "com.github.nscala-time" %% "nscala-time" % "1.6.0",
   "mysql" % "mysql-connector-java" % "[5.1,)",
   "org.scalatest" %% "scalatest" % "2.2.1" % "test",
   "c3p0" % "c3p0" % "0.9.1.2"
@@ -31,4 +31,4 @@ buildInfoPackage := "build"
 
 scalikejdbcSettings
 
-TwirlKeys.templateImports ++= Seq("views.Js", "models.db._", "models.join._")
+TwirlKeys.templateImports ++= Seq("views.Js", "views.Css", "models.db._", "models.join._")

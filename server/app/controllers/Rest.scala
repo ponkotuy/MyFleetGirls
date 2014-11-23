@@ -2,10 +2,14 @@ package controllers
 
 import models.db
 import models.join.{ShipDrop, ShipWithFav}
+import org.joda.time.LocalDate
+import org.joda.time.format.ISODateTimeFormat
 import org.json4s.JsonDSL._
 import org.json4s._
 import play.api.mvc.Controller
 import scalikejdbc._
+
+import scala.util.Try
 
 /**
  *
@@ -14,6 +18,8 @@ import scalikejdbc._
  */
 object Rest extends Controller {
   import controllers.Common._
+
+  lazy val DefaultStart = new LocalDate(2014, 1, 1)
 
   def searchUser(q: String) = returnJson(db.Admiral.findAllByLike(s"%$q%", limit = 20))
 
@@ -38,25 +44,34 @@ object Rest extends Controller {
       db.BattleResult.findAllShipByNameLike(s"%$q%")
   }
 
-  def recipeFromShip(shipId: Int) = returnJson {
-    val allCounts = db.CreateShip.materialCount().toMap
-    val counts = db.CreateShip.materialCount(sqls"result_ship = ${shipId}")
+  def recipeFromShip(shipId: Int, from: String, to: String) = returnJson {
+    val fromTo = whereFromTo(sqls"cs.created", from, to)
+    val allCounts = db.CreateShip.materialCount(fromTo).toMap
+    val counts = db.CreateShip.materialCount(sqls"result_ship = ${shipId} and ${fromTo}")
     counts.map { case (mat, count) =>
       Map("mat" -> mat, "count" -> count, "sum" -> allCounts(mat))
     }
   }
 
-  def dropFromShip(shipId: Int) = returnJson {
-    val allCounts = db.BattleResult.countAllGroupByCells().toMap
-    val dropCounts = db.BattleResult.countAllGroupByCells(sqls"get_ship_id = ${shipId}")
+  def dropFromShip(shipId: Int, from: String, to: String) = returnJson {
+    val fromTo = whereFromTo(sqls"br.created", from, to)
+    val allCounts = db.BattleResult.countAllGroupByCells(fromTo).toMap
+    val dropCounts = db.BattleResult.countAllGroupByCells(sqls"get_ship_id = ${shipId} and $fromTo")
     dropCounts.map { case (cell, count) =>
       Map("cell" -> cell, "count" -> count, "sum" -> allCounts(cell))
     }
   }
 
-  def recipeFromItem(itemId: Int) = returnJson {
-    val allCounts = db.CreateItem.materialCount().toMap
-    val counts = db.CreateItem.materialCount(sqls"slotitem_id = ${itemId}")
+  private def whereFromTo(target: SQLSyntax, from: String, to: String): SQLSyntax = {
+    val fromDate = Try { LocalDate.parse(from, ISODateTimeFormat.date()) }.getOrElse(DefaultStart)
+    val toDate = Try { LocalDate.parse(to, ISODateTimeFormat.date()) }.getOrElse(LocalDate.now())
+    sqls"${fromDate.toDate.getTime} < $target and $target < ${toDate.toDate.getTime}"
+  }
+
+  def recipeFromItem(itemId: Int, from: String, to: String) = returnJson {
+    val fromTo = whereFromTo(sqls"ci.created", from, to)
+    val allCounts = db.CreateItem.materialCount(fromTo).toMap
+    val counts = db.CreateItem.materialCount(sqls"slotitem_id = ${itemId} and ${fromTo}")
     counts.map { case (mat, count) =>
       Map("mat" -> mat, "count" -> count, "sum" -> allCounts.lift(mat).getOrElse(Long.MaxValue))
     }

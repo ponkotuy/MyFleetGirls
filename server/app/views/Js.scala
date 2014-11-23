@@ -11,6 +11,8 @@ object Js {
   val Vue = "//cdnjs.cloudflare.com/ajax/libs/vue/0.11.0/vue.min.js"
   val Lodash = "//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"
   val D3 = "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.12/d3.min.js"
+  val Common = Coffee("common")
+  val JQueryUI = Lib("jquery-ui.min")
 
   def ScriptFlot(adds: String*) = {
     <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script> ++
@@ -30,8 +32,15 @@ object Js {
   // TODO tablesorterがuser/shipでのみ使われている
   // TODO d3がcshipでのみ使われている
 
-  val Common = Coffee("common")
   def Assets(path: String) = controllers.routes.Assets.at(path)
   def Coffee(fName: String) = Assets(s"javascript/$fName.js")
   def Lib(fName: String) = Assets(s"javascript/lib/$fName.js")
+}
+
+object Css {
+  val JQueryUI = {
+      <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.css" />
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.theme.min.css" />
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.structure.min.css" />
+  }
 }

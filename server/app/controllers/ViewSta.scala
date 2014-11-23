@@ -17,9 +17,7 @@ import scala.util.Try
 object ViewSta extends Controller {
   import controllers.Common._
 
-  def activities = actionAsync {
-    Ok(views.html.sta.activities())
-  }
+  def activities = actionAsync { Ok(views.html.sta.activities()) }
 
   def statistics = actionAsync {
     val sCounts = db.CreateShip.materialCount().takeWhile(_._2 > 1)

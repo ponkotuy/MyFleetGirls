@@ -3,6 +3,7 @@
 @main {
   <title>入手経路検索 -統計-</title>
   <script src="@Js.Vue"></script>
+  <script src="@Js.MomentLocales"></script>
   <script src="@Js.Common"></script>
   <script src="@Js.Coffee("from_ship")"></script>
 } {
@@ -12,7 +13,24 @@
     </div>
 
     <div id="from_name" class="row">
-      <input type="text" id="search" class="form-control" placeholder="Search Fleet Girl or Slot Item" v-model="query" />
+      <form class="form-horizontal" role="form">
+        <div class="form-group">
+          <div class="col-sm-12">
+            <input type="text" id="search" class="form-control" placeholder="Search Fleet Girl or Slot Item" v-model="query" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label" style="padding-top: 1.5em">期間</label>
+          <div class="input-group col-sm-10">
+            <span class="input-group-addon">
+              <input type="checkbox" v-model="period" />
+            </span>
+            <input type="text" class="form-control date-picker" v-model="start_period">
+            <input type="text" class="form-control date-picker" v-model="end_period">
+          </div>
+        </div>
+      </form>
 
       <div class="col-md-2 col-sm-3">
         <div class="list-group" v-show="ships.length > 0" style="margin-top:20px;margin-bottom:20px;">
