@@ -143,13 +143,13 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
     }.list().apply()
   }
 
-  def countCellsGroupByDrop(area: Int, info: Int, cell: Int, rank: String)(
+  def countCellsGroupByDrop(area: Int, info: Int, cell: Int, rank: String, where: SQLSyntax = sqls"true")(
       implicit session: DBSession = autoSession): List[(ShipDrop, Long)] = {
     withSQL {
       select(br.*, sqls"count(1) as cnt")
         .from(BattleResult as br)
         .where.eq(br.areaId, area).and.eq(br.infoNo, info).and.eq(br.cell, cell)
-        .and.in(br.winRank, rank.map(_.toString))
+        .and.in(br.winRank, rank.map(_.toString)).and.append(where)
         .groupBy(br.areaId, br.infoNo, br.cell, br.getShipId)
         .orderBy(br.cell, sqls"cnt")
     }.map { rs =>
@@ -157,7 +157,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
     }.list().apply()
   }
 
-  def countCellsAlphaGroupByDrop(area: Int, info: Int, alpha: String, rank: String)(
+  def countCellsAlphaGroupByDrop(area: Int, info: Int, alpha: String, rank: String, where: SQLSyntax = sqls"true")(
     implicit session: DBSession = autoSession): List[(ShipDrop, Long)] = {
     withSQL {
       select(br.*, sqls"count(1) as cnt")
@@ -165,7 +165,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
         .innerJoin(CellInfo as ci)
         .on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
         .where.eq(br.areaId, area).and.eq(br.infoNo, info).and.eq(ci.alphabet, alpha)
-        .and.in(br.winRank, rank.map(_.toString))
+        .and.in(br.winRank, rank.map(_.toString)).and.append(where)
         .groupBy(br.areaId, br.infoNo, ci.alphabet, br.getShipId)
         .orderBy(br.cell, sqls"cnt")
     }.map { rs =>

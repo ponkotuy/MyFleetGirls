@@ -57,23 +57,34 @@ vueSettings =
       if @shipId != -1 then param.ship = @shipId
       else if @itemId != -1 then param.item = @itemId
       if @period
-        param.start = @start_period
-        param.end = @end_period
+        param.from = @start_period
+        param.to = @end_period
       location.hash = toURLParameter(param)
     restoreHash: ->
       param = fromURLParameter(location.hash.replace(/^\#/, ''))
       @query = if param.query? then decodeURIComponent(param.query) else @query
       @shipId = param.ship ? @shipId
       @itemId = param.item ? @itemId
-      if param.start
+      if param.from
         @period = true
-        @start_period = param.start
-        @end_period = param.end ? @end_period
+        @start_period = param.from
+        @end_period = param.to ? @end_period
     getFromTo: ->
       if @period
         {from: @start_period, to: @end_period}
       else
         {}
+    clickShip: (c) ->
+      base = "/entire/sta/cship/#{c.mat.fuel}/#{c.mat.ammo}/#{c.mat.steel}/#{c.mat.bauxite}/#{c.mat.develop}"
+      url = base + @fromToURL('?')
+      location.href = url
+    clickDrop: (c) ->
+      base = "/entire/sta/drop/#{c.cell.area}/#{c.cell.info}#cell=#{c.cell.area}-#{c.cell.info}-#{c.cell.cell}&rank=#{c.cell.rank}"
+      url = base + @fromToURL('&')
+      location.href = url
+    clickItem: (c) ->
+      location.href = "/entire/sta/citem/#{c.mat.fuel}/#{c.mat.ammo}/#{c.mat.steel}/#{c.mat.bauxite}/#{c.mat.sTypeName}"
+    fromToURL: (head) -> if @period then "#{head}from=#{@start_period}&to=#{@end_period}" else ''
 
   created: ->
     @restoreHash()

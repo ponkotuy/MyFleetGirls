@@ -25,9 +25,10 @@ object ViewSta extends Controller {
     Ok(views.html.sta.statistics(sCounts, iCounts))
   }
 
-  def cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int) = actionAsync {
+  def cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int, from: String, to: String) = actionAsync {
     val mat = Mat(fuel, ammo, steel, bauxite, develop)
-    val counts = db.CreateShip.countByMatWithMaster(mat)
+    val fromTo = Rest.whereFromTo(sqls"cs.created", from, to)
+    val counts = db.CreateShip.countByMatWithMaster(mat, fromTo)
     val title = s"$fuel/$ammo/$steel/$bauxite/$develop"
     val graphJson = cshipGraphJson(counts, title)
     val sum = counts.map(_._2).sum.toDouble

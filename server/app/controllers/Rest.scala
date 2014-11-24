@@ -62,7 +62,7 @@ object Rest extends Controller {
     }
   }
 
-  private def whereFromTo(target: SQLSyntax, from: String, to: String): SQLSyntax = {
+  private[controllers] def whereFromTo(target: SQLSyntax, from: String, to: String): SQLSyntax = {
     val fromDate = Try { LocalDate.parse(from, ISODateTimeFormat.date()) }.getOrElse(DefaultStart)
     val toDate = Try { LocalDate.parse(to, ISODateTimeFormat.date()) }.getOrElse(LocalDate.now())
     sqls"${fromDate.toDate.getTime} < $target and $target < ${toDate.toDate.getTime}"
@@ -77,14 +77,16 @@ object Rest extends Controller {
     }
   }
 
-  def dropCell(area: Int, info: Int, cell: Int, rank: String) = returnJson {
-    val drops = db.BattleResult.countCellsGroupByDrop(area, info, cell, rank)
+  def dropCell(area: Int, info: Int, cell: Int, rank: String, from: String, to: String) = returnJson {
+    val fromTo = whereFromTo(sqls"br.created", from ,to)
+    val drops = db.BattleResult.countCellsGroupByDrop(area, info, cell, rank, fromTo)
     val sum = drops.map(_._2).sum.toDouble
     drops.map(dropToJson(sum))
   }
 
-  def dropCellAlpha(area: Int, info: Int, alpha: String, rank: String) = returnJson {
-    val drops = db.BattleResult.countCellsAlphaGroupByDrop(area, info, alpha, rank)
+  def dropCellAlpha(area: Int, info: Int, alpha: String, rank: String, from: String, to: String) = returnJson {
+    val fromTo = whereFromTo(sqls"br.created", from ,to)
+    val drops = db.BattleResult.countCellsAlphaGroupByDrop(area, info, alpha, rank, fromTo)
     val sum = drops.map(_._2).sum.toDouble
     drops.map(dropToJson(sum))
   }

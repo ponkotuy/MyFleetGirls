@@ -43,8 +43,8 @@ GET     /rest/v1/search_master      controllers.Rest.searchMaster(q: String)
 GET     /rest/v1/search_master_ship controllers.Rest.searchMasterShip(q: String)
 GET     /rest/v1/recipe/from_ship/:shipId controllers.Rest.recipeFromShip(shipId: Int, from: String ?= "", to: String ?= "")
 GET     /rest/v1/recipe/from_item/:itemId controllers.Rest.recipeFromItem(itemId: Int, from: String ?= "", to: String ?= "")
-GET     /rest/v1/drop/:rank/:area/:info/:cell controllers.Rest.dropCell(area: Int, info: Int, cell: Int, rank: String)
-GET     /rest/v1/drop_alpha/:rank/:area/:info/:alpha controllers.Rest.dropCellAlpha(area: Int, info: Int, alpha: String, rank: String)
+GET     /rest/v1/drop/:rank/:area/:info/:cell controllers.Rest.dropCell(area: Int, info: Int, cell: Int, rank: String, from: String ?= "", to: String ?= "")
+GET     /rest/v1/drop_alpha/:rank/:area/:info/:alpha controllers.Rest.dropCellAlpha(area: Int, info: Int, alpha: String, rank: String, from: String ?= "", to: String ?= "")
 GET     /rest/v1/route/:area/:info  controllers.Rest.route(area: Int, info: Int)
 GET     /rest/v1/cell_info          controllers.Rest.cellInfo(area: Int ?= -1, info: Int ?= -1)
 GET     /rest/v1/maps               controllers.Rest.maps()
@@ -84,7 +84,7 @@ GET     /entire/about/change        controllers.ViewAbout.changeLog
 GET     /entire/about/faq           controllers.ViewAbout.faq
 GET     /entire/activities          controllers.ViewSta.activities
 GET     /entire/statistics          controllers.ViewSta.statistics
-GET     /entire/sta/cship/:fuel/:ammo/:steel/:bauxite/:develop controllers.ViewSta.cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int)
+GET     /entire/sta/cship/:fuel/:ammo/:steel/:bauxite/:develop controllers.ViewSta.cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int, from: String ?= "", to: String ?= "")
 GET     /entire/sta/citem/:fuel/:ammo/:steel/:bauxite/:sType controllers.ViewSta.citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: String)
 GET     /entire/sta/from_ship       controllers.ViewSta.fromShip()
 GET     /entire/sta/drop_stage      controllers.ViewSta.dropStage()

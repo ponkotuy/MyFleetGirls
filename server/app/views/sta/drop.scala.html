@@ -5,6 +5,7 @@
   <script src="@Js.Vue"></script>
   <script src="@Js.D3"></script>
   <script src="@Js.Lodash"></script>
+  <script src="@Js.MomentLocales"></script>
   <script src="@Js.Lib("sunburst")"></script>
   <script src="@Js.Common"></script>
   <script src="@Js.Coffee("drop")"></script>
@@ -31,7 +32,7 @@
               </a>
             </h2>
           </div>
-          <div id="collapse@cell.pointStr" class="panel-collapse collapse" data-url="@routes.Rest.dropCell(cell.areaId, cell.infoNo, cell.cell, "(rank)")">
+          <div id="collapse@cell.pointStr" class="panel-collapse collapse" data-url="@routes.Rest.dropCell(cell.areaId, cell.infoNo, cell.cell, "(rank)", "(from)", "(to)")">
             <div class="panel-body">
               <label class="checkbox-inline">
                 <input type="checkbox" v-model="dropOnly" />ドロップありのみ
@@ -45,6 +46,12 @@
               <label class="checkbox-inline">
                 <input type="checkbox" v-model="rank_b" />B勝利
               </label>
+              <label class="checkbox-inline">
+                <input type="checkbox" v-model="period" />期間
+              </label>
+              <input type="text" class="datepicker" v-model="from" />
+              〜
+              <input type="text" class="datepicker" v-model="to" />
               <div style="width:900px;height:600px;margin:auto;" id="sunburst@cell.pointStr" class="sunburst"></div>
             </div>
             <table class="table table-condensed table-hover">
@@ -52,7 +59,7 @@
                 <tr><th>艦種</th><th>名前</th><th>Count</th><th>Rate</th></tr>
               </thead>
               <tbody>
-                <tr v-repeat="drop: drops" class="clickable" onclick="location.href='/entire/sta/from_ship#query={{ drop.getShipName }}&ship={{ drop.getShipId }}'">
+                <tr v-repeat="drop: drops" class="clickable" v-on="click: clickDrop(drop)">
                   <td>{{ drop.getShipType }}</td>
                   <td>{{ drop.getShipName }}</td>
                   <td>{{ drop.count }}</td>

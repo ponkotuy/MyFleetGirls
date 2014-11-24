@@ -55,7 +55,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-repeat="c: sCounts" onclick="location.href='/entire/sta/cship/{{c.mat.fuel}}/{{c.mat.ammo}}/{{c.mat.steel}}/{{c.mat.bauxite}}/{{c.mat.develop}}'" class="clickable">
+              <tr v-repeat="c: sCounts" v-on="click: clickShip(c)" class="clickable">
                 <td>{{c.mat.fuel}}</td>
                 <td>{{c.mat.ammo}}</td>
                 <td>{{c.mat.steel}}</td>
@@ -77,7 +77,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-repeat="c: dropCounts" class="clickable" onclick="location.href='/entire/sta/drop/{{c.cell.area}}/{{c.cell.info}}#cell={{c.cell.area}}-{{c.cell.info}}-{{c.cell.cell}}&rank={{c.cell.rank}}'">
+              <tr v-repeat="c: dropCounts" v-on="click: clickDrop(c)" class="clickable">
                 <td v-if="c.cell.alpha">{{c.cell.area}}-{{c.cell.info}}-{{c.cell.alpha}} ({{c.cell.cell}})</td>
                 <td v-if="!c.cell.alpha">{{c.cell.area}}-{{c.cell.info}}-{{c.cell.cell}}</td>
                 <td>{{c.cell.rank}}</td>
@@ -95,7 +95,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-repeat="c: iCounts" onclick="location.href='/entire/sta/citem/{{c.mat.fuel}}/{{c.mat.ammo}}/{{c.mat.steel}}/{{c.mat.bauxite}}/{{c.mat.sTypeName}}'" class="clickable">
+            <tr v-repeat="c: iCounts" v-on="click: clickItem(c)" class="clickable">
               <td>{{c.mat.fuel}}</td>
               <td>{{c.mat.ammo}}</td>
               <td>{{c.mat.steel}}</td>
