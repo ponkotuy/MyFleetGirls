@@ -2,7 +2,8 @@ package controllers
 
 import models.db
 import models.join.{ItemMat, Mat, ShipWithName}
-import models.query.SnapshotSearch
+import models.query.{Period, SnapshotSearch}
+import models.view.{CShip, CItem}
 import org.json4s._
 import org.json4s.native.Serialization.write
 import play.api.mvc._
@@ -19,22 +20,23 @@ object ViewSta extends Controller {
 
   def activities = actionAsync { Ok(views.html.sta.activities()) }
 
-  def statistics = actionAsync {
-    val sCounts = db.CreateShip.materialCount().takeWhile(_._2 > 1)
-    val iCounts = db.CreateItem.materialCount().takeWhile(_._2 > 1)
-    Ok(views.html.sta.statistics(sCounts, iCounts))
+  def statistics(from: String, to: String) = actionAsync {
+    val fromTo = Period.fromStr(from, to)
+    val sCounts = db.CreateShip.materialCount(fromTo.where(sqls"cs.created")).takeWhile(_._2 > 1)
+    val iCounts = db.CreateItem.materialCount(fromTo.where(sqls"ci.created")).takeWhile(_._2 > 1)
+    Ok(views.html.sta.statistics(sCounts, iCounts, fromTo))
   }
 
   def cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int, from: String, to: String) = actionAsync {
     val mat = Mat(fuel, ammo, steel, bauxite, develop)
-    val fromTo = Rest.whereFromTo(sqls"cs.created", from, to)
-    val counts = db.CreateShip.countByMatWithMaster(mat, fromTo)
-    val title = s"$fuel/$ammo/$steel/$bauxite/$develop"
-    val graphJson = cshipGraphJson(counts, title)
+    val fromTo = Period.fromStr(from, to)
+    val cs = CShip(mat, fromTo)
+    val counts = db.CreateShip.countByMatWithMaster(mat, fromTo.where(sqls"cs.created"))
+    val graphJson = cshipGraphJson(counts, cs.title)
     val sum = counts.map(_._2).sum.toDouble
     val withRate = counts.map { case (ship, count) => (ship.name, count, count/sum) }
     val cships = db.CreateShip.findAllByMatWithName(mat, limit = 100)
-    Ok(views.html.sta.cship(title, graphJson, withRate, cships))
+    Ok(views.html.sta.cship(cs, graphJson, withRate, cships))
   }
 
   private def cshipGraphJson(counts: List[(db.MasterShipBase, Long)], title: String): String = {
@@ -52,21 +54,22 @@ object ViewSta extends Controller {
     write(Map("name" -> title, "children" -> data))
   }
 
-  def citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: String) = actionAsync {
+  def citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: String, from: String, to: String) = actionAsync {
+    val fromTo = Period.fromStr(from, to)
     val mat = ItemMat(fuel, ammo, steel, bauxite, -1, sType)
+    val ci = CItem(mat, fromTo)
     val citems = db.CreateItem.findAllByWithName(
       sqls"ci.fuel = $fuel and ci.ammo = $ammo and ci.steel = $steel and ci.bauxite = $bauxite and mst.name = $sType",
       limit = 100
     )
-    val counts = db.CreateItem.countItemByMat(mat)
+    val counts = db.CreateItem.countItemByMat(mat, fromTo.where(sqls"ci.created"))
     val sum = counts.map(_._2).sum.toDouble
     val withRate = counts.map { case (item, count) => (item.name, count, count/sum) }
     val countJsonRaw = counts.map { case (item, count) =>
       val url = routes.ViewSta.fromShip().toString() + s"#query=${item.name}"
       Map("label" -> item.name, "data" -> count, "url" -> url)
     }
-    val title = s"${sType}/$fuel/$ammo/$steel/$bauxite"
-    Ok(views.html.sta.citem(title, write(countJsonRaw), withRate, citems))
+    Ok(views.html.sta.citem(ci, write(countJsonRaw), withRate, citems))
   }
 
   def fromShip() = actionAsync { Ok(views.html.sta.from_ship()) }

@@ -1,9 +1,16 @@
-@(counts: Seq[(Mat, Long)], iCounts: Seq[(ItemMat, Long)])
+@(counts: Seq[(Mat, Long)], iCounts: Seq[(ItemMat, Long)], fromTo: models.query.Period)
 
 @main {
   <title>建造開発fromレシピ -統計-</title>
 } {
   @statistics_head("from_recipe") {
+    <form class="form-inline" role="form" action="@routes.ViewSta.statistics()">
+      <input type="text" class="form-control date-picker" value="@fromTo.fromStr" name="from">
+      〜
+      <input type="text" class="form-control date-picker" value="@fromTo.toStr" name="to">
+      <input type="submit" class="btn btn-default" value="期間変更" />
+    </form>
+
     <div class="row">
       <div class="col-lg-6">
         <div class="page-header">
@@ -17,7 +24,7 @@
           </thead>
           <tbody>
             @counts.map { case (mat, count) =>
-            <tr onclick="location.href='@routes.ViewSta.cship(mat.fuel, mat.ammo, mat.steel, mat.bauxite, mat.develop)'" class="clickable">
+            <tr onclick="location.href='@routes.ViewSta.cship(mat.fuel, mat.ammo, mat.steel, mat.bauxite, mat.develop, fromTo.fromStr, fromTo.toStr)'" class="clickable">
               <td>@count</td>
               <td>@mat.fuel</td>
               <td>@mat.ammo</td>
@@ -42,7 +49,7 @@
           </thead>
           <tbody>
             @iCounts.map { case (mat, count) =>
-            <tr onclick="location.href='@routes.ViewSta.citem(mat.fuel, mat.ammo, mat.steel, mat.bauxite, mat.sTypeName)'" class="clickable">
+            <tr onclick="location.href='@routes.ViewSta.citem(mat.fuel, mat.ammo, mat.steel, mat.bauxite, mat.sTypeName, fromTo.fromStr, fromTo.toStr)'" class="clickable">
               <td>@count</td>
               <td>@mat.sTypeName</td>
               <td>@mat.fuel</td>

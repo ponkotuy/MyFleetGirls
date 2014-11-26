@@ -2,14 +2,11 @@ package controllers
 
 import models.db
 import models.join.{ShipDrop, ShipWithFav}
-import org.joda.time.LocalDate
-import org.joda.time.format.ISODateTimeFormat
+import models.query.Period
 import org.json4s.JsonDSL._
 import org.json4s._
 import play.api.mvc.Controller
 import scalikejdbc._
-
-import scala.util.Try
 
 /**
  *
@@ -18,8 +15,6 @@ import scala.util.Try
  */
 object Rest extends Controller {
   import controllers.Common._
-
-  lazy val DefaultStart = new LocalDate(2014, 1, 1)
 
   def searchUser(q: String) = returnJson(db.Admiral.findAllByLike(s"%$q%", limit = 20))
 
@@ -45,7 +40,7 @@ object Rest extends Controller {
   }
 
   def recipeFromShip(shipId: Int, from: String, to: String) = returnJson {
-    val fromTo = whereFromTo(sqls"cs.created", from, to)
+    val fromTo = Period.fromStr(from, to).where(sqls"cs.created")
     val allCounts = db.CreateShip.materialCount(fromTo).toMap
     val counts = db.CreateShip.materialCount(sqls"result_ship = ${shipId} and ${fromTo}")
     counts.map { case (mat, count) =>
@@ -54,7 +49,7 @@ object Rest extends Controller {
   }
 
   def dropFromShip(shipId: Int, from: String, to: String) = returnJson {
-    val fromTo = whereFromTo(sqls"br.created", from, to)
+    val fromTo = Period.fromStr(from, to).where(sqls"br.created")
     val allCounts = db.BattleResult.countAllGroupByCells(fromTo).toMap
     val dropCounts = db.BattleResult.countAllGroupByCells(sqls"get_ship_id = ${shipId} and $fromTo")
     dropCounts.map { case (cell, count) =>
@@ -62,14 +57,8 @@ object Rest extends Controller {
     }
   }
 
-  private[controllers] def whereFromTo(target: SQLSyntax, from: String, to: String): SQLSyntax = {
-    val fromDate = Try { LocalDate.parse(from, ISODateTimeFormat.date()) }.getOrElse(DefaultStart)
-    val toDate = Try { LocalDate.parse(to, ISODateTimeFormat.date()) }.getOrElse(LocalDate.now())
-    sqls"${fromDate.toDate.getTime} < $target and $target < ${toDate.toDate.getTime}"
-  }
-
   def recipeFromItem(itemId: Int, from: String, to: String) = returnJson {
-    val fromTo = whereFromTo(sqls"ci.created", from, to)
+    val fromTo = Period.fromStr(from, to).where(sqls"ci.created")
     val allCounts = db.CreateItem.materialCount(fromTo).toMap
     val counts = db.CreateItem.materialCount(sqls"slotitem_id = ${itemId} and ${fromTo}")
     counts.map { case (mat, count) =>
@@ -78,14 +67,14 @@ object Rest extends Controller {
   }
 
   def dropCell(area: Int, info: Int, cell: Int, rank: String, from: String, to: String) = returnJson {
-    val fromTo = whereFromTo(sqls"br.created", from ,to)
+    val fromTo = Period.fromStr(from ,to).where(sqls"br.created")
     val drops = db.BattleResult.countCellsGroupByDrop(area, info, cell, rank, fromTo)
     val sum = drops.map(_._2).sum.toDouble
     drops.map(dropToJson(sum))
   }
 
   def dropCellAlpha(area: Int, info: Int, alpha: String, rank: String, from: String, to: String) = returnJson {
-    val fromTo = whereFromTo(sqls"br.created", from ,to)
+    val fromTo = Period.fromStr(from, to).where(sqls"br.created")
     val drops = db.BattleResult.countCellsAlphaGroupByDrop(area, info, alpha, rank, fromTo)
     val sum = drops.map(_._2).sum.toDouble
     drops.map(dropToJson(sum))

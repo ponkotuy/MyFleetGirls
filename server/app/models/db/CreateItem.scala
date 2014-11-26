@@ -121,7 +121,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
    *
    * @param mat : sTypeNameは無視する
    */
-  def countItemByMat(mat: ItemMat)(implicit session: DBSession = autoSession): List[(MiniItem, Long)] = {
+  def countItemByMat(mat: ItemMat, where: SQLSyntax = sqls"true")(implicit session: DBSession = autoSession): List[(MiniItem, Long)] = {
     withSQL {
       select(ci.slotitemId, mi.name, sqls"count(*) as count").from(CreateItem as ci)
         .innerJoin(Ship as s).on(sqls"ci.flagship = s.id and ci.member_id = s.member_id")
@@ -129,6 +129,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
         .leftJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
         .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where(sqls"""ci.fuel = ${mat.fuel} and ci.ammo = ${mat.ammo} and ci.steel = ${mat.steel} and ci.bauxite = ${mat.bauxite} and mst.name = ${mat.sTypeName}""")
+        .and.append(where)
         .groupBy(ci.slotitemId)
         .orderBy(sqls"count").desc
     }.map { rs => fromRStoMiniItem(rs) -> rs.long(3) }.list().apply()

@@ -30,6 +30,9 @@ vueSettings =
             that.shipId = ret.ships[0].id
           else if ret.items.length == 1
             that.itemId = ret.items[0].id
+          else
+            that.shipId = -1
+            that.itemId = -1
     selectShip: (sid) ->
       @shipId = sid
     selectItem: (iid) ->
@@ -83,15 +86,19 @@ vueSettings =
       url = base + @fromToURL('&')
       location.href = url
     clickItem: (c) ->
-      location.href = "/entire/sta/citem/#{c.mat.fuel}/#{c.mat.ammo}/#{c.mat.steel}/#{c.mat.bauxite}/#{c.mat.sTypeName}"
+      base = "/entire/sta/citem/#{c.mat.fuel}/#{c.mat.ammo}/#{c.mat.steel}/#{c.mat.bauxite}/#{c.mat.sTypeName}"
+      url = base + @fromToURL('?')
+      location.href = url
     fromToURL: (head) -> if @period then "#{head}from=#{@start_period}&to=#{@end_period}" else ''
 
-  created: ->
+  attached: ->
     @restoreHash()
     if @shipId != -1
       @getSCounts(@shipId)
+      clearTimeout(timeout)
     else if @itemId != -1
       @getICounts(@itemId)
+      clearTimeout(timeout)
     else if @query != ''
       timout = @searchShip(this, @query)()
 
@@ -103,12 +110,14 @@ vueSettings =
     shipId: (sid) ->
       if sid != -1
         @itemId = -1
+        clearTimeout(timeout) # 起動時にquery発行されてscountが消されるのを抑制
         @getSCounts(sid)
       else
         ships = []
     itemId: (iid) ->
       if iid != -1
         @shipId = -1
+        clearTimeout(timeout)
         @getICounts(iid)
       else
         items = []

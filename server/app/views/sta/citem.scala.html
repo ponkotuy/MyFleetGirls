@@ -1,7 +1,7 @@
-@(title: String, countJson: String, counts: Seq[(String, Long, Double)], history: Seq[CreateItemWithName])
+@(ci: models.view.CItem, countJson: String, counts: Seq[(String, Long, Double)], history: Seq[CreateItemWithName])
 
 @main {
-  <title>開発結果 @title</title>
+  <title>開発結果 @ci.title</title>
   <script src="@Js.MomentLocales"></script>
   @Js.ScriptFlot("pie")
   <script src="@Js.Coffee("pie")"></script>
@@ -9,24 +9,38 @@
 } {
   @statistics_head("from_recipe") {
     <div class="page-header">
-      <h1>@title</h1>
+      <h1>@ci.title</h1>
     </div>
-    <div style="width:700px;height:400px;margin:auto;" class="pie" data-json="@countJson"></div>
+
+    <div class="row">
+      <div class="col-sm-3">
+        <form role="form" action="@routes.ViewSta.citem(ci.fuel, ci.ammo, ci.steel, ci.bauxite, ci.sType)">
+          <div class="form-group">
+            <div class="input-group col-sm-10">
+              <input type="text" class="form-control date-picker" value="@ci.from" name="from">
+              <input type="text" class="form-control date-picker" value="@ci.to" name="to">
+            </div>
+          </div>
+          <input type="submit" class="btn btn-default" value="期間変更" />
+        </form>
+      </div>
+      <div class="pie col-sm-9" style="width:500px;height:400px;margin:auto;" data-json="@countJson"></div>
+    </div>
 
     <div class="row">
       <div class="col-md-6">
         <h3>Rate</h3>
-        <table class="table table-striped table-condensed">
+        <table class="table table-hover table-condensed">
           <thead>
-            <th>名前</th><th>数</th><th>Rate</th>
+            <tr><th>名前</th><th>数</th><th>Rate</th></tr>
           </thead>
           <tbody>
             @counts.map { case (name, count, rate) =>
-            <tr>
-              <td><a href="@routes.ViewSta.fromShip()#query=@name">@name</a></td>
-              <td>@count</td>
-              <td>@(f"${rate * 100}%.1f%%")</td>
-            </tr>
+              <tr class="clickable" onclick="location.href='@routes.ViewSta.fromShip()#query=@name&from=@ci.from&to=@ci.to'">
+                <td>@name</td>
+                <td>@count</td>
+                <td>@(f"${rate * 100}%.1f%%")</td>
+              </tr>
             }
           </tbody>
         </table>
@@ -34,16 +48,16 @@
 
       <div class="col-md-6">
         <h3>History</h3>
-        <table class="table table-striped table-condensed">
+        <table class="table table-hover table-condensed">
           <thead>
             <tr><th>名前</th><th>時間</th></tr>
           </thead>
           <tbody>
             @history.map { item =>
-            <tr>
-              <td><a href="@routes.ViewSta.fromShip()#query=@item.name&item=@item.slotitemId">@item.name</a></td>
-              <td class="viewTime" data-time="@item.created">@item.created</td>
-            </tr>
+              <tr class="clickable" onclick="location.href='@routes.ViewSta.fromShip()#query=@item.name&item=@item.slotitemId'">
+                <td>@item.name</td>
+                <td class="viewTime" data-time="@item.created">@item.created</td>
+              </tr>
             }
           </tbody>
         </table>
