@@ -20,6 +20,7 @@ vueConf = (id) ->
     routes: []
     cellInfo: []
     counts: []
+    sum: 0
     area: 0
     info: 0
     period: false
@@ -32,12 +33,16 @@ vueConf = (id) ->
   methods:
     getJSON: () ->
       $.getJSON "/rest/v1/route/#{@area}/#{@info}", @periodObj(), (data) =>
-        @routes = data
+        sum = 0
         sumCounts = []
         data.forEach (d) ->
           sumCounts[d.dep] ?= 0
           sumCounts[d.dep] += d.count
+          sum += d.count
         @counts = sumCounts
+        @sum = sum
+        @routes = data.filter (d) =>
+          (d.count * 1000) > @sum
       $.getJSON "/rest/v1/cell_info", {area: @area, info: @info}, (data) =>
         @cellInfo = data
       @setHash({})
@@ -59,12 +64,12 @@ vueConf = (id) ->
     setHash: ->
       param = if @modal then {modal: @modal, dep: @dep, dest: @dest} else {}
       location.hash = toURLParameter($.extend(param, @periodObj()))
-    restoreHash: ->
-      param = fromURLParameter(location.hash.replace(/^\#/, ''))
+    restoreHash: (param) ->
       if param.from?
         @period = true
         @from = param.from
         @to = param.to ? @to
+    restoreModal: (param) ->
       if param.modal?
         @modal = true
         @dep = param.dep ? @dep
@@ -89,7 +94,10 @@ vueConf = (id) ->
 
   created: ->
     @loadAttr(id)
-    @restoreHash()
+    param = fromURLParameter(location.hash.replace(/^\#/, ''))
+    @restoreHash(param)
+    @getJSON()
+    @restoreModal(param)
     timeout = 0
 
   watch:
