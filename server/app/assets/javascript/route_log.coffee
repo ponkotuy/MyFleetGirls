@@ -12,7 +12,7 @@ $(document).ready ->
       fleetType: 'name'
     methods:
       getInitData: () ->
-        @fromHash()
+        @restoreHash()
         $.getJSON '/rest/v1/cell_info', (data) =>
           @cellInfo = data
         @getData()
@@ -44,7 +44,7 @@ $(document).ready ->
       setHash: () ->
         data = if @fleetType != 'name' then $.extend(@areainfo(), {ftype: @fleetType}) else @areainfo()
         location.hash = toURLParameter(data)
-      fromHash: () ->
+      restoreHash: () ->
         obj = fromURLParameter(location.hash.replace(/^\#/, ''))
         if obj.area? and obj.info?
           @stage = "#{obj.area}-#{obj.info}"

@@ -3,7 +3,7 @@ package controllers
 import models.db
 import models.join.{ItemMat, Mat, ShipWithName}
 import models.query.{Period, SnapshotSearch}
-import models.view.{CShip, CItem}
+import models.view.{CItem, CShip}
 import org.json4s._
 import org.json4s.native.Serialization.write
 import play.api.mvc._
@@ -91,8 +91,9 @@ object ViewSta extends Controller {
 
   def route(area: Int, info: Int) = actionAsync { Ok(views.html.sta.route(area, info)) }
 
-  def routeFleet(area: Int, info: Int, dep: Int, dest: Int) = actionAsync {
-    val fleets = db.MapRoute.findFleetBy(sqls"area_id = $area and info_no = $info and dep = $dep and dest = $dest")
+  def routeFleet(area: Int, info: Int, dep: Int, dest: Int, from: String, to: String) = actionAsync {
+    val period = Period.fromStr(from, to)
+    val fleets = db.MapRoute.findFleetBy(sqls"area_id = $area and info_no = $info and dep = $dep and dest = $dest and ${period.where(sqls"created")}")
     val counts = fleetCounts(fleets)
     val cDep = db.CellInfo.findOrDefault(area, info, dep)
     val cDest = db.CellInfo.findOrDefault(area, info, dest)

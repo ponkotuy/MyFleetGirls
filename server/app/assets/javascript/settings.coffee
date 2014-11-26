@@ -11,9 +11,9 @@ $(document).ready ->
         $.post('/passwd/post/v1/settings', data)
           .done( => location.href = "/user/#{@userId}")
           .fail((str) => @errorMsg = str)
-      fromHash: () ->
+      restoreHash: () ->
         param = fromURLParameter(location.hash.replace(/^\#/, ''))
         @shipId = param.shipId
         @userId = param.userId
     created: () ->
-      @fromHash()
+      @restoreHash()

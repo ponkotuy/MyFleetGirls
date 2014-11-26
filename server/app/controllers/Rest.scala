@@ -88,8 +88,9 @@ object Rest extends Controller {
       ("rate" -> f"${count / sum * 100}%.1f%%")
   }
 
-  def route(area: Int, info: Int) = returnJson {
-    val routes = db.MapRoute.countCellsGroupByDest(area, info)
+  def route(area: Int, info: Int, from: String, to: String) = returnJson {
+    val period = Period.fromStr(from ,to)
+    val routes = db.MapRoute.countCellsGroupByDest(area, info, period.where(sqls"mr.created"))
     routes.map { case (route, count) =>
       Extraction.decompose(route).asInstanceOf[JObject] ~ ("count" -> count)
     }
