@@ -88,6 +88,13 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
     select.from(Admiral as a).where.in(a.id, ids)
   }.map(Admiral(a)(_)).list().apply()
 
+  def findAllInWithLv(ids: Seq[Long])(implicit session: DBSession = autoSession): List[AdmiralWithLv] = withSQL {
+    select(a.id, a.nickname, a.created, b.lv).from(Admiral as a)
+      .innerJoin(Basic as b).on(a.id, b.memberId)
+      .where.eq(b.created, sqls"(select MAX(${b.created}) from ${Basic.table} as b where ${a.id} = ${b.memberId})")
+      .and.in(a.id, ids)
+  }.map(AdmiralWithLv(a, b)).list().apply()
+
   def save(a: Admiral)(implicit session: DBSession = Admiral.autoSession): Admiral = {
     withSQL {
       update(Admiral).set(column.id -> a.id, column.nickname -> a.nickname)

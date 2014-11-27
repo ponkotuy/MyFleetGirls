@@ -4,6 +4,7 @@ import models.join.{ShipWithName, ShipWithAdmiral}
 import scalikejdbc._
 import com.ponkotuy.data
 import util.scalikejdbc.BulkInsert._
+import scalikejdbc.interpolation.SQLSyntax._
 
 /**
  *
@@ -137,6 +138,12 @@ object Ship extends SQLSyntaxSupport[Ship] {
       ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
     }.toList().apply()
   }
+
+  def findAllActiveUser(limit: Int = 20)(implicit session: DBSession = autoSession): List[Long] = withSQL {
+    select(distinct(s.memberId)).from(Ship as s)
+      .orderBy(s.created).desc
+      .limit(limit)
+  }.map(_.long(1)).toList().apply()
 
   def findSlot(memberId: Long, shipId: Int): List[Int] =
     ShipSlotItem.findAllBy(sqls"member_id = ${memberId} and ship_id = ${shipId}").map(_.slotitemId)

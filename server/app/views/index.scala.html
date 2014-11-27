@@ -1,7 +1,7 @@
 @(
   version: String,
   newest: Seq[Admiral],
-  highLv: Seq[AdmiralWithLv],
+  actives: Seq[AdmiralWithLv],
   message: TraversableOnce[String],
   baseCounts: Seq[(UserSettings, Long)]
 )
@@ -64,9 +64,9 @@
         </div>
 
         <div class="col-sm-4">
-          <h2>提督Lv順</h2>
+          <h2>Activeな提督</h2>
           <ul>
-            @highLv.map { a =>
+            @actives.map { a =>
               <li><a href="@routes.UserView.user(a.id)">@a.nickname</a><small>Lv@a.lv</small></li>
             }
           </ul>

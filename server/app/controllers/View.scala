@@ -19,11 +19,12 @@ object View extends Controller {
   def index = Action.async {
     Future {
       val newest = db.Admiral.findNewest(limit = 20)
-      val lvTops = db.Admiral.findAllLvTop(limit = 20)
+      val activeIds = db.Ship.findAllActiveUser(limit = 20)
+      val actives = db.Admiral.findAllInWithLv(activeIds)
       val source = Source.fromFile("server/public/message")
       val message = try { source.getLines().toList } finally { source.close() }
       val baseCounts = db.UserSettings.countAllByBase()
-      Ok(views.html.index(BuildInfo.version, newest, lvTops, message, baseCounts))
+      Ok(views.html.index(BuildInfo.version, newest, actives, message, baseCounts))
     }
   }
 
