@@ -98,4 +98,8 @@ object RestUser extends Controller {
   def snap(memberId: Long, snapId: Long) = returnJson {
     db.DeckSnapshot.find(snapId).filter(_.memberId == memberId).get
   }
+
+  def bookShips(memberId: Long) = returnJson {
+    db.ShipBook.findAllBy(sqls"sb.member_id = ${memberId} and sb.index_no < 100000")
+  }
 }

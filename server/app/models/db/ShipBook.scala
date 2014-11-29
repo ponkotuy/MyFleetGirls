@@ -56,7 +56,7 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
 
   def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[ShipBook] = {
     withSQL {
-      select.from(ShipBook as sb).where.append(sqls"${where}")
+      select.from(ShipBook as sb).where.append(sqls"${where}").orderBy(sb.indexNo).asc
     }.map(ShipBook(sb.resultName)).list().apply()
   }
 

@@ -2,20 +2,36 @@
 
 @main {
   <title>艦娘図鑑（画像） -@{user.admiral.nickname}提督-</title>
+  <script src="@Js.Vue"></script>
+  <script src="@Js.Coffee("ship_image_book")"></script>
+  <style>
+    .damaged {
+      font-weight: bold;
+    }
+  </style>
 } {
   @head_content(user) {
     @usertab(user, "book") {
       <div id="images">
+        <input type="hidden" v-model="userId" value="@user.admiral.id" />
         <div class="page-header">
           <h1>艦娘図鑑（画像）</h1>
         </div>
 
-        <div>
-          <div class="thumbnail" v-repeat="ship: ships">
-            <img data-src="/rest/v1/image/ship/{{ship.id}}" alt="{{ship.name}}" />
+        <div class="row">
+          <div class="col-lg-2 col-sm-3" v-repeat="ship: ships">
+            <div class="thumbnail">
+              <img src="/rest/v1/image/ship/{{ship.id}}.jpg" alt="{{ship.name}}" />
+              <h5 v-class="text-danger: ship.isMarried, damaged: ship.isDameged">No.{{ship.indexNo}} {{ship.name}}</h5>
+            </div>
           </div>
         </div>
       </div>
+
+      <ul>
+        <li>名前太字は中破絵回収済であることを示す</li>
+        <li>名前赤字は結婚絵回収済であることを示す</li>
+      </ul>
     }
   }
 }

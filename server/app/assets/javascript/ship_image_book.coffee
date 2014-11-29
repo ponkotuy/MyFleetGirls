@@ -2,9 +2,15 @@ $(document).ready ->
   vue = new Vue(vueConf)
 
 vueConf =
+  el: '#images'
+
   data:
-    ships = []
+    ships: []
 
   methods:
     getShips: ->
-      $.get "/rest/v1/"
+      $.get "/rest/v2/user/#{@userId}/book/ships", (data) =>
+        @ships = data
+
+  watch:
+    userId: -> @getShips()
