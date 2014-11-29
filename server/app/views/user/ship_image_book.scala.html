@@ -1,0 +1,21 @@
+@(user: User)
+
+@main {
+  <title>艦娘図鑑（画像） -@{user.admiral.nickname}提督-</title>
+} {
+  @head_content(user) {
+    @usertab(user, "book") {
+      <div id="images">
+        <div class="page-header">
+          <h1>艦娘図鑑（画像）</h1>
+        </div>
+
+        <div>
+          <div class="thumbnail" v-repeat="ship: ships">
+            <img data-src="/rest/v1/image/ship/{{ship.id}}" alt="{{ship.name}}" />
+          </div>
+        </div>
+      </div>
+    }
+  }
+}
