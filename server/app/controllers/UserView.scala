@@ -121,6 +121,10 @@ object UserView extends Controller {
     Ok(views.html.user.book(user, sBooks, iBooks))
   }
 
+  def shipImageBook(memberId: Long) = userView(memberId) { user =>
+    Ok(views.html.user.ship_image_book(user))
+  }
+
   def dock(memberId: Long) = userView(memberId) { user =>
     Ok(views.html.user.dock(user))
   }

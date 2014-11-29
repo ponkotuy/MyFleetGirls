@@ -37,6 +37,7 @@ POST    /post/v1/swf/ship/:shipId   controllers.PostFile.ship(shipId: String)
 POST    /post/v1/mp3/kc/:shipKey/:soundId controllers.PostFile.sound(shipKey: String, soundId: Int)
 
 # Rest
+# v1はdeprecatedで、新規実装は全てv2にすること
 GET     /rest/v1/search_user        controllers.Rest.searchUser(q: String)
 GET     /rest/v1/search_base_user   controllers.Rest.searchBaseUser(base: Int, q: String ?= "")
 GET     /rest/v1/search_master      controllers.Rest.searchMaster(q: String)
@@ -68,6 +69,7 @@ GET     /rest/v1/:userId/route_log  controllers.RestUser.routeLog(userId: Long, 
 GET     /rest/v1/:userId/route_log_count controllers.RestUser.routeLogCount(userId: Long, area: Int ?= -1, info: Int ?= -1)
 GET     /rest/v1/:userId/quest      controllers.RestUser.quest(userId: Long)
 GET     /rest/v1/:userId/snap/:snapId controllers.RestUser.snap(userId: Long, snapId: Long)
+GET     /rest/v2/user/:userId/book/ships controllers.RestUser.bookShips(userId: Long)
 GET     /rest/v1/image/ship/:shipId.jpg controllers.RestImage.ship(shipId: Int)
 GET     /rest/v1/sound/ship/:shipId/:soundId.mp3 controllers.RestSound.ship(shipId: Int, soundId: Int)
 HEAD    /rest/v1/image/ship/:shipId.jpg controllers.RestImage.shipHead(shipId: Int)
@@ -113,6 +115,7 @@ GET     /user/:userId/ship          controllers.UserView.ship(userId: Long)
 GET     /user/:userId/ship_page/:shipId controllers.UserView.shipPage(userId: Long, shipId: Int)
 GET     /passwd/user/:userId/settings      controllers.UserView.settings(userId: Long)
 GET     /user/:userId/book          controllers.UserView.book(userId: Long)
+GET     /user/:userId/ship_image_book controllers.UserView.shipImageBook(userId: Long)
 GET     /user/:userId/dock          controllers.UserView.dock(userId: Long)
 GET     /user/:userId/create        controllers.UserView.create(userId: Long)
 GET     /user/:userId/slotitem      controllers.UserView.slotitem(userId: Long)
