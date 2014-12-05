@@ -18,7 +18,7 @@ case object MaterialRanking extends Ranking {
 
   override val title: String = "資源保有量"
 
-  override val divClass: String = colmd3
+  override val divClass: String = collg3
 
   override val comment: List[String] = List(comment7days)
 

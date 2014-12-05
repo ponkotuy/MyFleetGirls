@@ -18,7 +18,7 @@ case object SumShipExpRanking extends Ranking {
 
   override val title: String = "艦娘合計Exp"
   override val comment: List[String] = List(comment7days)
-  override val divClass: String = colmd3
+  override val divClass: String = collg3
 
   override def rankingQuery(limit: Int): List[RankingElement] = {
     findAllOrderByShipExpSum(limit, agoMillis(7.days)).map { case (admiral, exp) =>

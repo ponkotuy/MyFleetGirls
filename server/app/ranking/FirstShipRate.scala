@@ -20,8 +20,8 @@ case object FirstShipRate extends Ranking {
       }
     val masters = db.MasterShipBase.findAllBy(sqls"ms.id in (${counts.keySet})")
       .map { it => it.id -> it }.toMap
-    val sum = counts.map(_._2).sum
-    counts.map { case (sid, count) =>
+    val sum = counts.values.sum
+    counts.toList.sortBy(-_._2).map { case (sid, count) =>
       val master = masters(sid)
       val url = routes.ViewSta.shipBook(sid).toString()
       RankingElement(master.name, <span><strong>{f"$count%,d"}</strong>{s" / $sum"}</span>, url)
