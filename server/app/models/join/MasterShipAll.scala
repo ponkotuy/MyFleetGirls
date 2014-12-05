@@ -30,6 +30,7 @@ case class MasterShipAll(
 
   def afterfuel = if(after.afterfuel > 0) Some(after.afterfuel) else None
   def afterbull = if(after.afterbull > 0) Some(after.afterbull) else None
+  def afterShipId = after.aftershipid
 
   def afterResource = {
     for {
@@ -40,7 +41,7 @@ case class MasterShipAll(
 
   def afterLv: Option[Int] = if(after.afterlv > 0) Some(after.afterlv) else None
   lazy val afterShip: Option[MasterShipAll] =
-    MasterShipBase.findAllInOneBy(sqls"ms.id = ${after.aftershipid}").headOption
+    MasterShipBase.findAllInOneBy(sqls"ms.id = ${afterShipId}").headOption
 
   lazy val beforeShip: List[MasterShipAll] =
     MasterShipBase.findAllInOneBy(sqls"msa.aftershipid = ${base.id}")

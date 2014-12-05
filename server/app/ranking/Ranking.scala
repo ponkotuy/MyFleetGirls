@@ -25,13 +25,13 @@ object Ranking {
 
   val values: Array[Ranking] = Array(
     MaterialRanking,
-    YomeRanking,
     FirstShipRanking,
     ShipBookRanking,
     MarriedRanking,
     SumShipExpRanking,
     ExpByShipRanking,
-    ItemBookRanking
+    ItemBookRanking,
+    FirstShipRate
   )
 
   def fromString(str: String): Option[Ranking] = values.find(_.toString == str)

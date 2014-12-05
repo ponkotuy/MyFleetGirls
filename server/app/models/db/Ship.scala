@@ -148,6 +148,12 @@ object Ship extends SQLSyntaxSupport[Ship] {
   def findSlot(memberId: Long, shipId: Int): List[Int] =
     ShipSlotItem.findAllBy(sqls"member_id = ${memberId} and ship_id = ${shipId}").map(_.slotitemId)
 
+  def countAllShip(where: SQLSyntax)(implicit session: DBSession = autoSession): Map[Int, Long] = withSQL {
+    select(s.shipId, sqls"count(1) as cnt").from(Ship as s)
+      .where(where)
+      .groupBy(s.shipId)
+  }.map { rs => rs.int(1) -> rs.long("cnt") }.toTraversable().apply().toMap
+
   def create(s: data.Ship, memberId: Long)(implicit session: DBSession = Ship.autoSession): Unit = {
     val created = System.currentTimeMillis()
     ShipSlotItem.bulkInsert(s.slot, memberId, s.id)

@@ -54,7 +54,7 @@ case object ExpByShipRanking extends Ranking {
     .filterNot(_.aftershipid == 0)
     .map(ship => ship.aftershipid -> ship.id).toMap
 
-  private def evolutionBase(shipId: Int): Int = {
+  def evolutionBase(shipId: Int): Int = {
     afters.get(shipId) match {
       case Some(afterId) => evolutionBase(afterId)
       case None => shipId

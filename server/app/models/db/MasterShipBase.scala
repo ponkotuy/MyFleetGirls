@@ -56,6 +56,10 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
     select.from(MasterShipBase as ms)
   }.map(MasterShipBase(ms)).toList().apply()
 
+  def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[MasterShipBase] = withSQL {
+    select.from(MasterShipBase as ms).where(where)
+  }.map(MasterShipBase(ms)).toList().apply()
+
   def findAllByLike(q: String)(implicit session: DBSession = autoSession): List[MasterShipBase] = withSQL {
     select.from(MasterShipBase as ms).where.like(ms.name, q)
   }.map(MasterShipBase(ms)).toList().apply()
