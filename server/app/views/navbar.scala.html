@@ -1,7 +1,9 @@
 @(active: String)
-<script src="@routes.Assets.at("javascript/navbar.js")"></script>
-  <div style="margin-top: 0px; margin-bottom: 10px;">
-    <div class="container">
+<link rel="stylesheet" href="@Css.BootstrapSwitch" />
+<script src="@Js.Coffee("navbar")"></script>
+<script src="@Js.BootstrapSwitch"></script>
+<div style="margin-top: 0px; margin-bottom: 10px;">
+  <div class="container">
     <div class="header">
       <button type="button" class="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse"></button>
       <a class="navbar-brand" href="//myfleet.moe"><img src="@routes.Assets.at("MFGsTitle.png")" width="106px" height="51px" alt="MyFleetGirls" style="margin-top: -10px; margin-left: -10px; margin-right: 20px;"/></a>
@@ -21,9 +23,11 @@
           <a href="@routes.View.login("")" id="loginA">Login/Logout</a>
         </li>
         <li>
-          <a href="#" on-click="return false;">
-            <span id="toggle_sound" class="glyphicon glyphicon-volume-up" style="color: #000; font-size: 1.5em;"></span>
-          </a>
+          <div style="margin-top: 6px;">
+            <input type="checkbox" id="toggle_sound" style="" data-size="small"
+              data-on-text='<span class="glyphicon glyphicon-volume-up" style="font-size: 1.2em;"></span>'
+              data-off-text='<span class="glyphicon glyphicon-volume-off" style="font-size: 1.2em; width: 16px;"></span>' />
+          </div>
         </li>
       </ul>
     </div>

@@ -11,6 +11,7 @@ object Js {
   val Vue = "//cdnjs.cloudflare.com/ajax/libs/vue/0.11.0/vue.min.js"
   val Lodash = "//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"
   val D3 = "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.12/d3.min.js"
+  val BootstrapSwitch = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.2.1/js/bootstrap-switch.min.js"
   val Common = Coffee("common")
   val JQueryUI = Lib("jquery-ui.min")
 
@@ -38,6 +39,7 @@ object Js {
 }
 
 object Css {
+  val BootstrapSwitch = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.2.1/css/bootstrap3/bootstrap-switch.min.css"
   val JQueryUI = {
       <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.css" />
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.theme.min.css" />
