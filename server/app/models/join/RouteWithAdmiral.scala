@@ -15,4 +15,5 @@ case class RouteWithAdmiral(mapRoute: MapRoute, admiral: Admiral) extends Activi
   override def message: String = s"${nickname}提督が${areaId}-${infoNo}へ出撃しました"
   override def url: String = controllers.routes.UserView.routeLog(memberId).url
   override def created: Long = mapRoute.created
+  override def id: String = mapRoute.id.toString
 }

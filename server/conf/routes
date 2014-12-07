@@ -131,6 +131,9 @@ GET     /user/:userId/statistics    controllers.UserView.statistics(userId: Long
 # WebSocket
 GET     /ws/v1/user/:userId         controllers.UserWS.info(userId: Long)
 
+# Atom
+GET     /atom/v1/activities         controllers.Atom.activities()
+
 # Fav
 PUT     /passwd/put/v1/fav          controllers.Fav.put
 GET     /rest/v1/fav_count/:url     controllers.Fav.getCount(url: String)

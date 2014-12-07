@@ -61,3 +61,6 @@ logger.application=DEBUG
 
 # Parser Max Length
 parsers.text.maxLength=1024K
+
+# Common Key for Atom ID
+atom.common_key=

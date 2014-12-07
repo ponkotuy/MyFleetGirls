@@ -21,6 +21,7 @@ case class BattleResultWithUser(battleResult: BattleResult, admiral: Admiral) ex
   override def message: String = getShipName.map { sName =>
     s"${nickname}提督が${stage}で${sName}を入手しました"
   }.getOrElse("")
+  override def id: String = battleResult.id.toString
 }
 
 object BattleResultWithUser {

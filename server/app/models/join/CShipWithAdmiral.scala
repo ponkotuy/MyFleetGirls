@@ -14,6 +14,7 @@ case class CShipWithAdmiral(createShip: CreateShip, admiral: Admiral, masterShip
   override def message: String = s"${nickname}提督が${shipName}を建造しました"
   override def url: String = controllers.routes.UserView.create(memberId).url
   override def created: Long = createShip.created
+  override def id: String = s"${createShip.memberId}_${createShip.kDock}_${createShip.completeTime}"
 }
 
 object CShipWithAdmiral {

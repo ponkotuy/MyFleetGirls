@@ -13,6 +13,7 @@ trait Activity {
   def admiral: Admiral
   def url: String
   def created: Long
+  def id: String
 
   def nickname: String = admiral.nickname
   def memberId: Long = admiral.id
