@@ -84,6 +84,7 @@ GET     /passwd/entire/login  controllers.View.login(init: String ?= "", back: S
 GET     /entire/about               controllers.ViewAbout.setup
 GET     /entire/about/change        controllers.ViewAbout.changeLog
 GET     /entire/about/faq           controllers.ViewAbout.faq
+GET     /entire/about/setup_detail  controllers.ViewAbout.setupDetail
 GET     /entire/activities          controllers.ViewSta.activities
 GET     /entire/statistics          controllers.ViewSta.statistics(from: String ?= "", to: String ?= "")
 GET     /entire/sta/cship/:fuel/:ammo/:steel/:bauxite/:develop controllers.ViewSta.cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int, from: String ?= "", to: String ?= "")
