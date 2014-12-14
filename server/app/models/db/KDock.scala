@@ -1,5 +1,6 @@
 package models.db
 
+import models.join.KDockWithName
 import scalikejdbc._
 import com.ponkotuy.data
 import scalikejdbc.{WrappedResultSet, DBSession}
@@ -48,7 +49,7 @@ object KDock extends SQLSyntaxSupport[KDock] {
       .orderBy(kd.id)
   }.map { rs =>
     KDockWithName(
-      rs.int(kd.id), rs.long(kd.completeTime),
+      rs.int(kd.id), rs.long(kd.memberId), rs.long(kd.completeTime),
       rs.int(kd.fuel), rs.int(kd.ammo), rs.int(kd.steel), rs.int(kd.bauxite), rs.int(ms.id), rs.string(ms.name))
   }.toList().apply()
 
@@ -88,6 +89,4 @@ object KDock extends SQLSyntaxSupport[KDock] {
   }
 }
 
-case class KDockWithName(
-    id: Int, completeTime: Long,
-    fuel: Int, ammo: Int, steel: Int, bauxite: Int, shipId: Int, name: String)
+

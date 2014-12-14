@@ -1,5 +1,6 @@
 package models.db
 
+import models.join.NDockWithName
 import scalikejdbc._
 import com.ponkotuy.data
 
@@ -29,18 +30,16 @@ object NDock extends SQLSyntaxSupport[NDock] {
       .where.eq(nd.memberId, memberId)
   }.map(NDock(nd)).toList().apply()
 
-  def findAllByUserWithName(memberId: Long)(implicit session: DBSession = NDock.autoSession): List[NDockWithName] = {
-    val result = withSQL {
+  def findAllByUserWithName(memberId: Long)(implicit session: DBSession = NDock.autoSession): List[NDockWithName] =
+    withSQL {
       select(nd.id, nd.shipId, nd.completeTime, ms.id, ms.name).from(NDock as nd)
         .innerJoin(Ship as s).on(sqls"${nd.memberId} = ${s.memberId} and ${nd.shipId} = ${s.id}")
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .where.eq(nd.memberId, memberId)
         .orderBy(nd.id)
     }.map { rs =>
-      NDockWithName(rs.int(nd.id), rs.int(nd.shipId), rs.long(nd.completeTime), rs.int(ms.id), rs.string(ms.name))
+      NDockWithName(rs.int(nd.id), rs.long(nd.memberId), rs.int(nd.shipId), rs.long(nd.completeTime), rs.int(ms.id), rs.string(ms.name))
     }.toList().apply()
-    result
-  }
 
   def create(nd: data.NDock, memberId: Long)(implicit session: DBSession = NDock.autoSession): Unit = {
     val created = System.currentTimeMillis()
@@ -58,5 +57,3 @@ object NDock extends SQLSyntaxSupport[NDock] {
   def deleteAllByUser(memberId: Long)(implicit session: DBSession = NDock.autoSession): Unit =
     applyUpdate { delete.from(NDock).where.eq(NDock.column.memberId, memberId) }
 }
-
-case class NDockWithName(id: Int, shipId: Int, completeTime: Long, masterShipId: Int, name: String)

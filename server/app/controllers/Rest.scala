@@ -1,7 +1,7 @@
 package controllers
 
 import models.db
-import models.join.{Activity, ShipDrop, ShipWithFav}
+import models.join.{ShipDrop, ShipWithFav}
 import models.query.Period
 import org.json4s.JsonDSL._
 import org.json4s._
@@ -107,24 +107,8 @@ object Rest extends Controller {
     db.MapRoute.findStageUnique()
   }
 
-  val NGStage = Set((1, 1), (2, 2), (2, 3))
   def activities(from: Long, limit: Int, offset: Int) = returnJson {
     readActivities(from, limit, offset).map(_.toJSON)
-  }
-
-  def readActivities(from: Long, limit: Int, offset: Int): List[Activity] = {
-    val started = db.MapRoute.findWithUserBy(sqls"mr.created > ${from}", limit*8, offset)
-      .filter(_.start.exists(_.start))
-      .filterNot { it => NGStage.contains((it.areaId, it.infoNo)) }
-    val rares = db.MasterShipOther.findAllBy(sqls"mso.backs >= 5").map(_.id).toSet
-    val drops = db.BattleResult.findWithUserBy(sqls"br.created > ${from} and br.get_ship_id is not null", limit*8, offset)
-      .filter(_.getShipId.exists(rares.contains))
-    val rareItems = db.MasterSlotItem.findAllBy(sqls"msi.rare >= 1").map(_.id).toSet
-    val createItems = db.CreateItem.findWithUserBy(sqls"ci.created > ${from}", limit, offset)
-      .filter { it => rareItems.contains(it.itemId) }
-    val createShips = db.CreateShip.findWithUserBy(sqls"cs.created > ${from}", limit, offset)
-      .filter { it => rares.contains(it.shipId) }
-    (started ++ drops ++ createItems ++ createShips).sortBy(_.created).reverse.take(limit)
   }
 
   def bookShips(q: String) = returnJson {

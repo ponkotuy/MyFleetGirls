@@ -1,6 +1,6 @@
 package controllers
 
-import models.join.User
+import models.join.{Activity, User}
 import models.db
 import play.api.mvc._
 import org.json4s._
@@ -149,4 +149,25 @@ object Common extends Controller {
       f(request)
     }
   }
+
+  val NGStage = Set((1, 1), (2, 2), (2, 3))
+  def readActivities(from: Long, limit: Int, offset: Int, memberId: Long = 0L): List[Activity] = {
+    def f = whereMember(_: SQLSyntax, memberId)
+    val started = db.MapRoute.findWithUserBy(sqls"mr.created > ${from} ${f(sqls"mr.member_id")}", limit*8, offset)
+      .filter(_.start.exists(_.start))
+      .filterNot { it => NGStage.contains((it.areaId, it.infoNo)) }
+    val rares = db.MasterShipOther.findAllBy(sqls"mso.backs >= 5").map(_.id).toSet
+    val drops = db.BattleResult.findWithUserBy(sqls"br.created > ${from} and br.get_ship_id is not null ${f(sqls"br.member_id")}", limit*8, offset)
+      .filter(_.getShipId.exists(rares.contains))
+    val rareItems = db.MasterSlotItem.findAllBy(sqls"msi.rare >= 1").map(_.id).toSet
+    val createItems = db.CreateItem.findWithUserBy(sqls"ci.created > ${from} ${f(sqls"ci.member_id")}", limit, offset)
+      .filter { it => rareItems.contains(it.itemId) }
+    val createShips = db.CreateShip.findWithUserBy(sqls"cs.created > ${from} ${f(sqls"cs.member_id")}", limit, offset)
+      .filter { it => rares.contains(it.shipId) }
+    (started ++ drops ++ createItems ++ createShips).sortBy(-_.created).take(limit)
+  }
+
+  private def whereMember(col: SQLSyntax, memberId: Long) = if(memberId == 0L) sqls"" else sqls"and ${col} = ${memberId}"
+
+
 }
