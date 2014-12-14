@@ -105,6 +105,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
         .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where.append(where)
+        .orderBy(si.slotitemId)
     }.map { rs =>
       val slotItem = SlotItem(si)(rs)
       val shipId = rs.intOpt(s.resultName.shipId)
