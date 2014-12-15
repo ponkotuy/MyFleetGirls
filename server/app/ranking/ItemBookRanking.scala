@@ -17,11 +17,11 @@ case object ItemBookRanking extends Ranking {
   lazy val ib = ItemBook.syntax("ib")
 
   override val title: String = "装備図鑑登録"
-  override val comment: List[String] = List(comment7days)
+  override val comment: List[String] = List(comment30days)
   override val divClass: String = colmd3
 
   override def rankingQuery(limit: Int): List[RankingElement] = {
-    findAllOrderByItemBookCount(limit, agoMillis(7.days)).map { case (admiral, count) =>
+    findAllOrderByItemBookCount(limit, agoMillis(30.days)).map { case (admiral, count) =>
       val url = routes.UserView.book(admiral.id).toString()
       RankingElement(admiral.nickname, <span>{count}</span>, url)
     }
