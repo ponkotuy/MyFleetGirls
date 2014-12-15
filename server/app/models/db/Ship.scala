@@ -1,6 +1,6 @@
 package models.db
 
-import models.join.{ShipWithName, ShipWithAdmiral}
+import models.join.{ShipWithSpecs, ShipWithName, ShipWithAdmiral}
 import scalikejdbc._
 import com.ponkotuy.data
 import util.scalikejdbc.BulkInsert._
@@ -54,6 +54,7 @@ object Ship extends SQLSyntaxSupport[Ship] {
   lazy val ds = DeckShip.syntax("ds")
   lazy val ssi = ShipSlotItem.syntax("ssi")
   lazy val mst = MasterStype.syntax("mst")
+  lazy val mss = MasterShipSpecs.syntax("mss")
   lazy val a = Admiral.syntax("a")
 
   def findShipId(memberId: Long, sid: Int)(implicit session: DBSession = autoSession): Option[Int] = withSQL {
@@ -63,13 +64,14 @@ object Ship extends SQLSyntaxSupport[Ship] {
   def findByUserMaxLvWithName(memberId: Long)(implicit session: DBSession = autoSession): Option[ShipWithName] = {
     withSQL {
       select.from(Ship as s)
-        .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
         .where.eq(s.memberId, memberId)
         .and.eq(s.lv, sqls"(SELECT MAX(${s.lv}) FROM ${Ship.table} s WHERE ${s.memberId} = ${memberId})")
     }.map { rs =>
       val slot = findSlot(memberId, rs.int(s.resultName.id))
-      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
     }.first().apply()
   }
 
@@ -77,12 +79,13 @@ object Ship extends SQLSyntaxSupport[Ship] {
       implicit session: DBSession = autoSession): Option[ShipWithName] = {
     withSQL {
       select.from(Ship as s)
-        .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
         .where.eq(s.memberId, memberId).and.eq(s.id, sid)
     }.map { rs =>
       val slot = findSlot(memberId, rs.int(s.resultName.id))
-      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
     }.first().apply()
   }
 
@@ -103,15 +106,29 @@ object Ship extends SQLSyntaxSupport[Ship] {
         val slots = ShipSlotItem.findAllInShip(memberId, ids)
         withSQL {
           select.from(Ship as s)
-            .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-            .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
+            .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+            .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+            .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
             .where.eq(s.memberId, memberId).and.in(s.id, ids)
         }.map { rs =>
           val id = rs.int(s.resultName.id)
           val slot = slots.filter(_.shipId == id).map(_.slotitemId)
-          ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+          ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
         }.toList().apply()
     }
+
+  // Slotは常にNil
+  def findAllWithSpec(where: SQLSyntax = sqls"true")(implicit session: DBSession = autoSession): List[ShipWithSpecs] = {
+    withSQL {
+      select.from(Ship as s)
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
+        .where(where)
+    }.map { rs =>
+      ShipWithSpecs(Ship(s, Nil)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
+    }.toList().apply()
+  }
 
   def findAllByUser(memberId: Long)(implicit session: DBSession = Ship.autoSession): List[Ship] = {
     val slots = ShipSlotItem.findAllBy(sqls"member_id = ${memberId}")
@@ -129,13 +146,14 @@ object Ship extends SQLSyntaxSupport[Ship] {
     val slots = ShipSlotItem.findAllBy(sqls"member_id = ${memberId}")
     withSQL {
       select.from(Ship as s)
-        .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
         .where.eq(s.memberId, memberId)
     }.map { rs =>
       val id = rs.int(s.resultName.id)
       val slot = slots.filter(_.shipId == id).map(_.slotitemId)
-      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
     }.toList().apply()
   }
 

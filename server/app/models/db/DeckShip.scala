@@ -25,6 +25,7 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
   lazy val s = Ship.syntax("s")
   lazy val ms = MasterShipBase.syntax("ms")
   lazy val mst = MasterStype.syntax("mst")
+  lazy val mss = MasterShipSpecs.syntax("mss")
 
   def findAllByUserWithName(memberId: Long)(implicit session: DBSession = autoSession): List[DeckShipWithName] = {
     withSQL {
@@ -42,13 +43,14 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
       select.from(DeckShip as ds)
         .innerJoin(Ship as s).on(sqls"${ds.shipId} = ${s.id} and ${ds.memberId} = ${s.memberId}")
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
         .where.eq(ds.memberId, memberId).and.eq(ds.deckId, deckId)
         .orderBy(ds.num)
     }.map { rs =>
       val id = rs.int(s.resultName.id)
       val slot = slots.filter(_.shipId == id).map(_.slotitemId)
-      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
     }.list().apply()
   }
 
@@ -58,12 +60,13 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
       select.from(DeckShip as ds)
         .innerJoin(Ship as s).on(ds.shipId, s.id)
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
         .where.eq(ds.memberId, memberId).and.eq(s.memberId, memberId).and.eq(ds.deckId, 1).and.eq(ds.num, 0)
     }.map { rs =>
       val id = rs.int(s.resultName.id)
       val slot = slots.filter(_.shipId == id).map(_.slotitemId)
-      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
     }.first().apply()
   }
 

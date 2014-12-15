@@ -6,7 +6,7 @@ import scalikejdbc._
 /**
  * Date: 14/06/16.
  */
-case class ShipSnapshotWithName(ship: Ship, master: MasterShipBase, stype: MasterStype, rest: ShipSnapshotRest)
+case class ShipSnapshotWithName(ship: Ship, master: MasterShipBase, stype: MasterStype, spec: MasterShipSpecs, rest: ShipSnapshotRest)
     extends ShipParameter {
   def deckId = rest.deckId
   def num = rest.num

@@ -46,6 +46,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
   lazy val ms = MasterShipBase.syntax("ms")
   lazy val mst = MasterStype.syntax("mst")
   lazy val msi = MasterSlotItem.syntax("msi")
+  lazy val mss = MasterShipSpecs.syntax("mss")
 
   override val autoSession = AutoSession
 
@@ -85,25 +86,27 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
     withSQL {
       select.from(SlotItem as si)
         .innerJoin(ShipSlotItem as ssi).on(sqls"${si.id} = ${ssi.slotitemId} and ${si.memberId} = ${ssi.memberId}")
-        .leftJoin(Ship as s).on(sqls"${ssi.shipId} = ${s.id} and ${ssi.memberId} = ${s.memberId}")
-        .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(Ship as s).on(sqls"${ssi.shipId} = ${s.id} and ${ssi.memberId} = ${s.memberId}")
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
         .where.append(where)
     }.map { rs =>
       val memberId = rs.long(ssi.resultName.memberId)
       val shipId = rs.int(s.resultName.shipId)
       val slot = Ship.findSlot(memberId, shipId)
-      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
     }.toList().apply()
   }
 
   def findAllWithArmedShipBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[ItemWithShip] = {
     withSQL {
       select.from(SlotItem as si)
-        .leftJoin(ShipSlotItem as ssi).on(sqls"${si.id} = ${ssi.slotitemId} and ${si.memberId} = ${ssi.memberId}")
-        .leftJoin(Ship as s).on(sqls"${ssi.shipId} = ${s.id} and ${ssi.memberId} = ${s.memberId}")
-        .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(ShipSlotItem as ssi).on(sqls"${si.id} = ${ssi.slotitemId} and ${si.memberId} = ${ssi.memberId}")
+        .innerJoin(Ship as s).on(sqls"${ssi.shipId} = ${s.id} and ${ssi.memberId} = ${s.memberId}")
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
         .where.append(where)
         .orderBy(si.slotitemId)
     }.map { rs =>
@@ -112,7 +115,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
       val slot = shipId.map { id => Ship.findSlot(slotItem.memberId, id) }
       val ship = slot.map { sl => Ship(s, sl)(rs) }
       val withName = ship.map { s =>
-        ShipWithName(s, MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+        ShipWithName(s, MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
       }
       ItemWithShip(slotItem, withName)
     }.toList().apply()

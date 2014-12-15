@@ -31,10 +31,11 @@ object UserSettings extends SQLSyntaxSupport[UserSettings] {
     base = rs.get(us.base)
   )
 
-  val us = UserSettings.syntax("us")
-  val s = Ship.syntax("s")
-  val ms = MasterShipBase.syntax("ms")
-  val mst = MasterStype.syntax("mst")
+  lazy val us = UserSettings.syntax("us")
+  lazy val s = Ship.syntax("s")
+  lazy val ms = MasterShipBase.syntax("ms")
+  lazy val mst = MasterStype.syntax("mst")
+  lazy val mss = MasterShipSpecs.syntax("mss")
 
   override val autoSession = AutoSession
 
@@ -53,7 +54,7 @@ object UserSettings extends SQLSyntaxSupport[UserSettings] {
         .where.eq(us.memberId, memberId)
     }.map { rs =>
       val slot = Ship.findSlot(memberId, rs.int(s.resultName.id))
-      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
     }.single().apply()
   }
 

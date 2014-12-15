@@ -12,6 +12,7 @@ trait ShipParameter extends GraphData {
   def ship: Ship
   def master: MasterShipBase
   def stype: MasterStype
+  def spec: MasterShipSpecs
 
   def id = ship.id
   def shipId = ship.shipId
@@ -45,8 +46,6 @@ trait ShipParameter extends GraphData {
     val map = MasterSlotItem.findIn(ids).map(it => it.id -> it).toMap
     ids.map(map(_))
   }
-  lazy val spec: MasterShipSpecs = MasterShipSpecs.find(shipId).get
-
 
   lazy val airSuperiority: Int = {
     slotMaster.zip(spec.maxeq).filter(_._1.category.exists(EquipType.CarrierBased.contains)).map { case (fighter, slotCount) =>
@@ -68,6 +67,9 @@ trait ShipParameter extends GraphData {
   def raisouRate: Double = calcRate(rowRaisou, spec.raisouMin, spec.raisouMax)
   def taikuRate: Double = calcRate(rowTaiku, spec.taikuMin, spec.taikuMax)
   def soukouRate: Double = calcRate(rowSoukou, spec.soukoMin, spec.soukoMax)
+
+  /** 運の改修度 */
+  def upLucky: Int = lucky - spec.luckyMin
 
   /** Condition値による色の変化 */
   def rgb: RGB = ShipParameter.rgb(cond)

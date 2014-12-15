@@ -134,6 +134,7 @@ object DeckShipSnapshot extends SQLSyntaxSupport[DeckShipSnapshot] {
   val dss = DeckShipSnapshot.syntax("dss")
   val ms = MasterShipBase.syntax("ms")
   val mst = MasterStype.syntax("mst")
+  val mss = MasterShipSpecs.syntax("mss")
 
   override val autoSession = AutoSession
 
@@ -148,10 +149,11 @@ object DeckShipSnapshot extends SQLSyntaxSupport[DeckShipSnapshot] {
       select.from(DeckShipSnapshot as dss)
         .innerJoin(MasterShipBase as ms).on(dss.shipId, ms.id)
         .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipSpecs as mss).on(dss.shipId, mss.id)
         .where.eq(dss.id, id)
     }.map { rs =>
       val ship = DeckShipSnapshot(dss)(rs).toShip
-      ShipSnapshotWithName(ship, MasterShipBase(ms)(rs), MasterStype(mst)(rs), ShipSnapshotRest(dss)(rs))
+      ShipSnapshotWithName(ship, MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs), ShipSnapshotRest(dss)(rs))
     }.single().apply()
   }
 
@@ -174,11 +176,12 @@ object DeckShipSnapshot extends SQLSyntaxSupport[DeckShipSnapshot] {
       select.from(DeckShipSnapshot as dss)
         .innerJoin(MasterShipBase as ms).on(dss.shipId, ms.id)
         .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipSpecs as mss).on(dss.shipId, mss.id)
         .where.append(sqls"${where}")
         .orderBy(dss.num)
     }.map { rs =>
       val ship = DeckShipSnapshot(dss)(rs).toShip
-      ShipSnapshotWithName(ship, MasterShipBase(ms)(rs), MasterStype(mst)(rs), ShipSnapshotRest(dss)(rs))
+      ShipSnapshotWithName(ship, MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs), ShipSnapshotRest(dss)(rs))
     }.list().apply()
   }
 

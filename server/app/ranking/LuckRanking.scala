@@ -1,0 +1,27 @@
+package ranking
+
+import models.db.{Admiral, Ship}
+import scalikejdbc._
+import controllers.routes
+import scala.concurrent.duration._
+
+/**
+ * Date: 14/12/16.
+ */
+object LuckRanking extends Ranking {
+  import Ranking._
+
+  override val title: String = "運改修度"
+  override val comment: List[String] = List(comment7days)
+  override val divClass: String = collg3
+
+  override def rankingQuery(limit: Int): List[RankingElement] = {
+    val oldest = agoMillis(7.days)
+    for {
+      ship <- Ship.findAllWithSpec(sqls"s.lucky > mss.lucky_min and s.created > ${oldest}").sortBy(-_.upLucky).take(limit)
+      admiral <- Admiral.find(ship.memberId)
+    } yield {
+      RankingElement(admiral.nickname, <span><strong>+{ship.upLucky}</strong> {ship.name} <small>{ship.spec.luckyMin}→{ship.lucky}</small></span>, routes.UserView.user(admiral.id).url)
+    }
+  }
+}

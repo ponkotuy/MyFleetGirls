@@ -18,6 +18,7 @@ case object FirstShipRanking extends Ranking {
   lazy val s = Ship.syntax("s")
   lazy val ms = MasterShipBase.syntax("ms")
   lazy val mst = MasterStype.syntax("mst")
+  lazy val mss = MasterShipSpecs.syntax("mss")
 
   override val title: String = "初期艦Lv"
   override val divClass: String = collg3
@@ -41,7 +42,7 @@ case object FirstShipRanking extends Ranking {
         .orderBy(s.exp).desc
         .limit(limit)
     }.map { rs =>
-      Admiral(a)(rs) -> ShipWithName(Ship(s, Nil)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs))
+      Admiral(a)(rs) -> ShipWithName(Ship(s, Nil)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
     }.list().apply()
   }
 

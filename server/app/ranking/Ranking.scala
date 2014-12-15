@@ -26,6 +26,7 @@ object Ranking {
   val values: Array[Ranking] = Array(
     MaterialRanking,
     FirstShipRanking,
+    LuckRanking,
     ShipBookRanking,
     MarriedRanking,
     SumShipExpRanking,
