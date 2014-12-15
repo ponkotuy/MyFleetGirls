@@ -51,6 +51,7 @@ object UserSettings extends SQLSyntaxSupport[UserSettings] {
         .innerJoin(Ship as s).on(sqls"us.yome = s.id and us.member_id = s.member_id")
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
         .where.eq(us.memberId, memberId)
     }.map { rs =>
       val slot = Ship.findSlot(memberId, rs.int(s.resultName.id))
