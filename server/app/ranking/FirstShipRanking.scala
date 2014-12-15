@@ -38,6 +38,7 @@ case object FirstShipRanking extends Ranking {
         .innerJoin(Admiral as a).on(s.memberId, a.id)
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
         .where.gt(s.created, from).and.append(where)
         .orderBy(s.exp).desc
         .limit(limit)
