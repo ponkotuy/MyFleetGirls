@@ -46,3 +46,7 @@ object Css {
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.structure.min.css" />
   }
 }
+
+object Image {
+  def setup(name: String) = controllers.routes.Assets.at(s"image/setup/${name}.png")
+}

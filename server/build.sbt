@@ -32,4 +32,4 @@ buildInfoPackage := "build"
 
 scalikejdbcSettings
 
-TwirlKeys.templateImports ++= Seq("views.Js", "views.Css", "models.db._", "models.join._")
+TwirlKeys.templateImports ++= Seq("views._", "models.db._", "models.join._")
