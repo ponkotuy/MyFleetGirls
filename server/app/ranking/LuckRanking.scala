@@ -8,7 +8,7 @@ import scala.concurrent.duration._
 /**
  * Date: 14/12/16.
  */
-object LuckRanking extends Ranking {
+case object LuckRanking extends Ranking {
   import Ranking._
 
   override val title: String = "運改修度"
