@@ -26,190 +26,232 @@
     img {
       margin: 20px;
     }
+    .affix-nav.affix{
+      top: 0;
+      position:fixed;
+    }
+    .affix-nav.affix-top{
+      position:static;
+    }
+    .affix-nav.affix-bottom{
+      position:absolute;
+    }
+    li.active {
+      background-color: #FFBC3A;
+    }
   </style>
+  <script>
+    $(function(){
+      $('#navbar').affix({offset: {
+        top: 400,
+        bottom: 400
+      }}).on('affix.bs.affix', function() {
+        $(this).css({'top': '0'});
+      });
+      $('body').scrollspy({target: 'nav.navbar'});
+    });
+  </script>
 } {
   @about_head("setup_detail") {
-    <section id="getstarted">
-      <h1>MyFleetGirlsセットアップ手順</h1>
+    <div class="row">
+      <section id="getstarted" class="col-sm-9">
+        <h1>MyFleetGirlsセットアップ手順</h1>
 
-      <h2>はじめに</h2>
-      <p>ＭｙＦｌｅｅｔＧｉｒｌｓのセットアップの方法をちょこっとだけ詳しく説明して、導入を簡単にするのが目的のドキュメントです。</p>
-      <p>導入順序は<a href="@routes.ViewAbout.setup()">こちら</a>の、「インストール・使い方」に準じて進めていきます。</p>
-      <p>こちらの説明で困らずにセットアップできた方はこれを読まなくても何の問題もありません。</p>
-      <p>パソコンの操作や知識にちょっと自信がない人向けの説明書になります。</p>
-      <p>パソコンの設定は上手くいかないときはほんとにはまってしまうので、あせらずゆっくり、落ち着いて行いましょう。</p>
-      <p>なお、OSはWindows系OS（特にWindows7）を対象とします。</p>
+        <h2 id="start">はじめに</h2>
+        <p>ＭｙＦｌｅｅｔＧｉｒｌｓのセットアップの方法をちょこっとだけ詳しく説明して、導入を簡単にするのが目的のドキュメントです。</p>
+        <p>導入順序は<a href="@routes.ViewAbout.setup()">こちら</a>の、「インストール・使い方」に準じて進めていきます。</p>
+        <p>こちらの説明で困らずにセットアップできた方はこれを読まなくても何の問題もありません。</p>
+        <p>パソコンの操作や知識にちょっと自信がない人向けの説明書になります。</p>
+        <p>パソコンの設定は上手くいかないときはほんとにはまってしまうので、あせらずゆっくり、落ち着いて行いましょう。</p>
+        <p>なお、OSはWindows系OS（特にWindows7）を対象とします。</p>
 
-      <h2>Javaセットアップ方法</h2>
-      <p>ここではJavaのセットアップ方法について解説します。Java7以降がインストールされていることが分かっている場合はこの章を読み飛ばしてもらって構いません。</p>
+        <h2 id="java_setup">Javaセットアップ</h2>
+        <p>ここではJavaのセットアップ方法について解説します。Java7以降がインストールされていることが分かっている場合はこの章を読み飛ばしてもらって構いません。</p>
 
-      <h3>Javaインストール状況の確認</h3>
-      <p>まず、自分のパソコンにJavaがセットアップされているか確認するために、Javaのバージョンを確認しましょう。</p>
-      <p>場合によっては一番躓いてしまうところですので、落ち着いて気長に行いましょう！！</p>
-      <p>まずコマンドプロンプトを開きます。</p>
-      <p>コマンドプロンプトって何？って人は、デスクトップ左下の「スタート」のクリックして「プログラムとファイルの検索」に<code>cmd</code>と入力して<kbd>Enter</kbd>を押します。</p>
-      <img src="@Image.setup("cmd")" class="img-rounded" />
-      <p>そうすると、黒い画面が出てきますので、<code>java -version</code>と入力し、<kbd>Enter</kbd>を押します。</p>
-      <img src="@Image.setup("java_cmd")" class="img-rounded" />
-      <p>もしJavaが正常に設定されていれば、このコマンドによってJavaのバージョンが確認できます。</p>
-      <img src="@Image.setup("java_version")" class="img-rounded" />
-      <p><code>java version</code>の後の数字がJavaのバージョンです。</p>
-      <p>ここで<code>1.7.なんとか</code>がJava7のバージョンで、<code>1.8.なんとか</code>がJava8のバージョンです。</p>
-      <p>MyFleetGirlsはJava7以上のバージョンが必須なので、<code>1.6.なんとか</code>等、古かったら次の節を見て最新版をインストールしましょう。</p>
-      <p>問題は上記のように表示されなかった場合です。</p>
-      <p>恐らく、このように表示されます。</p>
-      <img src="@Image.setup("non_java")" class="img-rounded" />
-      <p>大きく分けて次の二つの場合が考えられますので、順番に確認します。</p>
-      <ol>
-        <li>Javaがインストールされていない</li>
-        <li>Javaはインストールされているが、パソコンが<code>java</code>というコマンドを認識しない</li>
-      </ol>
+        <h3>Javaインストール状況の確認</h3>
+        <p>まず、自分のパソコンにJavaがセットアップされているか確認するために、Javaのバージョンを確認しましょう。</p>
+        <p>場合によっては一番躓いてしまうところですので、落ち着いて気長に行いましょう！！</p>
+        <p>まずコマンドプロンプトを開きます。</p>
+        <p>コマンドプロンプトって何？って人は、デスクトップ左下の「スタート」のクリックして「プログラムとファイルの検索」に<code>cmd</code>と入力して<kbd>Enter</kbd>を押します。</p>
+        <img src="@Image.setup("cmd")" class="img-rounded" />
+        <p>そうすると、黒い画面が出てきますので、<code>java -version</code>と入力し、<kbd>Enter</kbd>を押します。</p>
+        <img src="@Image.setup("java_cmd")" class="img-rounded" />
+        <p>もしJavaが正常に設定されていれば、このコマンドによってJavaのバージョンが確認できます。</p>
+        <img src="@Image.setup("java_version")" class="img-rounded" />
+        <p><code>java version</code>の後の数字がJavaのバージョンです。</p>
+        <p>ここで<code>1.7.なんとか</code>がJava7のバージョンで、<code>1.8.なんとか</code>がJava8のバージョンです。</p>
+        <p>MyFleetGirlsはJava7以上のバージョンが必須なので、<code>1.6.なんとか</code>等、古かったら次の節を見て最新版をインストールしましょう。</p>
+        <p>問題は上記のように表示されなかった場合です。</p>
+        <p>恐らく、このように表示されます。</p>
+        <img src="@Image.setup("non_java")" class="img-rounded" />
+        <p>大きく分けて次の二つの場合が考えられますので、順番に確認します。</p>
+        <ol>
+          <li>Javaがインストールされていない</li>
+          <li>Javaはインストールされているが、パソコンが<code>java</code>というコマンドを認識しない</li>
+        </ol>
 
-      <h3>Javaがインストールされていない場合の対応方法</h3>
-      <p>デスクトップ右下の「スタート」をクリックして「コントロールパネル」を開きましょう。</p>
-      <img src="@Image.setup("control_panel")" class="img-rounded" />
-      <p>その中にJavaがあれば問題ありませんので、2の対応に移ってください。</p>
-      <img src="@Image.setup("control_java")" class="img-rounded" />
-      <p>無い場合は、公式サイトからダウンロードしてインストールを行いましょう。</p>
-      <p><a href="http://java.com/ja/download/" target="_blank">公式ダウンロードサイト</a></p>
-      <p>Javaをインストールしたらまた初めの手順にもどってJavaのバージョン確認を実行して下さい。</p>
+        <h3>Javaがインストールされていない場合の対応方法</h3>
+        <p>デスクトップ右下の「スタート」をクリックして「コントロールパネル」を開きましょう。</p>
+        <img src="@Image.setup("control_panel")" class="img-rounded" />
+        <p>その中にJavaがあれば問題ありませんので、2の対応に移ってください。</p>
+        <img src="@Image.setup("control_java")" class="img-rounded" />
+        <p>無い場合は、公式サイトからダウンロードしてインストールを行いましょう。</p>
+        <p><a href="http://java.com/ja/download/" target="_blank">公式ダウンロードサイト</a></p>
+        <p>Javaをインストールしたらまた初めの手順にもどってJavaのバージョン確認を実行して下さい。</p>
 
-      <h3>パソコンが<code>java</code>コマンドを認識しない場合の対応方法</h3>
-      <p>パソコンの「環境設定」が必要になります。</p>
-      <p>まずはJavaがどこに保存されているか確認しましょう。</p>
-      <p>Javaがインストールされていれば、以下のように辿ればJavaのフォルダが作成作成されているかと思います。</p>
-      <pre>Cフォルダ ⇒ Program Files (x86) ⇒ Java</pre>
-      <img src="@Image.setup("jre_dir")" class="img-rounded" />
-      <p>このJavaのフォルダの中にバージョンごとのJavaがあります。</p>
-      <p>例えば画像のパソコンの場合、Java7とJava8が保存されています。</p>
-      <p>jreの後の数字は、「jre7」のように一つだけならそのバージョンですが、<code>jre1.8.0_25</code>のようになっていたら、<code>1.</code>の次の数字の<code>8</code>がそのバージョンとなります。</p>
-      <p>更にここからJavaの実行フォルダの「bin」フォルダを探します。</p>
-      <p>複数バージョンがある場合は最新のバージョンを選びましょう。</p>
-      <p>今回の場合はこのように進みます。</p>
-      <pre>jre1.8.0_25 ⇒ bin</pre>
-      <p>ここが目的のJavaの実行場所です。</p>
-      <img src="@Image.setup("address_bar")" class="img-rounded" />
-      <p>そうしましたら、上の画像の赤で囲っているアドレスバーの何も無いところをクリックして下さい。</p>
-      <p>そうすると、このアドレスをコピーできるようになりますので、コピーしましょう。</p>
-      <img src="@Image.setup("address_bar2")" class="img-rounded" />
-      <p>メモ帳を開いていったん貼り付けます。</p>
-      <p>そして、<strong>先頭に半角セミコロン<code>;</code>を加えてください。</strong></p>
-      <img src="@Image.setup("memo_colon")" class="img-rounded" />
-      <p>この値を「環境変数」の「Path」に加えたら完成です。</p>
-      <p>コントロールパネルから「システム」を選択してください。</p>
-      <img src="@Image.setup("system")" class="img-rounded" />
-      <p>次に左のほうにある「システムの詳細設定」を選択します。</p>
-      <img src="@Image.setup("system_detail")" class="img-rounded" />
-      <p>そうすると、システムのプロパティ画面が開きます。</p>
-      <p>「詳細設定」のタブを選び、下のほうの「環境変数」のボタンをクリックしてください。</p>
-      <img src="@Image.setup("system_property")" class="img-rounded" />
-      <p>環境変数の画面が開きますので、下の「システム環境変数」から「Path」を探してクリックして選択し、「編集」ボタンを押します。</p>
-      <img src="@Image.setup("environment")" class="img-rounded" />
-      <p>そしたら、さっきメモ帳で作成した文字列を変数値の一番最後に加えます。</p>
-      <p><strong>必ず一番最後です</strong>間違ったらキャンセルで閉じてやり直してください。</p>
-      <img src="@Image.setup("add_environment")" class="img-rounded" />
-      <p>これで作業完了です、各画面を「ok」ボタンで閉じてください。</p>
-      <p>そしたらまた一番最初の作業のコマンドプロンプトでの<code>java -version</code>確認を行ってください。</p>
-      <p>正常にバージョンが確認できたら作業完了です。</p>
+        <h3>パソコンが<code>java</code>コマンドを認識しない場合の対応方法</h3>
+        <p>パソコンの「環境設定」が必要になります。</p>
+        <p>まずはJavaがどこに保存されているか確認しましょう。</p>
+        <p>Javaがインストールされていれば、以下のように辿ればJavaのフォルダが作成作成されているかと思います。</p>
+        <pre>Cフォルダ ⇒ Program Files (x86) ⇒ Java</pre>
+        <img src="@Image.setup("jre_dir")" class="img-rounded" />
+        <p>このJavaのフォルダの中にバージョンごとのJavaがあります。</p>
+        <p>例えば画像のパソコンの場合、Java7とJava8が保存されています。</p>
+        <p>jreの後の数字は、「jre7」のように一つだけならそのバージョンですが、<code>jre1.8.0_25</code>のようになっていたら、<code>1.</code>の次の数字の<code>8</code>がそのバージョンとなります。</p>
+        <p>更にここからJavaの実行フォルダの「bin」フォルダを探します。</p>
+        <p>複数バージョンがある場合は最新のバージョンを選びましょう。</p>
+        <p>今回の場合はこのように進みます。</p>
+        <pre>jre1.8.0_25 ⇒ bin</pre>
+        <p>ここが目的のJavaの実行場所です。</p>
+        <img src="@Image.setup("address_bar")" class="img-rounded" />
+        <p>そうしましたら、上の画像の赤で囲っているアドレスバーの何も無いところをクリックして下さい。</p>
+        <p>そうすると、このアドレスをコピーできるようになりますので、コピーしましょう。</p>
+        <img src="@Image.setup("address_bar2")" class="img-rounded" />
+        <p>メモ帳を開いていったん貼り付けます。</p>
+        <p>そして、<strong>先頭に半角セミコロン<code>;</code>を加えてください。</strong></p>
+        <img src="@Image.setup("memo_colon")" class="img-rounded" />
+        <p>この値を「環境変数」の「Path」に加えたら完成です。</p>
+        <p>コントロールパネルから「システム」を選択してください。</p>
+        <img src="@Image.setup("system")" class="img-rounded" />
+        <p>次に左のほうにある「システムの詳細設定」を選択します。</p>
+        <img src="@Image.setup("system_detail")" class="img-rounded" />
+        <p>そうすると、システムのプロパティ画面が開きます。</p>
+        <p>「詳細設定」のタブを選び、下のほうの「環境変数」のボタンをクリックしてください。</p>
+        <img src="@Image.setup("system_property")" class="img-rounded" />
+        <p>環境変数の画面が開きますので、下の「システム環境変数」から「Path」を探してクリックして選択し、「編集」ボタンを押します。</p>
+        <img src="@Image.setup("environment")" class="img-rounded" />
+        <p>そしたら、さっきメモ帳で作成した文字列を変数値の一番最後に加えます。</p>
+        <p><strong>必ず一番最後です</strong>間違ったらキャンセルで閉じてやり直してください。</p>
+        <img src="@Image.setup("add_environment")" class="img-rounded" />
+        <p>これで作業完了です、各画面を「ok」ボタンで閉じてください。</p>
+        <p>そしたらまた一番最初の作業のコマンドプロンプトでの<code>java -version</code>確認を行ってください。</p>
+        <p>正常にバージョンが確認できたら作業完了です。</p>
 
-      <h2>DownloaderのDownload</h2>
-      <p>以下のリンクのダウンロードから行いましょう。</p>
-      <p><a href="https://myfleet.moe/assets/zip/MyFleetGirls.zip"></a></p>
-      <p>保存場所ですが、作業フォルダを作成してわかりやすい場所に保存することをお勧めします。（このマニュアルでは、「D:\ツール\艦これ」という場所に保存しました。）</p>
+        <h2 id="download">Download</h2>
+        <p>以下のリンクのダウンロードから行いましょう。</p>
+        <p><a href="https://myfleet.moe/assets/zip/MyFleetGirls.zip"></a></p>
+        <p>保存場所ですが、作業フォルダを作成してわかりやすい場所に保存することをお勧めします。（このマニュアルでは、「D:\ツール\艦これ」という場所に保存しました。）</p>
 
-      <h2>ZIPファイルを解凍</h2>
-      <p>先ほどダウンロードしたDownloaderを展開します。</p>
-      <p>お使いの解凍ソフトを使って展開してください。</p>
-      <p>解凍ソフトが無い場合は、ダウンロードしたZipファイルを右クリックし、「すべて展開」を選んだ後に「展開」ボタンを押してください。</p>
-      <p>下の画像のようにフォルダが展開されれば成功です。</p>
-      <img src="@Image.setup("extract")" class="img-rounded" />
+        <h2 id="extract">解凍</h2>
+        <p>先ほどダウンロードしたDownloaderを展開します。</p>
+        <p>お使いの解凍ソフトを使って展開してください。</p>
+        <p>解凍ソフトが無い場合は、ダウンロードしたZipファイルを右クリックし、「すべて展開」を選んだ後に「展開」ボタンを押してください。</p>
+        <p>下の画像のようにフォルダが展開されれば成功です。</p>
+        <img src="@Image.setup("extract")" class="img-rounded" />
 
-      <h2>PACファイルを使ってブラウザのProxy設定をする</h2>
-      <p>MyFleetGirlsを使用しながら艦これをプレイするには、プロキシ（Proxy）の設定が必要となります。</p>
-      <p>お使いのブラウザによって設定方法が異なりますので注意してください。</p>
-      <p>ここでは以下のブラウザにおける設定方法について説明します。</p>
+        <h2 id="proxy">Proxy設定</h2>
+        <p>MyFleetGirlsを使用しながら艦これをプレイするには、プロキシ（Proxy）の設定が必要となります。</p>
+        <p>お使いのブラウザによって設定方法が異なりますので注意してください。</p>
+        <p>ここでは以下のブラウザにおける設定方法について説明します。</p>
 
-      <ol>
-        <li>IE(Internet Explorer)の場合</li>
-        <li>Google Chromeの場合</li>
-        <li>Mozilla Firefoxの場合</li>
-      </ol>
+        <ol>
+          <li>IE(Internet Explorer)の場合</li>
+          <li>Google Chromeの場合</li>
+          <li>Mozilla Firefoxの場合</li>
+        </ol>
 
-      <p>なお、プロキシの設定を行った場合MyFleetGirlsを起動しないと艦これが起動しなくなり、設定を戻す必要がありますので注意してください。</p>
+        <p>なお、プロキシの設定を行った場合MyFleetGirlsを起動しないと艦これが起動しなくなり、設定を戻す必要がありますので注意してください。</p>
 
-      <h3>IEの場合</h3>
-      <p>「LANの設定」を変更します。</p>
-      <p>IEを開いて右上の歯車のマークの「ツール」をクリックし「インターネットオプション」を開きます。</p>
-      <img src="@Image.setup("ie_option")" class="img-rounded" />
-      <p>「接続」タブを選択して「LANの設定」を開きます。</p>
-      <img src="@Image.setup("ie_connection")" class="img-rounded" />
-      <p>「自動構成スクリプトを使用する」にチェックを入れて、アドレスに<a href="@routes.Assets.at("proxy.pac")">http://myfleet.moe/@routes.Assets.at("proxy.pac")</a>を加え「OK」を押します。</p>
-      <img src="@Image.setup("ie_proxy")" class="img-rounded" />
-      <p>以上で設定は完了です。</p>
-      <p>なお、この状態で艦これをプレイするには、MyFleetGirlsの起動が必要となります。</p>
-      <p>MyFleetGirlsを使用しないで艦これをプレイする場合はこの「自動構成スクリプトを使用する」の<strong>チェックを必ず外して</strong>ください。</p>
+        <h3>IEの場合</h3>
+        <p>「LANの設定」を変更します。</p>
+        <p>IEを開いて右上の歯車のマークの「ツール」をクリックし「インターネットオプション」を開きます。</p>
+        <img src="@Image.setup("ie_option")" class="img-rounded" />
+        <p>「接続」タブを選択して「LANの設定」を開きます。</p>
+        <img src="@Image.setup("ie_connection")" class="img-rounded" />
+        <p>「自動構成スクリプトを使用する」にチェックを入れて、アドレスに<a href="@routes.Assets.at("proxy.pac")">http://myfleet.moe/@routes.Assets.at("proxy.pac")</a>を加え「OK」を押します。</p>
+        <img src="@Image.setup("ie_proxy")" class="img-rounded" />
+        <p>以上で設定は完了です。</p>
+        <p>なお、この状態で艦これをプレイするには、MyFleetGirlsの起動が必要となります。</p>
+        <p>MyFleetGirlsを使用しないで艦これをプレイする場合はこの「自動構成スクリプトを使用する」の<strong>チェックを必ず外して</strong>ください。</p>
 
-      <h3>Google Chromeの場合</h3>
-      <p>IEと同じように「LANの設定」を変更しますが、開く手順が違います。</p>
-      <p>まず、Chromeを開いてから右上の三本線の「ツール」を開き、「設定」を開きます。</p>
-      <img src="@Image.setup("chrome_option")" class="img-rounded" />
-      <p>設定のタブが開きますので、一番下の「詳細設定を表示」をクリックします。</p>
-      <img src="@Image.setup("chrome_settings_detail")" class="img-rounded" />
-      <p>そうしたら画面の下に詳細設定が開きますので、「ネットワーク」のプロキシ「設定の変更」をクリック、「インターネットのプロパティ」を開きます。</p>
-      <img src="@Image.setup("chrome_change_proxy")" class="img-rounded" />
-      <p>「接続」タブを選択して「LANの設定」を開きます。</p>
-      <img src="@Image.setup("ie_connection")" class="img-rounded" />
-      <p>「自動構成スクリプトを使用する」にチェックを入れて、アドレスに<a href="@routes.Assets.at("proxy.pac")">http://myfleet.moe/@routes.Assets.at("proxy.pac")</a>を加え「OK」を押します。</p>
-      <img src="@Image.setup("ie_proxy")" class="img-rounded" />
-      <p>以上で設定は完了です。</p>
-      <p>この状態で艦これをプレイするには、MyFleetGirlsの起動が必要となります。</p>
-      <p>MyFleetGirlsを使用しないで艦これをプレイする場合はこの「自動構成スクリプトを使用する」の<strong>チェックを必ず外して</strong>ください。</p>
+        <h3>Google Chromeの場合</h3>
+        <p>IEと同じように「LANの設定」を変更しますが、開く手順が違います。</p>
+        <p>まず、Chromeを開いてから右上の三本線の「ツール」を開き、「設定」を開きます。</p>
+        <img src="@Image.setup("chrome_option")" class="img-rounded" />
+        <p>設定のタブが開きますので、一番下の「詳細設定を表示」をクリックします。</p>
+        <img src="@Image.setup("chrome_settings_detail")" class="img-rounded" />
+        <p>そうしたら画面の下に詳細設定が開きますので、「ネットワーク」のプロキシ「設定の変更」をクリック、「インターネットのプロパティ」を開きます。</p>
+        <img src="@Image.setup("chrome_change_proxy")" class="img-rounded" />
+        <p>「接続」タブを選択して「LANの設定」を開きます。</p>
+        <img src="@Image.setup("ie_connection")" class="img-rounded" />
+        <p>「自動構成スクリプトを使用する」にチェックを入れて、アドレスに<a href="@routes.Assets.at("proxy.pac")">http://myfleet.moe/@routes.Assets.at("proxy.pac")</a>を加え「OK」を押します。</p>
+        <img src="@Image.setup("ie_proxy")" class="img-rounded" />
+        <p>以上で設定は完了です。</p>
+        <p>この状態で艦これをプレイするには、MyFleetGirlsの起動が必要となります。</p>
+        <p>MyFleetGirlsを使用しないで艦これをプレイする場合はこの「自動構成スクリプトを使用する」の<strong>チェックを必ず外して</strong>ください。</p>
 
-      <h3>Mozilla Firefoxの場合</h3>
-      <p>Firefoxを開いてキーボードの「Alt」を押してメニューを開きます。</p>
-      <p>そして、「ツール」⇒「オプション」を開きます。</p>
-      <img src="@Image.setup("firefox_option")" class="img-rounded" />
-      <p>「ネットワーク」タブから「接続設定」をクリックします。</p>
-      <img src="@Image.setup("firefox_connection")" class="img-rounded" />
-      <p>「自動プロキシ設定スクリプトURL」を選択し、画像のように<a href="@routes.Assets.at("proxy.pac")">http://myfleet.moe/@routes.Assets.at("proxy.pac")</a>を加えて「OK」をクリックします。</p>
-      <img src="@Image.setup("firefox_proxy")" class="img-rounded" />
-      <p>以上で設定は完了です。</p>
-      <p>この状態で艦これをプレイするには、MyFleetGirlsの起動が必要となります。</p>
-      <p>MyFleetGirlsを使用しないで艦これをプレイする場合は<strong>「プロキシを使用しない」を選んで</strong>ください。</p>
+        <h3>Mozilla Firefoxの場合</h3>
+        <p>Firefoxを開いてキーボードの「Alt」を押してメニューを開きます。</p>
+        <p>そして、「ツール」⇒「オプション」を開きます。</p>
+        <img src="@Image.setup("firefox_option")" class="img-rounded" />
+        <p>「ネットワーク」タブから「接続設定」をクリックします。</p>
+        <img src="@Image.setup("firefox_connection")" class="img-rounded" />
+        <p>「自動プロキシ設定スクリプトURL」を選択し、画像のように<a href="@routes.Assets.at("proxy.pac")">http://myfleet.moe/@routes.Assets.at("proxy.pac")</a>を加えて「OK」をクリックします。</p>
+        <img src="@Image.setup("firefox_proxy")" class="img-rounded" />
+        <p>以上で設定は完了です。</p>
+        <p>この状態で艦これをプレイするには、MyFleetGirlsの起動が必要となります。</p>
+        <p>MyFleetGirlsを使用しないで艦これをプレイする場合は<strong>「プロキシを使用しない」を選んで</strong>ください。</p>
 
-      <h2>MyFleetGirls.batを起動する</h2>
-      <p>プロキシの設定が終わったらMyFleetGirlsを起動します。</p>
-      <p>普通に起動するには「MyFleetGirls.bat」を起動すれば問題ないかと思います。</p>
-      <img src="@Image.setup("myfleet_bat")" class="img-rounded" />
-      <p>そうすると黒い画面が出ます。</p>
-      <img src="@Image.setup("myfleet_console")" class="img-rounded" />
-      <p>これで起動は完了です。</p>
+        <h2 id="startup">MyFleetGirlsの起動</h2>
+        <p>プロキシの設定が終わったらMyFleetGirlsを起動します。</p>
+        <p>普通に起動するには「MyFleetGirls.bat」を起動すれば問題ないかと思います。</p>
+        <img src="@Image.setup("myfleet_bat")" class="img-rounded" />
+        <p>そうすると黒い画面が出ます。</p>
+        <img src="@Image.setup("myfleet_console")" class="img-rounded" />
+        <p>これで起動は完了です。</p>
 
-      <h2>設定したブラウザで艦これのFlashを起動する</h2>
-      <p>プロキシ設定したブラウザで普通に艦これを起動します。</p>
-      <p>母港画面が開いたら問題ありません。</p>
+        <h2 id="kancolle">艦これを起動する</h2>
+        <p>プロキシ設定したブラウザで普通に艦これを起動します。</p>
+        <p>母港画面が開いたら問題ありません。</p>
 
-      <h2>MyFleetGirlsにアクセスして動作しているか確認</h2>
-      <p>MyFleetGirlsのWEBサイトに接続します。</p>
-      <p><a href="@routes.View.index()" target="_blank">http://myfleet.moe@routes.View.index()</a></p>
-      <p>「所属基地名」に自分の接続しているサーバーを入力してください。</p>
-      <p>この状態で自分の提督名が見つからない場合は「提督名」に自分の提督名を入れて検索してください。</p>
-      <p>以上でセットアップは完了です。</p>
+        <h2 id="check">動作確認</h2>
+        <p>MyFleetGirlsのWEBサイトに接続します。</p>
+        <p><a href="@routes.View.index()" target="_blank">http://myfleet.moe@routes.View.index()</a></p>
+        <p>「所属基地名」に自分の接続しているサーバーを入力してください。</p>
+        <p>この状態で自分の提督名が見つからない場合は「提督名」に自分の提督名を入れて検索してください。</p>
+        <p>以上でセットアップは完了です。</p>
 
-      <h2>【おまけ】パスワードの設定とログイン</h2>
-      <p>MyFleetGirlsにログインできるようになると嫁艦設定などができるようになります。</p>
-      <p>ここではパスワード設定を説明します。</p>
-      <p>パスワードは一度設定すると、自力では変更できませんので注意してください。</p>
-      <p>詳細はFAQを参照してください。</p>
-      <p>まず、MyFleetGirlsのフォルダの「application.conf.sample」をコピーして貼り付けて、<code>application.conf - コピー.sample</code>を作成します。</p>
-      <img src="@Image.setup("conf_copy")" class="img-rounded" />
-      <p>次に、作成した「application.conf - コピー.sample」をメモ帳で開きます。</p>
-      <p>そして、<code># pass: abcde</code>の部分の<code>#</code>を削除して<code>abcde</code>の部分に好きなパスワードを設定し、保存して閉じます。</p>
-      <img src="@Image.setup("memo_pass")" class="img-rounded" />
-      <p><code>application.conf - コピー.sample</code>を名前を変えて、<code>application.conf</code>に変更すれば完成です。</p>
-      <img src="@Image.setup("app_conf")" class="img-rounded" />
-      <p>MyFleetGirls.batと艦これを起動しなおして、MyFleetGirlsのウェブサイトでログインしてみてください。</p>
-      <p><a href="@routes.View.login()">ログイン画面</a></p>
-    </section>
+        <h2 id="password">パスワードの設定</h2>
+        <p>MyFleetGirlsにログインできるようになると嫁艦設定などができるようになります。</p>
+        <p>ここではパスワード設定を説明します。</p>
+        <p>パスワードは一度設定すると、自力では変更できませんので注意してください。</p>
+        <p>詳細はFAQを参照してください。</p>
+        <p>まず、MyFleetGirlsのフォルダの「application.conf.sample」をコピーして貼り付けて、<code>application.conf - コピー.sample</code>を作成します。</p>
+        <img src="@Image.setup("conf_copy")" class="img-rounded" />
+        <p>次に、作成した「application.conf - コピー.sample」をメモ帳で開きます。</p>
+        <p>そして、<code># pass: abcde</code>の部分の<code>#</code>を削除して<code>abcde</code>の部分に好きなパスワードを設定し、保存して閉じます。</p>
+        <img src="@Image.setup("memo_pass")" class="img-rounded" />
+        <p><code>application.conf - コピー.sample</code>を名前を変えて、<code>application.conf</code>に変更すれば完成です。</p>
+        <img src="@Image.setup("app_conf")" class="img-rounded" />
+        <p>MyFleetGirls.batと艦これを起動しなおして、MyFleetGirlsのウェブサイトでログインしてみてください。</p>
+        <p><a href="@routes.View.login()">ログイン画面</a></p>
+      </section>
+
+      <section class="col-sm-3">
+        <nav id="navbar" class="navbar" data-role="complementary">
+          <ul class="nav">
+            <li><a href="#start">はじめに</a></li>
+            <li><a href="#java_setup">Javaセットアップ</a></li>
+            <li><a href="#download">Download</a></li>
+            <li><a href="#extract">解凍</a></li>
+            <li><a href="#proxy">Proxy設定</a></li>
+            <li><a href="#startup">MyFleetGirlsの起動</a></li>
+            <li><a href="#kancolle">艦これを起動する</a></li>
+            <li><a href="#check">動作確認</a></li>
+            <li><a href="#password">パスワードの設定</a></li>
+          </ul>
+        </div>
+      </section>
+    </div>
   }
 }
