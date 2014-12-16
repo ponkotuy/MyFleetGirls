@@ -102,11 +102,11 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
   def findAllWithArmedShipBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[ItemWithShip] = {
     withSQL {
       select.from(SlotItem as si)
-        .innerJoin(ShipSlotItem as ssi).on(sqls"${si.id} = ${ssi.slotitemId} and ${si.memberId} = ${ssi.memberId}")
-        .innerJoin(Ship as s).on(sqls"${ssi.shipId} = ${s.id} and ${ssi.memberId} = ${s.memberId}")
-        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
-        .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
+        .leftJoin(ShipSlotItem as ssi).on(sqls"${si.id} = ${ssi.slotitemId} and ${si.memberId} = ${ssi.memberId}")
+        .leftJoin(Ship as s).on(sqls"${ssi.shipId} = ${s.id} and ${ssi.memberId} = ${s.memberId}")
+        .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .leftJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
         .where.append(where)
         .orderBy(si.slotitemId)
     }.map { rs =>
