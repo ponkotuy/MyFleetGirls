@@ -33,3 +33,6 @@ $(document).ready ->
 
   obj = fromURLParameter(location.hash.replace(/^\#/, ''))
   $("#collapse#{obj.id}").collapse()
+  $('.collapse').on 'hide.bs.collapse', ->
+    here = location.href.replace(/\#.*$/, '') # hash以下を削除
+    history.replaceState(null, null, here)

@@ -6,11 +6,15 @@ $(document).ready ->
     vue = new Vue(vueConf(elem, id, cell))
   obj = fromURLParameter(location.hash.replace(/^\#/, ''))
   $("#collapse#{obj.cell}").collapse()
+  $('.collapse').on 'hide.bs.collapse', ->
+    here = location.href.replace(/\#.*$/, '') # hash以下を削除
+    history.replaceState(null, null, here)
 
 timeout = 0
 
 vueConf = (elem, id, cell) ->
   el: '#' + id
+
   data:
     drops: []
     dropOnly: false
@@ -21,6 +25,7 @@ vueConf = (elem, id, cell) ->
     period: false
     from: moment({year: 2014, month: 0, day: 1}).format('YYYY-MM-DD')
     to: moment().format('YYYY-MM-DD')
+
   methods:
     rank: ->
       (if @rank_s then 'S' else '') +
@@ -88,6 +93,9 @@ vueConf = (elem, id, cell) ->
       i.url = $(this).attr('data-url')
       if i.drops.length == 0
         i.getJSON()
+      else
+        i.setHash()
+
   watch:
     dropOnly: -> @getJSON()
     rank_s: -> @getJSON()
