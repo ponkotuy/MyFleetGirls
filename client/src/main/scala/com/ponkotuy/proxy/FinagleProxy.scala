@@ -1,6 +1,6 @@
 package com.ponkotuy.proxy
 
-import com.github.theon.uri.Uri
+import com.netaporter.uri.Uri
 import com.ponkotuy.intercept.Intercepter
 import com.twitter.conversions.storage._
 import com.twitter.conversions.time._
@@ -21,7 +21,7 @@ class FinagleProxy(port: Int, inter: Intercepter) {
 
   val service = new Service[HttpRequest, HttpResponse] {
     def apply(req: HttpRequest): Future[HttpResponse] = {
-      val uri = Uri.parseUri(req.getUri)
+      val uri = Uri.parse(req.getUri)
       if(req.getMethod == HttpMethod.POST) req.setUri(uri.pathRaw)
       val res = client(uri.host.get + ":80").apply(req)
       res.foreach(rs => inter.input(req, rs, uri))

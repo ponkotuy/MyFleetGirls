@@ -1,6 +1,6 @@
 package com.ponkotuy.parser
 
-import com.github.theon.uri.Uri
+import com.netaporter.uri.Uri
 
 import scala.util.Try
 import java.net.URLDecoder
@@ -18,8 +18,8 @@ import scala.io.Source
  */
 case class Query(req: HttpRequest, res: HttpResponse, uri: Uri) {
   import Query._
-  def host = Uri.parseUri(uri).host
-  lazy val resType = ResType.fromUri(uri)
+  def host = uri.host
+  lazy val resType = ResType.fromUri(uri.toString())
   def resCont: String = Query.toString(res.getContent)
   def resJson: Either[JValue, String] = KCJson.toAst(resCont)
   def reqCont: String = Query.toString(req.getContent)

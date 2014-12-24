@@ -1,13 +1,13 @@
 package com.ponkotuy.intercept
 
-import com.github.theon.uri.Uri
+import com.netaporter.uri.Uri
 import com.ponkotuy.parser.{Query, ResponseController}
 import com.ponkotuy.util.Log
 import com.ponkotuy.value.KCServer
 import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
+import scala.concurrent.Future
 
 /**
  *
@@ -29,7 +29,7 @@ class KCIntercepter extends Intercepter with Log {
   }
 
   private def valid(req: HttpRequest): Boolean = {
-    val uri = Uri.parseUri(req.getUri)
+    val uri = Uri.parse(req.getUri)
     uri.host.map(KCServer.ips.contains).getOrElse(true)
   }
 }

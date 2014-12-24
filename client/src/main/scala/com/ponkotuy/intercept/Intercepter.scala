@@ -1,6 +1,6 @@
 package com.ponkotuy.intercept
 
-import com.github.theon.uri.Uri
+import com.netaporter.uri.Uri
 import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
 
 /**

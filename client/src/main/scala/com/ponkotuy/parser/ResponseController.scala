@@ -1,6 +1,6 @@
 package com.ponkotuy.parser
 
-import com.github.theon.uri.Uri
+import com.netaporter.uri.Uri
 import com.ponkotuy.data
 import com.ponkotuy.util.Log
 import com.ponkotuy.value.KCServer

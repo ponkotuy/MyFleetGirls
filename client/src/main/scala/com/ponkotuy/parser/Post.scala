@@ -97,7 +97,7 @@ object Post extends Log {
   }
 
   def swfShip(q: Query)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    parseKey(q.uri).filterNot(MFGHttp.existsImage).foreach { key =>
+    parseKey(q.toString).filterNot(MFGHttp.existsImage).foreach { key =>
       val swf = allRead(q.res.getContent)
       val file = TempFileTool.save(swf, "swf")
       MFGHttp.postFile("/swf/ship/" + key, "image")(file)
@@ -106,7 +106,7 @@ object Post extends Log {
   }
 
   def mp3kc(q: Query)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    SoundUrlId.parseURL(q.uri).filterNot(MFGHttp.existsSound).foreach { case SoundUrlId(shipKey, soundId) =>
+    SoundUrlId.parseURL(q.toString).filterNot(MFGHttp.existsSound).foreach { case SoundUrlId(shipKey, soundId) =>
       val sound = allRead(q.res.getContent)
       val file = TempFileTool.save(sound, "mp3")
       MFGHttp.postFile(s"/mp3/kc/${shipKey}/${soundId}", "sound")(file)

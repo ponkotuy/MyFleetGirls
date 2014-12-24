@@ -1,6 +1,6 @@
 package com.ponkotuy.parser
 
-import com.github.theon.uri.Uri
+import com.netaporter.uri.Uri
 import com.ponkotuy.util.Log
 import scala.util.matching.Regex
 
@@ -96,7 +96,7 @@ object ResType extends Log {
   )
 
   def fromUri(uri: String): Option[ResType] = {
-    val path = Uri.parseUri(uri).pathRaw
+    val path = Uri.parse(uri).pathRaw
     println(path)
     values.find(_.regexp.findFirstIn(path).isDefined)
   }
