@@ -32,7 +32,7 @@ object NDock extends SQLSyntaxSupport[NDock] {
 
   def findAllByUserWithName(memberId: Long)(implicit session: DBSession = NDock.autoSession): List[NDockWithName] =
     withSQL {
-      select(nd.id, nd.shipId, nd.completeTime, nd.created, ms.id, ms.name).from(NDock as nd)
+      select(nd.id, nd.memberId, nd.shipId, nd.completeTime, nd.created, ms.id, ms.name).from(NDock as nd)
         .innerJoin(Ship as s).on(sqls"${nd.memberId} = ${s.memberId} and ${nd.shipId} = ${s.id}")
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .where.eq(nd.memberId, memberId)

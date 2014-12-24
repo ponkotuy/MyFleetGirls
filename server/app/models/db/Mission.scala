@@ -74,7 +74,7 @@ object Mission extends SQLSyntaxSupport[Mission] {
 
   def findByUserWithFlagship(memberId: Long)(implicit session: DBSession = autoSession): List[MissionWithFlagship] =
     withSQL {
-      select(m.memberId, m.number, mm.name, m.deckId, dp.name, m.completeTime, s.shipId).from(Mission as m)
+      select.from(Mission as m)
         .innerJoin(MasterMission as mm).on(m.number, mm.id)
         .innerJoin(DeckPort as dp).on(sqls"${m.memberId} = ${dp.memberId} and ${m.deckId} = ${dp.id}")
         .innerJoin(DeckShip as ds).on(sqls"${m.memberId} = ${ds.memberId} and ${m.deckId} = ${ds.deckId}")

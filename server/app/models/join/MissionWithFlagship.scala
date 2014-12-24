@@ -30,6 +30,12 @@ object MissionWithFlagship {
       mm: SyntaxProvider[MasterMission],
       dp: SyntaxProvider[DeckPort],
       s: SyntaxProvider[Ship])(rs: WrappedResultSet): MissionWithFlagship =
+    apply(m.resultName, mm.resultName, dp.resultName, s.resultName)(rs)
+  def apply(
+      m: ResultName[Mission],
+      mm: ResultName[MasterMission],
+      dp: ResultName[DeckPort],
+      s: ResultName[Ship])(rs: WrappedResultSet): MissionWithFlagship =
     new MissionWithFlagship(
       rs.long(m.memberId),
       rs.int(m.number),
