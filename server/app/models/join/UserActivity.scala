@@ -11,6 +11,7 @@ trait UserActivity {
   def message: String
   def url: String
   def completeTime: Long
+  def created: Long
   def key: String
 
   def toJSON: JObject =

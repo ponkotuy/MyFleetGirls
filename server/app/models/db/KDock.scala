@@ -42,14 +42,14 @@ object KDock extends SQLSyntaxSupport[KDock] {
 
   def findAllByUserWithName(memberId: Long)(
       implicit session: DBSession = KDock.autoSession): List[KDockWithName] = withSQL {
-    select(kd.id, kd.memberId, kd.completeTime, kd.fuel, kd.ammo, kd.steel, kd.bauxite, ms.id, ms.name)
+    select(kd.id, kd.memberId, kd.completeTime, kd.fuel, kd.ammo, kd.steel, kd.bauxite, kd.created, ms.id, ms.name)
       .from(KDock as kd)
       .innerJoin(MasterShipBase as ms).on(kd.shipId, ms.id)
       .where.eq(kd.memberId, memberId)
       .orderBy(kd.id)
   }.map { rs =>
     KDockWithName(
-      rs.int(kd.id), rs.long(kd.memberId), rs.long(kd.completeTime),
+      rs.int(kd.id), rs.long(kd.memberId), rs.long(kd.completeTime), rs.long(kd.created),
       rs.int(kd.fuel), rs.int(kd.ammo), rs.int(kd.steel), rs.int(kd.bauxite), rs.int(ms.id), rs.string(ms.name))
   }.toList().apply()
 

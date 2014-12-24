@@ -133,8 +133,8 @@ GET     /user/:userId/statistics    controllers.UserView.statistics(userId: Long
 GET     /ws/v1/user/:userId         controllers.UserWS.info(userId: Long)
 
 # Atom
-GET     /atom/v1/activities         controllers.Atom.activities()
-GET     /atom/v1/user/:userId/activities controllers.Atom.userActivities(userId: Long)
+GET     /atom/v1/activities.rdf     controllers.Atom.activities()
+GET     /atom/v1/user/:userId/activities.rdf controllers.Atom.userActivities(userId: Long)
 
 # Fav
 PUT     /passwd/put/v1/fav          controllers.Fav.put

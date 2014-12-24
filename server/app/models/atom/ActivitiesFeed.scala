@@ -29,7 +29,8 @@ object ActivitiesFeed {
 case class ActivityEntry(x: Activity) extends Entriable {
   override def id: String = s"${Settings.atomCommonKey}${x.url}:${x.id}"
   override def summary: Summary = Summary.Str(x.message)
-  override def title: String = x.title
+  override def title: String = s"${x.nickname}提督の${x.title}"
   override def updated: DateTime = new DateTime(x.created)
+  override def published: DateTime = new DateTime(x.created)
   override def links: List[String] = List(x.url)
 }

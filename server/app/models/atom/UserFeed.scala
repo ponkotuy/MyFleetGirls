@@ -30,5 +30,6 @@ case class UserEntry(x: UserActivity) extends Entriable {
   override def summary: Summary = Summary.Str(x.message)
   override def title: String = x.title
   override def updated: DateTime = new DateTime(x.completeTime)
+  override def published: DateTime = new DateTime(x.created)
   override def links: List[String] = List(x.url)
 }

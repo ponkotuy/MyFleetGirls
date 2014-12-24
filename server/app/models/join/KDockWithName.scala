@@ -11,6 +11,7 @@ case class KDockWithName(
     id: Int,
     memberId: Long,
     completeTime: Long,
+    created: Long,
     fuel: Int,
     ammo: Int,
     steel: Int,

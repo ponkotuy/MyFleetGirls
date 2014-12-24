@@ -16,6 +16,7 @@ case class MissionWithFlagship(
     deckId: Int,
     deckName: String,
     completeTime: Long,
+    created: Long,
     flagshipId: Int) extends UserActivity {
   override def title: String = "任務"
   override def url: String = routes.UserView.dock(memberId).url
@@ -36,6 +37,7 @@ object MissionWithFlagship {
       rs.int(m.deckId),
       rs.string(dp.name),
       rs.long(m.completeTime),
+      rs.long(m.created),
       rs.int(s.shipId)
     )
 }
