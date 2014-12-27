@@ -1,18 +1,18 @@
 package com.ponkotuy.parser
 
-import com.ponkotuy.value.KCServer
+import java.io.ByteArrayOutputStream
 
-import scala.util.Try
-import org.json4s._
-import org.json4s.native.Serialization.write
-import com.ponkotuy.http.MFGHttp
 import com.ponkotuy.data._
 import com.ponkotuy.data.master._
+import com.ponkotuy.http.MFGHttp
 import com.ponkotuy.tool.TempFileTool
-import com.ponkotuy.config.ClientConfig
-import java.io.ByteArrayOutputStream
-import org.jboss.netty.buffer.ChannelBuffer
 import com.ponkotuy.util.Log
+import com.ponkotuy.value.KCServer
+import org.jboss.netty.buffer.ChannelBuffer
+import org.json4s._
+import org.json4s.native.Serialization.write
+
+import scala.util.Try
 
 /**
  * Date: 14/06/01.
@@ -21,10 +21,11 @@ object Post extends Log {
   implicit val formats = DefaultFormats
 
   def master(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    if(ClientConfig.Auth.master) {
-      val masterGraph = MasterShipGraph.fromJson(obj \ "api_mst_shipgraph")
-      val filenames = masterGraph.map(it => it.id -> it.filename).toMap
-      val masterShip = MasterShip.fromJson(obj \ "api_mst_ship", filenames)
+    val masterGraph = MasterShipGraph.fromJson(obj \ "api_mst_shipgraph")
+    val filenames = masterGraph.map(it => it.id -> it.filename).toMap
+    val masterShip = MasterShip.fromJson(obj \ "api_mst_ship", filenames)
+    val existingCount = MFGHttp.get("/master/ship/count", 2).map(_.toLong)
+    if(existingCount.exists(_ != masterShip.size)) {
       MFGHttp.masterPost("/master/ship", write(masterShip))
       val masterMission = MasterMission.fromJson(obj \ "api_mst_mission")
       MFGHttp.masterPost("/master/mission", write(masterMission))
@@ -32,6 +33,7 @@ object Post extends Log {
       MFGHttp.masterPost("/master/slotitem", write(masterSlotitem))
       val masterSType = MasterSType.fromJson(obj \ "api_mst_stype")
       MFGHttp.masterPost("/master/stype", write(masterSType))
+      println("Success Sending Master Data")
     }
   }
 

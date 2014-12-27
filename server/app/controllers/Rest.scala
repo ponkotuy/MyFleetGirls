@@ -39,6 +39,8 @@ object Rest extends Controller {
       db.BattleResult.findAllShipByNameLike(s"%$q%")
   }
 
+  def masterShipCount() = actionAsync { request => Ok(db.MasterShipBase.count().toString) }
+
   def recipeFromShip(shipId: Int, from: String, to: String) = returnJson {
     val fromTo = Period.fromStr(from, to).where(sqls"cs.created")
     val allCounts = db.CreateShip.materialCount(fromTo).toMap
