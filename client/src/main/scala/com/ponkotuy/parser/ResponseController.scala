@@ -1,6 +1,7 @@
 package com.ponkotuy.parser
 
 import com.netaporter.uri.Uri
+import com.ponkotuy.config.ClientConfig
 import com.ponkotuy.data
 import com.ponkotuy.util.Log
 import com.ponkotuy.value.KCServer
@@ -89,9 +90,11 @@ class ResponseController extends Log {
       case SoundMP3 =>
         lazyPost { (a, b) => Post.mp3kc(q)(a, b) }
       case _ =>
-        info(s"ResType: $typ")
-        info(s"Req: ${q.reqCont}")
-        q.resJson.left.map(jsonInfo(_))
+        if(ClientConfig.Auth.master) {
+          info(s"ResType: $typ")
+          info(s"Req: ${q.reqCont}")
+          q.resJson.left.map(jsonInfo(_))
+        }
     }
   }
 
