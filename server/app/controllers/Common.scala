@@ -130,23 +130,43 @@ object Common extends Controller {
 
   def returnJson[A <: AnyRef](f: => A) = Action.async {
     Future {
-      Ok(write(f)).as("application/json")
+      try {
+        Ok(write(f)).as("application/json")
+      } catch {
+        case e: IllegalArgumentException => BadRequest(e.getMessage)
+      }
     }
   }
 
   def returnString[A](f: => A) = actionAsync { Ok(f.toString) }
 
   def actionAsync(f: => Result) = Action.async { request =>
-    Future { f }
+    Future {
+      try {
+        f
+      } catch {
+        case e: IllegalArgumentException => BadRequest(e.getMessage)
+      }
+    }
   }
 
   def actionAsync(f: (Request[AnyContent]) => Result) = Action.async { request =>
-    Future { f(request) }
+    Future {
+      try {
+        f(request)
+      } catch {
+        case e: IllegalArgumentException => BadRequest(e.getMessage)
+      }
+    }
   }
 
   def formAsync(f: Request[Map[String, Seq[String]]] => Result) = Action.async(parse.urlFormEncoded) { request =>
     Future {
-      f(request)
+      try {
+        f(request)
+      } catch {
+        case e: IllegalArgumentException => BadRequest(e.getMessage)
+      }
     }
   }
 

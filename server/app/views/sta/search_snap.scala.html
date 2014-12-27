@@ -22,17 +22,25 @@
 
     @if(snap.count > PageCount) {
       <ul class="pagination">
-        <li @if(snap.page == 0){class="disabled"}>
-          <a href="@routes.ViewSta.searchSnap(snap.q, snap.page - 1)">&laquo;</a>
-        </li>
+        @if(snap.page == 0) {
+          <li class="disabled"><a>&laquo;</a></li>
+        } else {
+          <li>
+            <a href="@routes.ViewSta.searchSnap(snap.q, snap.page - 1)">&laquo;</a>
+          </li>
+        }
         @for(p <- 0 until math.min(snap.maxPage + 1, 10)) {
           <li @if(p == snap.page){class="active"}>
             <a href="@routes.ViewSta.searchSnap(snap.q, p)">@{p + 1}</a>
           </li>
         }
-        <li @if(snap.isMaxPage){class="disabled"}>
-          <a href="@routes.ViewSta.searchSnap(snap.q, snap.page + 1)">&raquo;</a>
-        </li>
+        @if(snap.isMaxPage) {
+          <li class="disabled"><a>&raquo;</a></li>
+        } else {
+          <li>
+            <a href="@routes.ViewSta.searchSnap(snap.q, snap.page + 1)">&raquo;</a>
+          </li>
+        }
       </ul>
     }
 

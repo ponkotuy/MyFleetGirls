@@ -142,6 +142,7 @@ object ViewSta extends Controller {
   }
 
   def searchSnap(q: String, page: Int) = actionAsync {
+    require(0 <= page && page < 10, "0 <= page < 10")
     val result = SnapshotSearch.search(q, page)
     Ok(views.html.sta.search_snap(result))
   }

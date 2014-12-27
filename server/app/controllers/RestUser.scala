@@ -37,6 +37,7 @@ object RestUser extends Controller {
   }
 
   def createShips(memberId: Long, limit: Int, offset: Int, large: Boolean) = returnJson {
+    require(limit + offset <= 100, "limit + offset <= 100")
     db.CreateShip.findAllByUserWithName(memberId, large, limit, offset)
   }
 
@@ -44,12 +45,14 @@ object RestUser extends Controller {
     returnString(db.CreateShip.countByUser(memberId, large))
 
   def createItems(memberId: Long, limit: Int, offset: Int) = returnJson {
+    require(limit + offset <= 100, "limit + offset <= 100")
     db.CreateItem.findAllByWithName(sqls"ci.member_id = ${memberId}", limit, offset)
   }
 
   def createItemCount(memberId: Long) = returnString(db.CreateItem.countBy(sqls"member_id = ${memberId}"))
 
   def battleResult(memberId: Long, limit: Int, offset: Int, boss: Boolean, drop: Boolean, rank: String) = returnJson {
+    require(limit + offset <= 100, "limit + offset <= 100")
     val where = battleResultWhere(memberId, boss, drop, rank)
     val result = db.BattleResult.findAllByWithCell(where, limit, offset)
     JArray(result.map(_.toJson))

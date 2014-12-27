@@ -14,7 +14,7 @@ case class SnapshotSearch(q: String, snaps: Seq[DeckSnapshotWithAdmiral], count:
   def enable: Boolean = snaps.nonEmpty
   def orElse(f: => SnapshotSearch) = if(enable) this else f
   def maxPage: Int = ((count + PageCount - 1)/PageCount - 1).toInt
-  def isMaxPage: Boolean = page == maxPage
+  def isMaxPage: Boolean = page == maxPage || page == 9
 }
 
 object SnapshotSearch {

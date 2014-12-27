@@ -108,6 +108,7 @@ object Rest extends Controller {
   }
 
   def activities(from: Long, limit: Int, offset: Int) = returnJson {
+    require(limit + offset <= 100, "limit + offset <= 100")
     readActivities(from, limit, offset).map(_.toJSON)
   }
 
