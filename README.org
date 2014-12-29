@@ -41,6 +41,7 @@ $ sbt +proxy
 
 ** 実運用で必要なこと
    - server/public/MFGsTitle.pngにTitle画像を置く
+   - server/public/feed-icon-28x28.pngを [[http://www.feedicons.com/]] から落として置く
    - server/public/clientディレクトリ以下にclientの自動ダウンロードに必要なファイルを置く
    - server/public/zip/MyFleetGirls.zipにDownloaderのzipファイルを置く（さきほどのzipコマンドで生成されます）
 
