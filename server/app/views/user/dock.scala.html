@@ -1,5 +1,3 @@
-@import models.join.User
-
 @(user: User)
 @import views.Js
 
@@ -12,6 +10,13 @@
   @head_content(user) {
     @usertab(user,"dock") {
       <section id="messages">
+
+        <div class="row">
+          <a href="@routes.Atom.userActivities(user.admiral.id)" class="pull-right">
+            <img src="@routes.Assets.at("feed-icon-28x28.png")" alt="feed(ATOM)" class="img-rounded" />
+          </a>
+        </div>
+
         <div id="mes">
           <div class="alert alert-info" v-repeat="mes: messages.slice(0, 3)">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>

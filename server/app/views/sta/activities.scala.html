@@ -6,16 +6,13 @@
   <script src="@Js.Vue"></script>
   <script src="@Js.MomentLocales"></script>
   <script src="@Js.Coffee("activities")"></script>
-  <style>
-    .trans {
-      transition: all 1.0s ease;
-    }
-    .trans.v-enter, .trans.v-leave {
-      opacity: 0;
-    }
-  </style>
 } {
   @statistics_head("activities") {
+    <div class="row">
+      <a href="@routes.Atom.activities()" class="pull-right">
+        <img src="@routes.Assets.at("feed-icon-28x28.png")" alt="feed(ATOM)" class="img-rounded" />
+      </a>
+    </div>
     <table class="table table-hover" id="activities_list">
       <tr v-repeat="acts | orderBy created reverse" class="clickable trans" v-on="click: jump(url)" v-transition>
         <th>{{ title }}</th>
