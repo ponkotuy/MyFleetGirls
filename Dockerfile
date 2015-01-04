@@ -26,13 +26,6 @@ RUN mkdir ~/bin && \
   && chmod 0755 ~/bin/sbt
 VOLUME ["/root/.ivy2", "/root/.sbt", "/var/lib/mysql"]
 
-# Copy File
-RUN mkdir ~/myfleet
-ADD project ~/myfleet/project/
-ADD server ~/myfleet/server/
-ADD library ~/myfleet/library/
-ADD client ~/myfleet/client/
-
 # MariaDB Settings
 RUN \
   echo "mysqld_safe &" > /tmp/config && \
@@ -40,6 +33,13 @@ RUN \
   echo "mysql -e 'CREATE DATABASE myfleet;'" >> /tmp/config && \
   bash /tmp/config && \
   rm -f /tmp/config
+
+# Copy File
+RUN mkdir ~/myfleet
+ADD project ~/myfleet/project/
+ADD server ~/myfleet/server/
+ADD library ~/myfleet/library/
+ADD client ~/myfleet/client/
 
 # RUN
 EXPOSE 9000
