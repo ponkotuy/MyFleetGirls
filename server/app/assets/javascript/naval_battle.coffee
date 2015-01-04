@@ -14,6 +14,7 @@ $(document).ready ->
       setPage: (page) ->
         @page = page
       getData: () ->
+        @data = []
         @setHash()
         dat = @whereObj()
         $.getJSON "/rest/v1/#{userid}/battle_result_count", dat, (ret) =>

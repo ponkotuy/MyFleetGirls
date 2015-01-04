@@ -52,7 +52,7 @@ object RestUser extends Controller {
   def createItemCount(memberId: Long) = returnString(db.CreateItem.countBy(sqls"member_id = ${memberId}"))
 
   def battleResult(memberId: Long, limit: Int, offset: Int, boss: Boolean, drop: Boolean, rank: String) = returnJson {
-    require(limit + offset <= 100, "limit + offset <= 100")
+    require(limit + offset <= 200, "limit + offset <= 200")
     val where = battleResultWhere(memberId, boss, drop, rank)
     val result = db.BattleResult.findAllByWithCell(where, limit, offset)
     JArray(result.map(_.toJson))
@@ -71,6 +71,7 @@ object RestUser extends Controller {
       .append(if(drop) sqls" and get_ship_id is not null" else sqls"")
 
   def routeLog(memberId: Long, limit: Int, offset: Int, area: Int, info: Int) = returnJson {
+    require(limit + offset <= 200, "limit + offset <= 200")
     val result = db.MapRoute.findAllBy(routeLogWhere(memberId, area, info), limit, offset)
     val ships = db.Ship.findAllByUserWithName(memberId)
       .map(s => s.id -> s).toMap
