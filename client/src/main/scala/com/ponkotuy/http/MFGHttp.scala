@@ -103,6 +103,7 @@ object MFGHttp extends Log {
     if(stCode >= 400) {
       error(s"Error Response ${stCode}\n${res.getStatusLine}\n${content}")
     }
+    stCode
   }
 
   def existsImage(key: String): Boolean =

@@ -13,20 +13,18 @@ import scala.concurrent.Future
  * Date: 14/03/22.
  */
 object RestImage extends Controller {
-  def ship(shipId: Int, swfId: Int) = Action.async {
-    Future {
-      db.ShipImage.find(shipId, swfId) match {
-        case Some(record) => Ok(record.image).as("image/jpeg")
-        case _ => NotFound(s"Not Found Image (id=$shipId, swfId=$swfId)")
-      }
-    }
-  }
+  def ship = shipCommon(_: Int, _: Int)
 
-  def shipHead(shipId: Int, swfId: Int) = Action.async {
+  def shipHead = shipCommon(_: Int, _: Int)
+
+  private def shipCommon(shipId: Int, swfId: Int) = Action.async {
     Future {
       db.ShipImage.find(shipId, swfId) match {
         case Some(record) => Ok(record.image).as("image/jpeg")
-        case _ => NotFound(s"Not Found Image (id=$shipId, swfId=$swfId)")
+        case _ =>
+          db.ShipImage.findAllBy(sqls"si.id = ${shipId}").headOption.map { head =>
+            Ok(head.image).as("image/jpeg")
+          }.getOrElse(NotFound(s"Not Found Image (id=$shipId, swfId=$swfId)"))
       }
     }
   }
