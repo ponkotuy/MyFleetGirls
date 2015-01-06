@@ -5,8 +5,9 @@ import scalikejdbc._
 case class ShipImage(
   id: Int,
   image: Array[Byte],
-  filename: Option[String],
-  memberId: Long) {
+  filename: String,
+  memberId: Long,
+  swfId: Int) {
 
   def save()(implicit session: DBSession = ShipImage.autoSession): ShipImage = ShipImage.save(this)(session)
 
@@ -18,13 +19,14 @@ object ShipImage extends SQLSyntaxSupport[ShipImage] {
 
   override val tableName = "ship_image"
 
-  override val columns = Seq("id", "image", "filename", "member_id")
+  override val columns = Seq("id", "image", "filename", "member_id", "swf_id")
 
   def apply(si: ResultName[ShipImage])(rs: WrappedResultSet): ShipImage = new ShipImage(
     id = rs.int(si.id),
     image = rs.bytes(si.image),
-    filename = rs.stringOpt(si.filename),
-    memberId = rs.long(si.memberId)
+    filename = rs.string(si.filename),
+    memberId = rs.long(si.memberId),
+    swfId = rs.int(si.swfId)
   )
 
   val si = ShipImage.syntax("si")
@@ -32,22 +34,16 @@ object ShipImage extends SQLSyntaxSupport[ShipImage] {
 
   override val autoSession = AutoSession
 
-  def find(id: Int)(implicit session: DBSession = autoSession): Option[ShipImage] = {
+  def find(id: Int, swfId: Int)(implicit session: DBSession = autoSession): Option[ShipImage] = {
     withSQL {
-      select.from(ShipImage as si).where.eq(si.id, id)
+      select.from(ShipImage as si).where.eq(si.id, id).and.eq(si.swfId, swfId)
     }.map(ShipImage(si.resultName)).single().apply()
   }
 
   def findAdmiral(sid: Int)(implicit session: DBSession = autoSession): Option[Admiral] = withSQL {
     select(a.resultAll).from(ShipImage as si)
       .innerJoin(Admiral as a).on(si.memberId, a.id).where.eq(si.id, sid)
-  }.map(Admiral(a)).single().apply()
-
-  def findByFilename(filename: String)(implicit session: DBSession = autoSession): Option[ShipImage] = {
-    withSQL {
-      select.from(ShipImage as si).where.eq(si.filename, filename)
-    }.map(ShipImage(si.resultName)).single().apply()
-  }
+  }.map(Admiral(a)).headOption().apply()
 
   def findAll()(implicit session: DBSession = autoSession): List[ShipImage] = {
     withSQL(select.from(ShipImage as si)).map(ShipImage(si.resultName)).list().apply()
@@ -73,26 +69,23 @@ object ShipImage extends SQLSyntaxSupport[ShipImage] {
       id: Int,
       image: Array[Byte],
       filename: String,
-      memberId: Long)(implicit session: DBSession = autoSession): ShipImage = {
+      memberId: Long,
+      swfId: Int)(implicit session: DBSession = autoSession): Unit = {
     withSQL {
       insert.into(ShipImage).columns(
         column.id,
         column.image,
         column.filename,
-        column.memberId
+        column.memberId,
+        column.swfId
       ).values(
           id,
           image,
           filename,
-          memberId
+          memberId,
+          swfId
         )
     }.update().apply()
-
-    ShipImage(
-      id = id,
-      image = image,
-      filename = Some(filename),
-      memberId = memberId)
   }
 
   def save(entity: ShipImage)(implicit session: DBSession = autoSession): ShipImage = {

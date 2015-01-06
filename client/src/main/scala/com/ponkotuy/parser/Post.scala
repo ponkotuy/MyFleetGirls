@@ -102,8 +102,8 @@ object Post extends Log {
     parseKey(q.toString).filterNot(MFGHttp.existsImage).foreach { key =>
       val swf = allRead(q.res.getContent)
       val file = TempFileTool.save(swf, "swf")
-      MFGHttp.postFile("/swf/ship/" + key, "image")(file)
-      println(s"初めての艦娘を見て画像を転送しました")
+      val stCode = MFGHttp.postFile("/swf/ship/" + key, "image")(file)
+      if(stCode < 400) println(s"初めての艦娘を見て画像を転送しました")
     }
   }
 
@@ -111,8 +111,8 @@ object Post extends Log {
     SoundUrlId.parseURL(q.toString).filterNot(MFGHttp.existsSound).foreach { case SoundUrlId(shipKey, soundId) =>
       val sound = allRead(q.res.getContent)
       val file = TempFileTool.save(sound, "mp3")
-      MFGHttp.postFile(s"/mp3/kc/${shipKey}/${soundId}", "sound")(file)
-      println(s"初めて (ShipKey -> $shipKey, SoundID -> $soundId) の声を聞いた")
+      val stCode = MFGHttp.postFile(s"/mp3/kc/${shipKey}/${soundId}", "sound")(file)
+      if(stCode < 400) println(s"初めて (ShipKey -> $shipKey, SoundID -> $soundId) の声を聞いた")
     }
   }
 

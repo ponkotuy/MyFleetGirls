@@ -26,7 +26,7 @@ $ sbt +proxy
   とします。sbtが必要です。設定はapplication.confをトップディレクトリに置きます。
 
 ** MyFleetGirls Server
-   + sbtとMariaDBをインストール
+   + sbt（sbt-extrasのインストールをお勧め）とMariaDBとswftoolsをインストール
    + server/conf/application.confを適宜設定（.sampleをコピーして、DB設定を適宜すればいいでしょう）
    + server/public/message にテキストファイル置かないと弊害があるかも
 

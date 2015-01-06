@@ -79,8 +79,8 @@ object MFGHttp extends Log {
   }
 
   def postFile(uStr: String, fileBodyKey: String, ver: Int = 1)(file: File)(
-      implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return }
+      implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Int = {
+    if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return 601 }
     try {
       val http = httpBuilder.build()
       val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
@@ -93,11 +93,11 @@ object MFGHttp extends Log {
       val res = http.execute(post)
       alertResult(res)
     } catch {
-      case e: Throwable => error((e.getMessage :+ e.getStackTrace).mkString("\n"))
+      case e: Throwable => error((e.getMessage :+ e.getStackTrace).mkString("\n")); 600
     }
   }
 
-  private def alertResult(res: CloseableHttpResponse): Unit = {
+  private def alertResult(res: CloseableHttpResponse): Int = {
     val stCode = res.getStatusLine.getStatusCode
     val content = allRead(res.getEntity.getContent)
     if(stCode >= 400) {

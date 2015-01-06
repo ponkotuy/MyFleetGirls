@@ -7,7 +7,7 @@ RUN \
     echo "deb http://ftp.yz.yamagata-u.ac.jp/pub/dbms/mariadb/repo/10.0/debian sid main" > /etc/apt/sources.list.d/mariadb.list
 
 # apt-get
-RUN apt-get update && apt-get install -y curl mariadb-server software-properties-common && apt-get clean
+RUN apt-get update && apt-get install -y curl swftools mariadb-server software-properties-common && apt-get clean
 
 # Install Oracle Java
 RUN \

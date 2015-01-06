@@ -1,10 +1,12 @@
 package controllers
 
-import play.api.mvc._
-import Common._
-import java.io.{ByteArrayOutputStream, InputStream, FileInputStream}
-import tool.SWFTool
+import java.io.{ByteArrayOutputStream, FileInputStream, InputStream}
+
+import controllers.Common._
 import models.db
+import play.api.mvc._
+import scalikejdbc._
+import tool.{SWFContents, SWFTool, SWFType}
 
 /**
  *
@@ -18,19 +20,19 @@ object PostFile extends Controller {
       request.body.file("image") match {
         case Some(ref) =>
           findKey(shipKey) { ship =>
-            db.ShipImage.find(ship.id) match {
-              case Some(si) =>
-                if(si.filename.isDefined) Ok("Already Exists")
-                else {
-                  db.ShipImage(si.id, si.image, Some(shipKey), si.memberId).save() // filenameをupdate
-                  Ok("Updated Ship Image Key")
+            if(db.ShipImage.countBy(sqls"si.id = ${ship.id}") > 0) Ok("Already Exists")
+            else {
+              val swfFile = ref.ref.file
+              val contents = SWFTool.contents(swfFile)
+              val isExec = contents.filter(_.typ == SWFType.Jpeg).flatMap { case SWFContents(id, _) =>
+                val imageFile = SWFTool.extractJPG(swfFile, id)
+                imageFile.map { file =>
+                  val image = readAll(new FileInputStream(file))
+                  db.ShipImage.create(ship.id, image, shipKey, auth.id, id)
+                  true
                 }
-              case None =>
-                val swfFile = ref.ref.file
-                val imageFile = SWFTool.extractJPG(swfFile, 5)
-                val image = readAll(new FileInputStream(imageFile))
-                db.ShipImage.create(ship.id, image, shipKey, auth.id)
-                Ok("Success")
+              }.nonEmpty
+              if(isExec) Ok("Success") else BadRequest("Not Found Image")
             }
           }
         case None => BadRequest("Need Image")
