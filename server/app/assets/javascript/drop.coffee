@@ -42,6 +42,7 @@ vueConf = (elem, id, cell) ->
         @drops = xs.reverse().map (it) ->
           it.getShipName ?= 'ドロップ無し'
           it
+        @drops.sort (x, y) -> y.count - x.count
     draw: ->
       countSum = @countUpDrops(@drops)
       typed = _.groupBy @drops, (drop) -> drop.getShipType
