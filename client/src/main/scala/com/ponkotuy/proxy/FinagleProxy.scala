@@ -7,7 +7,7 @@ import com.twitter.conversions.time._
 import com.twitter.finagle.builder.ClientBuilder
 import com.twitter.finagle.{ChannelException, Http, Service, http}
 import com.twitter.util.{Await, Future}
-import org.jboss.netty.handler.codec.http.{HttpMethod, HttpRequest, HttpResponse}
+import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
 
 import scala.collection.mutable
 
@@ -22,7 +22,7 @@ class FinagleProxy(port: Int, inter: Intercepter) {
   val service = new Service[HttpRequest, HttpResponse] {
     def apply(req: HttpRequest): Future[HttpResponse] = {
       val uri = Uri.parse(req.getUri)
-      if(req.getMethod == HttpMethod.POST) req.setUri(uri.pathRaw)
+      req.setUri(uri.pathRaw)
       val res = client(uri.host.get + ":80").apply(req)
       res.foreach(rs => inter.input(req, rs, uri))
       res
