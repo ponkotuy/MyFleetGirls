@@ -13,7 +13,8 @@ libraryDependencies ++= Seq(
   "mysql" % "mysql-connector-java" % "[5.1,)",
   "org.scalatest" %% "scalatest" % "2.2.1" % "test",
   "c3p0" % "c3p0" % "0.9.1.2",
-  "org.apache.abdera" % "abdera-parser" % "1.1.3"
+  "org.apache.abdera" % "abdera-parser" % "1.1.3",
+  "net.sf.ehcache" % "ehcache" % "2.9.0"
 )
 
 lazy val root = (project in file("server/")).enablePlugins(PlayScala)

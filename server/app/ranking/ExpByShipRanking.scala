@@ -41,23 +41,12 @@ case object ExpByShipRanking extends Ranking {
     // 進化元に集約
     val map = mutable.Map[Int, Long]().withDefaultValue(0L)
     result.foreach { case (master, count) =>
-      map(evolutionBase(master.id)) += count
+      map(EvolutionBase(master.id)) += count
     }
 
     // 名前付与
     val masters = MasterShipBase.findAll()
       .map(ship => ship.id -> ship.name).toMap
     map.map { case (id, count) => (id, masters(id), count) }.toList.sortBy(_._3).reverse
-  }
-
-  private lazy val afters = MasterShipAfter.findAll()
-    .filterNot(_.aftershipid == 0)
-    .map(ship => ship.aftershipid -> ship.id).toMap
-
-  def evolutionBase(shipId: Int): Int = {
-    afters.get(shipId) match {
-      case Some(afterId) => evolutionBase(afterId)
-      case None => shipId
-    }
   }
 }

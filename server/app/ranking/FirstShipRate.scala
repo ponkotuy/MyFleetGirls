@@ -4,6 +4,8 @@ import controllers.routes
 import models.db
 import scalikejdbc._
 
+import scala.collection.mutable
+
 /**
  *
  * @author ponkotuy
@@ -14,11 +16,11 @@ case object FirstShipRate extends Ranking {
   override val title: String = "初期艦"
 
   override def rankingQuery(limit: Int): List[RankingElement] = {
-    val counts = db.Ship.countAllShip(sqls"s.id = 1")
-      .map { case (sid, count) =>
-        ExpByShipRanking.evolutionBase(sid) -> count
-      }
-    val masters = db.MasterShipBase.findAllBy(sqls"ms.id in (${counts.keySet})")
+    val counts = mutable.Map[Int, Long]().withDefaultValue(0)
+    db.Ship.countAllShip(sqls"s.id = 1").foreach { case (sid, count) =>
+      counts(EvolutionBase(sid)) += count
+    }
+    val masters = db.MasterShipBase.findAllBy(sqls"ms.id in (${counts.keys.toSet})")
       .map { it => it.id -> it }.toMap
     val sum = counts.values.sum
     counts.toList.sortBy(-_._2).map { case (sid, count) =>
