@@ -33,7 +33,6 @@ case object ExpByShipRanking extends Ranking {
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .groupBy(s.shipId)
         .orderBy(sqls"sum").desc
-        .limit(limit)
     }.map { rs =>
       MasterShipBase.apply(ms)(rs) -> rs.long(sqls"sum")
     }.list().apply()
@@ -47,6 +46,6 @@ case object ExpByShipRanking extends Ranking {
     // 名前付与
     val masters = MasterShipBase.findAll()
       .map(ship => ship.id -> ship.name).toMap
-    map.map { case (id, count) => (id, masters(id), count) }.toList.sortBy(_._3).reverse
+    map.map { case (id, count) => (id, masters(id), count) }.toList.sortBy(_._3).reverse.take(limit)
   }
 }
