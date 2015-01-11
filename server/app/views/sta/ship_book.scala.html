@@ -8,8 +8,11 @@
   @statistics_head("ship_book") {
     <h1>@master.stName @master.name<small>@master.yomi</small></h1>
 
-    <div class="col-lg-3 col-md-4 col-sm-5">
-      <img src="@routes.RestImage.ship(master.id, 5)" style="margin: 25px;"/>
+    <div class="col-lg-3 col-md-4 col-sm-5" id="ship_image">
+      <div v-on="click: change" class="clickable">
+        <img v-if="!damaged" src="@routes.RestImage.ship(master.id, 5)" style="margin: 25px;" />
+        <img v-if="damaged" src="@routes.RestImage.ship(master.id, 7)" style="margin: 25px;" />
+      </div>
       @admiral.map { ad =>
         <small>画像提供： <a href="@routes.UserView.user(ad.id)">@ad.nickname</a></small>
       }

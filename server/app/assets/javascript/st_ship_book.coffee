@@ -16,3 +16,10 @@ $(document).ready ->
     created: ->
       sid = $(@.$options.el).attr('data-ship-id')
       @getSCounts(sid)
+
+  image = new Vue
+    el: '#ship_image'
+    data:
+      damaged: false
+    methods:
+      change: -> @damaged = !@damaged
