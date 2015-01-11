@@ -4,7 +4,7 @@ import AssemblyKeys._
 
 name := "MyFleetGirls"
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.5"
 
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.2.1",

@@ -9,6 +9,7 @@ import play._
 object MyFleetGirlsBuild extends Build {
 
   val ver = "1.2.7"
+  val scalaVer = "2.11.5"
 
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
@@ -22,17 +23,17 @@ object MyFleetGirlsBuild extends Build {
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .dependsOn(library)
     .enablePlugins(PlayScala).settings(
-      scalaVersion := "2.11.4"
+      scalaVersion := scalaVer
     )
 
   lazy val client = Project(id = "client", base = file("client"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
-    .settings(scalaVersion := "2.11.4")
+    .settings(scalaVersion := scalaVer)
     .dependsOn(library)
 
   lazy val library = Project(id = "library", base = file("library"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
-    .settings(scalaVersion := "2.11.4")
+    .settings(scalaVersion := scalaVer)
 
   lazy val update = Project(id = "update", base = file("update"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
@@ -44,7 +45,7 @@ object MyFleetGirlsBuild extends Build {
 
   override lazy val settings = super.settings ++ Seq(
     version := ver,
-    scalaVersion := "2.11.4",
+    scalaVersion := scalaVer,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions"),
     updateOptions := updateOptions.value.withCircularDependencyLevel(CircularDependencyLevel.Error),
     jarName in assembly := "MyFleetGirls.jar",

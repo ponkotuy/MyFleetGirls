@@ -16,7 +16,6 @@ trait TimeToLiveCache[K, V] {
 
   final lazy val cache = {
     val manager = CacheManager.getInstance()
-    println(cacheName)
     if(manager.cacheExists(cacheName)) {
       manager.getCache(cacheName)
     } else {

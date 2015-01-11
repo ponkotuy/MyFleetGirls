@@ -1,12 +1,14 @@
 
 name := "MyFleetGirlsServer"
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.5"
+
+val scalikeJdbcVer = "2.2.+"
 
 libraryDependencies ++= Seq(
-  "org.scalikejdbc" %% "scalikejdbc" % "2.1.+",
-  "org.scalikejdbc" %% "scalikejdbc-config" % "2.1.+",
-  "org.scalikejdbc" %% "scalikejdbc-interpolation" % "2.1.+",
+  "org.scalikejdbc" %% "scalikejdbc" % scalikeJdbcVer,
+  "org.scalikejdbc" %% "scalikejdbc-config" % scalikeJdbcVer,
+  "org.scalikejdbc" %% "scalikejdbc-interpolation" % scalikeJdbcVer,
   "org.json4s" %% "json4s-native" % "3.2.11",
   "com.github.tototoshi" %% "play-flyway" % "1.1.2",
   "com.github.nscala-time" %% "nscala-time" % "1.6.0",

@@ -1,5 +1,5 @@
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.5"
 
 libraryDependencies ++= Seq(
   "net.databinder.dispatch" %% "dispatch-core" % "0.11.0",
