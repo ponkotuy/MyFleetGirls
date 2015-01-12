@@ -22,8 +22,8 @@ object ViewSta extends Controller {
 
   def statistics(from: String, to: String) = actionAsync {
     val fromTo = Period.fromStr(from, to)
-    val sCounts = db.CreateShip.materialCount(fromTo.where(sqls"cs.created")).takeWhile(_._2 > 1)
-    val iCounts = db.CreateItem.materialCount(fromTo.where(sqls"ci.created")).takeWhile(_._2 > 1)
+    val sCounts = db.CreateShip.materialCount(fromTo.where(sqls"cs.created")).take(50).takeWhile(_._2 > 1)
+    val iCounts = db.CreateItem.materialCount(fromTo.where(sqls"ci.created")).take(50).takeWhile(_._2 > 1)
     Ok(views.html.sta.statistics(sCounts, iCounts, fromTo))
   }
 
