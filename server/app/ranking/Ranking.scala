@@ -68,6 +68,7 @@ object Ranking {
   def toElem(ship: ShipWithName): Elem = <span>{ship.name}<small>{"Lv" + ship.lv}</small></span>
 }
 
+@SerialVersionUID(1L)
 case class RankingElement(name: String, value: Elem, url: Option[String])
 
 object RankingElement {
