@@ -116,9 +116,11 @@ object UserView extends Controller {
   }
 
   def book(memberId: Long) = userView(memberId) { user =>
-    val sBooks = db.ShipBook.findAllBy(sqls"member_id = ${memberId}").sortBy(_.indexNo)
-    val iBooks = db.ItemBook.findAllBy(sqls"member_id = ${memberId}").sortBy(_.indexNo)
-    Ok(views.html.user.book(user, sBooks, iBooks))
+    val allShips = db.ShipBook.findAllUnique()
+    val allItems = db.ItemBook.findAllUnique()
+    val sBooks = db.ShipBook.findAllBy(sqls"member_id = ${memberId}").map(it => it.indexNo -> it).toMap
+    val iBooks = db.ItemBook.findAllBy(sqls"member_id = ${memberId}").map(it => it.indexNo -> it).toMap
+    Ok(views.html.user.book(user, allShips, sBooks, allItems, iBooks))
   }
 
   def shipImageBook(memberId: Long) = userView(memberId) { user =>

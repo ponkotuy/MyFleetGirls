@@ -60,6 +60,12 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
     }.map(ShipBook(sb.resultName)).list().apply()
   }
 
+  def findAllUnique()(implicit session: DBSession = autoSession): List[(Int, String)] = withSQL {
+    select(sb.indexNo, sb.name).from(ShipBook as sb).groupBy(sb.indexNo)
+  }.map { rs =>
+    rs.int(1) -> rs.string(2)
+  }.list().apply()
+
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(ShipBook as sb).where.append(sqls"${where}")

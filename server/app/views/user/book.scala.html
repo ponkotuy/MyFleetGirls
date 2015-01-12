@@ -1,4 +1,4 @@
-@(user: User, ships: Seq[ShipBook], items: Seq[ItemBook])
+@(user: User, allShips: Seq[(Int, String)], ships: Map[Int, ShipBook], allItems: Seq[(Int, String)], items: Map[Int, ItemBook])
 
 @main {
   <title>図鑑 -@{user.admiral.nickname}提督-</title>
@@ -13,19 +13,20 @@
           <table class="table table-striped table-condensed" id="ship_book_table">
             <thead>
               <tr>
-                <th>No</th><th>名前</th><th>中破絵</th><th>ケッコン</th>
+                <th>No</th><th>名前</th><th>登録</th><th>中破絵</th><th>ケッコン</th>
               </tr>
             </thead>
             <tbody>
-              @ships.map { book =>
-              <tr>
-                <td>@book.indexNo</td>
-                <td>@book.name</td>
-                <td>@if(book.isDameged){
+              @allShips.map { case (indexNo, name) =>
+              <tr @if(!ships.contains(indexNo)){class="disabled"}>
+                <td>@indexNo</td>
+                <td>@name</td>
+                <td>@if(ships.contains(indexNo)){ <span class="glyphicon glyphicon-ok"></span> }</td>
+                <td>@if(ships.get(indexNo).exists(_.isDameged)) {
                     <span class="glyphicon glyphicon-ok"></span>
                   }
                 </td>
-                <td>@if(book.isMarried){
+                <td>@if(ships.get(indexNo).exists(_.isMarried)) {
                   <span class="glyphicon glyphicon-ok"></span>
                 }
                 </td>
@@ -42,14 +43,15 @@
           <table class="table table-striped table-condensed" id="item_book_table">
             <thead>
               <tr>
-                <th>No</th><th>名前</th>
+                <th>No</th><th>名前</th><th>登録</th>
               </tr>
             </thead>
             <tbody>
-              @items.map { book =>
-              <tr>
-                <td>@book.indexNo</td>
-                <td>@book.name</td>
+              @allItems.map { case (indexNo, name) =>
+              <tr @if(!items.contains(indexNo)){class="disabled"}>
+                <td>@indexNo</td>
+                <td>@name</td>
+                <td>@if(items.contains(indexNo)) { <span class="glyphicon glyphicon-ok"></span> }</td>
               </tr>
               }
             </tbody>

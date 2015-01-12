@@ -21,7 +21,7 @@
         <div class="row">
           <div class="col-lg-2 col-sm-3" v-repeat="ship: ships">
             <div class="thumbnail">
-              <img src="/rest/v1/image/ship/{{ship.id}}.jpg" alt="{{ship.name}}" />
+              <img src="/rest/v1/image/ship/{{ship.id}}/5.jpg" alt="{{ship.name}}" />
               <h5 v-class="text-danger: ship.isMarried, damaged: ship.isDameged">No.{{ship.indexNo}} {{ship.name}}</h5>
             </div>
           </div>

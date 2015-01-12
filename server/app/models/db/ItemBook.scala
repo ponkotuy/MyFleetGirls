@@ -55,6 +55,12 @@ object ItemBook extends SQLSyntaxSupport[ItemBook] {
     }.map(ItemBook(ib.resultName)).list().apply()
   }
 
+  def findAllUnique()(implicit session: DBSession = autoSession): List[(Int, String)] = withSQL {
+    select(ib.indexNo, ib.name).from(ItemBook as ib).groupBy(ib.indexNo).orderBy(ib.indexNo)
+  }.map { rs =>
+    rs.int(1) -> rs.string(2)
+  }.list().apply()
+
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(ItemBook as ib).where.append(sqls"${where}")
