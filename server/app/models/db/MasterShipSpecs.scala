@@ -2,9 +2,10 @@ package models.db
 
 import com.ponkotuy.data.master
 import scalikejdbc._
+import util.ehcache.TimeToLiveCache
 import util.scalikejdbc.BulkInsert._
 
-import scala.collection.mutable
+import scala.concurrent.duration._
 
 case class MasterShipSpecs(
   id: Int,
@@ -32,7 +33,7 @@ case class MasterShipSpecs(
 
 object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
 
-  val cache = new mutable.WeakHashMap[Int, Option[MasterShipSpecs]] with mutable.SynchronizedMap[Int, Option[MasterShipSpecs]]
+  val cache = MasterShipSpecsCache
 
   override val tableName = "master_ship_specs"
 
@@ -61,12 +62,11 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
 
   override val autoSession = AutoSession
 
-  def find(id: Int)(implicit session: DBSession = autoSession): Option[MasterShipSpecs] = {
-    def query = withSQL {
-      select.from(MasterShipSpecs as mss).where.eq(mss.id, id)
-    }.map(MasterShipSpecs(mss.resultName)).single().apply()
-    cache.getOrElseUpdate(id, query)
-  }
+  def find(id: Int)(implicit session: DBSession = autoSession): Option[MasterShipSpecs] = cache.get(id)
+
+  private[db] def findDb(id: Int)(implicit session: DBSession = autoSession): Option[MasterShipSpecs] = withSQL {
+    select.from(MasterShipSpecs as mss).where.eq(mss.id, id)
+  }.map(MasterShipSpecs(mss.resultName)).single().apply()
 
   def findAll()(implicit session: DBSession = autoSession): List[MasterShipSpecs] = {
     withSQL(select.from(MasterShipSpecs as mss)).map(MasterShipSpecs(mss.resultName)).list().apply()
@@ -211,4 +211,11 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
     }.update().apply()
   }
 
+}
+
+object MasterShipSpecsCache extends TimeToLiveCache[Int, MasterShipSpecs] {
+  override def cacheName: String = "masterShipSpecs"
+  override def maxEntries: Int = 1000
+  override def liveSeconds: Long = 60.minutes.toSeconds
+  override protected def default(k: Int): Option[MasterShipSpecs] = MasterShipSpecs.findDb(k)
 }
