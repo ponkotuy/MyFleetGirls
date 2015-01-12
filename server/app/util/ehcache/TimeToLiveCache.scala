@@ -7,12 +7,16 @@ import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**
- * Created by yosuke on 15/01/10.
+ *
+ * @author ponkotuy
+ * Date: 15/01/10.
  */
 trait TimeToLiveCache[K, V] {
+  // Required Override
   def cacheName: String
   def liveSeconds: Long
   def maxEntries: Int
+  protected def default(k: K): Option[V]
 
   final lazy val cache = {
     val manager = CacheManager.getInstance()
@@ -50,6 +54,4 @@ trait TimeToLiveCache[K, V] {
   }
 
   def getSize: Int = cache.getSize
-
-  protected def default(k: K): Option[V]
 }
