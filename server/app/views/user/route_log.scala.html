@@ -1,6 +1,5 @@
 @(user: User, stages: Seq[Stage])
-@import models.join.Stage
-@import views.Js
+
 @main {
   <title>海戦記録 -@{user.admiral.nickname}提督-</title>
   <script src="@Js.MomentLocales"></script>
@@ -67,7 +66,6 @@
             <a href="#" v-on="click: setPage(page + 1)" onclick="return false;">&raquo;</a>
           </li>
         </ul>
-      </div>
       </div>
     }
   }

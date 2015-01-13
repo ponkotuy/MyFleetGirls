@@ -9,6 +9,7 @@ $(document).ready ->
       data: []
       bossOnly: false
       dropOnly: false
+      stage: 'ALL'
       ranks: {S: true, A: true, B: true, C: false, D: false, E: false}
     methods:
       setPage: (page) ->
@@ -16,7 +17,7 @@ $(document).ready ->
       getData: () ->
         @data = []
         @setHash()
-        dat = @whereObj()
+        dat = $.extend(@whereObj(), @areainfo())
         $.getJSON "/rest/v1/#{userid}/battle_result_count", dat, (ret) =>
           @allCount = ret
         $.getJSON "/rest/v1/#{userid}/battle_result", dat, (ret) =>
@@ -35,6 +36,12 @@ $(document).ready ->
         xs = for str, value of @ranks
           if value then str else ''
         xs.join('')
+      areainfo: () ->
+        if @stage == 'ALL'
+          {}
+        else
+          xs = @stage.split('-')
+          {area: xs[0], info: xs[1]}
       setHash: ->
         obj =
           count: @count
@@ -42,22 +49,24 @@ $(document).ready ->
           bossOnly: @bossOnly
           dropOnly: @dropOnly
           rank: @rank()
-        location.hash = toURLParameter(obj)
+        location.hash = toURLParameter($.extend(obj, @areainfo()))
       restoreHash: ->
         obj = fromURLParameter(location.hash.replace(/^\#/, ''))
         unless obj.count? then return
         @count = parseInt(obj.count)
-        @page = parseInt(obj.page)
+        @setPage(parseInt(obj.page))
         @bossOnly = obj.bossOnly != 'false'
         @dropOnly = obj.dropOnly != 'false'
+        if obj.area? and obj.info?
+          @stage = "#{obj.area}-#{obj.info}"
         for str, _ of @ranks
           @ranks[str] = obj.rank.indexOf(str) != -1
-    created: ->
+    compiled: ->
       @restoreHash()
-      @getData()
     ready: ->
       @$watch 'ranks', @getData, true # Deep Watch
     watch:
       'page': -> @getData()
       'bossOnly': -> @getData()
       'dropOnly': -> @getData()
+      'stage': -> @getData()

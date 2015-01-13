@@ -51,24 +51,26 @@ object RestUser extends Controller {
 
   def createItemCount(memberId: Long) = returnString(db.CreateItem.countBy(sqls"member_id = ${memberId}"))
 
-  def battleResult(memberId: Long, limit: Int, offset: Int, boss: Boolean, drop: Boolean, rank: String) = returnJson {
+  def battleResult(memberId: Long, limit: Int, offset: Int, boss: Boolean, drop: Boolean, rank: String, area: Option[Int], info: Option[Int]) = returnJson {
     require(limit + offset <= 200, "limit + offset <= 200")
-    val where = battleResultWhere(memberId, boss, drop, rank)
+    val where = battleResultWhere(memberId, boss, drop, rank, area, info)
     val result = db.BattleResult.findAllByWithCell(where, limit, offset)
     JArray(result.map(_.toJson))
   }
 
-  def battleResultCount(memberId: Long, boss: Boolean, drop: Boolean, rank: String) = returnString {
-    val where = battleResultWhere(memberId, boss, drop, rank)
+  def battleResultCount(memberId: Long, boss: Boolean, drop: Boolean, rank: String, area: Option[Int], info: Option[Int]) = returnString {
+    val where = battleResultWhere(memberId, boss, drop, rank, area, info)
     if(boss) db.BattleResult.countByWithCellInfo(where)
     else db.BattleResult.countBy(where)
   }
 
-  private def battleResultWhere(memberId: Long, boss: Boolean, drop: Boolean, rank: String) =
+  private def battleResultWhere(memberId: Long, boss: Boolean, drop: Boolean, rank: String, area: Option[Int], info: Option[Int]) =
     sqls"member_id = ${memberId}"
       .append(if(rank.nonEmpty) sqls" and win_rank in (${rank.map(_.toString)})" else sqls"")
       .append(if(boss) sqls" and boss = true" else sqls"")
       .append(if(drop) sqls" and get_ship_id is not null" else sqls"")
+      .append(area.map(a => sqls" and br.area_id = ${a}").getOrElse(sqls""))
+      .append(info.map(i => sqls" and br.info_no = ${i}").getOrElse(sqls""))
 
   def routeLog(memberId: Long, limit: Int, offset: Int, area: Int, info: Int) = returnJson {
     require(limit + offset <= 200, "limit + offset <= 200")

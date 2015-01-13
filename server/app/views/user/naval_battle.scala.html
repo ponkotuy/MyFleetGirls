@@ -1,7 +1,4 @@
-@import models.join.User
-
-@(user: User)
-@import views.Js
+@(user: User, stages: Seq[Stage])
 
 @main {
   <title>海戦履歴 -@{user.admiral.nickname}提督-</title>
@@ -18,6 +15,15 @@
 
       <div id="battle_log">
         <form class="form-inline" role="form">
+          <div class="form-group">
+            <label>Stage</label>
+            <select v-model="stage" id="stage_select">
+              <option selected="selected">ALL</option>
+              @stages.map { stage =>
+                <option>@stage.area-@stage.info</option>
+              }
+            </select>
+          </div>
           <div class="checkbox">
             <label class="checkbox-inline">
               <input type="checkbox" v-model="bossOnly">BOSSのみ

@@ -184,7 +184,8 @@ object UserView extends Controller {
   }
 
   def navalBattle(memberId: Long) = userView(memberId) { user =>
-    Ok(views.html.user.naval_battle(user))
+    val stages = db.MapRoute.findStageUnique()
+    Ok(views.html.user.naval_battle(user, stages))
   }
 
   def routeLog(memberId: Long) = userView(memberId) { user =>
