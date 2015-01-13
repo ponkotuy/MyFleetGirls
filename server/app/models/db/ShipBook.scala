@@ -25,18 +25,10 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
 
   override val columns = Seq("member_id", "id", "index_no", "is_dameged", "name", "updated", "is_married")
 
-  def apply(sb: ResultName[ShipBook])(rs: WrappedResultSet): ShipBook = new ShipBook(
-    memberId = rs.long(sb.memberId),
-    id = rs.int(sb.id),
-    indexNo = rs.int(sb.indexNo),
-    isDameged = rs.boolean(sb.isDameged),
-    name = rs.string(sb.name),
-    updated = rs.long(sb.updated),
-    isMarried = rs.boolean(sb.isMarried)
-  )
+  def apply(sb: ResultName[ShipBook])(rs: WrappedResultSet): ShipBook = autoConstruct(rs, sb)
 
-  val sb = ShipBook.syntax("sb")
-  val ms = MasterShipBase.syntax("ms")
+  lazy val sb = ShipBook.syntax("sb")
+  lazy val ms = MasterShipBase.syntax("ms")
 
   override val autoSession = AutoSession
 

@@ -3,7 +3,6 @@ package models.db
 import models.join.{Mat, CShipWithAdmiral, CreateShipWithName2, CreateShipWithName}
 import scalikejdbc._
 import com.ponkotuy.data
-import scalikejdbc.{WrappedResultSet, DBSession}
 import sqls.distinct
 
 /** 建造ログ
@@ -20,20 +19,7 @@ case class CreateShip(
 
 object CreateShip extends SQLSyntaxSupport[CreateShip] {
   def apply(x: SyntaxProvider[CreateShip])(rs: WrappedResultSet): CreateShip = apply(x.resultName)(rs)
-  def apply(x: ResultName[CreateShip])(rs: WrappedResultSet): CreateShip = new CreateShip(
-    rs.long(x.memberId),
-    rs.int(x.resultShip),
-    rs.int(x.fuel),
-    rs.int(x.ammo),
-    rs.int(x.steel),
-    rs.int(x.bauxite),
-    rs.int(x.develop),
-    rs.int(x.kDock),
-    rs.boolean(x.highspeed),
-    rs.boolean(x.largeFlag),
-    rs.long(x.completeTime),
-    rs.long(x.created)
-  )
+  def apply(x: ResultName[CreateShip])(rs: WrappedResultSet): CreateShip = autoConstruct(rs, x)
 
   lazy val cs = CreateShip.syntax("cs")
   lazy val ms = MasterShipBase.syntax("ms")

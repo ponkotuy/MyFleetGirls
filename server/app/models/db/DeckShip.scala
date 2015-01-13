@@ -2,7 +2,6 @@ package models.db
 
 import models.join.{ShipWithName, DeckShipWithName}
 import scalikejdbc._
-import scalikejdbc.{DBSession, WrappedResultSet}
 import util.scalikejdbc.BulkInsert._
 
 /**
@@ -14,12 +13,7 @@ case class DeckShip(deckId: Int, num: Int, memberId: Long, shipId: Int)
 
 object DeckShip extends SQLSyntaxSupport[DeckShip] {
   def apply(x: SyntaxProvider[DeckShip])(rs: WrappedResultSet): DeckShip = apply(x.resultName)(rs)
-  def apply(x: ResultName[DeckShip])(rs: WrappedResultSet): DeckShip = new DeckShip(
-    rs.int(x.deckId),
-    rs.int(x.num),
-    rs.long(x.memberId),
-    rs.int(x.shipId)
-  )
+  def apply(x: ResultName[DeckShip])(rs: WrappedResultSet): DeckShip = autoConstruct(rs, x)
 
   lazy val ds = DeckShip.syntax("ds")
   lazy val s = Ship.syntax("s")

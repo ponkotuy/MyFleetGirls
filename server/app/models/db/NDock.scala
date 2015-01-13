@@ -12,14 +12,9 @@ import com.ponkotuy.data
 case class NDock(id: Int, memberId: Long, shipId: Int, completeTime: Long, created: Long)
 
 object NDock extends SQLSyntaxSupport[NDock] {
+
   def apply(x: SyntaxProvider[NDock])(rs: WrappedResultSet): NDock = apply(x.resultName)(rs)
-  def apply(x: ResultName[NDock])(rs: WrappedResultSet): NDock = new NDock(
-    rs.int(x.id),
-    rs.long(x.memberId),
-    rs.int(x.shipId),
-    rs.long(x.completeTime),
-    rs.long(x.created)
-  )
+  def apply(x: ResultName[NDock])(rs: WrappedResultSet): NDock = autoConstruct(rs, x)
 
   lazy val nd = NDock.syntax("nd")
   lazy val s = Ship.syntax("s")

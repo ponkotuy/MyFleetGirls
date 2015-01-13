@@ -1,7 +1,6 @@
 package models.db
 
 import scalikejdbc._
-import scalikejdbc.{DBSession, WrappedResultSet}
 import com.ponkotuy.data
 import util.scalikejdbc.BulkInsert._
 
@@ -14,12 +13,7 @@ case class DeckPort(id: Int, memberId: Long, name: String, created: Long)
 
 object DeckPort extends SQLSyntaxSupport[DeckPort] {
   def apply(x: SyntaxProvider[DeckPort])(rs: WrappedResultSet): DeckPort = apply(x.resultName)(rs)
-  def apply(x: ResultName[DeckPort])(rs: WrappedResultSet): DeckPort = new DeckPort(
-    rs.int(x.id),
-    rs.long(x.memberId),
-    rs.string(x.name),
-    rs.long(x.created)
-  )
+  def apply(x: ResultName[DeckPort])(rs: WrappedResultSet): DeckPort = autoConstruct(rs, x)
 
   lazy val dp = DeckPort.syntax("dp")
 

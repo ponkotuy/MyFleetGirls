@@ -1,7 +1,7 @@
 package models.db
 
 import com.ponkotuy.data.master
-import scalikejdbc.{DBSession, WrappedResultSet, _}
+import scalikejdbc._
 import util.scalikejdbc.BulkInsert._
 
 /**
@@ -13,14 +13,7 @@ case class MasterMission(id: Int, mapArea: Int, name: String, time: Int, fuel: D
 
 object MasterMission extends SQLSyntaxSupport[MasterMission] {
   def apply(x: SyntaxProvider[MasterMission])(rs: WrappedResultSet): MasterMission = apply(x.resultName)(rs)
-  def apply(x: ResultName[MasterMission])(rs: WrappedResultSet): MasterMission = new MasterMission(
-    rs.int(x.id),
-    rs.int(x.mapArea),
-    rs.string(x.name),
-    rs.int(x.time),
-    rs.double(x.fuel),
-    rs.double(x.ammo)
-  )
+  def apply(x: ResultName[MasterMission])(rs: WrappedResultSet): MasterMission = autoConstruct(rs, x)
 
   lazy val mm = MasterMission.syntax("mm")
 

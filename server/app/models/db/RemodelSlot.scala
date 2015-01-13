@@ -36,24 +36,10 @@ object RemodelSlot extends SQLSyntaxSupport[RemodelSlot] {
   override val columns = Seq("id", "slot_id", "member_id", "second_ship", "fuel", "ammo", "steel", "bauxite", "develop", "revamping", "req_slot_id", "slot_num", "created")
 
   def apply(r: SyntaxProvider[RemodelSlot])(rs: WrappedResultSet): RemodelSlot = apply(r.resultName)(rs)
-  def apply(r: ResultName[RemodelSlot])(rs: WrappedResultSet): RemodelSlot = new RemodelSlot(
-    id = rs.get(r.id),
-    slotId = rs.get(r.slotId),
-    memberId = rs.get(r.memberId),
-    secondShip = rs.get(r.secondShip),
-    fuel = rs.get(r.fuel),
-    ammo = rs.get(r.ammo),
-    steel = rs.get(r.steel),
-    bauxite = rs.get(r.bauxite),
-    develop = rs.get(r.develop),
-    revamping = rs.get(r.revamping),
-    reqSlotId = rs.get(r.reqSlotId),
-    slotNum = rs.get(r.slotNum),
-    created = rs.get(r.created)
-  )
+  def apply(r: ResultName[RemodelSlot])(rs: WrappedResultSet): RemodelSlot = autoConstruct(rs, r)
 
-  val r = RemodelSlot.syntax("r")
-  val ms = MasterShipBase.syntax("ms")
+  lazy val r = RemodelSlot.syntax("r")
+  lazy val ms = MasterShipBase.syntax("ms")
 
   override val autoSession = AutoSession
 

@@ -28,19 +28,9 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
   override val columns = Seq("id", "member_id", "url", "hash_url", "title", "first", "second", "created")
 
   def apply(f: SyntaxProvider[Favorite])(rs: WrappedResultSet): Favorite = apply(f.resultName)(rs)
+  def apply(f: ResultName[Favorite])(rs: WrappedResultSet): Favorite = autoConstruct(rs, f)
 
-  def apply(f: ResultName[Favorite])(rs: WrappedResultSet): Favorite = new Favorite(
-    id = rs.get(f.id),
-    memberId = rs.get(f.memberId),
-    url = rs.get(f.url),
-    hashUrl = rs.get(f.hashUrl),
-    title = rs.get(f.title),
-    first = rs.get(f.first),
-    second = rs.get(f.second),
-    created = rs.get(f.created)
-  )
-
-  val f = Favorite.syntax("f")
+  lazy val f = Favorite.syntax("f")
 
   override val autoSession = AutoSession
 

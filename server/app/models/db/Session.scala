@@ -26,14 +26,9 @@ object Session extends SQLSyntaxSupport[Session] {
   override val columns = Seq("uuid_most", "uuid_least", "member_id", "created")
 
   def apply(s: SyntaxProvider[Session])(rs: WrappedResultSet): Session = apply(s.resultName)(rs)
-  def apply(s: ResultName[Session])(rs: WrappedResultSet): Session = new Session(
-    uuidMost = rs.get(s.uuidMost),
-    uuidLeast = rs.get(s.uuidLeast),
-    memberId = rs.get(s.memberId),
-    created = rs.get(s.created)
-  )
+  def apply(s: ResultName[Session])(rs: WrappedResultSet): Session = autoConstruct(rs, s)
 
-  val s = Session.syntax("s")
+  lazy val s = Session.syntax("s")
 
   override val autoSession = AutoSession
 

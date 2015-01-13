@@ -25,11 +25,7 @@ object UserSettings extends SQLSyntaxSupport[UserSettings] {
   override val columns = Seq("member_id", "yome", "base")
 
   def apply(us: SyntaxProvider[UserSettings])(rs: WrappedResultSet): UserSettings = apply(us.resultName)(rs)
-  def apply(us: ResultName[UserSettings])(rs: WrappedResultSet): UserSettings = new UserSettings(
-    memberId = rs.get(us.memberId),
-    yome = rs.get(us.yome),
-    base = rs.get(us.base)
-  )
+  def apply(us: ResultName[UserSettings])(rs: WrappedResultSet): UserSettings = autoConstruct(rs, us)
 
   lazy val us = UserSettings.syntax("us")
   lazy val s = Ship.syntax("s")

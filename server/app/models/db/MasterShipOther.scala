@@ -34,24 +34,9 @@ object MasterShipOther extends SQLSyntaxSupport[MasterShipOther] {
   override val columns = Seq("id", "buildtime", "broken_fuel", "broken_ammo", "broken_steel", "broken_bauxite", "powup_fuel", "powup_ammo", "powup_steel", "powup_bauxite", "backs", "fuel_max", "bull_max", "slot_num")
 
   def apply(mso: SyntaxProvider[MasterShipOther])(rs: WrappedResultSet): MasterShipOther = apply(mso.resultName)(rs)
-  def apply(mso: ResultName[MasterShipOther])(rs: WrappedResultSet): MasterShipOther = new MasterShipOther(
-    id = rs.int(mso.id),
-    buildtime = rs.int(mso.buildtime),
-    brokenFuel = rs.int(mso.brokenFuel),
-    brokenAmmo = rs.int(mso.brokenAmmo),
-    brokenSteel = rs.int(mso.brokenSteel),
-    brokenBauxite = rs.int(mso.brokenBauxite),
-    powupFuel = rs.int(mso.powupFuel),
-    powupAmmo = rs.int(mso.powupAmmo),
-    powupSteel = rs.int(mso.powupSteel),
-    powupBauxite = rs.int(mso.powupBauxite),
-    backs = rs.int(mso.backs),
-    fuelMax = rs.int(mso.fuelMax),
-    bullMax = rs.int(mso.bullMax),
-    slotNum = rs.int(mso.slotNum)
-  )
+  def apply(mso: ResultName[MasterShipOther])(rs: WrappedResultSet): MasterShipOther = autoConstruct(rs, mso)
 
-  val mso = MasterShipOther.syntax("mso")
+  lazy val mso = MasterShipOther.syntax("mso")
 
   override val autoSession = AutoSession
 

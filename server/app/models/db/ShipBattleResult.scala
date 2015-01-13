@@ -22,15 +22,9 @@ object ShipBattleResult extends SQLSyntaxSupport[ShipBattleResult] {
 
   override val columns = Seq("battle_id", "member_id", "id", "exp", "lost_flag")
 
-  def apply(sbr: ResultName[ShipBattleResult])(rs: WrappedResultSet): ShipBattleResult = new ShipBattleResult(
-    battleId = rs.long(sbr.battleId),
-    memberId = rs.long(sbr.memberId),
-    id = rs.byte(sbr.id),
-    exp = rs.int(sbr.exp),
-    lostFlag = rs.boolean(sbr.lostFlag)
-  )
+  def apply(sbr: ResultName[ShipBattleResult])(rs: WrappedResultSet): ShipBattleResult = autoConstruct(rs, sbr)
 
-  val sbr = ShipBattleResult.syntax("sbr")
+  lazy val sbr = ShipBattleResult.syntax("sbr")
 
   override val autoSession = AutoSession
 

@@ -2,7 +2,6 @@ package models.db
 
 import scalikejdbc._
 import com.ponkotuy.data
-import scalikejdbc.{DBSession, WrappedResultSet}
 import tool.DiffCalc
 
 /**
@@ -42,19 +41,7 @@ object Material extends SQLSyntaxSupport[Material] {
   lazy val m = Material.syntax("m")
 
   def apply(m: SyntaxProvider[Material])(rs: WrappedResultSet): Material = apply(m.resultName)(rs)
-  def apply(m: ResultName[Material])(rs: WrappedResultSet): Material = new Material(
-    id = rs.long(m.id),
-    memberId = rs.long(m.memberId),
-    fuel = rs.int(m.fuel),
-    ammo = rs.int(m.ammo),
-    steel = rs.int(m.steel),
-    bauxite = rs.int(m.bauxite),
-    instant = rs.int(m.instant),
-    bucket = rs.int(m.bucket),
-    develop = rs.int(m.develop),
-    revamping = rs.int(m.revamping),
-    created = rs.long(m.created)
-  )
+  def apply(m: ResultName[Material])(rs: WrappedResultSet): Material = autoConstruct(rs, m)
 
   def save(m: Material)(implicit session: DBSession = Material.autoSession): Material = {
     withSQL {

@@ -1,7 +1,6 @@
 package models.db
 
 import scalikejdbc._
-import scalikejdbc.{AutoSession, WrappedResultSet, DBSession}
 
 import scala.util.Random
 
@@ -23,14 +22,10 @@ object ShipSound extends SQLSyntaxSupport[ShipSound] {
 
   override val columns = Seq("ship_id", "sound_id", "sound")
 
-  def apply(ss: ResultName[ShipSound])(rs: WrappedResultSet): ShipSound = new ShipSound(
-    shipId = rs.int(ss.shipId),
-    soundId = rs.int(ss.soundId),
-    sound = rs.bytes(ss.sound)
-  )
+  def apply(ss: ResultName[ShipSound])(rs: WrappedResultSet): ShipSound = autoConstruct(rs, ss)
 
-  val ss = ShipSound.syntax("ss")
-  val ms = MasterShipBase.syntax("ms")
+  lazy val ss = ShipSound.syntax("ss")
+  lazy val ms = MasterShipBase.syntax("ms")
 
   override val autoSession = AutoSession
 

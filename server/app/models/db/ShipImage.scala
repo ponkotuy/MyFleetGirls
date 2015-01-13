@@ -21,16 +21,10 @@ object ShipImage extends SQLSyntaxSupport[ShipImage] {
 
   override val columns = Seq("id", "image", "filename", "member_id", "swf_id")
 
-  def apply(si: ResultName[ShipImage])(rs: WrappedResultSet): ShipImage = new ShipImage(
-    id = rs.int(si.id),
-    image = rs.bytes(si.image),
-    filename = rs.string(si.filename),
-    memberId = rs.long(si.memberId),
-    swfId = rs.int(si.swfId)
-  )
+  def apply(si: ResultName[ShipImage])(rs: WrappedResultSet): ShipImage = autoConstruct(rs, si)
 
-  val si = ShipImage.syntax("si")
-  val a = Admiral.syntax("a")
+  lazy val si = ShipImage.syntax("si")
+  lazy val a = Admiral.syntax("a")
 
   override val autoSession = AutoSession
 

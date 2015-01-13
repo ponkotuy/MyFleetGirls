@@ -32,20 +32,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
 
   override val columns = Seq("member_id", "id", "item_id", "slotitem_id", "fuel", "ammo", "steel", "bauxite", "create_flag", "shizai_flag", "flagship", "created")
 
-  def apply(ci: ResultName[CreateItem])(rs: WrappedResultSet): CreateItem = new CreateItem(
-    memberId = rs.long(ci.memberId),
-    id = rs.long(ci.id),
-    itemId = rs.intOpt(ci.itemId),
-    slotitemId = rs.intOpt(ci.slotitemId),
-    fuel = rs.int(ci.fuel),
-    ammo = rs.int(ci.ammo),
-    steel = rs.int(ci.steel),
-    bauxite = rs.int(ci.bauxite),
-    createFlag = rs.boolean(ci.createFlag),
-    shizaiFlag = rs.boolean(ci.shizaiFlag),
-    flagship = rs.int(ci.flagship),
-    created = rs.long(ci.created)
-  )
+  def apply(ci: ResultName[CreateItem])(rs: WrappedResultSet): CreateItem = autoConstruct(rs, ci)
 
   lazy val ci = CreateItem.syntax("ci")
   lazy val mi = MasterSlotItem.syntax("mi")

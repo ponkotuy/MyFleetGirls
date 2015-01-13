@@ -31,14 +31,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
   override val columns = Seq("member_id", "id", "slotitem_id", "name", "locked", "level")
 
   def apply(si: SyntaxProvider[SlotItem])(rs: WrappedResultSet): SlotItem = SlotItem(si.resultName)(rs)
-  def apply(si: ResultName[SlotItem])(rs: WrappedResultSet): SlotItem = new SlotItem(
-    memberId = rs.long(si.memberId),
-    id = rs.int(si.id),
-    slotitemId = rs.int(si.slotitemId),
-    name = rs.string(si.name),
-    locked = rs.boolean(si.locked),
-    level = rs.int(si.level)
-  )
+  def apply(si: ResultName[SlotItem])(rs: WrappedResultSet): SlotItem = autoConstruct(rs, si)
 
   lazy val si = SlotItem.syntax("si")
   lazy val ssi = ShipSlotItem.syntax("ssi")

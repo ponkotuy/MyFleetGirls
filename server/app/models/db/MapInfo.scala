@@ -26,14 +26,9 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
 
   override val columns = Seq("member_id", "id", "cleared", "exboss_flag")
 
-  def apply(mi: ResultName[MapInfo])(rs: WrappedResultSet): MapInfo = new MapInfo(
-    memberId = rs.long(mi.memberId),
-    id = rs.int(mi.id),
-    cleared = rs.boolean(mi.cleared),
-    exbossFlag = rs.boolean(mi.exbossFlag)
-  )
+  def apply(mi: ResultName[MapInfo])(rs: WrappedResultSet): MapInfo = autoConstruct(rs, mi)
 
-  val mi = MapInfo.syntax("mi")
+  lazy val mi = MapInfo.syntax("mi")
 
   override val autoSession = AutoSession
 

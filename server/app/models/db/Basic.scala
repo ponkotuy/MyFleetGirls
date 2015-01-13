@@ -2,7 +2,6 @@ package models.db
 
 import scalikejdbc._
 import com.ponkotuy.data
-import scalikejdbc.{DBSession, WrappedResultSet}
 import tool.DiffCalc
 
 /**
@@ -49,15 +48,7 @@ object Basic extends SQLSyntaxSupport[Basic] {
   lazy val b = Basic.syntax("b")
 
   def apply(b: SyntaxProvider[Basic])(rs: WrappedResultSet): Basic = apply(b.resultName)(rs)
-  def apply(b: ResultName[Basic])(rs: WrappedResultSet): Basic = new Basic(
-    id = rs.long(b.id), memberId = rs.long(b.memberId),
-    lv = rs.int(b.lv), experience = rs.int(b.experience), rank = rs.int(b.rank),
-    maxChara = rs.int(b.maxChara), fCoin = rs.int(b.fCoin),
-    stWin = rs.int(b.stWin), stLose = rs.int(b.stLose),
-    msCount = rs.int(b.msCount), msSuccess = rs.int(b.msSuccess),
-    ptWin = rs.int(b.ptWin), ptLose = rs.int(b.ptLose),
-    created = rs.long(b.created)
-  )
+  def apply(b: ResultName[Basic])(rs: WrappedResultSet): Basic = autoConstruct(rs, b)
 
   def save(b: Basic)(implicit session: DBSession = Basic.autoSession): Basic = {
     withSQL {
