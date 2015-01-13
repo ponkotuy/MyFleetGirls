@@ -1,7 +1,6 @@
 package models.db
 
 import scalikejdbc._
-import scalikejdbc.{DBSession, WrappedResultSet}
 import com.ponkotuy.data
 
 /** このツール内でログイン代わりに使うパラメータ
@@ -17,11 +16,7 @@ case class Auth(id: Long, nickname: String, created: Long) {
 @deprecated("Use Admiral", "0.1-SNAPSHOT")
 object Auth extends SQLSyntaxSupport[Auth] {
   def apply(x: SyntaxProvider[Auth])(rs: WrappedResultSet): Auth = apply(x.resultName)(rs)
-  def apply(x: ResultName[Auth])(rs: WrappedResultSet): Auth = new Auth(
-    rs.long(x.id),
-    rs.string(x.nickname),
-    rs.long(x.created)
-  )
+  def apply(x: ResultName[Auth])(rs: WrappedResultSet): Auth = autoConstruct(rs, x)
 
   lazy val auth = Auth.syntax("auth")
 

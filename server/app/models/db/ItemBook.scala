@@ -23,15 +23,9 @@ object ItemBook extends SQLSyntaxSupport[ItemBook] {
 
   override val columns = Seq("member_id", "id", "index_no", "name", "updated")
 
-  def apply(ib: ResultName[ItemBook])(rs: WrappedResultSet): ItemBook = new ItemBook(
-    memberId = rs.long(ib.memberId),
-    id = rs.int(ib.id),
-    indexNo = rs.int(ib.indexNo),
-    name = rs.string(ib.name),
-    updated = rs.long(ib.updated)
-  )
+  def apply(ib: ResultName[ItemBook])(rs: WrappedResultSet): ItemBook = autoConstruct(rs, ib)
 
-  val ib = ItemBook.syntax("ib")
+  lazy val ib = ItemBook.syntax("ib")
 
   override val autoSession = AutoSession
 

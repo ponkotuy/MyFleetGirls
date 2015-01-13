@@ -22,14 +22,9 @@ object ShipSlotItem extends SQLSyntaxSupport[ShipSlotItem] {
 
   override val columns = Seq("member_id", "ship_id", "id", "slotitem_id")
 
-  def apply(ssi: ResultName[ShipSlotItem])(rs: WrappedResultSet): ShipSlotItem = new ShipSlotItem(
-    memberId = rs.long(ssi.memberId),
-    shipId = rs.int(ssi.shipId),
-    id = rs.int(ssi.id),
-    slotitemId = rs.int(ssi.slotitemId)
-  )
+  def apply(ssi: ResultName[ShipSlotItem])(rs: WrappedResultSet): ShipSlotItem = autoConstruct(rs, ssi)
 
-  val ssi = ShipSlotItem.syntax("ssi")
+  lazy val ssi = ShipSlotItem.syntax("ssi")
 
   override val autoSession = AutoSession
 

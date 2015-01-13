@@ -25,18 +25,11 @@ object DeckSnapshot extends SQLSyntaxSupport[DeckSnapshot] {
   override val columns = Seq("id", "member_id", "name", "title", "comment", "created")
 
   def apply(ds: SyntaxProvider[DeckSnapshot])(rs: WrappedResultSet): DeckSnapshot = apply(ds.resultName)(rs)
-  def apply(ds: ResultName[DeckSnapshot])(rs: WrappedResultSet): DeckSnapshot = new DeckSnapshot(
-    id = rs.get(ds.id),
-    memberId = rs.get(ds.memberId),
-    name = rs.get(ds.name),
-    title = rs.get(ds.title),
-    comment = rs.get(ds.comment),
-    created = rs.get(ds.created)
-  )
+  def apply(ds: ResultName[DeckSnapshot])(rs: WrappedResultSet): DeckSnapshot = autoConstruct(rs, ds)
 
-  val ds = DeckSnapshot.syntax("ds")
-  val dss = DeckShipSnapshot.syntax("dss")
-  val a = Admiral.syntax("a")
+  lazy val ds = DeckSnapshot.syntax("ds")
+  lazy val dss = DeckShipSnapshot.syntax("dss")
+  lazy val a = Admiral.syntax("a")
 
   override val autoSession = AutoSession
 

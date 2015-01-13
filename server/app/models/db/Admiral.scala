@@ -1,7 +1,6 @@
 package models.db
 
 import scalikejdbc._
-import scalikejdbc.{DBSession, WrappedResultSet}
 import com.ponkotuy.data
 
 /**
@@ -16,12 +15,7 @@ case class Admiral(id: Long, nicknameId: Long, nickname: String, created: Long) 
 
 object Admiral extends SQLSyntaxSupport[Admiral] {
   def apply(x: SyntaxProvider[Admiral])(rs: WrappedResultSet): Admiral = apply(x.resultName)(rs)
-  def apply(x: ResultName[Admiral])(rs: WrappedResultSet): Admiral = new Admiral(
-    rs.long(x.id),
-    rs.long(x.nicknameId),
-    rs.string(x.nickname),
-    rs.long(x.created)
-  )
+  def apply(x: ResultName[Admiral])(rs: WrappedResultSet): Admiral = autoConstruct(rs, x)
 
   lazy val a = Admiral.syntax("a")
   lazy val b = Basic.syntax("b")

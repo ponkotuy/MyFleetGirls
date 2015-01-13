@@ -22,14 +22,9 @@ object MyFleetAuth extends SQLSyntaxSupport[MyFleetAuth] {
   override val columns = Seq("id", "hash", "salt", "created")
 
   def apply(mfa: SyntaxProvider[MyFleetAuth])(rs: WrappedResultSet): MyFleetAuth = apply(mfa.resultName)(rs)
-  def apply(mfa: ResultName[MyFleetAuth])(rs: WrappedResultSet): MyFleetAuth = new MyFleetAuth(
-    id = rs.get(mfa.id),
-    hash = rs.get(mfa.hash),
-    salt = rs.get(mfa.salt),
-    created = rs.get(mfa.created)
-  )
+  def apply(mfa: ResultName[MyFleetAuth])(rs: WrappedResultSet): MyFleetAuth = autoConstruct(rs, mfa)
 
-  val mfa = MyFleetAuth.syntax("mfa")
+  lazy val mfa = MyFleetAuth.syntax("mfa")
 
   override val autoSession = AutoSession
 

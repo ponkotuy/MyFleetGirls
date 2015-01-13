@@ -23,16 +23,11 @@ object MasterStype extends SQLSyntaxSupport[MasterStype] {
   override val tableName = "master_stype"
 
   override val columns = Seq("id", "sortno", "name", "scnt", "kcnt")
-  def apply(x: SyntaxProvider[MasterStype])(rs: WrappedResultSet): MasterStype = apply(x.resultName)(rs)
-  def apply(ms: ResultName[MasterStype])(rs: WrappedResultSet): MasterStype = new MasterStype(
-    id = rs.int(ms.id),
-    sortno = rs.int(ms.sortno),
-    name = rs.string(ms.name),
-    scnt = rs.int(ms.scnt),
-    kcnt = rs.int(ms.kcnt)
-  )
 
-  val ms = MasterStype.syntax("ms")
+  def apply(x: SyntaxProvider[MasterStype])(rs: WrappedResultSet): MasterStype = apply(x.resultName)(rs)
+  def apply(ms: ResultName[MasterStype])(rs: WrappedResultSet): MasterStype = autoConstruct(rs, ms)
+
+  lazy val ms = MasterStype.syntax("ms")
 
   override val autoSession = AutoSession
 

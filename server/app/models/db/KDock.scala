@@ -3,7 +3,6 @@ package models.db
 import models.join.KDockWithName
 import scalikejdbc._
 import com.ponkotuy.data
-import scalikejdbc.{WrappedResultSet, DBSession}
 import util.scalikejdbc.BulkInsert._
 
 /**
@@ -17,19 +16,9 @@ case class KDock(
     fuel: Int, ammo: Int, steel: Int, bauxite: Int, created: Long)
 
 object KDock extends SQLSyntaxSupport[KDock] {
+
   def apply(x: SyntaxProvider[KDock])(rs: WrappedResultSet): KDock = apply(x.resultName)(rs)
-  def apply(x: ResultName[KDock])(rs: WrappedResultSet): KDock = new KDock(
-    rs.int(x.id),
-    rs.long(x.memberId),
-    rs.int(x.shipId),
-    rs.int(x.state),
-    rs.long(x.completeTime),
-    rs.int(x.fuel),
-    rs.int(x.ammo),
-    rs.int(x.steel),
-    rs.int(x.bauxite),
-    rs.long(x.created)
-  )
+  def apply(x: ResultName[KDock])(rs: WrappedResultSet): KDock = autoConstruct(rs, x)
 
   lazy val kd = KDock.syntax("kd")
   lazy val ms = MasterShipBase.syntax("ms")

@@ -37,28 +37,12 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
 
   override val columns = Seq("id", "member_id", "area_id", "info_no", "cell", "enemies", "win_rank", "quest_name", "quest_level", "enemy_deck", "first_clear", "get_ship_id", "get_ship_type", "get_ship_name", "created")
 
-  def apply(br: ResultName[BattleResult])(rs: WrappedResultSet): BattleResult = new BattleResult(
-    id = rs.long(br.id),
-    memberId = rs.long(br.memberId),
-    areaId = rs.int(br.areaId),
-    infoNo = rs.int(br.infoNo),
-    cell = rs.int(br.cell),
-    enemies = rs.string(br.enemies),
-    winRank = rs.string(br.winRank),
-    questName = rs.string(br.questName),
-    questLevel = rs.int(br.questLevel),
-    enemyDeck = rs.string(br.enemyDeck),
-    firstClear = rs.boolean(br.firstClear),
-    getShipId = rs.intOpt(br.getShipId),
-    getShipType = rs.stringOpt(br.getShipType),
-    getShipName = rs.stringOpt(br.getShipName),
-    created = rs.long(br.created)
-  )
+  def apply(br: ResultName[BattleResult])(rs: WrappedResultSet): BattleResult = autoConstruct(rs, br)
 
-  val br = BattleResult.syntax("br")
-  val ci = CellInfo.syntax("ci")
-  val ms = MasterShipBase.syntax("ms")
-  val a = Admiral.syntax("a")
+  lazy val br = BattleResult.syntax("br")
+  lazy val ci = CellInfo.syntax("ci")
+  lazy val ms = MasterShipBase.syntax("ms")
+  lazy val a = Admiral.syntax("a")
 
   override val autoSession = AutoSession
 

@@ -2,7 +2,6 @@ package models.db
 
 import models.join.MissionWithFlagship
 import scalikejdbc._
-import scalikejdbc.{DBSession, WrappedResultSet}
 import com.ponkotuy.data
 import util.scalikejdbc.BulkInsert._
 
@@ -14,15 +13,9 @@ import util.scalikejdbc.BulkInsert._
 case class Mission(memberId: Long, deckId: Int, page: Int, number: Int, completeTime: Long, created: Long)
 
 object Mission extends SQLSyntaxSupport[Mission] {
+
   def apply(x: SyntaxProvider[Mission])(rs: WrappedResultSet): Mission = apply(x.resultName)(rs)
-  def apply(x: ResultName[Mission])(rs: WrappedResultSet): Mission = new Mission(
-    rs.long(x.memberId),
-    rs.int(x.deckId),
-    rs.int(x.page),
-    rs.int(x.number),
-    rs.long(x.completeTime),
-    rs.long(x.created)
-  )
+  def apply(x: ResultName[Mission])(rs: WrappedResultSet): Mission = autoConstruct(rs, x)
 
   lazy val m = Mission.syntax("m")
   lazy val mm = MasterMission.syntax("mm")

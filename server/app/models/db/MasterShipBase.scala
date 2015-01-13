@@ -2,7 +2,7 @@ package models.db
 
 import com.ponkotuy.data.master
 import models.join.{MasterShipWithStype, MasterShipAll}
-import scalikejdbc.{DBSession, WrappedResultSet, _}
+import scalikejdbc._
 
 /**
  *
@@ -16,14 +16,7 @@ case class MasterShipBase(
 object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
   override val tableName = "master_ship"
   def apply(x: SyntaxProvider[MasterShipBase])(rs: WrappedResultSet): MasterShipBase = apply(x.resultName)(rs)
-  def apply(x: ResultName[MasterShipBase])(rs: WrappedResultSet): MasterShipBase = new MasterShipBase(
-    rs.int(x.id),
-    rs.string(x.name),
-    rs.string(x.yomi),
-    rs.int(x.sortno),
-    rs.int(x.stype),
-    rs.string(x.filename)
-  )
+  def apply(x: ResultName[MasterShipBase])(rs: WrappedResultSet): MasterShipBase = autoConstruct(rs, x)
 
   lazy val ms = MasterShipBase.syntax("ms")
   lazy val mss = MasterShipSpecs.syntax("mss")

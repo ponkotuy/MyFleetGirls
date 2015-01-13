@@ -34,24 +34,9 @@ object Quest extends SQLSyntaxSupport[Quest] {
   override val columns = Seq("member_id", "id", "category", "typ", "state", "title", "detail", "fuel", "ammo", "steel", "bauxite", "bonus", "progress_flag", "created")
 
   def apply(q: SyntaxProvider[Quest])(rs: WrappedResultSet): Quest = apply(q.resultName)(rs)
-  def apply(q: ResultName[Quest])(rs: WrappedResultSet): Quest = new Quest(
-    memberId = rs.get(q.memberId),
-    id = rs.get(q.id),
-    category = rs.get(q.category),
-    typ = rs.get(q.typ),
-    state = rs.get(q.state),
-    title = rs.get(q.title),
-    detail = rs.get(q.detail),
-    fuel = rs.get(q.fuel),
-    ammo = rs.get(q.ammo),
-    steel = rs.get(q.steel),
-    bauxite = rs.get(q.bauxite),
-    bonus = rs.get(q.bonus),
-    progressFlag = rs.get(q.progressFlag),
-    created = rs.get(q.created)
-  )
+  def apply(q: ResultName[Quest])(rs: WrappedResultSet): Quest = autoConstruct(rs, q)
 
-  val q = Quest.syntax("q")
+  lazy val q = Quest.syntax("q")
 
   override val autoSession = AutoSession
 

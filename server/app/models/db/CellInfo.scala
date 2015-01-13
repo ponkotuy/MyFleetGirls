@@ -23,20 +23,12 @@ case class CellInfo(
 object CellInfo extends SQLSyntaxSupport[CellInfo] {
 
   override val tableName = "cell_info"
-
   override val columns = Seq("area_id", "info_no", "cell", "alphabet", "start", "boss")
 
   def apply(ci: SyntaxProvider[CellInfo])(rs: WrappedResultSet): CellInfo = apply(ci.resultName)(rs)
-  def apply(ci: ResultName[CellInfo])(rs: WrappedResultSet): CellInfo = new CellInfo(
-    areaId = rs.get(ci.areaId),
-    infoNo = rs.get(ci.infoNo),
-    cell = rs.get(ci.cell),
-    alphabet = rs.get(ci.alphabet),
-    start = rs.get(ci.start),
-    boss = rs.get(ci.boss)
-  )
+  def apply(ci: ResultName[CellInfo])(rs: WrappedResultSet): CellInfo = autoConstruct(rs, ci)
 
-  val ci = CellInfo.syntax("ci")
+  lazy val ci = CellInfo.syntax("ci")
 
   override val autoSession = AutoSession
 
