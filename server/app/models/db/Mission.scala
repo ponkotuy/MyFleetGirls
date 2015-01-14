@@ -1,6 +1,7 @@
 package models.db
 
 import models.join.MissionWithFlagship
+import models.other.MissionWithDeckId
 import scalikejdbc._
 import com.ponkotuy.data
 import util.scalikejdbc.BulkInsert._
@@ -35,19 +36,19 @@ object Mission extends SQLSyntaxSupport[Mission] {
     Mission(memberId, deckId, m.page, m.number, m.completeTime, created)
   }
 
-  def bulkInsert(ms: Seq[data.Mission], ids: Seq[Int], memberId: Long, created: Long = System.currentTimeMillis())(
+  def bulkInsert(ms: Seq[MissionWithDeckId], memberId: Long, created: Long = System.currentTimeMillis())(
       implicit session: DBSession = Mission.autoSession): Seq[Mission] = {
-    if(ms.isEmpty || ids.isEmpty) return Nil
+    if(ms.isEmpty) return Nil
     applyUpdate {
       insert.into(Mission).columns(
         column.memberId, column.deckId,
         column.page, column.number, column.completeTime, column.created
       ).multiValues(
-          Seq.fill(ms.size)(memberId), ids,
+          Seq.fill(ms.size)(memberId), ms.map(_.deckId),
           ms.map(_.page), ms.map(_.number), ms.map(_.completeTime), Seq.fill(ms.size)(created)
         )
     }
-    ms.zip(ids).map { case (f, i) => Mission(memberId, i, f.page, f.number, f.completeTime, created) }
+    ms.map { m => Mission(memberId, m.deckId, m.page, m.number, m.completeTime, created) }
   }
 
   def findByDeck(memberId: Long, deckId: Int)(

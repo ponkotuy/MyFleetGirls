@@ -1,5 +1,6 @@
 package models.db
 
+import models.other.MissionWithDeckId
 import scalikejdbc._
 import com.ponkotuy.data
 import util.scalikejdbc.BulkInsert._
@@ -50,8 +51,9 @@ object DeckPort extends SQLSyntaxSupport[DeckPort] {
       val created = System.currentTimeMillis()
 
       // Mission
-      val (missions, ids) = dps.flatMap(d => d.mission.map(_ -> d.id)).unzip
-      Mission.bulkInsert(missions, ids, memberId, created)
+      val missions = dps.flatMap(d => d.mission.map(MissionWithDeckId(_, d.id)))
+      Mission.bulkInsert(missions, memberId, created)
+      MissionHistory.bulkInsert(missions, memberId, created)
 
       // DeckShip
       dps.foreach { d => DeckShip.bulkInsert(d.id, memberId, d.ships)}

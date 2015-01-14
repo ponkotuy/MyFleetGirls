@@ -55,10 +55,10 @@ object ResType extends Log {
   case object GetShip extends ResType(s"\\A$ReqKousyou/getship\\z".r) // IDとshipIDのみ
   case object CreateItem extends ResType(s"\\A$ReqKousyou/createitem\\z".r)
   case object RemodelSlotlist extends ResType(s"\\A$ReqKousyou/remodel_slotlist\\z".r)
-  case object Charge extends ResType(s"\\A$ReqHokyu/charge\\z".r) // 特に要らない
+  case object Charge extends ResType(s"\\A$ReqHokyu/charge\\z".r)
   case object HenseiChange extends ResType(s"\\A$ReqHensei/change\\z".r)
   case object HenseiLock extends ResType(s"\\A$ReqHensei/lock\\z".r)
-  case object MissionStart extends ResType(s"\\A$ReqMission/start\\z".r) // 特に要らない
+  case object MissionStart extends ResType(s"\\A$ReqMission/start\\z".r)
   case object KaisouPowerup extends ResType(s"\\A$ReqKaisou/powerup\\z".r)
   case object Remodeling extends ResType(s"\\A$ReqKaisou/remodeling\\z".r)
   case object Marriage extends ResType(s"\\A$ReqKaisou/marriage\\z".r) // ケッコンカッコカリ（はぁと

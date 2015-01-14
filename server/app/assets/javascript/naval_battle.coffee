@@ -63,6 +63,7 @@ $(document).ready ->
           @ranks[str] = obj.rank.indexOf(str) != -1
     compiled: ->
       @restoreHash()
+      @getData()
     ready: ->
       @$watch 'ranks', @getData, true # Deep Watch
     watch:
