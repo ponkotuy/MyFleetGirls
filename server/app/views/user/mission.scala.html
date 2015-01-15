@@ -1,0 +1,45 @@
+@(user: User, stages: Seq[MasterMission])
+
+@main {
+  <title>@{user.admiral.nickname}提督 -遠征履歴-</title>
+  <script src="@Js.Vue"></script>
+  <script src="@Js.Coffee("mission")"></script>
+} {
+  @head_content(user) {
+    @usertab(user, "mission") {
+      <div class="page-header">
+        <h1>遠征履歴</h1>
+      </div>
+
+      <div id="mission">
+        <form class="form-inline" role="form">
+          <div class="form-group">
+            <label>Stage</label>
+            <select v-model="stage" id="stage_select">
+              <option selected="selected">ALL</option>
+              @stages.map { stage =>
+                <option value="@stage.id">@{stage.mapArea}-@{stage.name}</option>
+              }
+            </select>
+          </div>
+        </form>
+
+        <table class="table table-condensed table-striped">
+          <thead>
+            <tr>
+              <th>Area</th><th>ID</th><th>名前</th><th>帰還（予定）日時</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-repeat="m: missions">
+              <td>{{m.mapArea}}</td>
+              <td>{{m.missionId}}</td>
+              <td>{{m.name}}</td>
+              <td>{{m.completeTime}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+}

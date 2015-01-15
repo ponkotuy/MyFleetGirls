@@ -68,6 +68,7 @@ GET     /rest/v1/:userId/battle_result controllers.RestUser.battleResult(userId:
 GET     /rest/v1/:userId/battle_result_count controllers.RestUser.battleResultCount(userId: Long, boss: Boolean ?= false, drop: Boolean ?= false, rank: String ?= "SABCDE", area: Option[Int], info: Option[Int])
 GET     /rest/v1/:userId/route_log  controllers.RestUser.routeLog(userId: Long, limit: Int ?= 10, offset: Int ?= 0, area: Int ?= -1, info: Int ?= -1)
 GET     /rest/v1/:userId/route_log_count controllers.RestUser.routeLogCount(userId: Long, area: Int ?= -1, info: Int ?= -1)
+GET     /rest/v2/user/:userId/mission controllers.RestUser.mission(userId: Long, limit: Int ?= 10, offset: Int ?= 0, missionId: Option[Int])
 GET     /rest/v1/:userId/quest      controllers.RestUser.quest(userId: Long)
 GET     /rest/v1/:userId/snap/:snapId controllers.RestUser.snap(userId: Long, snapId: Long)
 GET     /rest/v2/user/:userId/book/ships controllers.RestUser.bookShips(userId: Long)
@@ -127,6 +128,7 @@ GET     /user/:userId/snap_aship/:shipId controllers.UserView.snapAship(userId: 
 GET     /user/:userId/fleet/:deckId controllers.UserView.fleet(userId: Long, deckId: Int)
 GET     /user/:userId/naval_battle  controllers.UserView.navalBattle(userId: Long)
 GET     /user/:userId/route_log     controllers.UserView.routeLog(userId: Long)
+GET     /user/:userId/mission       controllers.UserView.mission(userId: Long)
 GET     /user/:userId/quest         controllers.UserView.quest(userId: Long)
 GET     /user/:userId/statistics    controllers.UserView.statistics(userId: Long)
 

@@ -99,6 +99,14 @@ object RestUser extends Controller {
       .append(if(info != -1) sqls" and info_no = ${info}" else sqls"")
   }
 
+  def mission(memberId: Long, limit: Int, offset: Int, missionId: Option[Int]) = returnJson {
+    require(limit + offset <= 200, "limit + offset <= 200")
+    val where: SQLSyntax = sqls"mh.member_id = ${memberId}"
+      .append(missionId.map(id => sqls" and mh.number = ${id}").getOrElse(sqls""))
+    db.MissionHistory.findAllByWithMaster(where, limit, offset)
+      .sortBy(-_.completeTime).map(_.toJson)
+  }
+
   def quest(memberId: Long) = returnJson { db.Quest.findAllBy(sqls"member_id = ${memberId}") }
 
   def snap(memberId: Long, snapId: Long) = returnJson {

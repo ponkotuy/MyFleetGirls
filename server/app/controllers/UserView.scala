@@ -193,6 +193,11 @@ object UserView extends Controller {
     Ok(views.html.user.route_log(user, stages))
   }
 
+  def mission(memberId: Long) = userView(memberId) { user =>
+    val stages = db.MasterMission.findAll()
+    Ok(views.html.user.mission(user, stages))
+  }
+
   def quest(memberId: Long) = userView(memberId) { user =>
     Ok(views.html.user.quest(user))
   }

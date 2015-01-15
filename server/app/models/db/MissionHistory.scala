@@ -1,5 +1,6 @@
 package models.db
 
+import models.join.MissionHistoryWithMaster
 import models.other.MissionWithDeckId
 import scalikejdbc._
 import util.scalikejdbc.BulkInsert._
@@ -38,6 +39,7 @@ object MissionHistory extends SQLSyntaxSupport[MissionHistory] {
   )
 
   val mh = MissionHistory.syntax("mh")
+  val mm = MasterMission.syntax("mm")
 
   override val autoSession = AutoSession
 
@@ -59,6 +61,16 @@ object MissionHistory extends SQLSyntaxSupport[MissionHistory] {
     withSQL {
       select.from(MissionHistory as mh).where.append(sqls"${where}")
     }.map(MissionHistory(mh.resultName)).list().apply()
+  }
+
+  def findAllByWithMaster(where: SQLSyntax, limit: Int, offset: Int)(implicit session: DBSession = autoSession): List[MissionHistoryWithMaster] = {
+    withSQL {
+      select.from(MissionHistory as mh)
+        .innerJoin(MasterMission as mm).on(mh.number, mm.id)
+        .where(where).limit(limit).offset(offset)
+    }.map { rs =>
+      MissionHistoryWithMaster(MissionHistory(mh)(rs), MasterMission(mm)(rs))
+    }.list().apply()
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
