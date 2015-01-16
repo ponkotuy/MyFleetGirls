@@ -3,6 +3,9 @@
 @main {
   <title>@{user.admiral.nickname}提督 -遠征履歴-</title>
   <script src="@Js.Vue"></script>
+  <script src="@Js.MomentLocales"></script>
+  <script src="@Js.Common"></script>
+  <script src="@Js.Coffee("time")"></script>
   <script src="@Js.Coffee("mission")"></script>
 } {
   @head_content(user) {
@@ -35,7 +38,7 @@
               <td>{{m.mapArea}}</td>
               <td>{{m.missionId}}</td>
               <td>{{m.name}}</td>
-              <td>{{m.completeTime}}</td>
+              <td>{{toDate(m.completeTime)}}</td>
             </tr>
           </tbody>
         </table>
