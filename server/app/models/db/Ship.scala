@@ -13,7 +13,7 @@ import scalikejdbc.interpolation.SQLSyntax._
  */
 case class Ship(
     id: Int, shipId: Int, memberId: Long,
-    lv: Int, exp: Int, nowhp: Int, slot: List[Int], fuel: Int, bull: Int, dockTime: Long, cond: Int,
+    lv: Short, exp: Int, nowhp: Short, slot: List[Int], fuel: Int, bull: Int, dockTime: Long, cond: Int,
     karyoku: Int, raisou: Int, taiku: Int, soukou: Int, kaihi: Int, taisen: Int, sakuteki: Int, lucky: Int, locked: Boolean,
     created: Long, maxhp: Int)
 
@@ -27,9 +27,9 @@ object Ship extends SQLSyntaxSupport[Ship] {
       rs.int(x.id),
       rs.int(x.shipId),
       rs.long(x.memberId),
-      rs.int(x.lv),
+      rs.short(x.lv),
       rs.int(x.exp),
-      rs.int(x.nowhp),
+      rs.short(x.nowhp),
       slot,
       rs.int(x.fuel),
       rs.int(x.bull),
@@ -56,6 +56,13 @@ object Ship extends SQLSyntaxSupport[Ship] {
   lazy val mst = MasterStype.syntax("mst")
   lazy val mss = MasterShipSpecs.syntax("mss")
   lazy val a = Admiral.syntax("a")
+
+  def find(memberId: Long, sid: Int)(implicit session: DBSession = autoSession): Option[Ship] = withSQL {
+    select.from(Ship as s).where.eq(s.memberId, memberId).and.eq(s.id, sid)
+  }.map { rs =>
+    val slot = findSlot(memberId, sid)
+    Ship(s, slot)(rs)
+  }.single().apply()
 
   def findShipId(memberId: Long, sid: Int)(implicit session: DBSession = autoSession): Option[Int] = withSQL {
     select(s.shipId).from(Ship as s).where.eq(s.memberId, memberId).and.eq(s.id, sid)

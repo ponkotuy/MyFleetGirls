@@ -30,7 +30,7 @@
         <table class="table table-condensed table-striped">
           <thead>
             <tr>
-              <th>Area</th><th>ID</th><th>名前</th><th>帰還（予定）日時</th>
+              <th>Area</th><th>ID</th><th>名前</th><th>艦隊</th><th>帰還（予定）日時</th>
             </tr>
           </thead>
           <tbody>
@@ -38,6 +38,7 @@
               <td>{{m.mapArea}}</td>
               <td>{{m.missionId}}</td>
               <td>{{m.name}}</td>
+              <td><span v-repeat="s: m.ships">{{s.name}}<small>Lv{{s.lv}}</small> </span></td>
               <td>{{toDate(m.completeTime)}}</td>
             </tr>
           </tbody>

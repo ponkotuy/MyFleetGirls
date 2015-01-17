@@ -20,7 +20,7 @@
    基本的には http://myfleet.moe/entire/about 参照。ただし、起動は
 
 #+BEGIN_SRC
-$ sbt +proxy
+$ sbt proxy
 #+END_SRC
 
   とします。sbtが必要です。設定はapplication.confをトップディレクトリに置きます。
@@ -34,7 +34,7 @@ $ sbt +proxy
 
    - run :: サーバを立ち上げます。ただし開発モード
    - start :: 同上。ただし本番モード
-   - proxy :: client立ち上げ。ただし通常は+が必要
+   - proxy :: client立ち上げ
    - assembl :: MyFleetGirls ClientのダウンローダとClient本体をone-packageのjarに固める
    - zip :: assemblyののちに、publicにそれらを配置する
    - prof :: profilerを立ち上げる（メンテされてないので動くか不明）

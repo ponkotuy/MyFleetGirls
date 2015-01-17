@@ -106,7 +106,7 @@ object Post extends Controller {
   def deckPort = authAndParse[List[DeckPort]] { case (auth, decks) =>
     try {
       db.DeckPort.deleteByUser(auth.id)
-      db.DeckPort.bulkInsert(decks, auth.id)
+      db.DeckPort.bulkInsertEntire(decks, auth.id)
     } catch {
       case e: Exception => e.printStackTrace()
     }

@@ -45,18 +45,18 @@ object DeckPort extends SQLSyntaxSupport[DeckPort] {
     }
   }
 
-  def bulkInsert(dps: Seq[data.DeckPort], memberId: Long)(
+  def bulkInsertEntire(dps: Seq[data.DeckPort], memberId: Long)(
       implicit session: DBSession = DeckPort.autoSession): Unit = {
     if(dps.nonEmpty) {
       val created = System.currentTimeMillis()
 
       // Mission
-      val missions = dps.flatMap(d => d.mission.map(MissionWithDeckId(_, d.id)))
+      val missions = dps.flatMap(d => d.mission.map(MissionWithDeckId(_, d.id, d.ships)))
       Mission.bulkInsert(missions, memberId, created)
-      MissionHistory.bulkInsert(missions, memberId, created)
+      missions.foreach { mission => MissionHistory.createFromWithDeckId(mission, memberId, created) }
 
       // DeckShip
-      dps.foreach { d => DeckShip.bulkInsert(d.id, memberId, d.ships)}
+      dps.foreach { d => DeckShip.bulkInsert(d.id, memberId, d.ships) }
 
       // Main
       applyUpdate {

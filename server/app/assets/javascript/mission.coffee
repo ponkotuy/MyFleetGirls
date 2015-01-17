@@ -6,6 +6,7 @@ $(document).ready ->
     data:
       stage: 'ALL'
       missions: []
+      userid: userid
     methods:
       getData: ->
         @missions = []

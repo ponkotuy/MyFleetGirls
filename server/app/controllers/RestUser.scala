@@ -103,8 +103,10 @@ object RestUser extends Controller {
     require(limit + offset <= 200, "limit + offset <= 200")
     val where: SQLSyntax = sqls"mh.member_id = ${memberId}"
       .append(missionId.map(id => sqls" and mh.number = ${id}").getOrElse(sqls""))
-    db.MissionHistory.findAllByWithMaster(where, limit, offset)
-      .sortBy(-_.completeTime).map(_.toJson)
+    val missions = db.MissionHistory.findAllByWithMaster(where, limit, offset)
+      .sortBy(-_.completeTime)
+    val ships = db.MissionHistoryShip.findAllWithMasterShipBy(sqls"mhs.mission_id in (${missions.map(_.missionId)})")
+    missions.map { m => m.toJsonWithShip(ships) }
   }
 
   def quest(memberId: Long) = returnJson { db.Quest.findAllBy(sqls"member_id = ${memberId}") }

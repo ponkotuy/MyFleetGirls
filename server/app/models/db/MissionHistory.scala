@@ -28,18 +28,11 @@ object MissionHistory extends SQLSyntaxSupport[MissionHistory] {
   override val columns = Seq("id", "member_id", "deck_id", "page", "number", "complete_time", "created")
 
   def apply(mh: SyntaxProvider[MissionHistory])(rs: WrappedResultSet): MissionHistory = apply(mh.resultName)(rs)
-  def apply(mh: ResultName[MissionHistory])(rs: WrappedResultSet): MissionHistory = new MissionHistory(
-    id = rs.get(mh.id),
-    memberId = rs.get(mh.memberId),
-    deckId = rs.get(mh.deckId),
-    page = rs.get(mh.page),
-    number = rs.get(mh.number),
-    completeTime = rs.get(mh.completeTime),
-    created = rs.get(mh.created)
-  )
+  def apply(mh: ResultName[MissionHistory])(rs: WrappedResultSet): MissionHistory = autoConstruct(rs, mh)
 
   val mh = MissionHistory.syntax("mh")
   val mm = MasterMission.syntax("mm")
+  val mhs = MissionHistoryShip.syntax("mhs")
 
   override val autoSession = AutoSession
 
@@ -48,6 +41,10 @@ object MissionHistory extends SQLSyntaxSupport[MissionHistory] {
       select.from(MissionHistory as mh).where.eq(mh.id, id)
     }.map(MissionHistory(mh.resultName)).single().apply()
   }
+
+  def findFromCompleteTime(memberId: Long, completeTime: Long)(implicit session: DBSession = autoSession): Option[MissionHistory] = withSQL {
+    select.from(MissionHistory as mh).where.eq(mh.memberId, memberId).and.eq(mh.completeTime, completeTime)
+  }.map(MissionHistory(mh)).single().apply()
 
   def findAll()(implicit session: DBSession = autoSession): List[MissionHistory] = {
     withSQL(select.from(MissionHistory as mh)).map(MissionHistory(mh.resultName)).list().apply()
@@ -114,6 +111,14 @@ object MissionHistory extends SQLSyntaxSupport[MissionHistory] {
       created = created)
   }
 
+  def createFromWithDeckId(ms: MissionWithDeckId, memberId: Long, created: Long = System.currentTimeMillis())(
+      implicit session: DBSession = autoSession): Unit = {
+    val exists = findFromCompleteTime(memberId, ms.completeTime).isDefined
+    if(exists) return
+    val result = create(memberId, ms.deckId, ms.page, ms.number, ms.completeTime, created)
+    MissionHistoryShip.bulkInsert(ms.misshonShips(memberId, result.id, created))
+  }
+
   def save(entity: MissionHistory)(implicit session: DBSession = autoSession): MissionHistory = {
     withSQL {
       update(MissionHistory).set(
@@ -131,6 +136,7 @@ object MissionHistory extends SQLSyntaxSupport[MissionHistory] {
 
   def bulkInsert(ms: Seq[MissionWithDeckId], memberId: Long, created: Long = System.currentTimeMillis())(
       implicit session: DBSession = autoSession): Unit = {
+    if(ms.isEmpty) return
     val exists = findAllBy(sqls"mh.member_id = ${memberId} and mh.complete_time in (${ms.map(_.completeTime)})").map(_.completeTime)
     val ms_ = ms.filterNot { m => exists.contains(m.completeTime) }
     if(ms_.isEmpty) return
