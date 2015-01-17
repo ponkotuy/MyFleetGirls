@@ -23,11 +23,11 @@
                 <td>@name</td>
                 <td>@if(ships.contains(indexNo)){ <span class="glyphicon glyphicon-ok"></span> }</td>
                 <td>@if(ships.get(indexNo).exists(_.isDameged)) {
-                    <span class="glyphicon glyphicon-ok"></span>
+                    <span class="glyphicon glyphicon-ok-circle"></span>
                   }
                 </td>
                 <td>@if(ships.get(indexNo).exists(_.isMarried)) {
-                  <span class="glyphicon glyphicon-ok"></span>
+                  <span class="glyphicon glyphicon-heart"></span>
                 }
                 </td>
               </tr>
