@@ -36,7 +36,7 @@
           <tbody>
             <tr v-repeat="m: missions">
               <td>{{m.mapArea}}</td>
-              <td>{{m.missionId}}</td>
+              <td>{{m.number}}</td>
               <td>{{m.name}}</td>
               <td><span v-repeat="s: m.ships">{{s.name}}<small>Lv{{s.lv}}</small> </span></td>
               <td>{{toDate(m.completeTime)}}</td>

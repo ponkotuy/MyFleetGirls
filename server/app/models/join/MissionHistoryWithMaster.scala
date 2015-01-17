@@ -9,12 +9,14 @@ import models.db._
  */
 case class MissionHistoryWithMaster(history: MissionHistory, master: MasterMission) {
   def missionId = history.id
+  def number = history.number
   def name = master.name
   def mapArea = master.mapArea
   def completeTime = history.completeTime
 
   def toJson: JObject = ("mapArea" -> mapArea) ~
     ("missionId" -> missionId) ~
+    ("number" -> number) ~
     ("name" -> name) ~
     ("completeTime" -> completeTime)
 
