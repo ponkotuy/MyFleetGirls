@@ -42,13 +42,18 @@ $(document).ready ->
           xs = @stage.split('-')
           {area: xs[0], info: xs[1]}
       setHash: () ->
-        data = if @fleetType != 'name' then $.extend(@areainfo(), {ftype: @fleetType}) else @areainfo()
+        data = if @fleetType != 'name'
+          $.extend(@areainfo(), {ftype: @fleetType})
+        else
+          @areainfo()
+        data.page = @page
         location.hash = toURLParameter(data)
       restoreHash: () ->
         obj = fromURLParameter(location.hash.replace(/^\#/, ''))
         if obj.area? and obj.info?
           @stage = "#{obj.area}-#{obj.info}"
         @fleetType = obj.ftype ? @fleetType
+        @page = obj.page ? @page
       setPage: (page) -> @page = page
       maxPage: () -> Math.min(Math.ceil(@allCount / @count), 10)
       pages: () -> [0..(@maxPage() - 1)]

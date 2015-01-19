@@ -29,8 +29,8 @@ $(document).ready ->
         location.hash = toURLParameter(obj)
       restoreHash: ->
         obj = fromURLParameter(location.hash.replace(/^\#/, ''))
-        if obj.stage? then @stage = obj.stage
-        if obj.page then @page = obj.page
+        @stage = obj.stage ? @stage
+        @page = obj.page ? @page
       setPage: (page) -> @page = page
       maxPage: () -> Math.min(Math.ceil(@allCount / pageCount), 10)
       pages: () -> [0..(@maxPage() - 1)]
