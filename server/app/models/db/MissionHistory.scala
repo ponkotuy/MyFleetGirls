@@ -64,7 +64,8 @@ object MissionHistory extends SQLSyntaxSupport[MissionHistory] {
     withSQL {
       select.from(MissionHistory as mh)
         .innerJoin(MasterMission as mm).on(mh.number, mm.id)
-        .where(where).limit(limit).offset(offset)
+        .where(where)
+        .orderBy(mh.completeTime).desc.limit(limit).offset(offset)
     }.map { rs =>
       MissionHistoryWithMaster(MissionHistory(mh)(rs), MasterMission(mm)(rs))
     }.list().apply()

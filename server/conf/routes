@@ -69,6 +69,7 @@ GET     /rest/v1/:userId/battle_result_count controllers.RestUser.battleResultCo
 GET     /rest/v1/:userId/route_log  controllers.RestUser.routeLog(userId: Long, limit: Int ?= 10, offset: Int ?= 0, area: Int ?= -1, info: Int ?= -1)
 GET     /rest/v1/:userId/route_log_count controllers.RestUser.routeLogCount(userId: Long, area: Int ?= -1, info: Int ?= -1)
 GET     /rest/v2/user/:userId/mission controllers.RestUser.mission(userId: Long, limit: Int ?= 10, offset: Int ?= 0, missionId: Option[Int])
+GET     /rest/v2/user/:userId/mission_count controllers.RestUser.missionCount(userId: Long, missionId: Option[Int])
 GET     /rest/v1/:userId/quest      controllers.RestUser.quest(userId: Long)
 GET     /rest/v1/:userId/snap/:snapId controllers.RestUser.snap(userId: Long, snapId: Long)
 GET     /rest/v2/user/:userId/book/ships controllers.RestUser.bookShips(userId: Long)

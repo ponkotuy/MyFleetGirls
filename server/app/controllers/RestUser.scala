@@ -73,7 +73,7 @@ object RestUser extends Controller {
       .append(info.map(i => sqls" and br.info_no = ${i}").getOrElse(sqls""))
 
   def routeLog(memberId: Long, limit: Int, offset: Int, area: Int, info: Int) = returnJson {
-    require(limit + offset <= 200, "limit + offset <= 200")
+    require(limit + offset <= 210, "limit + offset <= 210")
     val result = db.MapRoute.findAllBy(routeLogWhere(memberId, area, info), limit, offset)
     val ships = db.Ship.findAllByUserWithName(memberId)
       .map(s => s.id -> s).toMap
@@ -101,13 +101,21 @@ object RestUser extends Controller {
 
   def mission(memberId: Long, limit: Int, offset: Int, missionId: Option[Int]) = returnJson {
     require(limit + offset <= 200, "limit + offset <= 200")
-    val where: SQLSyntax = sqls"mh.member_id = ${memberId}"
-      .append(missionId.map(id => sqls" and mh.number = ${id}").getOrElse(sqls""))
+    val where = missionWhere(memberId, missionId)
     val missions = db.MissionHistory.findAllByWithMaster(where, limit, offset)
       .sortBy(-_.completeTime)
     val ships = db.MissionHistoryShip.findAllWithMasterShipBy(sqls"mhs.mission_id in (${missions.map(_.missionId)})")
     missions.map { m => m.toJsonWithShip(ships) }
   }
+
+  def missionCount(memberId: Long, missionId: Option[Int]) = returnString {
+    val where = missionWhere(memberId, missionId)
+    db.MissionHistory.countBy(where)
+  }
+
+  private def missionWhere(memberId: Long, missionId: Option[Int]): SQLSyntax =
+    sqls"mh.member_id = ${memberId}"
+      .append(missionId.map(id => sqls" and mh.number = ${id}").getOrElse(sqls""))
 
   def quest(memberId: Long) = returnJson { db.Quest.findAllBy(sqls"member_id = ${memberId}") }
 

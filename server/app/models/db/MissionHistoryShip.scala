@@ -64,6 +64,7 @@ object MissionHistoryShip extends SQLSyntaxSupport[MissionHistoryShip] {
       select.from(MissionHistoryShip as mhs)
         .innerJoin(MasterShipBase as ms).on(mhs.shipId, ms.id)
         .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+        .where(where)
         .orderBy(mhs.missionId, mhs.id)
     }.map { rs =>
       val ship = MissionHistoryShip(mhs)(rs)
