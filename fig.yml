@@ -1,0 +1,10 @@
+play:
+  build: .
+  links:
+    - db
+  volumes:
+    - ~/.ivy2:/root/.ivy2
+    - ~/.sbt:/root/.sbt
+db:
+  image: dockerfile/mariadb
+  command: bash -c 'echo "mysqld_safe &" > /tmp/config && echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config && echo "mysql -e \"create database myfleet;\"" >> /tmp/config && bash /tmp/config && rm -f /tmp/config'
