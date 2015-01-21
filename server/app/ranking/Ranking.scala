@@ -29,6 +29,7 @@ case class CachedRanking(ranking: Ranking) extends Ranking {
       if(result.size == limit) result else updateAndReturn(limit)
     } else updateAndReturn(limit)
   }
+
   private[this] def updateAndReturn(limit: Int): List[RankingElement] = {
     val result = ranking.rankingQuery(limit)
     val map = result.zipWithIndex.map { case (elem, i) => i -> elem }.toMap
