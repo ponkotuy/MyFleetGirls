@@ -43,6 +43,7 @@ GET     /rest/v1/search_base_user   controllers.Rest.searchBaseUser(base: Int, q
 GET     /rest/v1/search_master      controllers.Rest.searchMaster(q: String)
 GET     /rest/v1/search_master_ship controllers.Rest.searchMasterShip(q: String)
 GET     /rest/v2/master/ship/count  controllers.Rest.masterShipCount()
+GET     /rest/v2/master/ship/hash   controllers.Rest.masterShipHash()
 GET     /rest/v1/recipe/from_ship/:shipId controllers.Rest.recipeFromShip(shipId: Int, from: String ?= "", to: String ?= "")
 GET     /rest/v1/recipe/from_item/:itemId controllers.Rest.recipeFromItem(itemId: Int, from: String ?= "", to: String ?= "")
 GET     /rest/v1/drop/:rank/:area/:info/:cell controllers.Rest.dropCell(area: Int, info: Int, cell: Int, rank: String, from: String ?= "", to: String ?= "")

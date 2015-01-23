@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream
 import com.ponkotuy.data._
 import com.ponkotuy.data.master._
 import com.ponkotuy.http.MFGHttp
-import com.ponkotuy.tool.TempFileTool
+import com.ponkotuy.tool.{Checksum, TempFileTool}
 import com.ponkotuy.util.Log
 import com.ponkotuy.value.KCServer
 import org.jboss.netty.buffer.ChannelBuffer
@@ -24,8 +24,10 @@ object Post extends Log {
     val masterGraph = MasterShipGraph.fromJson(obj \ "api_mst_shipgraph")
     val filenames = masterGraph.map(it => it.id -> it.filename).toMap
     val masterShip = MasterShip.fromJson(obj \ "api_mst_ship", filenames)
-    val existingCount = MFGHttp.get("/master/ship/count", 2).map(_.toLong)
-    if(existingCount.exists(_ != masterShip.size)) {
+    val hash = Checksum.fromSeq(masterShip.map(_.base.name))
+    println(hash)
+    val existingHash = MFGHttp.get("/master/ship/hash", 2).map(_.toLong)
+    if(existingHash.exists(_ != hash)) {
       MFGHttp.masterPost("/master/ship", write(masterShip))
       val masterMission = MasterMission.fromJson(obj \ "api_mst_mission")
       MFGHttp.masterPost("/master/mission", write(masterMission))

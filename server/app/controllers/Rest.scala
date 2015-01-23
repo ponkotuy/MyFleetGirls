@@ -1,5 +1,6 @@
 package controllers
 
+import com.ponkotuy.tool.Checksum
 import models.db
 import models.join.{ShipDrop, ShipWithFav}
 import models.query.Period
@@ -39,7 +40,11 @@ object Rest extends Controller {
       db.BattleResult.findAllShipByNameLike(s"%$q%")
   }
 
-  def masterShipCount() = actionAsync { request => Ok(db.MasterShipBase.count().toString) }
+  def masterShipCount() = returnString { db.MasterShipBase.count() }
+  def masterShipHash() = returnString {
+    val names = db.MasterShipBase.findShipNames()
+    Checksum.fromSeq(names)
+  }
 
   def recipeFromShip(shipId: Int, from: String, to: String) = returnJson {
     val fromTo = Period.fromStr(from, to).where(sqls"cs.created")

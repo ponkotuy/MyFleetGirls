@@ -49,6 +49,10 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
     select.from(MasterShipBase as ms)
   }.map(MasterShipBase(ms)).toList().apply()
 
+  def findShipNames()(implicit session: DBSession = autoSession): List[String] = withSQL {
+    select(ms.name).from(MasterShipBase as ms)
+  }.map(_.string(1)).toList().apply()
+
   def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[MasterShipBase] = withSQL {
     select.from(MasterShipBase as ms).where(where)
   }.map(MasterShipBase(ms)).toList().apply()
