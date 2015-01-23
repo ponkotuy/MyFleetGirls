@@ -2,12 +2,14 @@ package controllers
 
 import com.ponkotuy.tool.Checksum
 import models.db
-import models.join.{ShipDrop, ShipWithFav}
+import models.join.{ItemMat, ShipDrop, ShipWithFav}
 import models.query.Period
 import org.json4s.JsonDSL._
 import org.json4s._
 import play.api.mvc.Controller
 import scalikejdbc._
+
+import scala.collection.mutable
 
 /**
  *
@@ -66,7 +68,13 @@ object Rest extends Controller {
 
   def recipeFromItem(itemId: Int, from: String, to: String) = returnJson {
     val fromTo = Period.fromStr(from, to).where(sqls"ci.created")
-    val allCounts = db.CreateItem.materialCount(fromTo).toMap
+    val allCounts = {
+      val counts = db.CreateItem.materialCount(fromTo)
+      val builder = mutable.Map[ItemMat, Long]().withDefaultValue(0L)
+      builder.sizeHint(counts.size)
+      counts.foreach { case (mat, count) => builder(mat) += count }
+      builder.toMap
+    }
     val counts = db.CreateItem.materialCount(sqls"slotitem_id = ${itemId} and ${fromTo}")
     counts.map { case (mat, count) =>
       Map("mat" -> mat, "count" -> count, "sum" -> allCounts.lift(mat).getOrElse(Long.MaxValue))

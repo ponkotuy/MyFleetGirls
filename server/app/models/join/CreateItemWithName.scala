@@ -36,7 +36,7 @@ object CreateItemWithName {
     )
 }
 
-case class ItemMat(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: Int, sTypeName: String)
+case class ItemMat(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sTypeName: String)
 
 object ItemMat {
   def apply(ci: SyntaxProvider[CreateItem], mst: SyntaxProvider[MasterStype])(rs: WrappedResultSet): ItemMat =
@@ -45,7 +45,6 @@ object ItemMat {
       rs.int(ci.ammo),
       rs.int(ci.steel),
       rs.int(ci.bauxite),
-      rs.int(mst.id),
       rs.string(mst.name)
     )
 }

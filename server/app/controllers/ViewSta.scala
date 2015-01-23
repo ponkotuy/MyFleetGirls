@@ -56,7 +56,7 @@ object ViewSta extends Controller {
 
   def citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: String, from: String, to: String) = actionAsync {
     val fromTo = Period.fromStr(from, to)
-    val mat = ItemMat(fuel, ammo, steel, bauxite, -1, sType)
+    val mat = ItemMat(fuel, ammo, steel, bauxite, sType)
     val ci = CItem(mat, fromTo)
     val citems = db.CreateItem.findAllByWithName(
       sqls"ci.fuel = $fuel and ci.ammo = $ammo and ci.steel = $steel and ci.bauxite = $bauxite and mst.name = $sType",
