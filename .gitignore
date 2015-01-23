@@ -33,4 +33,6 @@ server/conf/application.conf
 # Others
 *~
 *.hprof.txt
-server/public/MFGsTitle.png
+server/public/*.png
+logs
+message
