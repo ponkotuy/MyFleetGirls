@@ -1,0 +1,9 @@
+#!/bin/sh
+
+cd /home/yosuke/service/MyFleetGirls
+git --git-dir=.git pull
+sbt zip
+sleep 3
+/mnt/backup/service/dump/myfleet/dump.sh
+kill `cat server/target/universal/stage/RUNNING_PID`
+JAVA_HOME=$HOME/etc/soft/jdk1.8.0 sbt start -Dhttp.port=9003 &

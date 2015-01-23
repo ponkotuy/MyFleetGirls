@@ -25,7 +25,6 @@ object Post extends Log {
     val filenames = masterGraph.map(it => it.id -> it.filename).toMap
     val masterShip = MasterShip.fromJson(obj \ "api_mst_ship", filenames)
     val hash = Checksum.fromSeq(masterShip.map(_.base.name))
-    println(hash)
     val existingHash = MFGHttp.get("/master/ship/hash", 2).map(_.toLong)
     if(existingHash.exists(_ != hash)) {
       MFGHttp.masterPost("/master/ship", write(masterShip))
