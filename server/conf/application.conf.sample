@@ -64,3 +64,6 @@ parsers.text.maxLength=1024K
 
 # Common Key for Atom ID
 atom.common_key=
+
+# Assets Cache
+"assets.cache./public/proxy.pac"="public, max-age=10800"
