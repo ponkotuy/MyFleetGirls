@@ -1,7 +1,7 @@
 package com.ponkotuy.tool
 
-import java.io.{FileOutputStream, File}
-import scala.util.Random
+import java.io.{Closeable, File}
+import java.nio.file.Files
 
 /**
  *
@@ -11,15 +11,27 @@ import scala.util.Random
 object TempFileTool {
   private val Fname = "tempfiletool_myfleet"
 
-  def save(dat: Array[Byte], extension: String): File = {
-    val tempFile = File.createTempFile(Fname, "." + extension)
-    val fos = new FileOutputStream(tempFile.getPath)
-    fos.write(dat)
-    fos.close()
-    tempFile
+  def save(dat: Array[Byte], extension: String)(f: File => Unit): Unit = {
+    val temp = Files.createTempFile(Fname, "." + extension)
+    using(Files.newOutputStream(temp)) { buffer =>
+      buffer.write(dat)
+      buffer.flush()
+      val file = temp.toFile
+      f(file)
+      file.delete()
+    }
   }
 
-  def create(extension: String): File = {
-    File.createTempFile(Fname, "." + extension)
+  def create(extension: String)(f: File => Unit): Unit = {
+    val temp = Files.createTempFile(Fname, "." + extension)
+    using(Files.newOutputStream(temp)) { buffer =>
+      val file = temp.toFile
+      f(file)
+      file.delete()
+    }
+  }
+
+  def using[A <% Closeable](s: A)(f: A => Unit): Unit = {
+    try f(s) finally s.close()
   }
 }

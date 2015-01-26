@@ -9,6 +9,7 @@ import com.ponkotuy.tool.{Checksum, TempFileTool}
 import com.ponkotuy.util.Log
 import com.ponkotuy.value.KCServer
 import org.jboss.netty.buffer.ChannelBuffer
+import org.json4s.JsonAST.JValue
 import org.json4s._
 import org.json4s.native.Serialization.write
 
@@ -102,18 +103,20 @@ object Post extends Log {
   def swfShip(q: Query)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     parseKey(q.toString).filterNot(MFGHttp.existsImage).foreach { key =>
       val swf = allRead(q.res.getContent)
-      val file = TempFileTool.save(swf, "swf")
-      val stCode = MFGHttp.postFile("/swf/ship/" + key, "image")(file)
-      if(stCode < 400) println(s"初めての艦娘を見て画像を転送しました")
+      TempFileTool.save(swf, "swf") { file =>
+        val stCode = MFGHttp.postFile("/swf/ship/" + key, "image")(file)
+        if(stCode < 400) println(s"初めての艦娘を見て画像を転送しました")
+      }
     }
   }
 
   def mp3kc(q: Query)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     SoundUrlId.parseURL(q.toString).filterNot(MFGHttp.existsSound).foreach { case SoundUrlId(shipKey, soundId) =>
       val sound = allRead(q.res.getContent)
-      val file = TempFileTool.save(sound, "mp3")
-      val stCode = MFGHttp.postFile(s"/mp3/kc/${shipKey}/${soundId}", "sound")(file)
-      if(stCode < 400) println(s"初めて (ShipKey -> $shipKey, SoundID -> $soundId) の声を聞いた")
+      TempFileTool.save(sound, "mp3") { file =>
+        val stCode = MFGHttp.postFile(s"/mp3/kc/${shipKey}/${soundId}", "sound")(file)
+        if(stCode < 400) println(s"初めて (ShipKey -> $shipKey, SoundID -> $soundId) の声を聞いた")
+      }
     }
   }
 

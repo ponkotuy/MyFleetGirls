@@ -23,14 +23,16 @@ object PostFile extends Controller {
             if(db.ShipImage.countBy(sqls"si.id = ${ship.id}") > 0) Ok("Already Exists")
             else {
               val swfFile = ref.ref.file
+              println(swfFile.getTotalSpace)
               val contents = SWFTool.contents(swfFile)
               val isExec = contents.filter(_.typ == SWFType.Jpeg).flatMap { case SWFContents(id, _) =>
-                val imageFile = SWFTool.extractJPG(swfFile, id)
-                imageFile.map { file =>
+                var success: Option[Boolean] = None // 中身に意味はない
+                SWFTool.extractJPG(swfFile, id) { file =>
                   val image = readAll(new FileInputStream(file))
                   db.ShipImage.create(ship.id, image, shipKey, auth.id, id)
-                  true
+                  success = Some(true)
                 }
+                success
               }.nonEmpty
               if(isExec) Ok("Success") else BadRequest("Not Found Image")
             }

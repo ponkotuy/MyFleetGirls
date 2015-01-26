@@ -14,13 +14,12 @@ import scala.util.Try
 object SWFTool {
   import scala.sys.process._
 
-  def extractJPG(input: File, no: Int): Option[File] = {
+  def extractJPG(input: File, no: Int)(f: File => Unit): Unit = {
     require(swfextractExists)
-    Try {
-      val output = TempFileTool.create("jpg")
+    TempFileTool.create("jpg") { output =>
       Seq("swfextract", input.getPath, s"-j${no}", "-o", output.getPath) !! new PlayProcessLogger
-      output
-    }.toOption
+      f(output)
+    }
   }
 
   def contents(input: File): Vector[SWFContents] = {
