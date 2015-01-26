@@ -16,22 +16,28 @@ object TempFileTool {
     using(Files.newOutputStream(temp)) { buffer =>
       buffer.write(dat)
       buffer.flush()
-      val file = temp.toFile
-      f(file)
-      file.delete()
+      usingTmp(temp.toFile) { file =>
+        f(file)
+        file.delete()
+      }
     }
   }
 
   def create(extension: String)(f: File => Unit): Unit = {
     val temp = Files.createTempFile(Fname, "." + extension)
     using(Files.newOutputStream(temp)) { buffer =>
-      val file = temp.toFile
-      f(file)
-      file.delete()
+      usingTmp(temp.toFile) { file =>
+        f(file)
+        file.delete()
+      }
     }
   }
 
   def using[A <% Closeable](s: A)(f: A => Unit): Unit = {
     try f(s) finally s.close()
+  }
+
+  def usingTmp(file: File)(f: File => Unit): Unit = {
+    try f(file) finally file.delete()
   }
 }

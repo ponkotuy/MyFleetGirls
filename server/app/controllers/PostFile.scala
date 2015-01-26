@@ -8,6 +8,8 @@ import play.api.mvc._
 import scalikejdbc._
 import tool.{SWFContents, SWFTool, SWFType}
 
+import scala.util.Try
+
 /**
  *
  * @author ponkotuy
@@ -23,16 +25,14 @@ object PostFile extends Controller {
             if(db.ShipImage.countBy(sqls"si.id = ${ship.id}") > 0) Ok("Already Exists")
             else {
               val swfFile = ref.ref.file
-              println(swfFile.getTotalSpace)
               val contents = SWFTool.contents(swfFile)
               val isExec = contents.filter(_.typ == SWFType.Jpeg).flatMap { case SWFContents(id, _) =>
-                var success: Option[Boolean] = None // 中身に意味はない
-                SWFTool.extractJPG(swfFile, id) { file =>
-                  val image = readAll(new FileInputStream(file))
-                  db.ShipImage.create(ship.id, image, shipKey, auth.id, id)
-                  success = Some(true)
-                }
-                success
+                Try {
+                  SWFTool.extractJPG(swfFile, id) { file =>
+                    val image = readAll(new FileInputStream(file))
+                    db.ShipImage.create(ship.id, image, shipKey, auth.id, id)
+                  }
+                }.toOption
               }.nonEmpty
               if(isExec) Ok("Success") else BadRequest("Not Found Image")
             }
