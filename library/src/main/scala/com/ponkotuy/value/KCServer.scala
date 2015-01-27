@@ -24,7 +24,8 @@ object KCServer {
     KCServer(15, "125.6.189.215", "幌筵泊地"),
     KCServer(16, "125.6.189.247", "宿毛湾泊地"),
     KCServer(17, "203.104.209.23", "鹿屋基地"),
-    KCServer(18, "203.104.209.39", "岩川基地")
+    KCServer(18, "203.104.209.39", "岩川基地"),
+    KCServer(19, "203.104.209.55", "佐伯湾泊地")
   )
 
   lazy val ips = values.map(_.ip).toSet
