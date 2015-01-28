@@ -18,7 +18,6 @@ object TempFileTool {
       buffer.flush()
       usingTmp(temp.toFile) { file =>
         f(file)
-        file.delete()
       }
     }
   }
@@ -28,7 +27,6 @@ object TempFileTool {
     using(Files.newOutputStream(temp)) { buffer =>
       usingTmp(temp.toFile) { file =>
         f(file)
-        file.delete()
       }
     }
   }
