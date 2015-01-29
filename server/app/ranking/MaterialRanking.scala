@@ -2,6 +2,7 @@ package ranking
 
 import controllers.routes
 import models.db.{Admiral, Material}
+import ranking.common.{RankingElement, Ranking}
 import scalikejdbc._
 import scala.concurrent.duration._
 
@@ -11,7 +12,7 @@ import scala.concurrent.duration._
  * Date: 14/10/09.
  */
 case object MaterialRanking extends Ranking {
-  import ranking.Ranking._
+  import Ranking._
 
   def a = Admiral.a
   lazy val m = Material.syntax("m")

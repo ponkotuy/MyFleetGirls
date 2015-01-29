@@ -2,6 +2,7 @@ package ranking
 
 import controllers.routes
 import models.db
+import ranking.common.{Ranking, RankingElement}
 import scalikejdbc._
 
 import scala.collection.mutable
@@ -12,7 +13,7 @@ import scala.collection.mutable
  * Date: 14/12/05.
  */
 case object FirstShipRate extends Ranking {
-  import ranking.Ranking._
+  import ranking.common.Ranking._
   override val title: String = "初期艦"
 
   override def rankingQuery(limit: Int): List[RankingElement] = {

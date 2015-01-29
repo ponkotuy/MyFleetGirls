@@ -1,8 +1,10 @@
 package ranking
 
 import controllers.routes
-import scalikejdbc._
 import models.db._
+import ranking.common.{Ranking, RankingElement}
+import scalikejdbc._
+
 import scala.collection.mutable
 
 /**
@@ -11,7 +13,7 @@ import scala.collection.mutable
  * Date: 14/10/09.
  */
 case object ExpByShipRanking extends Ranking {
-  import Ranking._
+  import ranking.common.Ranking._
 
   lazy val s = Ship.syntax("s")
   lazy val ms = MasterShipBase.syntax("ms")

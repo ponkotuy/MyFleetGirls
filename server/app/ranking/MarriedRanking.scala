@@ -1,6 +1,7 @@
 package ranking
 
 import controllers.routes
+import ranking.common.{RankingElement, Ranking}
 import scalikejdbc._
 import models.db._
 import scala.concurrent.duration._

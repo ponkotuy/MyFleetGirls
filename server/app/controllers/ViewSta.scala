@@ -7,7 +7,7 @@ import models.view.{CItem, CShip}
 import org.json4s._
 import org.json4s.native.Serialization.write
 import play.api.mvc._
-import ranking.Ranking
+import ranking.common.Ranking
 import scalikejdbc._
 
 import scala.util.Try
