@@ -53,5 +53,9 @@ trait TimeToLiveCache[K, V] {
     }
   }
 
+  /** When setting liveSeconds, can't get strict size. */
   def getSize: Int = cache.getSize
+
+  /** Can get strict size, but too late. */
+  def getStrictSize: Int = cache.getKeysWithExpiryCheck.size()
 }

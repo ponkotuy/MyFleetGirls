@@ -31,12 +31,12 @@ case object ExpByShipRanking extends Ranking {
   private def findAllOrderByExpSum(limit: Int = 10)(
       implicit session: DBSession = Ship.autoSession): List[(Int, String, Long)] = {
     val result = withSQL {
-      select(ms.resultAll, sqls"sum(s.exp) as sum").from(Ship as s)
+      select(ms.resultAll, sqls"sum(s.exp) as total").from(Ship as s)
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .groupBy(s.shipId)
-        .orderBy(sqls"sum").desc
+        .orderBy(sqls"total").desc
     }.map { rs =>
-      MasterShipBase.apply(ms)(rs) -> rs.long(sqls"sum")
+      MasterShipBase.apply(ms)(rs) -> rs.long(sqls"total")
     }.list().apply()
 
     // 進化元に集約

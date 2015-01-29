@@ -19,6 +19,7 @@ object EvolutionBase {
     }
   }
 
+  /* TODO: EHCacheの厳密なsizeを求めるのは非常に重く、EHCacheを使うべきでない */
   object Afters extends TimeToLiveCache[Int, Int] {
     var size = Int.MaxValue
     val SizeCheckLock: AnyRef = new AnyRef
@@ -39,7 +40,7 @@ object EvolutionBase {
 
     override def get(sid: Int): Option[Int] = {
       SizeCheckLock.synchronized {
-        if(getSize < size) replace()
+        if(getStrictSize < size) replace()
       }
       super.get(sid)
     }
