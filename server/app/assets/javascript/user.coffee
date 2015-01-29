@@ -27,7 +27,7 @@ $(document).ready ->
       plotO = $.plot(overview, exps, optionO)
       wholePlot()
     else
-      $('#admiral_exp').remove()
+      $('#admiral_exp').replaceWith('<p>グラフ生成に必要なデータが充分にありません</p>')
 
 translate = (data) -> [
   data: data.map (x) -> [x['created'], x['experience']]
@@ -47,6 +47,12 @@ mainPlot = (active, min, max = moment().valueOf()) ->
     newOpt = $.extend true, {}, option,
       xaxis: { min: min, max: max }
     plot = $.plot(chart, exps, newOpt)
+
+    # Delete plot if no data
+    y = plot.getYAxes()[0]
+    yDiff = y.max - y.min
+    if yDiff < 1
+      $(chart).replaceWith('')
   else
     plot = $.plot(chart, exps, option)
 
