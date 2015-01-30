@@ -2,7 +2,9 @@ import org.scalatest.FunSuite
 import tool.SWFContents
 
 /**
- * Created by yosuke on 15/01/06.
+ *
+ * @author ponkotuy
+ * Date: 15/01/06.
  */
 class SWFContentsSuite extends FunSuite {
   test("swfextract parse result") {
