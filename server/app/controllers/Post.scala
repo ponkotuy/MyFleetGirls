@@ -5,9 +5,10 @@ import java.util.UUID
 import com.ponkotuy.data._
 import com.ponkotuy.value.KCServer
 import controllers.Common._
-import models.req._
 import models.db
+import models.req._
 import play.api.mvc._
+import scalikejdbc._
 import tool.Authentication
 
 import scala.concurrent.ExecutionContext.Implicits._
@@ -212,7 +213,12 @@ object Post extends Controller {
     Settings.fromReq(request.body) match {
       case Some(set: Settings) =>
         if(uuidCheck(set.userId, request.session.get("key"))) {
-          db.UserSettings.setYome(set.userId, set.shipId)
+          val count = db.YomeShip.countBy(sqls"ys.member_id = ${set.userId}")
+          if(count < db.YomeShip.MaxYomeCount) {
+            db.YomeShip.create(set.userId, (count + 1).toShort, set.shipId)
+          } else {
+            db.YomeShip(set.userId, count.toShort, set.shipId).save()
+          }
           Ok("Success")
         } else {
           Unauthorized("Authentication failure")
