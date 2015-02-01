@@ -75,11 +75,11 @@ object Ship extends SQLSyntaxSupport[Ship] {
         .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
         .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
         .where.eq(s.memberId, memberId)
-        .and.eq(s.lv, sqls"(SELECT MAX(${s.lv}) FROM ${Ship.table} s WHERE ${s.memberId} = ${memberId})")
+        .orderBy(s.lv.desc, s.exp.desc, s.id.asc).limit(1)
     }.map { rs =>
       val slot = findSlot(memberId, rs.int(s.resultName.id))
       ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
-    }.first().apply()
+    }.single().apply()
   }
 
   def findByIDWithName(memberId: Long, sid: Int)(
