@@ -10,7 +10,7 @@ import scala.util.Try
 case class RemodelSlot(
   id: Int,
   slotId: Int,
-  memberId: Int,
+  memberId: Long,
   secondShip: Option[Int],
   fuel: Int,
   ammo: Int,
@@ -81,7 +81,7 @@ object RemodelSlot extends SQLSyntaxSupport[RemodelSlot] {
   def create(
     id: Int,
     slotId: Int,
-    memberId: Int,
+    memberId: Long,
     secondShip: Option[Int],
     fuel: Int,
     ammo: Int,

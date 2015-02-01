@@ -29,6 +29,7 @@ newrelic/
 # Settings
 application.conf
 server/conf/application.conf
+project/scalikejdbc.properties
 
 # Others
 *~

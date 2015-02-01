@@ -82,8 +82,7 @@ class ResponseController extends Log {
       case RemodelSlotlist =>
         lazyPost { (a, b) => dependent.remodelSlotList(obj)(a, b) }
       case RemodelSlot | RemodelSlotlistDetail =>
-        info(s"Req: ${req}")
-        q.resJson.left.map(jsonInfo(_))
+        lazyPost { (a, b) => Post.remodelSlot(obj, req)(a, b)}
       case LoginCheck | Deck | UseItem | Practice | Record | MapCell | UpdateDeckName | Charge | MissionStart |
            KaisouPowerup | Remodeling | Marriage | KaisouLock | PracticeBattle | PracticeMidnightBattle |
            PracticeBattleResult | HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |

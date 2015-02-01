@@ -24,6 +24,7 @@ POST    /post/v1/battle_result      controllers.Post.battleResult
 POST    /post/v1/map_route          controllers.Post.mapRoute
 POST    /post/v1/questlist          controllers.Post.questlist
 POST    /post/v1/remodel_slot       controllers.Post.remodelSlot
+POST    /post/v1/remodel            controllers.Post.remodel
 POST    /passwd/post/v1/register_snap controllers.Post.registerSnap
 POST    /passwd/post/v1/delete_snap controllers.Post.deleteSnap
 POST    /passwd/post/v1/update_snap controllers.Post.updateSnap

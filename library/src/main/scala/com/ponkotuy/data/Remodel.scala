@@ -13,7 +13,8 @@ case class Remodel(
     afterItemId: Int,
     voiceId: Int,
     afterSlot: Option[RemodelAfterSlot],
-    useSlotIds: List[Int])
+    useSlotIds: List[Int],
+    certain: Boolean)
 
 object Remodel {
   implicit val format = DefaultFormats
@@ -24,9 +25,17 @@ object Remodel {
       api_voice_id: String,
       api_after_slot: Option[RawRemodelAfterSlot],
       api_use_slot_id: List[Int]) {
-    def build: Remodel = {
+    def build(certain: Boolean): Remodel = {
       val List(beforeItem, afterItem) = api_remodel_id
-      Remodel(api_remodel_flag != 0, beforeItem, afterItem, api_voice_id.toInt, api_after_slot.map(_.build), api_use_slot_id)
+      Remodel(
+        api_remodel_flag != 0,
+        beforeItem,
+        afterItem,
+        api_voice_id.toInt,
+        api_after_slot.map(_.build),
+        api_use_slot_id,
+        certain
+      )
     }
   }
 
@@ -34,8 +43,11 @@ object Remodel {
     def build: RemodelAfterSlot = RemodelAfterSlot(api_id, api_slotitem_id, api_locked != 0, api_level)
   }
 
-  def fromJson(obj: JValue): Option[Remodel] = {
-    obj.extractOpt[RawRemodel].map(_.build)
+  def fromJson(obj: JValue, req: Map[String, String]): Option[Remodel] = {
+    for {
+      raw <- obj.extractOpt[RawRemodel]
+      certain <- req.get("api_certain_flag")
+    } yield raw.build(certain != "0")
   }
 }
 

@@ -120,6 +120,11 @@ object Post extends Log {
     }
   }
 
+  def remodelSlot(obj: JValue, req: Map[String, String])(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit =
+    Remodel.fromJson(obj, req).foreach { remodel =>
+      MFGHttp.post("/remodel", write(remodel))
+    }
+
   private def parseKey(str: String): Option[String] =
     Try {
       val filename = str.split('/').last

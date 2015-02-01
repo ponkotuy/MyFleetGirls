@@ -155,6 +155,11 @@ object Post extends Controller {
     Ok("Success")
   }
 
+  def remodel() = authAndParse[Remodel] { case (auth, request) =>
+    db.Remodel.create(request, auth.id)
+    Ok("Success")
+  }
+
   def registerSnap() = formAsync { request =>
     RegisterSnapshot.fromReq(request.body) match {
       case Some(snap) =>

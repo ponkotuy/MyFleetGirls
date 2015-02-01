@@ -6,11 +6,12 @@
 #
 jdbc.driver=com.mysql.jdbc.Driver
 jdbc.url=jdbc:mysql://localhost:3306/myfleet
-jdbc.username=myfleet
-jdbc.password=myfleet
+jdbc.username=
+jdbc.password=
 
 # Generator
-generator.packageName=models
+generator.packageName=models.db
 generator.lineBreak=LF
 generator.template=queryDsl
 generator.encoding=UTF-8
+generator.autoContruct=true
