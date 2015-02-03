@@ -1,4 +1,5 @@
-@(user: User, yome: Option[ShipWithName], best: Option[ShipWithName], flagship: Option[ShipWithName])
+@(user: User, yomes: List[ShipWithName], best: Option[ShipWithName], flagship: Option[ShipWithName])
+@import models.join.ShipWithName
 
 @main {
   <title>@{user.admiral.nickname}提督 -MyFleetGirls-</title>
@@ -20,7 +21,7 @@
   @head_content(user) {
     @usertab(user,"top") {
       <div class="row">
-        @yome.map { ship =>
+        @yomes.map { ship =>
           <div class="col-md-4 col-sm-6">
             <div class="page-header">
               <h1>嫁艦</h1>
@@ -49,11 +50,11 @@
       <table class="table table-condensed">
         <thead>
           <tr>
-            <th>艦種</th><th>名前</th><th>Lv</th><th>Exp</th><th>HP</th><th>Cond</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th><th>回避</th><th>対潜</th><th>索敵</th><th>運</th>
+            <th>艦種</th><th>名前</th><th>Lv</th><th>Exp</th><th>HP</th><th>Cond</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th><th>回避</th><th>対潜</th><th>索敵</th><th>運</th><th>嫁</th>
           </tr>
         </thead>
         <tbody>
-        @List(yome, best, flagship).flatten.map { ship =>
+        @for((ship, isYome) <- yomes.map(_ -> true) ++ (best ++ flagship).map(_ -> false)) {
           <tr>
             <td>@ship.stName</td>
             <td>@ship.name</td>
@@ -69,6 +70,11 @@
             <td>@ship.taisen</td>
             <td>@ship.sakuteki</td>
             <td>@ship.lucky</td>
+            @if(isYome && user.isMine) {
+              <td>
+                <button type="submit" class="btn btn-warning btn-xs delete-yome" data-ship-id="@ship.id">嫁解除</button>
+              </td>
+            }
           </tr>
         }
         </tbody>

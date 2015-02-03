@@ -36,12 +36,13 @@ object UserView extends Controller {
   }
 
   def top(memberId: Long) = userView(memberId) { user =>
-    val yome = db.UserSettings.findYome(memberId)
+    val yomes = db.YomeShip.findAllByWithName(sqls"ys.member_id = ${memberId}")
+    val yomeIds = yomes.map(_.id).toSet
     val best = db.Ship.findByUserMaxLvWithName(memberId)
-      .filterNot(b => b.id == yome.fold(-1)(_.id))
+      .filterNot(b => yomeIds.contains(b.id))
     val flagship = db.DeckShip.findFlagshipByUserWishShipName(memberId)
-      .filterNot(f => Set(yome, best).flatten.map(_.id).contains(f.id))
-    Ok(views.html.user.user(user, yome, best, flagship))
+      .filterNot(f => (yomeIds ++ best.map(_.id)).contains(f.id))
+    Ok(views.html.user.user(user, yomes, best, flagship))
   }
 
   def favorite(memberId: Long) = userView(memberId) { user =>

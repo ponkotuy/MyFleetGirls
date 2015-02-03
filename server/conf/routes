@@ -25,11 +25,12 @@ POST    /post/v1/map_route          controllers.Post.mapRoute
 POST    /post/v1/questlist          controllers.Post.questlist
 POST    /post/v1/remodel_slot       controllers.Post.remodelSlot
 POST    /post/v1/remodel            controllers.Post.remodel
-POST    /passwd/post/v1/register_snap controllers.Post.registerSnap
-POST    /passwd/post/v1/delete_snap controllers.Post.deleteSnap
-POST    /passwd/post/v1/update_snap controllers.Post.updateSnap
-POST    /passwd/post/v1/settings    controllers.Post.settings
-POST    /passwd/post/v1/set_session controllers.Post.setSession
+POST    /passwd/post/v1/register_snap controllers.WebPost.registerSnap
+POST    /passwd/post/v1/delete_snap controllers.WebPost.deleteSnap
+POST    /passwd/post/v1/update_snap controllers.WebPost.updateSnap
+POST    /passwd/post/v1/settings    controllers.WebPost.settings
+DELETE  /passwd/post/v1/yome        controllers.WebPost.deleteYome
+POST    /passwd/post/v1/set_session controllers.WebPost.setSession
 POST    /post/v1/master/ship        controllers.PostMaster.ship
 POST    /post/v1/master/mission     controllers.PostMaster.mission
 POST    /post/v1/master/slotitem    controllers.PostMaster.slotitem

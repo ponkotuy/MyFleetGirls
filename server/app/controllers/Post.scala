@@ -1,14 +1,10 @@
 package controllers
 
-import java.util.UUID
-
 import com.ponkotuy.data._
 import com.ponkotuy.value.KCServer
 import controllers.Common._
-import models.req._
 import models.db
 import play.api.mvc._
-import tool.Authentication
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
@@ -158,84 +154,5 @@ object Post extends Controller {
   def remodel() = authAndParse[Remodel] { case (auth, request) =>
     db.Remodel.create(request, auth.id)
     Ok("Success")
-  }
-
-  def registerSnap() = formAsync { request =>
-    RegisterSnapshot.fromReq(request.body) match {
-      case Some(snap) =>
-        if(uuidCheck(snap.userId, request.session.get("key"))) {
-          db.DeckPort.find(snap.userId, snap.deckport) match {
-            case Some(deck) =>
-              val current = System.currentTimeMillis()
-              val deckSnap = db.DeckSnapshot.create(snap.userId, deck.name, snap.title, snap.comment, current)
-              val ships = db.DeckShip.findAllByDeck(snap.userId, snap.deckport)
-              db.DeckShipSnapshot.bulkInsert(ships.map(_.ship), deckSnap.id)
-              Ok("Success")
-            case None => BadRequest("Invalid deckport")
-          }
-        } else {
-          Unauthorized("Authentication failure")
-        }
-      case None => BadRequest("Invalid data")
-    }
-  }
-
-  def deleteSnap() = formAsync { request =>
-    DeleteSnapshot.fromReq(request.body) match {
-      case Some(snap) =>
-        if(uuidCheck(snap.userId, request.session.get("key"))) {
-          db.DeckSnapshot.find(snap.snapId) match {
-            case Some(deck) =>
-              deck.destroy()
-              Ok("Success")
-            case None => BadRequest("Invalid snapId")
-          }
-        } else {
-          Unauthorized("Authorication failure")
-        }
-      case None => BadRequest("Invalid data")
-    }
-  }
-
-  def updateSnap() = formAsync { request =>
-    UpdateSnapshot.fromReq(request.body).map { update =>
-      if(uuidCheck(update.userId, request.session.get("key"))) {
-        db.DeckSnapshot.find(update.snapId).map { snap =>
-          db.DeckSnapshot(snap.id, snap.memberId, snap.name, update.title, update.comment, snap.created).save()
-          Ok("Success")
-        }.getOrElse(BadRequest("Invalid snapId"))
-      } else { Unauthorized("Authentication failure") }
-    }.getOrElse(BadRequest("Invalid data"))
-  }
-
-  def settings = formAsync { request =>
-    Settings.fromReq(request.body) match {
-      case Some(set: Settings) =>
-        if(uuidCheck(set.userId, request.session.get("key"))) {
-          db.UserSettings.setYome(set.userId, set.shipId)
-          Ok("Success")
-        } else {
-          Unauthorized("Authentication failure")
-        }
-      case None =>
-        BadRequest("Invalid data")
-    }
-  }
-
-  def setSession() = formAsync { request =>
-    AuthDataImpl.fromReq(request.body).map { auth =>
-      if(Authentication.myfleetAuth(auth)) {
-        val uuid = db.Session.findByUser(auth.userId)
-          .map(_.uuid)
-          .getOrElse {
-            val uuid = UUID.randomUUID()
-            db.Session.createByUUID(uuid, auth.userId)
-            uuid
-          }
-        Ok("Success").withSession("key" -> uuid.toString, "memberId" -> auth.userId.toString)
-      } else {
-        Unauthorized("Authentication failure")
-      }
-    }.getOrElse { BadRequest("Invalid data") }
   }
 }

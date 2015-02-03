@@ -29,6 +29,15 @@ $(document).ready ->
     else
       $('#admiral_exp').replaceWith('<p>グラフ生成に必要なデータが充分にありません</p>')
 
+  $('button.delete-yome').each ->
+    $(@).click ->
+      shipId = $(@).attr('data-ship-id')
+      data = {shipId: shipId, userId: userid}
+      $.ajax('/passwd/post/v1/yome', {type: 'DELETE', data: data})
+        .success ->
+          location.reload(true)
+
+
 translate = (data) -> [
   data: data.map (x) -> [x['created'], x['experience']]
   label: '提督経験値'
