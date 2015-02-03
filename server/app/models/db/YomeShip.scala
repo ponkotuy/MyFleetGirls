@@ -40,6 +40,12 @@ object YomeShip extends SQLSyntaxSupport[YomeShip] {
     }.map(YomeShip(ys.resultName)).single().apply()
   }
 
+  def findShipId(memberId: Long, shipId: Int)(implicit session: DBSession = autoSession): Option[YomeShip] = {
+    withSQL {
+      select.from(YomeShip as ys).where.eq(ys.memberId, memberId).and.eq(ys.shipId, shipId)
+    }.map(YomeShip(ys)).single().apply()
+  }
+
   def findAll()(implicit session: DBSession = autoSession): List[YomeShip] = {
     withSQL(select.from(YomeShip as ys)).map(YomeShip(ys.resultName)).list().apply()
   }

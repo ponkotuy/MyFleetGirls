@@ -27,6 +27,7 @@ $ sbt proxy
 
 ** MyFleetGirls Server
    + sbt（sbt-extrasのインストールをお勧め）とMariaDBとswftoolsをインストール
+   + MariaDBにmyfleetという名前のdatabaseを作成
    + server/conf/application.confを適宜設定（.sampleをコピーして、DB設定を適宜すればいいでしょう）
    + server/public/message にテキストファイル置かないと弊害があるかも
 
