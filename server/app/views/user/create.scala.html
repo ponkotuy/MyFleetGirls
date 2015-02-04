@@ -84,6 +84,30 @@
       </div>
 
       <div class="page-header">
+        <h1>装備改修履歴</h1>
+      </div>
+      <div id="remodel" data-url="@routes.RestUser.remodels(user.admiral.id)" data-count="@routes.RestUser.remodelCount(user.admiral.id)" data-pcount="10">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th>成否</th><th>Before</th><th>After</th><th>確実化</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-repeat="item: data">
+              <td>
+                <span class="glyphicon glyphicon-ok" v-if="item.remodel.flag"></span>
+                <span class="glyphicon glyphicon-remove" v-if="!item.remodel.flag"></span>
+              </td>
+              <td>{{item.before.name}}<span v-if="item.remodelAfter.level">+{{item.remodelAfter.level - (item.remodel.flag ? 1 : 0)}}</span></td>
+              <td><span v-if="item.remodelAfter">{{item.after.name}}+{{item.remodelAfter.level}}</span></td>
+              <td><span v-if="item.remodel.certain" class="glyphicon glyphicon-check"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="page-header">
         <h1>大型艦建造履歴</h1>
       </div>
       <table class="table table-striped table-condensed" id="large_ship_create">

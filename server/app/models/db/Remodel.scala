@@ -1,7 +1,10 @@
 package models.db
 
+import models.join.RemodelWithName
 import scalikejdbc._
 import com.ponkotuy.data
+
+import scala.util.Try
 
 case class Remodel(
   id: Long,
@@ -30,6 +33,9 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
   def apply(r: ResultName[Remodel])(rs: WrappedResultSet): Remodel = autoConstruct(rs, r)
 
   val r = Remodel.syntax("r")
+  val before = MasterSlotItem.syntax("bef")
+  val after = MasterSlotItem.syntax("aft")
+  val ras = RemodelAfterSlot.syntax("ras")
 
   override val autoSession = AutoSession
 
@@ -52,6 +58,24 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
       select.from(Remodel as r).where.append(sqls"${where}")
     }.map(Remodel(r.resultName)).list().apply()
   }
+
+  def findAllByWithName(
+      where: SQLSyntax,
+      limit: Int = 10,
+      offset: Int = 0)(implicit session: DBSession = autoSession): List[RemodelWithName] =
+    withSQL {
+      select.from(Remodel as r)
+        .innerJoin(MasterSlotItem as before).on(r.beforeItemId, before.id)
+        .innerJoin(MasterSlotItem as after).on(r.afterItemId, after.id)
+        .leftJoin(RemodelAfterSlot as ras).on(r.id, ras.remodelId)
+        .where(where).limit(limit).offset(offset)
+    }.map { rs =>
+      val remodel = Remodel(r)(rs)
+      val bItem = MasterSlotItem(before)(rs)
+      val aItem = MasterSlotItem(after)(rs)
+      val aSlot = Try { RemodelAfterSlot(ras)(rs) }.toOption
+      RemodelWithName(remodel, bItem, aItem, aSlot)
+    }.list().apply()
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {

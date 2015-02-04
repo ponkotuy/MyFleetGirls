@@ -30,4 +30,5 @@ $( ->
 
   pagingVue('#ship_create')
   pagingVue('#item_create')
+  pagingVue('#remodel')
 )

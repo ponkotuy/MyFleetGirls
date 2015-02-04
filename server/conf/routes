@@ -67,6 +67,8 @@ GET     /rest/v1/:userId/create_ships controllers.RestUser.createShips(userId: L
 GET     /rest/v1/:userId/create_ship_count controllers.RestUser.createShipCount(userId: Long, large: Boolean ?= false)
 GET     /rest/v1/:userId/create_items controllers.RestUser.createItems(userId: Long, limit: Int ?= 10, offset: Int ?= 0)
 GET     /rest/v1/:userId/create_item_count controllers.RestUser.createItemCount(userId: Long)
+GET     /rest/v2/user/:userId/remodels/list controllers.RestUser.remodels(userId: Long, limit: Int ?= 10, offset: Int ?= 0)
+GET     /rest/v2/user/:userId/remodels/count controllers.RestUser.remodelCount(userId: Long)
 GET     /rest/v1/:userId/battle_result controllers.RestUser.battleResult(userId: Long, limit: Int ?= 10, offset: Int ?= 0, boss: Boolean ?= false, drop: Boolean ?= false, rank: String ?= "SABCDE", area: Option[Int], info: Option[Int])
 GET     /rest/v1/:userId/battle_result_count controllers.RestUser.battleResultCount(userId: Long, boss: Boolean ?= false, drop: Boolean ?= false, rank: String ?= "SABCDE", area: Option[Int], info: Option[Int])
 GET     /rest/v1/:userId/route_log  controllers.RestUser.routeLog(userId: Long, limit: Int ?= 10, offset: Int ?= 0, area: Int ?= -1, info: Int ?= -1)

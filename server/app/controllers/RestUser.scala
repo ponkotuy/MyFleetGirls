@@ -51,6 +51,13 @@ object RestUser extends Controller {
 
   def createItemCount(memberId: Long) = returnString(db.CreateItem.countBy(sqls"member_id = ${memberId}"))
 
+  def remodels(memberId: Long, limit: Int, offset: Int) = returnJson {
+    require(limit + offset <= 100, "limit + offset <= 100")
+    db.Remodel.findAllByWithName(sqls"r.member_id = ${memberId}", limit, offset)
+  }
+
+  def remodelCount(memberId: Long) = returnString(db.Remodel.countBy(sqls"r.member_id = ${memberId}"))
+
   def battleResult(memberId: Long, limit: Int, offset: Int, boss: Boolean, drop: Boolean, rank: String, area: Option[Int], info: Option[Int]) = returnJson {
     require(limit + offset <= 200, "limit + offset <= 200")
     val where = battleResultWhere(memberId, boss, drop, rank, area, info)
