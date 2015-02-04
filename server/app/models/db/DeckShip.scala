@@ -21,6 +21,12 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
   lazy val mst = MasterStype.syntax("mst")
   lazy val mss = MasterShipSpecs.syntax("mss")
 
+  def find(memberId: Long, deckId: Int, num: Int)(implicit session: DBSession = autoSession): Option[DeckShip] =
+    withSQL {
+      select.from(DeckShip as ds)
+        .where.eq(ds.memberId, memberId).and.eq(ds.deckId, deckId).and.eq(ds.num, num)
+    }.map(DeckShip(ds)).single().apply()
+
   def findAllByUserWithName(memberId: Long)(implicit session: DBSession = autoSession): List[DeckShipWithName] = {
     withSQL {
       select(ds.deckId, ds.num, ds.memberId, ds.shipId, s.lv, s.cond, ms.name)

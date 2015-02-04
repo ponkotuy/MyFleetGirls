@@ -32,17 +32,7 @@
             </tr>
           </tbody>
         </table>
-        <ul class="pagination" v-if="allCount > pageCount()">
-          <li v-class="disabled: page == 0">
-            <a href="#" v-on="click: setPage(page - 1)" onclick="return false;">&laquo;</a>
-          </li>
-          <li v-repeat="p: pages()" v-attr="class: (p == page ? 'active' : '')">
-            <a v-on="click: setPage(p)" href="#" onclick="return false;">{{p + 1}}</a>
-          </li>
-          <li v-class="disabled: (page + 1) == maxPage()">
-            <a href="#" v-on="click: setPage(page + 1)" onclick="return false;">&raquo;</a>
-          </li>
-        </ul>
+        @create_paging()
       </div>
 
       <div class="page-header">
@@ -70,17 +60,7 @@
             </tr>
           </tbody>
         </table>
-        <ul class="pagination" v-if="allCount > pageCount()">
-          <li v-class="disabled: page == 0">
-            <a href="#" v-on="click: setPage(page - 1)" onclick="return false;">&laquo;</a>
-          </li>
-          <li v-repeat="p: pages()" v-attr="class: (p == page ? 'active' : '')">
-            <a v-on="click: setPage(p)" href="#" onclick="return false;">{{p + 1}}</a>
-          </li>
-          <li v-class="disabled: (page + 1) == maxPage()">
-            <a href="#" v-on="click: setPage(page + 1)" onclick="return false;">&raquo;</a>
-          </li>
-        </ul>
+        @create_paging()
       </div>
 
       <div class="page-header">
@@ -105,6 +85,7 @@
             </tr>
           </tbody>
         </table>
+        @create_paging()
       </div>
 
       <div class="page-header">
