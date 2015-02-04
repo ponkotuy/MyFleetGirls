@@ -60,6 +60,9 @@ object YomeShip extends SQLSyntaxSupport[YomeShip] {
     }.map(YomeShip(ys.resultName)).list().apply()
   }
 
+  def findAllFromMemberId(memberId: Long)(implicit session: DBSession = autoSession): List[YomeShip] =
+    findAllBy(sqls"ys.member_id = ${memberId}")
+
   def findAllByWithName(where: SQLSyntax)(implicit session: DBSession = autoSession): List[ShipWithName] = {
     withSQL {
       select.from(YomeShip as ys)

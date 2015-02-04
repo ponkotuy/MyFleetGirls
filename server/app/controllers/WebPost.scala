@@ -68,11 +68,13 @@ object WebPost extends Controller {
     Settings.fromReq(request.body) match {
       case Some(set: Settings) =>
         if(uuidCheck(set.userId, request.session.get("key"))) {
-          val count = db.YomeShip.countBy(sqls"ys.member_id = ${set.userId}")
-          if(count < db.YomeShip.MaxYomeCount) {
-            db.YomeShip.create(set.userId, (count + 1).toShort, set.shipId)
+          val yomes = db.YomeShip.findAllFromMemberId(set.userId)
+          if(yomes.exists(_.shipId == set.shipId)) { // 既に嫁がいたら削除
+            destroyYome(set.userId, set.shipId)
+          } else if(yomes.size < db.YomeShip.MaxYomeCount) {
+            db.YomeShip.create(set.userId, (yomes.size + 1).toShort, set.shipId)
           } else {
-            db.YomeShip(set.userId, count.toShort, set.shipId).save()
+            db.YomeShip(set.userId, yomes.size.toShort, set.shipId).save()
           }
           Ok("Success")
         } else {
@@ -86,16 +88,22 @@ object WebPost extends Controller {
   def deleteYome() = formAsync { request =>
     Settings.fromReq(request.body).map { case Settings(memberId, shipId) =>
       if(uuidCheck(memberId, request.session.get("key"))) {
-        db.YomeShip.findShipId(memberId, shipId) match {
-          case Some(yome) =>
-            yome.destroy()
-            Ok("Success")
-          case None => BadRequest("Not found ship")
-        }
+        if(destroyYome(memberId, shipId)) Ok("Success")
+        else BadRequest("Not found ship")
       } else {
         Unauthorized("Authentication failure")
       }
     }.getOrElse(BadRequest("Invalid data"))
+  }
+
+  private def destroyYome(memberId: Long, shipId: Int): Boolean = {
+    val yomes = db.YomeShip.findAllBy(sqls"ys.member_id = ${memberId}")
+    val result = yomes.filterNot(_.shipId == shipId).map(_.shipId)
+    yomes.foreach(_.destroy())
+    result.zipWithIndex.foreach { case (sid, idx) =>
+      db.YomeShip.create(memberId, (idx + 1).toShort, sid)
+    }
+    yomes.size > result.size
   }
 
   def setSession() = formAsync { request =>
