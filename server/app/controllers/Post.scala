@@ -158,7 +158,7 @@ object Post extends Controller {
   }
 
   def masterRemodel() = authAndParse[MasterRemodel] { case (auth, request) =>
-    db.MasterRemodel.create(request, auth.id)
+    db.MasterRemodel.createFromData(request, auth.id)
     Ok("Success")
   }
 }

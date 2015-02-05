@@ -18,6 +18,8 @@ case class MasterRemodel(
 
   def destroy()(implicit session: DBSession = MasterRemodel.autoSession): Unit = MasterRemodel.destroy(this)(session)
 
+  def sumKit: Int = develop + remodel + certainDevelop + certainRemodel + useSlotitemNum
+
 }
 
 
@@ -70,26 +72,28 @@ object MasterRemodel extends SQLSyntaxSupport[MasterRemodel] {
     }.map(_.long(1)).single().apply().get
   }
 
-  def create(x: data.master.MasterRemodel, memberId: Long)(implicit session: DBSession = autoSession): Unit = {
-    for {
-      item <- SlotItem.find(x.origSlotId, memberId)
-      if find(item.slotitemId, item.level).isEmpty
-    } {
-      createOrig(
-        item.slotitemId,
-        item.level,
-        x.develop,
-        x.remodel,
-        x.certainDevelop,
-        x.certainRemodel,
-        x.slotitemId,
-        x.slotitemNum,
-        x.changeFlag
-      )
+  def createFromData(x: data.master.MasterRemodel, memberId: Long)(implicit session: DBSession = autoSession): Unit = {
+    SlotItem.find(x.origSlotId, memberId).map { item =>
+      val orig = find(item.slotitemId, item.level)
+      // 間違えてLevelが低い状態でmasterを登録した可能性があるので、元のデータを消しておく
+      val isDestroy = orig.filter(_.sumKit > x.sumKit).map(_.destroy()).isDefined
+      if(orig.isEmpty || isDestroy) {
+        create(
+          item.slotitemId,
+          item.level,
+          x.develop,
+          x.remodel,
+          x.certainDevelop,
+          x.certainRemodel,
+          x.slotitemId,
+          x.slotitemNum,
+          x.changeFlag
+        )
+      }
     }
   }
 
-  def createOrig(
+  def create(
     slotitemId: Int,
     slotitemLevel: Int,
     develop: Int,

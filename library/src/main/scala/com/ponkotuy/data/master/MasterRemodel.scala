@@ -15,7 +15,9 @@ case class MasterRemodel(
     slotitemId: Int,
     slotitemNum: Int,
     changeFlag: Boolean,
-    origSlotId: Int)
+    origSlotId: Int) {
+  def sumKit: Int = develop + remodel + certainDevelop + certainRemodel + slotitemNum
+}
 
 object MasterRemodel {
   implicit val formats = DefaultFormats
