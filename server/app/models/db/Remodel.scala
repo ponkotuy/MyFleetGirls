@@ -14,7 +14,11 @@ case class Remodel(
   afterItemId: Int,
   vocieId: Int,
   useSlotIds: String,
-  certain: Boolean) {
+  certain: Boolean,
+  beforeItemLevel: Int,
+  firstShipId: Int,
+  secondShipId: Option[Int],
+  created: Long) {
 
   def save()(implicit session: DBSession = Remodel.autoSession): Remodel = Remodel.save(this)(session)
 
@@ -27,7 +31,7 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
 
   override val tableName = "remodel"
 
-  override val columns = Seq("id", "member_id", "flag", "before_item_id", "after_item_id", "vocie_id", "use_slot_ids", "certain")
+  override val columns = Seq("id", "member_id", "flag", "before_item_id", "after_item_id", "vocie_id", "use_slot_ids", "certain", "before_item_level", "first_ship_id", "second_ship_id", "created")
 
   def apply(r: SyntaxProvider[Remodel])(rs: WrappedResultSet): Remodel = apply(r.resultName)(rs)
   def apply(r: ResultName[Remodel])(rs: WrappedResultSet): Remodel = autoConstruct(rs, r)
@@ -35,7 +39,10 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
   val r = Remodel.syntax("r")
   val before = MasterSlotItem.syntax("bef")
   val after = MasterSlotItem.syntax("aft")
+  val uItem = MasterSlotItem.syntax("uItem")
   val ras = RemodelAfterSlot.syntax("ras")
+  val mr = MasterRemodel.syntax("mr")
+  val ms = MasterShipBase.syntax("ms")
 
   override val autoSession = AutoSession
 
@@ -68,13 +75,20 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
         .innerJoin(MasterSlotItem as before).on(r.beforeItemId, before.id)
         .innerJoin(MasterSlotItem as after).on(r.afterItemId, after.id)
         .leftJoin(RemodelAfterSlot as ras).on(r.id, ras.remodelId)
-        .where(where).limit(limit).offset(offset)
+        .leftJoin(MasterRemodel as mr).on(sqls"r.before_item_id = mr.slotitem_id and r.before_item_level = mr.slotitem_level")
+        .leftJoin(MasterSlotItem as uItem).on(mr.useSlotitemId, uItem.id)
+        .leftJoin(MasterShipBase as ms).on(r.secondShipId, ms.id)
+        .where(where).orderBy(r.created).desc
+        .limit(limit).offset(offset)
     }.map { rs =>
       val remodel = Remodel(r)(rs)
       val bItem = MasterSlotItem(before)(rs)
       val aItem = MasterSlotItem(after)(rs)
       val aSlot = Try { RemodelAfterSlot(ras)(rs) }.toOption
-      RemodelWithName(remodel, bItem, aItem, aSlot)
+      val master = Try { MasterRemodel(mr)(rs) }.toOption
+      val useItem = Try { MasterSlotItem(uItem)(rs) }.toOption
+      val secondShip = Try { MasterShipBase(ms)(rs) }.toOption
+      RemodelWithName(remodel, bItem, aItem, aSlot, master, useItem, secondShip)
     }.list().apply()
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
@@ -83,23 +97,31 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
     }.map(_.long(1)).single().apply().get
   }
 
-  def create(x: data.Remodel, memberId: Long)(implicit session: DBSession = autoSession): Remodel = {
-    val record =
-      createOrig(memberId, x.flag, x.beforeItemId, x.afterItemId, x.voiceId, x.useSlotIds.mkString(","), x.certain)
-    x.afterSlot.foreach { y =>
-      RemodelAfterSlot.create(record.id, y.id, y.slotitemId, y.locked, y.level)
+  def create(x: data.Remodel, memberId: Long)(implicit session: DBSession = autoSession): Option[Long] = {
+    val firstShipId = DeckShip.find(memberId, 1, 1).get.shipId // 第一艦隊旗艦は必ずいる
+    val secondShipId = DeckShip.find(memberId, 1, 2).map(_.shipId)
+    val now = System.currentTimeMillis()
+    SlotItem.find(x.slotId, memberId).map { beforeItem =>
+      val key = createOrig(memberId, x.flag, x.beforeItemId, x.afterItemId, x.voiceId, x.useSlotIds.mkString(","), x.certain, beforeItem.level, firstShipId, secondShipId, now)
+      x.afterSlot.foreach { y =>
+        RemodelAfterSlot.create(key, y.id, y.slotitemId, y.locked, y.level, now)
+      }
+      key
     }
-    record
   }
 
   def createOrig(
-    memberId: Long,
-    flag: Boolean,
-    beforeItemId: Int,
-    afterItemId: Int,
-    vocieId: Int,
-    useSlotIds: String,
-    certain: Boolean)(implicit session: DBSession = autoSession): Remodel = {
+      memberId: Long,
+      flag: Boolean,
+      beforeItemId: Int,
+      afterItemId: Int,
+      vocieId: Int,
+      useSlotIds: String,
+      certain: Boolean,
+      beforeItemLevel: Int,
+      firstShipId: Int,
+      secondShipId: Option[Int] = None,
+      created: Long = System.currentTimeMillis())(implicit session: DBSession = autoSession): Long = {
     val generatedKey = withSQL {
       insert.into(Remodel).columns(
         column.memberId,
@@ -108,7 +130,11 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
         column.afterItemId,
         column.vocieId,
         column.useSlotIds,
-        column.certain
+        column.certain,
+        column.beforeItemLevel,
+        column.firstShipId,
+        column.secondShipId,
+        column.created
       ).values(
           memberId,
           flag,
@@ -116,19 +142,15 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
           afterItemId,
           vocieId,
           useSlotIds,
-          certain
+          certain,
+          beforeItemLevel,
+          firstShipId,
+          secondShipId,
+          created
         )
     }.updateAndReturnGeneratedKey().apply()
 
-    Remodel(
-      id = generatedKey,
-      memberId = memberId,
-      flag = flag,
-      beforeItemId = beforeItemId,
-      afterItemId = afterItemId,
-      vocieId = vocieId,
-      useSlotIds = useSlotIds,
-      certain = certain)
+    generatedKey
   }
 
   def save(entity: Remodel)(implicit session: DBSession = autoSession): Remodel = {
@@ -141,7 +163,11 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
         column.afterItemId -> entity.afterItemId,
         column.vocieId -> entity.vocieId,
         column.useSlotIds -> entity.useSlotIds,
-        column.certain -> entity.certain
+        column.certain -> entity.certain,
+        column.beforeItemLevel -> entity.beforeItemLevel,
+        column.firstShipId -> entity.firstShipId,
+        column.secondShipId -> entity.secondShipId,
+        column.created -> entity.created
       ).where.eq(column.id, entity.id)
     }.update().apply()
     entity

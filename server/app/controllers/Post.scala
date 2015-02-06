@@ -1,6 +1,7 @@
 package controllers
 
 import com.ponkotuy.data._
+import com.ponkotuy.data.master.MasterRemodel
 import com.ponkotuy.value.KCServer
 import controllers.Common._
 import models.db
@@ -153,6 +154,17 @@ object Post extends Controller {
 
   def remodel() = authAndParse[Remodel] { case (auth, request) =>
     db.Remodel.create(request, auth.id)
+    for {
+      afterSlot <- request.afterSlot
+      item <- db.SlotItem.find(request.slotId, auth.id)
+    } {
+      db.SlotItem(auth.id, item.id, item.slotitemId, item.name, item.locked, afterSlot.level).save()
+    }
+    Ok("Success")
+  }
+
+  def masterRemodel() = authAndParse[MasterRemodel] { case (auth, request) =>
+    db.MasterRemodel.createFromData(request, auth.id)
     Ok("Success")
   }
 }

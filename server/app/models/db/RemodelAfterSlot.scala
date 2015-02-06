@@ -7,7 +7,8 @@ case class RemodelAfterSlot(
   id: Int,
   slotitemId: Int,
   locked: Boolean,
-  level: Int) {
+  level: Int,
+  created: Long) {
 
   def save()(implicit session: DBSession = RemodelAfterSlot.autoSession): RemodelAfterSlot = RemodelAfterSlot.save(this)(session)
 
@@ -20,7 +21,7 @@ object RemodelAfterSlot extends SQLSyntaxSupport[RemodelAfterSlot] {
 
   override val tableName = "remodel_after_slot"
 
-  override val columns = Seq("remodel_id", "id", "slotitem_id", "locked", "level")
+  override val columns = Seq("remodel_id", "id", "slotitem_id", "locked", "level", "created")
 
   def apply(ras: SyntaxProvider[RemodelAfterSlot])(rs: WrappedResultSet): RemodelAfterSlot = apply(ras.resultName)(rs)
   def apply(ras: ResultName[RemodelAfterSlot])(rs: WrappedResultSet): RemodelAfterSlot = autoConstruct(rs, ras)
@@ -60,29 +61,25 @@ object RemodelAfterSlot extends SQLSyntaxSupport[RemodelAfterSlot] {
     id: Int,
     slotitemId: Int,
     locked: Boolean,
-    level: Int)(implicit session: DBSession = autoSession): RemodelAfterSlot = {
+    level: Int,
+    created: Long = System.currentTimeMillis())(implicit session: DBSession = autoSession): Unit = {
     withSQL {
       insert.into(RemodelAfterSlot).columns(
         column.remodelId,
         column.id,
         column.slotitemId,
         column.locked,
-        column.level
+        column.level,
+        column.created
       ).values(
           remodelId,
           id,
           slotitemId,
           locked,
-          level
+          level,
+          created
         )
     }.update().apply()
-
-    RemodelAfterSlot(
-      remodelId = remodelId,
-      id = id,
-      slotitemId = slotitemId,
-      locked = locked,
-      level = level)
   }
 
   def save(entity: RemodelAfterSlot)(implicit session: DBSession = autoSession): RemodelAfterSlot = {
@@ -92,7 +89,8 @@ object RemodelAfterSlot extends SQLSyntaxSupport[RemodelAfterSlot] {
         column.id -> entity.id,
         column.slotitemId -> entity.slotitemId,
         column.locked -> entity.locked,
-        column.level -> entity.level
+        column.level -> entity.level,
+        column.created -> entity.created
       ).where.eq(column.remodelId, entity.remodelId)
     }.update().apply()
     entity
