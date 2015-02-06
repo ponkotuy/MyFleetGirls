@@ -154,6 +154,12 @@ object Post extends Controller {
 
   def remodel() = authAndParse[Remodel] { case (auth, request) =>
     db.Remodel.create(request, auth.id)
+    for {
+      afterSlot <- request.afterSlot
+      item <- db.SlotItem.find(request.slotId, auth.id)
+    } {
+      db.SlotItem(auth.id, item.id, item.slotitemId, item.name, item.locked, afterSlot.level).save()
+    }
     Ok("Success")
   }
 
