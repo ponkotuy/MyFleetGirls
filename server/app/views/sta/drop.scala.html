@@ -34,25 +34,27 @@
           </div>
           <div id="collapse@cell.pointStr" class="panel-collapse collapse" data-url="@routes.Rest.dropCell(cell.areaId, cell.infoNo, cell.cell, "(rank)", "(from)", "(to)")">
             <div class="panel-body">
-              <label class="checkbox-inline">
-                <input type="checkbox" v-model="dropOnly" />ドロップありのみ
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" v-model="rank_s" />S勝利
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" v-model="rank_a" />A勝利
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" v-model="rank_b" />B勝利
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" v-model="period" />期間
-              </label>
-              <input type="text" class="datepicker" v-model="from" />
-              〜
-              <input type="text" class="datepicker" v-model="to" />
-              <div style="width:900px;height:600px;margin:auto;" id="sunburst@cell.pointStr" class="sunburst"></div>
+              <form class="form-inline">
+                <label class="checkbox-inline">
+                  <input type="checkbox" v-model="dropOnly" />ドロップありのみ
+                </label>
+                <label class="checkbox-inline">
+                  <input type="checkbox" v-model="rank_s" />S勝利
+                </label>
+                <label class="checkbox-inline">
+                  <input type="checkbox" v-model="rank_a" />A勝利
+                </label>
+                <label class="checkbox-inline">
+                  <input type="checkbox" v-model="rank_b" />B勝利
+                </label>
+                <label class="checkbox-inline">
+                  <input type="checkbox" v-model="period" />期間
+                </label>
+                <input type="text" class="datepicker form-control" v-model="from" />
+                〜
+                <input type="text" class="datepicker form-control" v-model="to" />
+                <div style="width:900px;height:600px;margin:auto;" id="sunburst@cell.pointStr" class="sunburst"></div>
+              </form>
             </div>
             <table class="table table-condensed table-hover">
               <thead>

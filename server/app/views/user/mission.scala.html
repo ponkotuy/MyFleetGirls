@@ -18,7 +18,7 @@
         <form class="form-inline" role="form">
           <div class="form-group">
             <label>Stage</label>
-            <select v-model="stage" id="stage_select">
+            <select class="form-control" v-model="stage" id="stage_select">
               <option selected="selected">ALL</option>
               @stages.map { stage =>
                 <option value="@stage.id">@{stage.mapArea}-@{stage.name}</option>

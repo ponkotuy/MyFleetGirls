@@ -32,27 +32,29 @@
             </h2>
           </div>
           <div id="collapse@cell.pointAlpha" class="panel-collapse collapse" data-url="@routes.Rest.dropCellAlpha(cell.areaId, cell.infoNo, cell.alphabet, "(rank)", "(from)", "(to)")">
-            <div class="panel-body">
-              <label class="checkbox-inline">
-                <input type="checkbox" v-model="dropOnly" />ドロップありのみ
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" v-model="rank_s" />S勝利
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" v-model="rank_a" />A勝利
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" v-model="rank_b" />B勝利
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" v-model="period" />期間
-              </label>
-              <input type="text" class="datepicker" v-model="from" />
-              〜
-              <input type="text" class="datepicker" v-model="to" />
-              <div style="width:900px;height:600px;margin:auto;" id="sunburst@cell.pointAlpha" class="sunburst"></div>
-            </div>
+            <form class="form-inline">
+              <div class="panel-body">
+                <label class="checkbox-inline">
+                  <input type="checkbox" v-model="dropOnly" />ドロップありのみ
+                </label>
+                <label class="checkbox-inline">
+                  <input type="checkbox" v-model="rank_s" />S勝利
+                </label>
+                <label class="checkbox-inline">
+                  <input type="checkbox" v-model="rank_a" />A勝利
+                </label>
+                <label class="checkbox-inline">
+                  <input type="checkbox" v-model="rank_b" />B勝利
+                </label>
+                <label class="checkbox-inline">
+                  <input type="checkbox" v-model="period" />期間
+                </label>
+                <input type="text" class="datepicker form-control" v-model="from" />
+                〜
+                <input type="text" class="datepicker form-control" v-model="to" />
+                <div style="width:900px;height:600px;margin:auto;" id="sunburst@cell.pointAlpha" class="sunburst"></div>
+              </div>
+            </form>
             <table class="table table-condensed table-hover">
               <thead>
                 <tr><th>艦種</th><th>名前</th><th>Count</th><th>Rate</th></tr>

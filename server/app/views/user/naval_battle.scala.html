@@ -17,7 +17,7 @@
         <form class="form-inline" role="form">
           <div class="form-group">
             <label>Stage</label>
-            <select v-model="stage" id="stage_select">
+            <select v-model="stage" id="stage_select" class="form-control">
               <option selected="selected">ALL</option>
               @stages.map { stage =>
                 <option>@stage.area-@stage.info</option>
@@ -25,42 +25,42 @@
             </select>
           </div>
           <div class="checkbox">
-            <label class="checkbox-inline">
+            <label>
               <input type="checkbox" v-model="bossOnly">BOSSのみ
             </label>
           </div>
           <div class="checkbox">
-            <label class="checkbox-inline">
+            <label>
               <input type="checkbox" v-model="dropOnly">ドロップありのみ
             </label>
           </div>
           <div class="checkbox">
-            <label class="checkbox-inline">
+            <label>
               <input type="checkbox" v-model="ranks.S">S勝利
             </label>
           </div>
           <div class="checkbox">
-            <label class="checkbox-inline">
+            <label>
               <input type="checkbox" v-model="ranks.A">A勝利
             </label>
           </div>
           <div class="checkbox">
-            <label class="checkbox-inline">
+            <label>
               <input type="checkbox" v-model="ranks.B">B勝利
             </label>
           </div>
           <div class="checkbox">
-            <label class="checkbox-inline">
+            <label>
               <input type="checkbox" v-model="ranks.C">C敗北
             </label>
           </div>
           <div class="checkbox">
-            <label class="checkbox-inline">
+            <label>
               <input type="checkbox" v-model="ranks.D">D敗北
             </label>
           </div>
           <div class="checkbox">
-            <label class="checkbox-inline">
+            <label>
               <input type="checkbox" v-model="ranks.E">E敗北
             </label>
           </div>
