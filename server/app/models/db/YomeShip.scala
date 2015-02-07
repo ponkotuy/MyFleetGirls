@@ -1,6 +1,6 @@
 package models.db
 
-import models.join.ShipWithName
+import models.join.{ShipWithAdmiral, ShipWithName}
 import scalikejdbc._
 
 case class YomeShip(
@@ -31,6 +31,7 @@ object YomeShip extends SQLSyntaxSupport[YomeShip] {
   val ms = MasterShipBase.syntax("ms")
   val mst = MasterStype.syntax("mst")
   val mss = MasterShipSpecs.syntax("mss")
+  val a = Admiral.syntax("a")
 
   override val autoSession = AutoSession
 
@@ -74,6 +75,20 @@ object YomeShip extends SQLSyntaxSupport[YomeShip] {
     }.map { rs =>
       val slot = Ship.findSlot(rs.long(ys.resultName.memberId), rs.int(ys.resultName.shipId))
       ShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
+    }.list().apply()
+  }
+
+  def findAllByWithAdmiral(where: SQLSyntax, limit: Int = 10, offset: Int = 0)(
+      implicit session: DBSession = autoSession): List[ShipWithAdmiral] = {
+    withSQL {
+      select.from(YomeShip as ys)
+        .innerJoin(Ship as s).on(sqls"ys.member_id = s.member_id and ys.ship_id = s.id")
+        .innerJoin(Admiral as a).on(ys.memberId, a.id)
+        .where(where).orderBy(s.exp).desc
+        .limit(limit).offset(offset)
+    }.map { rs =>
+      val slot = Ship.findSlot(rs.long(s.resultName.memberId), rs.int(s.resultName.id))
+      ShipWithAdmiral(Ship(s, slot)(rs), Admiral(a)(rs))
     }.list().apply()
   }
 

@@ -1,4 +1,4 @@
-@(master: MasterShipAll, ships: Seq[ShipWithAdmiral], admiral: Option[Admiral])
+@(master: MasterShipAll, ships: Seq[ShipWithAdmiral], admiral: Option[Admiral], yomes: Seq[ShipWithAdmiral])
 
 @main {
   <title>@master.name -艦娘図鑑-</title>
@@ -55,18 +55,35 @@
         </table>
       </div>
 
-      <div class="col-md-4 col-sm-5">
-        <h3>所持ユーザ</h3>
-        <table class="table table-condensed table-striped">
-        @ships.zipWithIndex.map { case (ship, i) =>
-          <tr>
-            <th>@{i + 1}</th>
-            <th><a href="@routes.UserView.ship(ship.admiral.id)#modal=true&id=@ship.id">@ship.admiral.nickname</a></th>
-            <td>@master.name<small>Lv@ship.lv</small></td>
-          </tr>
-        }
-        </table>
-      </div>
+      @if(yomes.nonEmpty) {
+        <div class="col-md-4 col-sm-5">
+          <h3>嫁ユーザ</h3>
+          <table class="table table-condensed table-striped">
+            @yomes.zipWithIndex.map { case (ship, i) =>
+              <tr>
+                <th>@{i + 1}</th>
+                <th><a href="@routes.UserView.ship(ship.admiral.id)#modal=true&id=@ship.id">@ship.admiral.nickname</a></th>
+                <td>@master.name <small>Lv@ship.lv</small></td>
+              </tr>
+            }
+          </table>
+        </div>
+      }
+
+      @if(ships.nonEmpty) {
+        <div class="col-md-4 col-sm-5">
+          <h3>所持ユーザ</h3>
+          <table class="table table-condensed table-striped">
+            @ships.zipWithIndex.map { case (ship, i) =>
+              <tr>
+                <th>@{i + 1}</th>
+                <th><a href="@routes.UserView.ship(ship.admiral.id)#modal=true&id=@ship.id">@ship.admiral.nickname</a></th>
+                <td>@master.name <small>Lv@ship.lv</small></td>
+              </tr>
+            }
+          </table>
+        </div>
+      }
 
       <div v-show="sCounts.length > 0" class="col-sm-7">
         <h3>建造レシピ</h3>
