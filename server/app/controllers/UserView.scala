@@ -142,14 +142,14 @@ object UserView extends Controller {
 
   def aship(memberId: Long, shipId: Int) = userView(memberId) { user =>
     db.Ship.findByIDWithName(memberId, shipId) match {
-      case Some(ship) => Ok(views.html.user.modal_ship(ship, user))
+      case Some(ship) => Ok(views.html.user.modal_ship(ship, user, false))
       case _ => NotFound("艦娘が見つかりませんでした")
     }
   }
 
   def snapAship(memberId: Long, shipId: Int) = userView(memberId) { user =>
     db.DeckShipSnapshot.findWithName(shipId) match {
-      case Some(ship) => Ok(views.html.user.modal_ship(ship, user))
+      case Some(ship) => Ok(views.html.user.modal_ship(ship, user, true))
       case _ => NotFound("艦娘が見つかりませんでした")
     }
   }
@@ -164,7 +164,7 @@ object UserView extends Controller {
 
   def shipPage(memberId: Long, shipId: Int) = userView(memberId) { user =>
     db.Ship.findByIDWithName(memberId, shipId) match {
-      case Some(ship) => Ok(views.html.user.modal_ship(ship, user))
+      case Some(ship) => Ok(views.html.user.modal_ship(ship, user, false))
       case _ => NotFound("艦娘が見つかりませんでした")
     }
   }

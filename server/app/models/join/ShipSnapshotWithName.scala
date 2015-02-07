@@ -14,6 +14,7 @@ case class ShipSnapshotWithName(ship: Ship, master: MasterShipBase, stype: Maste
     val master = MasterSlotItem.findAll().map(ms => ms.id -> ms).toMap
     ship.slot.map(master.apply)
   }
+  override lazy val slotNames: List[String] = slotMaster.map(_.name)
 }
 
 case class ShipSnapshotRest(deckId: Long, num: Int)

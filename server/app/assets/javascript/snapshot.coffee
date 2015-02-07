@@ -9,6 +9,7 @@ $(document).ready ->
       location.hash = toURLParameter({modal: true, id: id})
       data = JSON.parse($(this).attr('data-json'))
       $(this).jqplot(data, jqplotOpt)
+    loadFavCounter()
 
   $('#modal').on 'hidden.bs.modal',(e)  ->
     url = location.href.split('#')[0]

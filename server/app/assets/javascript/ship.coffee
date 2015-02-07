@@ -46,7 +46,7 @@ $(document).ready ->
     $('.fleet_data').each () ->
       id = parseInt($(this).attr('data-id'))
       location.hash = toURLParameter({modal: true, id: id, fleet: true})
-    loadFavCounter(location.pathname + location.hash)
+    loadFavCounter()
 
   $('#modal').on 'hidden.bs.modal', ->
     url = location.href.split('#')[0]

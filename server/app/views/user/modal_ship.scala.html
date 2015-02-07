@@ -1,4 +1,4 @@
-@(ship: ShipParameter, user: User)
+@(ship: ShipParameter, user: User, isSnap: Boolean)
 
 <!-- Require jqPlot -->
 
@@ -7,7 +7,15 @@
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 
   <div style="float: right; margin-right: 20px;">
-    <div class="input-group input-group-sm favorite-group" data-title="@ship.name -@{user.admiral.nickname}提督の艦娘-">
+    @if(isSnap) {
+      <div class="input-group input-group-sm favorite-group"
+           data-title="@ship.name -@{user.admiral.nickname}提督のSnapshot-"
+           data-path="@{routes.UserView.snapshot(user.admiral.id)}#modal=true&id=@{ship.id}">
+    } else {
+      <div class="input-group input-group-sm favorite-group"
+           data-title="@ship.name -@{user.admiral.nickname}提督の艦娘-"
+           data-path="@{routes.UserView.ship(user.admiral.id)}#modal=true&id=@{ship.id}">
+    }
       <span class="input-group-btn">
         <button class="btn btn-default btn-add-favorite" type="button">
           <span class="text-warning glyphicon glyphicon-star"></span>
@@ -67,7 +75,7 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-  @if(user.logined.isEmpty || user.isMine) {
+  @if(!isSnap && (user.logined.isEmpty || user.isMine)) {
     <buttton type="button" class="btn btn-primary" @if(!user.isMine){disabled="disabled"} onclick="yome()">嫁艦にする</buttton>
   }
   <a type="button" class="btn btn-primary" onclick="tweet()" target="_blank">Tweet</a>
