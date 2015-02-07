@@ -6,8 +6,8 @@ import util.scalikejdbc.BulkInsert._
 
 /**
  *
- * @param deckId : 艦隊No.
- * @param num : 順番（旗艦0）
+ * @param deckId : 艦隊No. 1-indexed
+ * @param num : 順番（旗艦0） // 0-indexed
  */
 case class DeckShip(deckId: Int, num: Int, memberId: Long, shipId: Int)
 

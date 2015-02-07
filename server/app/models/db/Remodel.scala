@@ -98,8 +98,16 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
   }
 
   def create(x: data.Remodel, memberId: Long)(implicit session: DBSession = autoSession): Option[Long] = {
-    val firstShipId = DeckShip.find(memberId, 1, 1).get.shipId // 第一艦隊旗艦は必ずいる
-    val secondShipId = DeckShip.find(memberId, 1, 2).map(_.shipId)
+    val firstShipId = {
+      val deck = DeckShip.find(memberId, 1, 0).get.shipId // 第一艦隊旗艦は必ずいる
+      Ship.find(memberId, deck).get.shipId
+    }
+    val secondShipId = for {
+      secondShipDeck <- DeckShip.find(memberId, 1, 1)
+      deckId = secondShipDeck.shipId
+      secondShip <- Ship.find(memberId, deckId)
+      shipId = secondShip.shipId
+    } yield shipId
     val now = System.currentTimeMillis()
     SlotItem.find(x.slotId, memberId).map { beforeItem =>
       val key = createOrig(memberId, x.flag, x.beforeItemId, x.afterItemId, x.voiceId, x.useSlotIds.mkString(","), x.certain, beforeItem.level, firstShipId, secondShipId, now)

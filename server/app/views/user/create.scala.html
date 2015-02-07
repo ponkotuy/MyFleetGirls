@@ -80,7 +80,7 @@
                 <span class="glyphicon glyphicon-remove" v-if="!item.remodel.flag"></span>
               </td>
               <td><span v-if="item.secondShip">{{item.secondShip.name}}</span><span v-if="!item.secondShip">なし</span></td>
-              <td>{{item.before.name}}<span v-if="item.remodelAfter.level">+{{item.remodelAfter.level - (item.remodel.flag ? 1 : 0)}}</span></td>
+              <td>{{item.before.name}}+{{item.remodel.beforeItemLevel}}</td>
               <td><span v-if="item.remodelAfter">{{item.after.name}}+{{item.remodelAfter.level}}</span></td>
               <td>
                 <span v-if="item.master">

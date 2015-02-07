@@ -12,6 +12,6 @@ case class RemodelWithName(
     before: MasterSlotItem,
     after: MasterSlotItem,
     remodelAfter: Option[RemodelAfterSlot],
-    material: Option[MasterRemodel],
+    master: Option[MasterRemodel],
     use: Option[MasterSlotItem],
     secondShip: Option[MasterShipBase])
