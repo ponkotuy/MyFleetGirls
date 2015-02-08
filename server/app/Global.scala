@@ -65,7 +65,6 @@ object Cors extends Filter {
   def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
     val result = f(rh)
     result.map { r =>
-//      r.withHeaders("Access-Control-Allow-Origin" -> "http://ponkotuy.github.io, https://ponkotuy.github.io, null")
       r.withHeaders("Access-Control-Allow-Origin" -> "http://ponkotuy.github.io")
     }
   }
