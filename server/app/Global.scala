@@ -4,11 +4,13 @@ import com.github.nscala_time.time.StaticDateTimeZone
 import models.db.{Admiral, Material, Quest}
 import org.joda.time.{DateTimeConstants, LocalDate}
 import play.api._
+import play.api.mvc._
 import play.libs.Akka
 import scalikejdbc._
 import util.{Cron, CronSchedule, CronScheduler}
 
 import scala.concurrent.ExecutionContext.Implicits._
+import scala.concurrent.Future
 import scala.concurrent.duration._
 
 /**
@@ -16,7 +18,7 @@ import scala.concurrent.duration._
  * @author ponkotuy
  * Date: 14/05/12.
  */
-object Global extends GlobalSettings {
+object Global extends WithFilters(Cors) with GlobalSettings{
   import util.Cron._
 
   override def onStart(app: Application): Unit = {
@@ -55,6 +57,16 @@ object Global extends GlobalSettings {
         val rest = Set(daily.minBy(_.steel).id, daily.maxBy(_.steel).id)
         daily.filterNot(mat => rest.contains(mat.id)).foreach(_.destroy())
       }
+    }
+  }
+}
+
+object Cors extends Filter {
+  def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
+    val result = f(rh)
+    result.map { r =>
+//      r.withHeaders("Access-Control-Allow-Origin" -> "http://ponkotuy.github.io, https://ponkotuy.github.io, null")
+      r.withHeaders("Access-Control-Allow-Origin" -> "http://ponkotuy.github.io")
     }
   }
 }
