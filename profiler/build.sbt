@@ -11,5 +11,5 @@ libraryDependencies ++= Seq(
 Keys.fork in Keys.run := true
 
 javaOptions in Keys.run ++= Seq(
-  "-agentlib:hprof=cpu=samples,depth=80"
+  "-agentlib:hprof=cpu=samples,depth=80,interval=2"
 )
