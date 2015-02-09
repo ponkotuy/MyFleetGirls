@@ -1,0 +1,4 @@
+db.default.driver="com.mysql.jdbc.Driver"
+db.default.url="jdbc:mysql://localhost:3306/myfleet"
+db.default.user=
+db.default.password=
