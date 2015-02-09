@@ -3,6 +3,7 @@
 <!-- Require jqPlot -->
 
 <script src="@Js.Coffee("bar")"></script>
+<script src="@Js.Coffee("modal_ship")"></script>
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 
@@ -76,18 +77,7 @@
 <div class="modal-footer">
   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
   @if(!isSnap && (user.logined.isEmpty || user.isMine)) {
-    <buttton type="button" class="btn btn-primary" @if(!user.isMine){disabled="disabled"} onclick="yome()">嫁艦にする</buttton>
+    <buttton type="button" class="btn btn-primary" @if(!user.isMine){disabled="disabled"} onclick="yome(@user.admiral.id, @ship.id)">嫁艦にする</buttton>
   }
-  <a type="button" class="btn btn-primary" onclick="tweet()" target="_blank">Tweet</a>
-  <script>
-    var tweet = function(){
-      var here = encodeURIComponent(location.href);
-      var text = "@ship.name Lv@ship.lv";
-      var url = "https://twitter.com/intent/tweet?original_referer=" + here + "&url=" + here + "&text=" + text + "&hashtags=MyFleetGirls";
-      window.open(url);
-    }
-    var yome = function(){
-      location.href='@{routes.UserView.settings(ship.memberId)}#userId=@ship.memberId&shipId=@ship.id'
-    }
-  </script>
+  <a type="button" class="btn btn-primary" onclick="tweet('@ship.name', @ship.lv)" target="_blank">Tweet</a>
 </div>
