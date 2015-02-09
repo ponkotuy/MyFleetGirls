@@ -68,3 +68,9 @@ mainPlot = (active, min, max = moment().valueOf()) ->
 fixWidth = ->
   width = $('div.tab-content').width()
   $('.width-adj').width(width)
+
+# data required {userId: `userId`, shipId: `shipId`}
+@yome = (userId, shipId) ->
+  $.post('/passwd/post/v1/settings', {userId: userId, shipId: shipId})
+    .success -> location.href = "/user/#{userId}/top"
+    .error (e) -> console.error(e)
