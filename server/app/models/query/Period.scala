@@ -9,10 +9,16 @@ import scala.util.Try
 /**
  * Date: 14/11/27.
  */
-case class Period(from: LocalDate, to: LocalDate, default: Boolean) {
-  def where(target: SQLSyntax) = sqls"${from.toDate.getTime} < $target and $target < ${to.toDate.getTime}"
-  def fromStr = from.toString(ISODateTimeFormat.date())
-  def toStr = to.toString(ISODateTimeFormat.date())
+case class Period(from: Option[LocalDate], to: Option[LocalDate], default: Boolean) {
+  import Period._
+
+  def where(target: SQLSyntax) = {
+    val x = from.map(it => sqls"${it.toDate.getTime} < $target").getOrElse(sqls"true")
+    val y = to.map(it => sqls"$target < ${it.toDate.getTime}").getOrElse(sqls"true")
+    x.and.append(y)
+  }
+  def fromStr = from.getOrElse(DefaultStart).toString(ISODateTimeFormat.date())
+  def toStr = to.getOrElse(LocalDate.now()).toString(ISODateTimeFormat.date())
 }
 
 object Period {
@@ -21,6 +27,6 @@ object Period {
   def fromStr(from: String, to: String): Period = {
     val fromDate = Try { LocalDate.parse(from, ISODateTimeFormat.date()) }
     val toDate = Try { LocalDate.parse(to, ISODateTimeFormat.date()) }
-    Period(fromDate.getOrElse(DefaultStart), toDate.getOrElse(LocalDate.now()), fromDate.isFailure && toDate.isFailure)
+    Period(fromDate.toOption, toDate.toOption, fromDate.isFailure && toDate.isFailure)
   }
 }

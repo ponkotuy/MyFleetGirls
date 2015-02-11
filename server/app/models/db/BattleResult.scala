@@ -170,7 +170,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
 
   def countAllGroupByCells(where: SQLSyntax = sqls"1")(implicit session: DBSession = autoSession): List[(CellWithRank, Long)] = {
     withSQL {
-      select(br.*, ci.alphabet, sqls"count(1) as cnt").from(BattleResult as br)
+      select(br.areaId, br.infoNo, br.cell, br.winRank, ci.alphabet, sqls"count(1) as cnt").from(BattleResult as br)
         .leftJoin(CellInfo as ci).on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
         .where.append(sqls"${where}")
         .groupBy(br.areaId, br.infoNo, br.cell, br.winRank)
