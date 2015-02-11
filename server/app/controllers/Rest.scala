@@ -62,7 +62,7 @@ object Rest extends Controller {
     val allCounts = db.BattleResult.countAllGroupByCells(fromTo).toMap
     val dropCounts = db.BattleResult.countAllGroupByCells(sqls"get_ship_id = ${shipId} and $fromTo")
     dropCounts.map { case (cell, count) =>
-      Map("cell" -> cell, "count" -> count, "sum" -> allCounts(cell))
+      Map("cell" -> cell, "count" -> count, "sum" -> allCounts.get(cell))
     }
   }
 
