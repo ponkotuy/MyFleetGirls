@@ -22,7 +22,7 @@ object UserShipPlay extends App {
       UserView.ship(user).apply(FakeRequest())
     }
     futures.map { f =>
-      Await.result(f, 1.second).body.run(printIteratee)
+      Await.result(f, 10.second).body.run(printIteratee)
     }
   }
 }
