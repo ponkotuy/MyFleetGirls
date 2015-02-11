@@ -128,10 +128,12 @@ object Common extends Controller {
     result.getOrElse(false)
   }
 
-  def returnJson[A <: AnyRef](f: => A) = Action.async {
+  def returnJson[A <: AnyRef](f: => A): Action[AnyContent] = returnJsonReq(_ => f)
+
+  def returnJsonReq[A <: AnyRef](f: Request[AnyContent] => A): Action[AnyContent] = Action.async { req =>
     Future {
       try {
-        Ok(write(f)).as("application/json")
+        Ok(write(f(req))).as("application/json")
       } catch {
         case e: IllegalArgumentException => BadRequest(e.getMessage)
       }

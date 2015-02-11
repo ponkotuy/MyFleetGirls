@@ -1,6 +1,7 @@
 package controllers
 
 import models.db
+import models.req.{AllCrawlAPI, SortType}
 import org.json4s.JsonDSL._
 import org.json4s._
 import play.api.mvc.Controller
@@ -58,11 +59,18 @@ object RestUser extends Controller {
 
   def remodelCount(memberId: Long) = returnString(db.Remodel.countBy(sqls"r.member_id = ${memberId}"))
 
-  def battleResult(memberId: Long, limit: Int, offset: Int, boss: Boolean, drop: Boolean, rank: String, area: Option[Int], info: Option[Int]) = returnJson {
-    require(limit + offset <= 200, "limit + offset <= 200")
-    val where = battleResultWhere(memberId, boss, drop, rank, area, info)
-    val result = db.BattleResult.findAllByWithCell(where, limit, offset)
-    JArray(result.map(_.toJson))
+  def battleResult(memberId: Long, limit: Int, offset: Int, boss: Boolean, drop: Boolean, rank: String, area: Option[Int], info: Option[Int]) = returnJsonReq[JValue] { implicit req =>
+    AllCrawlAPI.form.bindFromRequest().get match {
+      case AllCrawlAPI(SortType.Normal, _) =>
+        require(limit + offset <= 200, "limit + offset <= 200")
+        val where = battleResultWhere(memberId, boss, drop, rank, area, info)
+        val result = db.BattleResult.findAllByWithCell(where, limit, offset)
+        JArray(result.map(_.toJson))
+      case AllCrawlAPI(SortType.Id, fromId) =>
+        val where = sqls"member_id = ${memberId}".and.append(fromId.map { id => sqls"id > ${id}" }.getOrElse(sqls"1"))
+        val result = db.BattleResult.findAllByWithCell(where, 100, orderBy = sqls"br.id")
+        JArray(result.map(_.toJson))
+    }
   }
 
   def battleResultCount(memberId: Long, boss: Boolean, drop: Boolean, rank: String, area: Option[Int], info: Option[Int]) = returnString {
