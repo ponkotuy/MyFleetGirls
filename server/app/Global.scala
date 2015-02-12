@@ -5,11 +5,11 @@ import models.db.{Admiral, Material, Quest}
 import org.joda.time.{DateTimeConstants, LocalDate}
 import play.api._
 import play.api.mvc._
+import play.api.libs.concurrent.Execution.Implicits._
 import play.libs.Akka
 import scalikejdbc._
 import util.{Cron, CronSchedule, CronScheduler}
 
-import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
 import scala.concurrent.duration._
 

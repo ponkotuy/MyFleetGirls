@@ -3,11 +3,11 @@ package controllers
 import com.github.nscala_time.time.Imports._
 import org.json4s.native.Serialization.write
 import play.api.mvc._
+import play.api.libs.concurrent.Execution.Implicits._
 import scalikejdbc._
 import models.db
 import tool.{BestShipExp, HistgramShipLv, MaterialDays, STypeExp}
 
-import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
 
 /**

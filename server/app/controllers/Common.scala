@@ -3,11 +3,11 @@ package controllers
 import models.join.{Activity, User}
 import models.db
 import play.api.mvc._
+import play.api.libs.concurrent.Execution.Implicits._
 import org.json4s._
 import org.json4s.native.{ JsonMethods => J }
 import org.json4s.native.Serialization.write
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits._
 import scalikejdbc._
 import com.ponkotuy.data.{MyFleetAuth, Auth}
 import tool.Authentication
