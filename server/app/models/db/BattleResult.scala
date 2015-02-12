@@ -159,7 +159,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
 
   def countAllByStage()(implicit session: DBSession = autoSession): List[(Stage, Long)] = {
     withSQL {
-      select(br.*, sqls"count(1) as cnt")
+      select(br.areaId, br.infoNo, sqls"count(1) as cnt")
         .from(BattleResult as br)
         .groupBy(br.areaId, br.infoNo)
         .orderBy(br.areaId, br.infoNo)
