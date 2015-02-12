@@ -13,7 +13,9 @@ case class BattleResultWithUser(battleResult: BattleResult, admiral: Admiral) ex
   def getShipId: Option[Int] = battleResult.getShipId
   def getShipName: Option[String] = battleResult.getShipName
 
-  def stage: String = s"${areaId}-${infoNo}-${cell}"
+  def stage: String = s"$viewName-$cell"
+
+  lazy val viewName = Stage(areaId, infoNo).toString
 
   override def title: String = "ドロップ"
   override def created: Long = battleResult.created
