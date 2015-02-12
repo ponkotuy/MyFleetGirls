@@ -111,11 +111,6 @@ object UserView extends Controller {
     Ok(views.html.user.ship(user, ships, decks, deckports))
   }
 
-  def settings(memberId: Long) = userView(memberId) { user =>
-    if(user.isMine) Ok(views.html.user.settings(user))
-    else Redirect(routes.View.login(user.admiral.id.toString, routes.UserView.settings(memberId).url))
-  }
-
   val UnprocurableItemId = Set(49)
 
   def book(memberId: Long) = userView(memberId) { user =>

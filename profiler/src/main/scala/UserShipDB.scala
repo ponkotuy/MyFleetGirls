@@ -3,9 +3,7 @@ import scala.util.Try
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import play.api.test.FakeRequest
-import play.api._
 import scalikejdbc._
-import UserShip.UserIterator
 
 /**
  *

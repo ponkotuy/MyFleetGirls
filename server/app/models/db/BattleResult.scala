@@ -68,14 +68,14 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
     }.map(BattleResult(br.resultName)).list().apply()
   }
 
-  def findAllByWithCell(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
+  def findAllByWithCell(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0, orderBy: SQLSyntax = br.created.desc)(
       implicit session: DBSession = autoSession): List[BattleResultWithCell] = {
     withSQL {
       select.from(BattleResult as br)
         .leftJoin(CellInfo as ci)
           .on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
         .where.append(sqls"${where}")
-        .orderBy(br.created).desc
+        .orderBy(orderBy)
         .limit(limit).offset(offset)
     }.map(BattleResultWithCell(br, ci)).list().apply()
   }
@@ -170,7 +170,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
 
   def countAllGroupByCells(where: SQLSyntax = sqls"1")(implicit session: DBSession = autoSession): List[(CellWithRank, Long)] = {
     withSQL {
-      select(br.*, ci.alphabet, sqls"count(1) as cnt").from(BattleResult as br)
+      select(br.areaId, br.infoNo, br.cell, br.winRank, ci.alphabet, sqls"count(1) as cnt").from(BattleResult as br)
         .leftJoin(CellInfo as ci).on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
         .where.append(sqls"${where}")
         .groupBy(br.areaId, br.infoNo, br.cell, br.winRank)

@@ -123,7 +123,6 @@ GET     /passwd/user/delete_snap/:snapId controllers.UserView.deleteSnap(snapId:
 GET     /user/:userId/material      controllers.UserView.material(userId: Long)
 GET     /user/:userId/ship          controllers.UserView.ship(userId: Long)
 GET     /user/:userId/ship_page/:shipId controllers.UserView.shipPage(userId: Long, shipId: Int)
-GET     /passwd/user/:userId/settings      controllers.UserView.settings(userId: Long)
 GET     /user/:userId/book          controllers.UserView.book(userId: Long)
 GET     /user/:userId/ship_image_book controllers.UserView.shipImageBook(userId: Long)
 GET     /user/:userId/dock          controllers.UserView.dock(userId: Long)

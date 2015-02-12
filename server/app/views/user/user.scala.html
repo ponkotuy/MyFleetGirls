@@ -50,7 +50,21 @@
       <table class="table table-condensed">
         <thead>
           <tr>
-            <th>艦種</th><th>名前</th><th>Lv</th><th>Exp</th><th>HP</th><th>Cond</th><th>火力</th><th>雷装</th><th>対空</th><th>装甲</th><th>回避</th><th>対潜</th><th>索敵</th><th>運</th><th>嫁</th>
+            <th>艦種</th>
+            <th>名前</th>
+            <th>Lv</th>
+            <th>Exp</th>
+            <th>HP</th>
+            <th>Cond</th>
+            <th>火力</th>
+            <th>雷装</th>
+            <th>対空</th>
+            <th>装甲</th>
+            <th>回避</th>
+            <th>対潜</th>
+            <th>索敵</th>
+            <th>運</th>
+            @if(user.isMine){<th>嫁</th>}
           </tr>
         </thead>
         <tbody>
@@ -70,10 +84,16 @@
             <td>@ship.taisen</td>
             <td>@ship.sakuteki</td>
             <td>@ship.lucky</td>
-            @if(isYome && user.isMine) {
-              <td>
-                <button type="submit" class="btn btn-warning btn-xs delete-yome" data-ship-id="@ship.id">嫁解除</button>
-              </td>
+            @if(user.isMine) {
+              @if(isYome) {
+                <td>
+                  <button type="submit" class="btn btn-warning btn-xs delete-yome" data-ship-id="@ship.id">嫁解除</button>
+                </td>
+              } else {
+                <td>
+                  <button type="submit" class="btn btn-info btn-xs" onclick="yome(@user.admiral.id, @ship.id)">嫁登録</button>
+                </td>
+              }
             }
           </tr>
         }
