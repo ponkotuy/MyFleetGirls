@@ -1,5 +1,6 @@
 package models.db
 
+import models.join.Stage
 import scalikejdbc._
 import scalikejdbc._
 import com.ponkotuy.data
@@ -15,7 +16,12 @@ case class MapInfo(
 
   def destroy()(implicit session: DBSession = MapInfo.autoSession): Unit = MapInfo.destroy(this)(session)
 
-  def abbr: String = s"${id/10}-${id%10}"
+  def abbr: String = stage.toString
+
+  def areaId = id/10
+  def infoNo = id%10
+
+  lazy val stage: Stage = Stage(areaId, infoNo)
 
 }
 

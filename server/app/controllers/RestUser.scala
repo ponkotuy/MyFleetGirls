@@ -100,7 +100,7 @@ object RestUser extends Controller {
           ("id" -> sid) ~ ("name" -> "喪失") ~ ("stype" -> "不明")
         }
       }
-      Extraction.decompose(route).asInstanceOf[JObject] ~ ("ships" -> xs)
+      route.toJson ~ ("ships" -> xs)
     }
   }
 

@@ -1,6 +1,6 @@
 package models.join
 
-import models.db.BattleResult
+import models.db.{AreaName, BattleResult}
 import scalikejdbc._
 
 /**
@@ -9,7 +9,10 @@ import scalikejdbc._
  * Date: 14/04/23.
  */
 case class Stage(area: Int, info: Int) {
-  override def toString: String = s"$area-$info"
+  override def toString: String = s"$viewName-$info"
+
+  lazy val areaName = AreaName.find(area)
+  def viewName = areaName.map(_.viewName).getOrElse(area.toString)
 }
 
 object Stage {

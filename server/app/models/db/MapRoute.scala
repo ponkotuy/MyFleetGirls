@@ -2,17 +2,21 @@ package models.db
 
 import com.ponkotuy.data
 import models.join.{Stage, ShipWithName, RouteWithAdmiral}
+import org.json4s._
+import org.json4s.JsonDSL._
 import scalikejdbc._
 
 case class MapRoute(
-  id: Long,
-  memberId: Long,
-  areaId: Int,
-  infoNo: Int,
-  dep: Int,
-  dest: Int,
-  fleet: List[Int],
-  created: Long) {
+    id: Long,
+    memberId: Long,
+    areaId: Int,
+    infoNo: Int,
+    dep: Int,
+    dest: Int,
+    fleet: List[Int],
+    created: Long) {
+
+  import MapRoute._
 
   def save()(implicit session: DBSession = MapRoute.autoSession): MapRoute = MapRoute.save(this)(session)
 
@@ -22,6 +26,11 @@ case class MapRoute(
 
   def end: Option[CellInfo] = CellInfo.find(areaId, infoNo, dest)
 
+  lazy val stage = Stage(areaId, infoNo)
+
+  def toJson: JObject =
+    Extraction.decompose(this)(formats).asInstanceOf[JObject] ~ ("area" -> stage.toString)
+
 }
 
 
@@ -30,6 +39,8 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
   override val tableName = "map_route"
 
   override val columns = Seq("id", "member_id", "area_id", "info_no", "dep", "dest", "fleet", "created")
+
+  implicit val formats = DefaultFormats
 
   def apply(mr: ResultName[MapRoute])(rs: WrappedResultSet): MapRoute = new MapRoute(
     id = rs.long(mr.id),

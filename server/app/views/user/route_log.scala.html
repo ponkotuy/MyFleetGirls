@@ -20,7 +20,7 @@
             <select class="form-control" v-model="stage" id="stage_select">
               <option selected="selected">ALL</option>
               @stages.map { stage =>
-                <option>@stage.area-@stage.info</option>
+                <option>@stage.toString</option>
               }
             </select>
           </div>
@@ -54,7 +54,7 @@
           </thead>
           <tbody>
             <tr v-repeat="r: routes">
-              <th>{{r.areaId}}-{{r.infoNo}}</th>
+              <th>{{r.area}}</th>
               <td v-html="viewCell(r.areaId, r.infoNo, r.dep)"></td>
               <td v-html="viewCell(r.areaId, r.infoNo, r.dest)"></td>
               <td>{{timeToStr(r.created)}}</td>
