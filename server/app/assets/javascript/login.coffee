@@ -1,7 +1,8 @@
 $(document).ready ->
   initUser = $('#initUser').val()
   back = $('#back').val()
-  storageKey = 'base_select_number'
+  baseSelectKey = 'base_select_number'
+  userIdKey = 'user_id_number'
   vue = new Vue
     el: '#login_form'
     data:
@@ -30,14 +31,16 @@ $(document).ready ->
         json.done (data) -> vue.$set('users', data)
       setAdmiral: (id) ->
         @userId = id
+    watch:
+      'admiralName': -> @getUsers(@getNumber(), @admiralName)
+      'userId': -> localStorage.setItem(userIdKey, @userId)
     ready: ->
-      number = localStorage.getItem(storageKey) ? @getNumber()
-      $('#base_select').val(number)
-      @getUsers(number, "")
-      @$watch 'admiralName', =>
-        @getUsers(@getNumber(), @admiralName)
+      baseSelect = localStorage.getItem(baseSelectKey) ? @getNumber()
+      $('#base_select').val(baseSelect)
+      @userId = localStorage.getItem(userIdKey) ? ""
+      @getUsers(baseSelect, "")
 
   $('#base_select').change ->
     number = vue.getNumber()
-    localStorage.setItem(storageKey, number)
+    localStorage.setItem(baseSelectKey, number)
     vue.getUsers(number, vue.admiralName)

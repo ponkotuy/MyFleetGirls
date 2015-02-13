@@ -18,12 +18,17 @@
 
       <div class="form-group">
         <label for="userId" class="col-sm-2 control-label">UserID(数字)</label>
-        <div class="col-sm-8">
-          <input type="number" class="form-control" id="userId" v-model="userId" v-on="keyup: submit() | key enter" />
+        <div class="col-sm-6">
+          <input type="number" class="form-control" id="userId" v-model="userId" v-on="keyup: submit() | key enter" tabindex="1" />
+        </div>
+        <div class="col-sm-2">
+          <button type="button" class="btn btn-default" data-toggle="collapse" aria-expanded="false" aria-controls="userSearch" href="#userSearch">
+            ユーザ検索
+          </button>
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group collapse" id="userSearch">
         <div class="col-sm-offset-2 col-sm-9">
           <div class="row form-group">
             <label for="base_select" class="col-sm-2 control-label">所属基地</label>
@@ -64,12 +69,12 @@
           <a href="@routes.ViewAbout.faq()#password">Password</a>
         </label>
         <div class="col-sm-8">
-          <input type="password" class="form-control" id="password" v-model="password" v-on="keyup: submit() | key enter" />
+          <input type="password" class="form-control" id="password" v-model="password" v-on="keyup: submit() | key enter" tabindex="2" />
         </div>
       </div>
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-8">
-          <button type="button" class="btn btn-primary" id="submit" v-on="click: submit()">Login</button>
+          <button type="button" class="btn btn-primary" id="submit" v-on="click: submit()" tabindex="3">Login</button>
         </div>
       </div>
     </form>
