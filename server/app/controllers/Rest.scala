@@ -1,5 +1,6 @@
 package controllers
 
+import com.github.nscala_time.time.Imports._
 import com.ponkotuy.tool.Checksum
 import models.db
 import models.join.{ItemMat, ShipDrop, ShipWithFav}
@@ -139,5 +140,17 @@ object Rest extends Controller {
 
   def remodelLog(slotId: Int) = returnJson {
     db.RemodelSlot.findAllWithSecondShipBy(sqls"r.slot_id = ${slotId}").sortBy(-_.remodel.created)
+  }
+
+  def remodelLogSummary(slotId: Int) = returnJson {
+    val aWeekAgo = DateTime.now - 7.weeks
+    val where = sqls"slot_id = ${slotId}".and.append(sqls"created > ${aWeekAgo.getMillis}")
+    val logs = db.RemodelSlot.findAllWithSecondShipBy(where, 1000)
+    val dates = logs.map(_.remodel.created).map(time => new DateTime(time, DateTimeZone.forID("Asia/Tokyo")))
+    val dayOfWeekSummary = dates.map(_.getDayOfWeek).sorted.map(_.toString).distinct
+    val secondShipCount = logs.map(_.ship).groupBy(_.map(_.name)).mapValues(_.size)
+    val secondShipSummary = secondShipCount.toList.sortBy(-_._2).map(_._1)
+    ("dayOfWeek" -> dayOfWeekSummary) ~
+      ("secondShip" -> secondShipSummary)
   }
 }

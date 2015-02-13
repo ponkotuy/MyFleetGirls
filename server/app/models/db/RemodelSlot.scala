@@ -62,11 +62,13 @@ object RemodelSlot extends SQLSyntaxSupport[RemodelSlot] {
       .map(_.int(1)).list().apply()
   }
 
-  def findAllWithSecondShipBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[RemodelWithShip] = {
+  def findAllWithSecondShipBy(where: SQLSyntax, limit: Int = 20)(implicit session: DBSession = autoSession): List[RemodelWithShip] = {
     withSQL {
       select.from(RemodelSlot as r)
         .leftJoin(MasterShipBase as ms).on(r.secondShip, ms.id)
-        .where.append(sqls"${where}").limit(20)
+        .where.append(sqls"${where}")
+        .orderBy(r.created.desc)
+        .limit(limit)
     }.map { rs =>
       RemodelWithShip(RemodelSlot(r)(rs), Try { MasterShipBase(ms)(rs) }.toOption)
     }.list().apply()

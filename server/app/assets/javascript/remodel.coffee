@@ -6,33 +6,31 @@ $(document).ready ->
     vue = new Vue
       el: '#' + id
       data:
-        logs: []
         url: ""
+        dayOfWeek: []
+        secondShip: []
       methods:
         getJSON: ->
           @setHash()
-          $.getJSON @url, (data) => @logs = data
+          $.getJSON @url, (data) =>
+            @dayOfWeek = data.dayOfWeek
+            @secondShip = data.secondShip.slice(0, 5)
         setHash: ->
-          location.hash = toURLParameter({id: slot})
+          location.href = '#' + toURLParameter({id: slot})
+        viewDayOfWeek: (day) -> '月火水木金土日'[day - 1]
         restoreHash: ->
-          obj = fromURLParameter(location.hash.replace(/^\#/, ''))
-        shipName: (log) -> if log.ship? then log.ship.name else "無し"
-        dayOfWeek: (date) -> moment(date).locale('ja').format('dddd')
-        dateFormat: (date) -> moment(date).format('YYYY-MM-DD HH:mm')
+          fromURLParameter(location.hash.replace(/^\#/, ''))
       created: ->
         i = this
         elem.find('.panel-collapse').on 'show.bs.collapse', ->
           i.restoreHash()
           i.url = $(this).attr('data-url')
-          if i.logs.length == 0
+          if i.dayOfWeek.length == 0
             i.getJSON()
-      ready: ->
-        @$watch 'logs', (logs) ->
-          if logs.length > 0
+      watch:
+        dayOfWeek: () ->
+          if @dayOfWeek.length > 0
             $("#panel#{slot}")[0].scrollIntoView(true)
 
   obj = fromURLParameter(location.hash.replace(/^\#/, ''))
   $("#collapse#{obj.id}").collapse()
-  $('.collapse').on 'hide.bs.collapse', ->
-    here = location.href.replace(/\#.*$/, '') # hash以下を削除
-    history.replaceState(null, null, here)
