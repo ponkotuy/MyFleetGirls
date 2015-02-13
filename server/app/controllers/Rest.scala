@@ -153,4 +153,8 @@ object Rest extends Controller {
     ("dayOfWeek" -> dayOfWeekSummary) ~
       ("secondShip" -> secondShipSummary)
   }
+
+  def masterRemodel(slotId: Int) = returnJson {
+    db.MasterRemodel.findAllByWithName(sqls"slotitem_id = ${slotId}")
+  }
 }

@@ -1,7 +1,10 @@
 package models.db
 
+import models.join.MasterRemodelWithName
 import scalikejdbc._
 import com.ponkotuy.data
+
+import scala.util.Try
 
 case class MasterRemodel(
   slotitemId: Int,
@@ -43,6 +46,8 @@ object MasterRemodel extends SQLSyntaxSupport[MasterRemodel] {
   )
 
   val mr = MasterRemodel.syntax("mr")
+  val msi1 = MasterSlotItem.syntax("msi1")
+  val msi2 = MasterSlotItem.syntax("msi2")
 
   override val autoSession = AutoSession
 
@@ -62,8 +67,20 @@ object MasterRemodel extends SQLSyntaxSupport[MasterRemodel] {
 
   def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[MasterRemodel] = {
     withSQL {
-      select.from(MasterRemodel as mr).where.append(sqls"${where}")
+      select.from(MasterRemodel as mr).where.append(sqls"${where}").orderBy(mr.slotitemLevel)
     }.map(MasterRemodel(mr.resultName)).list().apply()
+  }
+
+  def findAllByWithName(where: SQLSyntax)(implicit session: DBSession = autoSession): List[MasterRemodelWithName] = {
+    withSQL {
+      select.from(MasterRemodel as mr)
+        .innerJoin(MasterSlotItem as msi1).on(mr.slotitemId, msi1.id)
+        .leftJoin(MasterSlotItem as msi2).on(mr.useSlotitemId, msi2.id)
+        .where(where).orderBy(mr.slotitemLevel)
+    }.map { rs =>
+      val use = Try { MasterSlotItem(msi2)(rs) }.toOption
+      MasterRemodelWithName(MasterRemodel(mr)(rs), MasterSlotItem(msi1)(rs), use)
+    }.list().apply()
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {

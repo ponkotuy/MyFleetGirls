@@ -9,12 +9,15 @@ $(document).ready ->
         url: ""
         dayOfWeek: []
         secondShip: []
+        master: []
       methods:
         getJSON: ->
           @setHash()
           $.getJSON @url, (data) =>
             @dayOfWeek = data.dayOfWeek
             @secondShip = data.secondShip.slice(0, 5)
+          $.getJSON "/rest/v1/remodel/master/#{slot}", (data) =>
+            @master = data
         setHash: ->
           location.href = '#' + toURLParameter({id: slot})
         viewDayOfWeek: (day) -> '月火水木金土日'[day - 1]

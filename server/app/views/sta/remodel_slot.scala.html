@@ -21,7 +21,7 @@
             </h2>
           </div>
           <div id="collapse@slot.id" class="panel-collapse collapse" data-url="@routes.Rest.remodelLogSummary(slot.id)">
-            <dl class="dl-horizontal">
+            <dl class="dl-horizontal" style="padding-top: 20px">
               <dt>曜日</dt>
               <dd>
                 <span v-show="dayOfWeek.length < 7" v-repeat="day: dayOfWeek">{{viewDayOfWeek(day)}}</span>
@@ -33,9 +33,37 @@
                 <span v-if="secondShip.length == 5">など</span>
               </dd>
             </dl>
+            <table class="table table-condensed table-striped">
+              <thead>
+                <tr>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>開発資材</th>
+                  <th>改修資材</th>
+                  <th>消費装備</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-repeat="m: master">
+                  <td>{{m.slotitem.name}}+{{m.master.slotitemLevel}}</td>
+                  <td>
+                    <span v-if="m.master.slotitemLevel < 10">{{m.slotitem.name}}+{{m.master.slotitemLevel + 1}}</span>
+                    <span v-if="m.master.slotitemLevel == 10">？？？</span>
+                  </td>
+                  <td>{{m.master.develop}}/{{m.master.certainDevelop}}</td>
+                  <td>{{m.master.remodel}}/{{m.master.certainRemodel}}</td>
+                  <td><span v-if="m.use">{{m.use.name}}<span v-if="m.master.useSlotitemNum > 1"> x{{m.master.useSlotitemNum}}</span></span></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       }
     </div>
+
+    <h3>注釈</h3>
+    <ul>
+      <li>曜日・2番艦に関しては、それ以外の選択肢がある可能性もあります（網羅していることは保証できない仕様です）</li>
+    </ul>
   }
 }
