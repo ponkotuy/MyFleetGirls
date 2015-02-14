@@ -30,7 +30,7 @@
               <dt>2番艦</dt>
               <dd>
                 <span v-repeat="s: secondShip"> {{s}} </span>
-                <span v-if="secondShip.length == 5">など</span>
+                <span v-show="secondShip.length == 5">など</span>
               </dd>
             </dl>
             <table class="table table-condensed table-striped">
@@ -45,14 +45,15 @@
               </thead>
               <tbody>
                 <tr v-repeat="m: master">
-                  <td>{{m.slotitem.name}}+{{m.master.slotitemLevel}}</td>
+                  <td>{{m.slotitem.name}}<span v-show="m.master.slotitemLevel > 0">+{{m.master.slotitemLevel}}</span></td>
                   <td>
-                    <span v-if="m.master.slotitemLevel < 10">{{m.slotitem.name}}+{{m.master.slotitemLevel + 1}}</span>
-                    <span v-if="m.master.slotitemLevel == 10">？？？</span>
+                    <span v-show="m.master.slotitemLevel < 10">{{m.slotitem.name}}+{{m.master.slotitemLevel + 1}}</span>
+                    <span v-show="m.master.slotitemLevel == 10 && !m.to">？？？</span>
+                    <span v-show="m.to">{{m.to.after.name}}<span v-show="m.to && m.to.remodelAfter && m.to.remodelAfter.level > 0">{{m.to.remodelAfter.level}}</span></span>
                   </td>
                   <td>{{m.master.develop}}/{{m.master.certainDevelop}}</td>
                   <td>{{m.master.remodel}}/{{m.master.certainRemodel}}</td>
-                  <td><span v-if="m.use">{{m.use.name}}<span v-if="m.master.useSlotitemNum > 1"> x{{m.master.useSlotitemNum}}</span></span></td>
+                  <td><span v-show="m.use">{{m.use.name}}<span v-show="m.master.useSlotitemNum > 1"> x{{m.master.useSlotitemNum}}</span></span></td>
                 </tr>
               </tbody>
             </table>
