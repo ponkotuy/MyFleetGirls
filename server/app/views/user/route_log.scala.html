@@ -20,7 +20,7 @@
             <select class="form-control" v-model="stage" id="stage_select">
               <option selected="selected">ALL</option>
               @stages.map { stage =>
-                <option>@stage.toString</option>
+                <option value="@stage.area-@stage.info">@stage.toString</option>
               }
             </select>
           </div>
