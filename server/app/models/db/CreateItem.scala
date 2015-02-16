@@ -34,12 +34,12 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
 
   def apply(ci: ResultName[CreateItem])(rs: WrappedResultSet): CreateItem = autoConstruct(rs, ci)
 
-  lazy val ci = CreateItem.syntax("ci")
-  lazy val mi = MasterSlotItem.syntax("mi")
-  lazy val s = Ship.syntax("s")
-  lazy val ms = MasterShipBase.syntax("ms")
-  lazy val mst = MasterStype.syntax("mst")
-  lazy val a = Admiral.syntax("a")
+  val ci = CreateItem.syntax("ci")
+  val mi = MasterSlotItem.syntax("mi")
+  val s = Ship.syntax("s")
+  val ms = MasterShipBase.syntax("ms")
+  val mst = MasterStype.syntax("mst")
+  val a = Admiral.syntax("a")
 
   override val autoSession = AutoSession
 

@@ -1,6 +1,7 @@
 package controllers
 
 import models.db
+import models.db.MasterShipBase
 import models.join.{ItemMat, Mat, ShipWithName}
 import models.query.{Period, SnapshotSearch}
 import models.view.{CItem, CShip}
@@ -57,19 +58,21 @@ object ViewSta extends Controller {
   def citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: String, from: String, to: String) = actionAsync {
     val fromTo = Period.fromStr(from, to)
     val mat = ItemMat(fuel, ammo, steel, bauxite, sType)
-    val ci = CItem(mat, fromTo)
+    val citem = CItem(mat, fromTo)
+    val ci = db.CreateItem.syntax
+    val mst = db.MasterStype.syntax
     val citems = db.CreateItem.findAllByWithName(
-      sqls"ci.fuel = $fuel and ci.ammo = $ammo and ci.steel = $steel and ci.bauxite = $bauxite and mst.name = $sType",
+      sqls.eq(ci.fuel, fuel).and.eq(ci.ammo, ammo).and.eq(ci.steel, steel).and.eq(ci.bauxite, bauxite).and.eq(mst.name, sType),
       limit = 100
     )
-    val counts = db.CreateItem.countItemByMat(mat, fromTo.where(sqls"ci.created"))
+    val counts = db.CreateItem.countItemByMat(mat, fromTo.where(ci.created))
     val sum = counts.map(_._2).sum.toDouble
     val withRate = counts.map { case (item, count) => (item.name, count, count/sum) }
     val countJsonRaw = counts.map { case (item, count) =>
       val url = routes.ViewSta.fromShip().toString() + s"#query=${item.name}"
       Map("label" -> item.name, "data" -> count, "url" -> url)
     }
-    Ok(views.html.sta.citem(ci, write(countJsonRaw), withRate, citems))
+    Ok(views.html.sta.citem(citem, write(countJsonRaw), withRate, citems))
   }
 
   def fromShip() = actionAsync { Ok(views.html.sta.from_ship()) }
@@ -93,7 +96,14 @@ object ViewSta extends Controller {
 
   def routeFleet(area: Int, info: Int, dep: Int, dest: Int, from: String, to: String) = actionAsync {
     val period = Period.fromStr(from, to)
-    val fleets = db.MapRoute.findFleetBy(sqls"area_id = $area and info_no = $info and dep = $dep and dest = $dest and ${period.where(sqls"created")}")
+    val m = db.MapRoute.syntax
+    val fleets = db.MapRoute.findFleetBy(
+      sqls.eq(m.areaId, area)
+        .and.eq(m.infoNo, info)
+        .and.eq(m.dep, dep)
+        .and.eq(m.dest, dest)
+        .and.append(period.where(m.created))
+    )
     val counts = fleetCounts(fleets)
     val cDep = db.CellInfo.findOrDefault(area, info, dep)
     val cDest = db.CellInfo.findOrDefault(area, info, dest)
@@ -116,22 +126,23 @@ object ViewSta extends Controller {
 
   val StaBookURL = "/entire/sta/book/"
   def shipList() = actionAsync {
-    val ships = db.MasterShipBase.findAllWithStype(sqls"ms.sortno > 0")
+    val ships = db.MasterShipBase.findAllWithStype(sqls.gt(MasterShipBase.syntax.sortno, 0))
     Ok(views.html.sta.ship_list(ships, favCountTableByShip()))
   }
 
   def favCountTableByShip(): Map[Int, Long] = {
-    val favs = db.Favorite.countByURL(sqls"f.first = ${"entire"} and f.second = ${"sta"} and f.url like ${StaBookURL + "%"}")
+    val f = db.Favorite.syntax
+    val favs = db.Favorite.countByURL(sqls.eq(f.first, "entire").and.eq(f.second, "sta").and.like(f.url, StaBookURL + "%"))
     favs.flatMap { case (url, _, count) =>
       Try { url.replace(StaBookURL, "").toInt }.map(_ -> count).toOption
     }.toMap.withDefaultValue(0L)
   }
 
   def shipBook(sid: Int) = actionAsync {
-    db.MasterShipBase.findAllInOneBy(sqls"ms.id = $sid").headOption.map { master =>
+    db.MasterShipBase.findAllInOneBy(sqls.eq(db.MasterShipBase.syntax.id, sid)).headOption.map { master =>
       val ships = db.Ship.findByWithAdmiral(sid)
       val admiral = db.ShipImage.findAdmiral(sid)
-      val yomes = db.YomeShip.findAllByWithAdmiral(sqls"s.ship_id = ${sid}", 50)
+      val yomes = db.YomeShip.findAllByWithAdmiral(sqls.eq(db.Ship.syntax.shipId, sid), 50)
       Ok(views.html.sta.ship_book(master, ships, admiral, yomes))
     }.getOrElse(NotFound(s"Not Found ShipID: $sid"))
   }

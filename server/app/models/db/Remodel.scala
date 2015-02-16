@@ -75,7 +75,7 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
         .innerJoin(MasterSlotItem as before).on(r.beforeItemId, before.id)
         .innerJoin(MasterSlotItem as after).on(r.afterItemId, after.id)
         .leftJoin(RemodelAfterSlot as ras).on(r.id, ras.remodelId)
-        .leftJoin(MasterRemodel as mr).on(sqls"r.before_item_id = mr.slotitem_id and r.before_item_level = mr.slotitem_level")
+        .leftJoin(MasterRemodel as mr).on(sqls.eq(r.beforeItemId, mr.slotitemId).and.eq(r.beforeItemLevel, mr.slotitemLevel))
         .leftJoin(MasterSlotItem as uItem).on(mr.useSlotitemId, uItem.id)
         .leftJoin(MasterShipBase as ms).on(r.secondShipId, ms.id)
         .where(where).orderBy(r.created).desc

@@ -15,7 +15,6 @@ $( ->
       getCount: ->
         $.getJSON @count, (ret) =>
           @allCount = ret
-          console.log(@pages())
       timeToStr: (millis) ->
         moment(millis).format('YYYY-MM-DD HH:mm')
       maxPage: -> Math.min(Math.ceil(@allCount / @pageCount()), 10)
