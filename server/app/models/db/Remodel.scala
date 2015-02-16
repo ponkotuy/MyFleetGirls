@@ -97,6 +97,15 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
     }.map(_.long(1)).single().apply().get
   }
 
+  def countAllFromBefore(where: SQLSyntax = sqls"true")(implicit dBSession: DBSession = autoSession): Map[Int, Long] = {
+    withSQL {
+      select(r.beforeItemId, sqls.count).from(Remodel as r)
+        .where(where).groupBy(r.beforeItemId)
+    }.map { rs =>
+      rs.int(1) -> rs.long(2)
+    }.list().apply().toMap
+  }
+
   def create(x: data.Remodel, memberId: Long)(implicit session: DBSession = autoSession): Option[Long] = {
     val firstShipId = {
       val deck = DeckShip.find(memberId, 1, 0).get.shipId // 第一艦隊旗艦は必ずいる

@@ -80,6 +80,15 @@ object RemodelSlot extends SQLSyntaxSupport[RemodelSlot] {
     }.map(_.long(1)).single().apply().get
   }
 
+  def countAllFromSlotId(where: SQLSyntax = sqls"true")(implicit session: DBSession = autoSession): Map[Int, Long] = {
+    withSQL {
+      select(r.slotId, sqls.count).from(RemodelSlot as r)
+        .where(where).groupBy(r.slotId)
+    }.map { rs =>
+      rs.int(1) -> rs.long(2)
+    }.list().apply().toMap
+  }
+
   def create(
     id: Int,
     slotId: Int,

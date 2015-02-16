@@ -138,8 +138,9 @@ object ViewSta extends Controller {
 
   def remodelSlot() = actionAsync {
     val ids = db.RemodelSlot.findAllUniqueSlotId()
+    val counts = db.Remodel.countAllFromBefore().withDefaultValue(0L)
     val slots = db.MasterSlotItem.findIn(ids)
-    Ok(views.html.sta.remodel_slot(slots))
+    Ok(views.html.sta.remodel_slot(slots, counts))
   }
 
   def searchSnap(q: String, page: Int) = actionAsync {
