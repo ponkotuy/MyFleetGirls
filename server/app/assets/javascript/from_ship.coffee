@@ -113,20 +113,20 @@ vueSettings =
         clearTimeout(timeout) # 起動時にquery発行されてscountが消されるのを抑制
         @getSCounts(sid)
       else
-        ships = []
+        @ships = []
     itemId: (iid) ->
       if iid != -1
         @shipId = -1
         clearTimeout(timeout)
         @getICounts(iid)
       else
-        items = []
-    start_period: (start) ->
+        @items = []
+    start_period: ->
       if @period
         console.log("OK")
         clearTimeout(timeout)
         timeout = setTimeout(@getCounts, 500)
-    end_period: (end) ->
+    end_period: ->
       if @period
         clearTimeout(timeout)
         timeout = setTimeout(@getCounts, 500)

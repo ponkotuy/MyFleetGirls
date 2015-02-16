@@ -12,100 +12,105 @@
       <h1>入手経路検索</h1>
     </div>
 
-    <div id="from_name" class="row">
-      <form class="form-horizontal" role="form">
-        <div class="form-group">
-          <div class="col-sm-12">
-            <input type="text" id="search" class="form-control" placeholder="Search Fleet Girl or Slot Item" v-model="query" />
+    <div id="from_name">
+      <div class="row" style="padding-bottom: 40px">
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">ワード</label>
+            <div class="col-sm-8">
+              <input type="text" id="search" class="form-control" placeholder="Search Fleet Girl or Slot Item" v-model="query" />
+            </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label class="col-sm-2 control-label" style="padding-top: 1.5em">期間</label>
-          <div class="input-group col-sm-10">
-            <span class="input-group-addon">
-              <input type="checkbox" v-model="period" />
-            </span>
-            <input type="text" class="form-control date-picker" v-model="start_period">
-            <input type="text" class="form-control date-picker" v-model="end_period">
+          <div class="form-group">
+            <label class="col-sm-2 control-label" style="padding-top: 1.5em">期間</label>
+            <div class="input-group col-sm-8">
+              <span class="input-group-addon">
+                <input type="checkbox" v-model="period" />
+              </span>
+              <input type="text" class="form-control date-picker" v-model="start_period">
+              <input type="text" class="form-control date-picker" v-model="end_period">
+            </div>
           </div>
-        </div>
-      </form>
-
-      <div class="col-md-2 col-sm-3">
-        <div class="list-group" v-show="ships.length > 0" style="margin-top:20px;margin-bottom:20px;">
-          <a v-repeat="ship: ships" class="list-group-item" v-class="active: ship.id == shipId" v-on="click: selectShip(ship.id)" href="#" onclick="return false;">
-            {{ship.name}}
-          </a>
-        </div>
-        <div class="list-group" v-show="items.length > 0" style="margin-top:20px;margin-bottom:20px;">
-          <a v-repeat="item: items" class="list-group-item"  v-class="active: item.id == itemId" v-on="click: selectItem(item.id)" href="#" onclick="return false;">
-            {{item.name}}
-          </a>
-        </div>
+        </form>
       </div>
 
-      <div class="col-md-10 col-sm-9">
-        <div v-show="sCounts.length > 0">
-          <h3>建造レシピ</h3>
-          <table class="table table-hover table-condensed" v-show="sCounts.length > 0">
+      <div class="row">
+        <div class="col-md-2 col-sm-3">
+          <div class="list-group" v-show="ships.length > 0" style="margin-top:20px;margin-bottom:20px;">
+            <a v-repeat="ship: ships" class="list-group-item" v-class="active: ship.id == shipId" v-on="click: selectShip(ship.id)" href="#" onclick="return false;">
+              {{ship.name}}
+            </a>
+          </div>
+          <div class="list-group" v-show="items.length > 0" style="margin-top:20px;margin-bottom:20px;">
+            <a v-repeat="item: items" class="list-group-item"  v-class="active: item.id == itemId" v-on="click: selectItem(item.id)" href="#" onclick="return false;">
+              {{item.name}}
+            </a>
+          </div>
+        </div>
+
+        <div class="col-md-10 col-sm-9">
+          <div v-show="sCounts.length > 0">
+            <h3>建造レシピ</h3>
+            <table class="table table-hover table-condensed" v-show="sCounts.length > 0">
+              <thead>
+                <tr>
+                  <th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>資材</th><th>回数</th><th>比率</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-repeat="c: sCounts" v-on="click: clickShip(c)" class="clickable">
+                  <td>{{c.mat.fuel}}</td>
+                  <td>{{c.mat.ammo}}</td>
+                  <td>{{c.mat.steel}}</td>
+                  <td>{{c.mat.bauxite}}</td>
+                  <td>{{c.mat.develop}}</td>
+                  <td><strong>{{c.count}}</strong> / {{c.sum}}</td>
+                  <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div v-show="dropCounts.length > 0">
+            <h3>ドロップ</h3>
+            <table class="table table-hover table-condensed">
+              <thead>
+                <tr>
+                  <th>Stage</th><th>Rank</th><th>ドロップ数</th><th>比率</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-repeat="c: dropCounts" v-on="click: clickDrop(c)" class="clickable">
+                  <td v-if="c.cell.alpha">{{c.cell.viewName}}-{{c.cell.alpha}} ({{c.cell.cell}})</td>
+                  <td v-if="!c.cell.alpha">{{c.cell.viewName}}-{{c.cell.cell}}</td>
+                  <td>{{c.cell.rank}}</td>
+                  <td><strong>{{c.count}}</strong> / {{c.sum}}</td>
+                  <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <table class="table table-hover table-condensed" v-show="iCounts.length > 0">
             <thead>
               <tr>
-                <th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>資材</th><th>回数</th><th>比率</th>
+                <th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>艦種</th><th>回数</th><th>比率</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-repeat="c: sCounts" v-on="click: clickShip(c)" class="clickable">
+              <tr v-repeat="c: iCounts" v-on="click: clickItem(c)" class="clickable">
                 <td>{{c.mat.fuel}}</td>
                 <td>{{c.mat.ammo}}</td>
                 <td>{{c.mat.steel}}</td>
                 <td>{{c.mat.bauxite}}</td>
-                <td>{{c.mat.develop}}</td>
+                <td>{{c.mat.sTypeName}}</td>
                 <td><strong>{{c.count}}</strong> / {{c.sum}}</td>
                 <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
               </tr>
             </tbody>
           </table>
         </div>
-
-        <div v-show="dropCounts.length > 0">
-          <h3>ドロップ</h3>
-          <table class="table table-hover table-condensed">
-            <thead>
-              <tr>
-                <th>Stage</th><th>Rank</th><th>ドロップ数</th><th>比率</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-repeat="c: dropCounts" v-on="click: clickDrop(c)" class="clickable">
-                <td v-if="c.cell.alpha">{{c.cell.viewName}}-{{c.cell.alpha}} ({{c.cell.cell}})</td>
-                <td v-if="!c.cell.alpha">{{c.cell.viewName}}-{{c.cell.cell}}</td>
-                <td>{{c.cell.rank}}</td>
-                <td><strong>{{c.count}}</strong> / {{c.sum}}</td>
-                <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <table class="table table-hover table-condensed" v-show="iCounts.length > 0">
-          <thead>
-            <tr>
-              <th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>艦種</th><th>回数</th><th>比率</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-repeat="c: iCounts" v-on="click: clickItem(c)" class="clickable">
-              <td>{{c.mat.fuel}}</td>
-              <td>{{c.mat.ammo}}</td>
-              <td>{{c.mat.steel}}</td>
-              <td>{{c.mat.bauxite}}</td>
-              <td>{{c.mat.sTypeName}}</td>
-              <td><strong>{{c.count}}</strong> / {{c.sum}}</td>
-              <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
   }
