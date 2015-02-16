@@ -7,10 +7,10 @@
       <a href="@{routes.UserView.top(user.admiral.id)}">Top</a>
     </li>
     <li class="@if(active=="favorite"){active}">
-      <a href="@{routes.UserView.favorite(user.admiral.id)}">Favorite</a>
+      <a href="@{routes.UserView.favorite(user.admiral.id)}">Fav</a>
     </li>
     <li class="@if(active=="snap"){active}">
-      <a href="@{routes.UserView.snapshot(user.admiral.id)}">スナップショット</a>
+      <a href="@{routes.UserView.snapshot(user.admiral.id)}">Snap</a>
     </li>
     <li class="@if(active=="material"){active}">
       <a href="@{routes.UserView.material(user.admiral.id)}">資源</a>
@@ -32,9 +32,6 @@
     </li>
     <li class="@if(active=="naval"){active}">
       <a href="@{routes.UserView.navalBattle(user.admiral.id)}">海戦</a>
-    </li>
-    <li class="@if(active=="route"){active}">
-      <a href="@{routes.UserView.routeLog(user.admiral.id)}">羅針盤</a>
     </li>
     <li class="@if(active=="mission"){active}">
       <a href="@{routes.UserView.mission(user.admiral.id)}">遠征</a>

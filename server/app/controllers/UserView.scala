@@ -188,8 +188,7 @@ object UserView extends Controller {
   }
 
   def routeLog(memberId: Long) = userView(memberId) { user =>
-    val stages = db.MapRoute.findStageUnique()
-    Ok(views.html.user.route_log(user, stages))
+    Redirect(routes.UserView.navalBattle(memberId))
   }
 
   def mission(memberId: Long) = userView(memberId) { user =>
