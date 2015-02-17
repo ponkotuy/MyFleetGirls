@@ -27,7 +27,7 @@ object MasterStype extends SQLSyntaxSupport[MasterStype] {
   def apply(x: SyntaxProvider[MasterStype])(rs: WrappedResultSet): MasterStype = apply(x.resultName)(rs)
   def apply(ms: ResultName[MasterStype])(rs: WrappedResultSet): MasterStype = autoConstruct(rs, ms)
 
-  lazy val ms = MasterStype.syntax("ms")
+  val ms = MasterStype.syntax("ms")
 
   override val autoSession = AutoSession
 

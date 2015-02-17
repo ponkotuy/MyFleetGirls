@@ -18,12 +18,12 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
   def apply(x: SyntaxProvider[MasterShipBase])(rs: WrappedResultSet): MasterShipBase = apply(x.resultName)(rs)
   def apply(x: ResultName[MasterShipBase])(rs: WrappedResultSet): MasterShipBase = autoConstruct(rs, x)
 
-  lazy val ms = MasterShipBase.syntax("ms")
-  lazy val mss = MasterShipSpecs.syntax("mss")
-  lazy val mst = MasterStype.syntax("mst")
-  lazy val msa = MasterShipAfter.syntax("msa")
-  lazy val mso = MasterShipOther.syntax("mso")
-  lazy val msb = MasterShipBase.syntax("msb") // 2つのMasterShipBaseを区別する必要がある時用
+  val ms = MasterShipBase.syntax("ms")
+  val mss = MasterShipSpecs.syntax("mss")
+  val mst = MasterStype.syntax("mst")
+  val msa = MasterShipAfter.syntax("msa")
+  val mso = MasterShipOther.syntax("mso")
+  val msb = MasterShipBase.syntax("msb") // 2つのMasterShipBaseを区別する必要がある時用
 
   def findAllInOneBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[MasterShipAll] = withSQL {
     select.from(MasterShipBase as ms)
@@ -69,9 +69,10 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
     }.map(MasterShipWithStype(ms, mst)).list().apply()
 
   def findAllWithStype(where: SQLSyntax)(implicit session: DBSession = autoSession): List[MasterShipWithStype] = {
+    println(where)
     withSQL {
       select.from(MasterShipBase as ms)
-        .leftJoin(MasterStype as mst).on(ms.stype, mst.id).where(sqls"$where")
+        .leftJoin(MasterStype as mst).on(ms.stype, mst.id).where(where)
         .orderBy(ms.sortno)
     }.map(MasterShipWithStype(ms, mst)).list().apply()
   }

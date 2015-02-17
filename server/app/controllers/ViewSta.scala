@@ -1,7 +1,6 @@
 package controllers
 
 import models.db
-import models.db.MasterShipBase
 import models.join.{ItemMat, Mat, ShipWithName}
 import models.query.{Period, SnapshotSearch}
 import models.view.{CItem, CShip}
@@ -59,8 +58,8 @@ object ViewSta extends Controller {
     val fromTo = Period.fromStr(from, to)
     val mat = ItemMat(fuel, ammo, steel, bauxite, sType)
     val citem = CItem(mat, fromTo)
-    val ci = db.CreateItem.syntax
-    val mst = db.MasterStype.syntax
+    val ci = db.CreateItem.ci
+    val mst = db.MasterStype.ms
     val citems = db.CreateItem.findAllByWithName(
       sqls.eq(ci.fuel, fuel).and.eq(ci.ammo, ammo).and.eq(ci.steel, steel).and.eq(ci.bauxite, bauxite).and.eq(mst.name, sType),
       limit = 100
@@ -126,12 +125,13 @@ object ViewSta extends Controller {
 
   val StaBookURL = "/entire/sta/book/"
   def shipList() = actionAsync {
-    val ships = db.MasterShipBase.findAllWithStype(sqls.gt(MasterShipBase.syntax.sortno, 0))
+    val ms = db.MasterShipBase.ms
+    val ships = db.MasterShipBase.findAllWithStype(sqls.gt(ms.sortno, 0))
     Ok(views.html.sta.ship_list(ships, favCountTableByShip()))
   }
 
   def favCountTableByShip(): Map[Int, Long] = {
-    val f = db.Favorite.syntax
+    val f = db.Favorite.f
     val favs = db.Favorite.countByURL(sqls.eq(f.first, "entire").and.eq(f.second, "sta").and.like(f.url, StaBookURL + "%"))
     favs.flatMap { case (url, _, count) =>
       Try { url.replace(StaBookURL, "").toInt }.map(_ -> count).toOption

@@ -30,7 +30,7 @@ object Favorite extends SQLSyntaxSupport[Favorite] {
   def apply(f: SyntaxProvider[Favorite])(rs: WrappedResultSet): Favorite = apply(f.resultName)(rs)
   def apply(f: ResultName[Favorite])(rs: WrappedResultSet): Favorite = autoConstruct(rs, f)
 
-  lazy val f = Favorite.syntax("f")
+  val f = Favorite.syntax("f")
 
   override val autoSession = AutoSession
 
