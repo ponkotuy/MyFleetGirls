@@ -1,9 +1,9 @@
 package controllers
 
+import com.ponkotuy.data.master._
+import controllers.Common._
 import models.db
 import play.api.mvc._
-import Common._
-import com.ponkotuy.data.master._
 
 /**
  *

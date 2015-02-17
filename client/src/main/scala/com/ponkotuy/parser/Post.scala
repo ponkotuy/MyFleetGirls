@@ -22,6 +22,13 @@ object Post extends Log {
   implicit val formats = DefaultFormats
 
   def master(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
+    masterShip(obj)
+    masterMission(obj)
+    masterSlotitem(obj)
+    masterSType((obj))
+  }
+
+  def masterShip(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     val masterGraph = MasterShipGraph.fromJson(obj \ "api_mst_shipgraph")
     val filenames = masterGraph.map(it => it.id -> it.filename).toMap
     val masterShip = MasterShip.fromJson(obj \ "api_mst_ship", filenames)
@@ -29,13 +36,37 @@ object Post extends Log {
     val existingHash = MFGHttp.get("/master/ship/hash", 2).map(_.toLong)
     if(existingHash.exists(_ != hash)) {
       MFGHttp.masterPost("/master/ship", write(masterShip))
-      val masterMission = MasterMission.fromJson(obj \ "api_mst_mission")
+      println("Success sending MasterShip data")
+    }
+  }
+
+  def masterMission(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
+    val masterMission = MasterMission.fromJson(obj \ "api_mst_mission")
+    val hash = Checksum.fromSeq(masterMission.map(_.name))
+    val existingHash = MFGHttp.get("/master/mission/hash", 2).map(_.toLong)
+    if(existingHash.exists(_ != hash)) {
       MFGHttp.masterPost("/master/mission", write(masterMission))
-      val masterSlotitem = MasterSlotItem.fromJson(obj \ "api_mst_slotitem")
+      println("Success sending MasterMission data")
+    }
+  }
+
+  def masterSlotitem(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
+    val masterSlotitem = MasterSlotItem.fromJson(obj \ "api_mst_slotitem")
+    val hash = Checksum.fromSeq(masterSlotitem.map(_.name))
+    val existingHash = MFGHttp.get("/master/slotitem/hash", 2).map(_.toLong)
+    if(existingHash.exists(_ != hash)) {
       MFGHttp.masterPost("/master/slotitem", write(masterSlotitem))
-      val masterSType = MasterSType.fromJson(obj \ "api_mst_stype")
+      println("Success sending MasterSlotitem data")
+    }
+  }
+
+  def masterSType(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
+    val masterSType = MasterSType.fromJson(obj \ "api_mst_stype")
+    val hash = Checksum.fromSeq(masterSType.map(_.name))
+    val existingHash = MFGHttp.get("/master/stype/hash", 2).map(_.toLong)
+    if(existingHash.exists(_ != hash)) {
       MFGHttp.masterPost("/master/stype", write(masterSType))
-      println("Success Sending Master Data")
+      println("Success sending MasterStype data")
     }
   }
 

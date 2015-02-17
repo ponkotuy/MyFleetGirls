@@ -21,6 +21,10 @@ object MasterMission extends SQLSyntaxSupport[MasterMission] {
     select.from(MasterMission as mm)
   }.map(MasterMission(mm)).toList().apply()
 
+  def findAllName()(implicit session: DBSession = autoSession): List[String] = withSQL {
+    select(mm.name).from(MasterMission as mm)
+  }.map(_.string(1)).list().apply()
+
   def count()(implicit session: DBSession = MasterMission.autoSession): Long = withSQL {
     select(sqls"count(1)").from(MasterMission as mm)
   }.map(rs => rs.long(1)).single().apply().get

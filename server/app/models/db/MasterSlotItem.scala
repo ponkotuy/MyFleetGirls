@@ -80,6 +80,10 @@ object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
     }.map(MasterSlotItem(msi.resultName)).list().apply()
   }
 
+  def findAllName()(implicit session: DBSession = autoSession): List[String] = withSQL {
+    select(msi.name).from(MasterSlotItem as msi)
+  }.map(_.string(1)).list().apply()
+
   def findIn(items: Seq[Int])(implicit session: DBSession = autoSession): List[MasterSlotItem] = {
     items match {
       case Seq() => Nil

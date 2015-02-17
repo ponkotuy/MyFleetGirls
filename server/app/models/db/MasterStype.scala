@@ -51,6 +51,10 @@ object MasterStype extends SQLSyntaxSupport[MasterStype] {
     }.map(MasterStype(ms.resultName)).list().apply()
   }
 
+  def findAllName()(implicit session: DBSession = autoSession): List[String] = withSQL {
+    select(ms.name).from(MasterStype as ms)
+  }.map(_.string(1)).list().apply()
+
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(MasterStype as ms).where.append(sqls"${where}")

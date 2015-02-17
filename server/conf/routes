@@ -60,6 +60,9 @@ GET     /rest/v1/remodel/log/:slotId controllers.Rest.remodelLog(slotId: Int)
 GET     /rest/v1/remodel/log/summary/:slotId controllers.Rest.remodelLogSummary(slotId: Int)
 GET     /rest/v1/remodel/master/:slotId controllers.Rest.masterRemodel(slotId: Int)
 GET     /rest/v1/book/ships         controllers.Rest.bookShips(q: String ?= "")
+GET     /rest/v2/master/mission/hash controllers.Rest.missionHash
+GET     /rest/v2/master/slotitem/hash controllers.Rest.slotitemHash
+GET     /rest/v2/master/stype/hash  controllers.Rest.stypeHash
 GET     /rest/v1/:userId/materials  controllers.RestUser.materials(userId: Long)
 GET     /rest/v1/:userId/basics     controllers.RestUser.basics(userId: Long)
 GET     /rest/v1/:userId/ndocks     controllers.RestUser.ndocks(userId: Long)

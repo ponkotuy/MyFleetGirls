@@ -157,4 +157,19 @@ object Rest extends Controller {
   def masterRemodel(slotId: Int) = returnJson {
     db.MasterRemodel.findAllByWithName(sqls"slotitem_id = ${slotId}")
   }
+
+  def missionHash() = returnString {
+    val names = db.MasterMission.findAllName()
+    Checksum.fromSeq(names)
+  }
+
+  def slotitemHash() = returnString {
+    val names = db.MasterSlotItem.findAllName()
+    Checksum.fromSeq(names)
+  }
+
+  def stypeHash() = returnString {
+    val names = db.MasterStype.findAllName()
+    Checksum.fromSeq(names)
+  }
 }
