@@ -139,10 +139,10 @@ object ViewSta extends Controller {
   }
 
   def shipBook(sid: Int) = actionAsync {
-    db.MasterShipBase.findAllInOneBy(sqls.eq(db.MasterShipBase.syntax.id, sid)).headOption.map { master =>
+    db.MasterShipBase.findAllInOneBy(sqls.eq(db.MasterShipBase.ms.id, sid)).headOption.map { master =>
       val ships = db.Ship.findByWithAdmiral(sid)
       val admiral = db.ShipImage.findAdmiral(sid)
-      val yomes = db.YomeShip.findAllByWithAdmiral(sqls.eq(db.Ship.syntax.shipId, sid), 50)
+      val yomes = db.YomeShip.findAllByWithAdmiral(sqls.eq(db.Ship.s.shipId, sid), 50)
       Ok(views.html.sta.ship_book(master, ships, admiral, yomes))
     }.getOrElse(NotFound(s"Not Found ShipID: $sid"))
   }

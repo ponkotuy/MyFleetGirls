@@ -49,13 +49,13 @@ object Ship extends SQLSyntaxSupport[Ship] {
     )
   }
 
-  lazy val s = Ship.syntax("s")
-  lazy val ms = MasterShipBase.syntax("ms")
-  lazy val ds = DeckShip.syntax("ds")
-  lazy val ssi = ShipSlotItem.syntax("ssi")
-  lazy val mst = MasterStype.syntax("mst")
-  lazy val mss = MasterShipSpecs.syntax("mss")
-  lazy val a = Admiral.syntax("a")
+  val s = Ship.syntax("s")
+  val ms = MasterShipBase.syntax("ms")
+  val ds = DeckShip.syntax("ds")
+  val ssi = ShipSlotItem.syntax("ssi")
+  val mst = MasterStype.syntax("mst")
+  val mss = MasterShipSpecs.syntax("mss")
+  val a = Admiral.syntax("a")
 
   def find(memberId: Long, sid: Int)(implicit session: DBSession = autoSession): Option[Ship] = withSQL {
     select.from(Ship as s).where.eq(s.memberId, memberId).and.eq(s.id, sid)
