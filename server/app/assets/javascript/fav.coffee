@@ -33,7 +33,7 @@ favCounter = (counter, path) ->
       counter.val(data)
 
 checkButton = (btn, path) ->
-  if location.protocol != "https"
+  if location.protocol != 'https:'
     btn.attr('disabled', 'disabled')
   else
     $.get('/rest/v1/is_faved/' + encodeURIComponent(path))
