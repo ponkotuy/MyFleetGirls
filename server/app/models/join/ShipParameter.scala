@@ -40,11 +40,11 @@ trait ShipParameter extends GraphData {
   def stName = stype.name
   def stAbbName = stAbbNames(stName)
 
-  lazy val slot: Seq[SlotItem] = SlotItem.findIn(ship.slot, memberId)
+  lazy val slot: Seq[SlotItemWithMaster] = SlotItem.findIn(ship.slot, memberId)
   lazy val slotMaster: Seq[MasterSlotItem] = {
     val ids = slot.map(_.slotitemId)
     val map = MasterSlotItem.findIn(ids).map(it => it.id -> it).toMap
-    ids.map(map(_))
+    ids.flatMap(map.get)
   }
 
   lazy val airSuperiority: Int = {

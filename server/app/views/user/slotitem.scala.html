@@ -20,7 +20,7 @@
 
           <ul class="list-group">
             @counts.map { case (item, count) =>
-              <a class="list-group-item list-group-item-@item.colorClass" data-toggle="modal" href="@routes.UserView.shipslotitem(user.admiral.id, item.id)" data-target="#modal" href="@routes.UserView.shipslotitem(user.admiral.id, item.id)" onclick="return false;">@item.name
+              <a class="list-group-item list-group-item-@item.colorClass" data-toggle="modal" href="@routes.UserView.shipslotitem(user.admiral.id, item.item.id)" data-target="#modal" href="@routes.UserView.shipslotitem(user.admiral.id, item.item.id)" onclick="return false;">@item.name
                 <span class="badge">@count</span>
               </a>
             }

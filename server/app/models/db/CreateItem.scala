@@ -113,13 +113,13 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
       select(ci.slotitemId, mi.name, sqls"count(*) as count").from(CreateItem as ci)
         .innerJoin(Ship as s).on(sqls"ci.flagship = s.id and ci.member_id = s.member_id")
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .leftJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
+        .innerJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
         .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where(sqls"""ci.fuel = ${mat.fuel} and ci.ammo = ${mat.ammo} and ci.steel = ${mat.steel} and ci.bauxite = ${mat.bauxite} and mst.name = ${mat.sTypeName}""")
         .and.append(where)
         .groupBy(ci.slotitemId)
         .orderBy(sqls"count").desc
-    }.map { rs => fromRStoMiniItem(rs) -> rs.long(3) }.list().apply()
+    }.map { rs => MiniItem.fromRS(rs) -> rs.long(3) }.list().apply()
   }
 
   def materialCount(where: SQLSyntax = sqls"true")(implicit session: DBSession = autoSession): List[(ItemMat, Long)] =
@@ -226,7 +226,12 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
     }.update().apply()
   }
 
-  def fromRStoMiniItem(rs: WrappedResultSet): MiniItem = {
+}
+
+case class MiniItem(itemId: Int, name: String)
+
+object MiniItem {
+  def fromRS(rs: WrappedResultSet): MiniItem = {
     rs.intOpt(1) match {
       case Some(itemId) =>
         val name = rs.string(2)
@@ -234,5 +239,4 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
       case _ => MiniItem(-1, "失敗")
     }
   }
-
 }

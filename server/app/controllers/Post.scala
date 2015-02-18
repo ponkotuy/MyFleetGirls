@@ -82,9 +82,8 @@ object Post extends Controller {
     for {
       id <- item.id
       slotitemId <- item.slotitemId
-      master <- db.MasterSlotItem.find(slotitemId)
     } {
-      db.SlotItem.create(auth.id, id, slotitemId, master.name)
+      db.SlotItem.create(auth.id, id, slotitemId)
     }
     Ok("Success")
   }
@@ -158,7 +157,7 @@ object Post extends Controller {
       afterSlot <- request.afterSlot
       item <- db.SlotItem.find(request.slotId, auth.id)
     } {
-      db.SlotItem(auth.id, item.id, item.slotitemId, item.name, item.locked, afterSlot.level).save()
+      db.SlotItem(auth.id, item.id, item.slotitemId, item.locked, afterSlot.level).save()
     }
     Ok("Success")
   }

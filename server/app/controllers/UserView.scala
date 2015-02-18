@@ -165,8 +165,9 @@ object UserView extends Controller {
   }
 
   def slotitem(memberId: Long) = userView(memberId) { user =>
-    val counts = db.SlotItem.countItemBy(sqls"member_id = ${memberId}")
-    val leveled = db.SlotItem.findAllWithArmedShipBy(sqls"si.member_id = ${memberId} and level > 0")
+    val si = db.SlotItem.si
+    val counts = db.SlotItem.countItemBy(sqls.eq(si.memberId, memberId))
+    val leveled = db.SlotItem.findAllWithArmedShipBy(sqls.eq(si.memberId, memberId).and.gt(si.level, 0))
     Ok(views.html.user.slotitem(user, counts, leveled))
   }
 

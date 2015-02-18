@@ -9,7 +9,6 @@ case class SlotItem(
     memberId: Long,
     id: Int,
     slotitemId: Int,
-    name: String,
     locked: Boolean,
     level: Int) {
 
@@ -17,10 +16,7 @@ case class SlotItem(
 
   def destroy()(implicit session: DBSession = SlotItem.autoSession): Unit = SlotItem.destroy(this)(session)
 
-  def nameWithLevel: String = {
-    val lv = if(level > 0) s"+$level" else ""
-    name + lv
-  }
+  def withLevel: String = if(level > 0) s"+$level" else ""
 }
 
 
@@ -28,18 +24,18 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
 
   override val tableName = "slot_item"
 
-  override val columns = Seq("member_id", "id", "slotitem_id", "name", "locked", "level")
+  override val columns = Seq("member_id", "id", "slotitem_id", "locked", "level")
 
   def apply(si: SyntaxProvider[SlotItem])(rs: WrappedResultSet): SlotItem = SlotItem(si.resultName)(rs)
   def apply(si: ResultName[SlotItem])(rs: WrappedResultSet): SlotItem = autoConstruct(rs, si)
 
-  lazy val si = SlotItem.syntax("si")
-  lazy val ssi = ShipSlotItem.syntax("ssi")
-  lazy val s = Ship.syntax("s")
-  lazy val ms = MasterShipBase.syntax("ms")
-  lazy val mst = MasterStype.syntax("mst")
-  lazy val msi = MasterSlotItem.syntax("msi")
-  lazy val mss = MasterShipSpecs.syntax("mss")
+  val si = SlotItem.syntax("si")
+  val ssi = ShipSlotItem.syntax("ssi")
+  val s = Ship.syntax("s")
+  val ms = MasterShipBase.syntax("ms")
+  val mst = MasterStype.syntax("mst")
+  val msi = MasterSlotItem.syntax("msi")
+  val mss = MasterShipSpecs.syntax("mss")
 
   override val autoSession = AutoSession
 
@@ -49,15 +45,18 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
     }.map(SlotItem(si.resultName)).single().apply()
   }
 
-  def findIn(xs: Seq[Int], memberId: Long)(implicit session: DBSession = autoSession): Seq[SlotItem] = {
+  def findIn(xs: Seq[Int], memberId: Long)(implicit session: DBSession = autoSession): Seq[SlotItemWithMaster] = {
     xs match {
       case Seq() => Nil
       case _ =>
         val result = withSQL {
           select.from(SlotItem as si)
+            .innerJoin(MasterSlotItem as msi).on(si.slotitemId, msi.id)
             .where.in(si.id, xs).and.eq(si.memberId, memberId)
-        }.map(SlotItem(si.resultName)).list().apply()
-        xs.flatMap(id => result.find(_.id == id)) // sort
+        }.map { rs =>
+          SlotItemWithMaster(SlotItem(si)(rs), MasterSlotItem(msi)(rs))
+        }.list().apply()
+        xs.flatMap(id => result.find(_.item.id == id)) // sort
     }
   }
 
@@ -95,8 +94,9 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
   def findAllWithArmedShipBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[ItemWithShip] = {
     withSQL {
       select.from(SlotItem as si)
-        .leftJoin(ShipSlotItem as ssi).on(sqls"${si.id} = ${ssi.slotitemId} and ${si.memberId} = ${ssi.memberId}")
-        .leftJoin(Ship as s).on(sqls"${ssi.shipId} = ${s.id} and ${ssi.memberId} = ${s.memberId}")
+        .innerJoin(MasterSlotItem as msi).on(si.slotitemId, msi.id)
+        .leftJoin(ShipSlotItem as ssi).on(sqls.eq(si.id, ssi.slotitemId).and.eq(si.memberId, ssi.memberId))
+        .leftJoin(Ship as s).on(sqls.eq(ssi.shipId, s.id).and.eq(ssi.memberId, s.memberId))
         .leftJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .leftJoin(MasterStype as mst).on(ms.stype, mst.id)
         .leftJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
@@ -110,7 +110,8 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
       val withName = ship.map { s =>
         ShipWithName(s, MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
       }
-      ItemWithShip(slotItem, withName)
+      val master = MasterSlotItem(msi)(rs)
+      ItemWithShip(slotItem, master, withName)
     }.toList().apply()
   }
 
@@ -138,7 +139,6 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
     memberId: Long,
     id: Int,
     slotitemId: Int,
-    name: String,
     locked: Boolean = false,
     level: Int = 0)(implicit session: DBSession = autoSession): Unit = {
     withSQL {
@@ -146,14 +146,12 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
         column.memberId,
         column.id,
         column.slotitemId,
-        column.name,
         column.locked,
         column.level
       ).values(
           memberId,
           id,
           slotitemId,
-          name,
           locked,
           level
         )
@@ -161,13 +159,11 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
   }
 
   def bulkInsert(xs: Seq[data.SlotItem], memberId: Long)(implicit session: DBSession = autoSession): Unit = {
-    val masterNames = MasterSlotItem.findAll().map(msi => msi.id -> msi.name).toMap
-    val names = xs.map(x => masterNames(x.slotitemId))
     applyUpdate {
       insert.into(SlotItem)
-        .columns(column.memberId, column.id, column.slotitemId, column.name, column.locked, column.level)
+        .columns(column.memberId, column.id, column.slotitemId, column.locked, column.level)
         .multiValues(
-          Seq.fill(xs.size)(memberId), xs.map(_.id), xs.map(_.slotitemId), names, xs.map(_.locked), xs.map(_.level)
+          Seq.fill(xs.size)(memberId), xs.map(_.id), xs.map(_.slotitemId), xs.map(_.locked), xs.map(_.level)
         )
     }
   }
@@ -178,7 +174,6 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
         column.memberId -> entity.memberId,
         column.id -> entity.id,
         column.slotitemId -> entity.slotitemId,
-        column.name -> entity.name,
         column.locked -> entity.locked,
         column.level -> entity.level
       ).where.eq(column.id, entity.id).and.eq(column.memberId, entity.memberId)
@@ -197,5 +192,3 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
   }
 
 }
-
-case class MiniItem(id: Int, name: String)
