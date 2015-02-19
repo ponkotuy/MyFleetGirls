@@ -1,9 +1,36 @@
-#!/bin/sh
+#!/bin/bash
 
-cd /home/yosuke/service/MyFleetGirls
+JAVA_HOME=$HOME/etc/soft/jdk1.8.0
+home=/home/yosuke
+pid=server/target/universal/stage/RUNNING_PID
+port1=9003
+port2=9004
+
+if [ `netstat -ant | grep ":$port1" | wc -l` -gt 0 ]
+then
+    port=$port2
+else
+    port=$port1
+fi
+
+# Directory
+myfleet_dir=$home/service/MyFleetGirls/$port
+cd $myfleet_dir
+
+# Kill old process
+kill `cat $pid`
+
 git --git-dir=.git pull
 sbt zip
 sleep 3
 /mnt/backup/service/dump/myfleet/dump.sh
-kill `cat server/target/universal/stage/RUNNING_PID`
-JAVA_HOME=$HOME/etc/soft/jdk1.8.0 sbt start -Dhttp.port=9003 &
+sbt compile
+sbt start -Dhttp.port=$port &
+
+sleep 30
+if [ $port -eq $port1 ]
+then
+    kill `cat ../$port2/$pid`
+else
+    kill `cat ../$port1/$pid`
+fi
