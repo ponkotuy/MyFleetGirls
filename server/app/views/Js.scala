@@ -47,6 +47,11 @@ object Css {
   }
 }
 
-object Image {
-  def setup(name: String) = controllers.routes.Assets.at(s"image/setup/${name}.png")
+object About {
+  val Host = "http://myfleetweb.herokuapp.com"
+  val Top = s"$Host/entire/about"
+
+  val ChangeLog = s"$Top/change_log"
+  val Faq = s"$Top/faq"
+  val SetupDetail = s"$Top/setup_detail"
 }
