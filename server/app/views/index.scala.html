@@ -47,7 +47,7 @@
             <p v-if="users.length == 0">Not Found</p>
             <ul id="admirals" v-if="users">
               <li v-repeat="user: users">
-                <a href="/user/{{user.id}}">{{user.nickname}}<small>Lv{{user.lv}}</small></a>
+                <a href="/user/{{user.id}}/">{{user.nickname}}<small>Lv{{user.lv}}</small></a>
               </li>
             </ul>
           </div>
