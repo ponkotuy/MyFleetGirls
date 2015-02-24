@@ -39,10 +39,10 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
 
   def apply(br: ResultName[BattleResult])(rs: WrappedResultSet): BattleResult = autoConstruct(rs, br)
 
-  lazy val br = BattleResult.syntax("br")
-  lazy val ci = CellInfo.syntax("ci")
-  lazy val ms = MasterShipBase.syntax("ms")
-  lazy val a = Admiral.syntax("a")
+  val br = BattleResult.syntax("br")
+  val ci = CellInfo.syntax("ci")
+  val ms = MasterShipBase.syntax("ms")
+  val a = Admiral.syntax("a")
 
   override val autoSession = AutoSession
 
@@ -88,7 +88,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
     }.map(MasterShipBase(ms)).list().apply()
   }
 
-  def findWithUserBy(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
+  def findWithUserBy(where: SQLSyntax, limit: Int = 10, offset: Int = 0)(
       implicit session: DBSession = autoSession): List[BattleResultWithUser] = {
     withSQL {
       select.from(BattleResult as br)
