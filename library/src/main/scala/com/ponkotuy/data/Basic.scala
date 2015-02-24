@@ -13,13 +13,14 @@ import com.ponkotuy.tool.Pretty
  * @param stWin stLose 出撃勝敗
  * @param msCount msSuccess 遠征回数/勝数
  * @param ptWin ptLose 演習勝敗
- * @author ponkotuy
+ * @param medals 甲勲章有無
+ * @author ponkotuy, lyrical_logical
  * Date: 14/02/20
  */
 case class Basic(
     lv: Int, experience: Int, rank: Int,
     maxChara: Int, fCoin: Int,
-    stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int) {
+    stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int, medals: Int) {
   def summary: String = Pretty(Map(("Lv", lv), ("経験値", experience)))
 }
 
@@ -39,6 +40,7 @@ object Basic {
     val msSuccess = json \ "api_ms_success"
     val ptWin = json \ "api_pt_win"
     val ptLose: Int = json \ "api_pt_lose"
-    Basic(lv, experience, rank, maxChara, fCoin, stWin, stLose, msCount, msSuccess, ptWin, ptLose)
+    val medals = json \ "api_medals"
+    Basic(lv, experience, rank, maxChara, fCoin, stWin, stLose, msCount, msSuccess, ptWin, ptLose, medals)
   }
 }

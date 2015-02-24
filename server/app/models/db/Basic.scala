@@ -14,6 +14,7 @@ import tool.DiffCalc
  * @param stWin stLose 出撃勝敗
  * @param msCount msSuccess 遠征回数/成功数
  * @param ptWin ptLose 演習勝敗
+ * @param medals 甲勲章有無
  * @author ponkotuy
  * Date: 14/02/20
  */
@@ -21,7 +22,7 @@ case class Basic(
     id: Long, memberId: Long,
     lv: Int, experience: Int, rank: Int,
     maxChara: Int, fCoin: Int,
-    stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int,
+    stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int, medals: Int,
     created: Long) {
   def save()(implicit session: DBSession = Basic.autoSession): Basic = Basic.save(this)
 
@@ -39,7 +40,8 @@ case class Basic(
       ratio(stLose, x.stLose),
       ratio(msCount, x.msCount),
       ratio(ptWin, x.ptWin),
-      ratio(ptLose, x.ptLose)
+      ratio(ptLose, x.ptLose),
+      ratio(medals, x.medals)
     ).max
   }
 }
@@ -58,7 +60,8 @@ object Basic extends SQLSyntaxSupport[Basic] {
         column.maxChara -> b.maxChara, column.fCoin -> b.fCoin,
         column.stWin -> b.stWin, column.stLose -> b.stLose,
         column.msCount -> b.msCount, column.msSuccess -> b.msSuccess,
-        column.ptWin -> b.ptWin, column.ptLose -> b.ptLose
+        column.ptWin -> b.ptWin, column.ptLose -> b.ptLose,
+        column.medals -> b.medals
       )
     }.update()
     b
@@ -74,6 +77,7 @@ object Basic extends SQLSyntaxSupport[Basic] {
         column.stWin -> b.stWin, column.stLose -> b.stLose,
         column.msCount -> b.msCount, column.msSuccess -> b.msSuccess,
         column.ptWin -> b.ptWin, column.ptLose -> b.ptLose,
+        column.medals -> b.medals,
         column.created -> created
       )
     }.updateAndReturnGeneratedKey().apply()

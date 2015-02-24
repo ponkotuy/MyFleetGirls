@@ -5,10 +5,10 @@ import com.ponkotuy.data
 
 /**
  *
- * @author ponkotuy
+ * @author ponkotuy, lyrical_logical
  * Date: 2014/03/01.
  */
-case class Admiral(id: Long, nicknameId: Long, nickname: String, created: Long) {
+case class Admiral(id: Long, nicknameId: Long, nickname: String, created: Long, medals: Int) {
   def authentication(auth: data.Auth): Boolean =
     auth.memberId == id && auth.id == nicknameId && auth.nickname == nickname
 }
@@ -104,13 +104,14 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
   }
 }
 
-case class AdmiralWithLv(id: Long, nickname: String, created: Long, lv: Int)
+case class AdmiralWithLv(id: Long, nickname: String, created: Long, lv: Int, medals: Int)
 
 object AdmiralWithLv {
   def apply(a: SyntaxProvider[Admiral], b: SyntaxProvider[Basic])(rs: WrappedResultSet): AdmiralWithLv = new AdmiralWithLv(
     rs.long(a.id),
     rs.string(a.nickname),
     rs.long(a.created),
-    rs.int(b.lv)
+    rs.int(b.lv),
+    rs.int(b.medals)
   )
 }
