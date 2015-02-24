@@ -21,9 +21,7 @@
         <h3>{{stype.stype}}</h3>
         <ul>
           <li v-repeat="stype.ships">
-            <a href="/entire/sta/book/{{id}}">
-              {{name}}<small v-if="favCount > 0">☆{{favCount}}</small>
-            </a>
+            <a href="/entire/sta/book/{{id}}">{{name}}</a><small v-if="favCount > 0">☆{{favCount}}</small>
           </li>
         </ul>
       </div>

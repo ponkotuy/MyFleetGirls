@@ -8,11 +8,12 @@ package tool
   * Date: 14/02/28.
   */
 object DiffCalc {
-  def ratio[T <% Double](x: T, y: T): Double =
-    (if(x > y) x / y else y / x) - 1.0
+  def ratio[T](x: T, y: T)(implicit ev1: T => Double): Double =
+    if(x == 0.0 && y == 0.0) 0.0
+    else (if(x > y) x / y else y / x) - 1.0
 
   /** 差のbaseからの比を取る */
-  def diffRatio[T <% Double](base: Double)(x: T, y: T): Double =
+  def diffRatio[T](base: Double)(x: T, y: T)(implicit ev1: T => Double): Double =
     math.abs(x - y) / base
 
   def neq(x: Any, y: Any): Double =

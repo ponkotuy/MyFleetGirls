@@ -69,7 +69,6 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
     }.map(MasterShipWithStype(ms, mst)).list().apply()
 
   def findAllWithStype(where: SQLSyntax)(implicit session: DBSession = autoSession): List[MasterShipWithStype] = {
-    println(where)
     withSQL {
       select.from(MasterShipBase as ms)
         .leftJoin(MasterStype as mst).on(ms.stype, mst.id).where(where)

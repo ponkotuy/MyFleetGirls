@@ -9,4 +9,5 @@ import models.db._
  */
 case class User(admiral: Admiral, basic: Basic, map: String, setting: UserSettings, logined: Option[Long]) {
   def isMine: Boolean = logined.contains(admiral.id)
+  def isGradeA: Boolean = basic.isGradeA
 }
