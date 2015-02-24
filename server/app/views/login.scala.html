@@ -56,7 +56,7 @@
               <p v-if="users.length == 0">Not Found</p>
               <ul id="admirals" v-if="users">
                 <li v-repeat="user: users">
-                  <a v-on="click: setAdmiral(user.id)" class="clickable">{{user.nickname}}<small>Lv{{user.lv}}</small></a>
+                  <a v-on="click: setAdmiral(user.id)" class="clickable">{{user.nickname}}</a><small>Lv{{user.lv}}</small>
                 </li>
               </ul>
             </div>

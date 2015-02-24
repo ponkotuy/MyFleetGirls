@@ -1,2 +1,2 @@
 
-alter table admiral add medals int not null default 0;
+alter table basic add medals int not null default 0;

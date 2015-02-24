@@ -41,9 +41,12 @@ case class Basic(
       ratio(msCount, x.msCount),
       ratio(ptWin, x.ptWin),
       ratio(ptLose, x.ptLose),
-      ratio(medals, x.medals)
+      neq(medals, x.medals)
     ).max
   }
+
+  /** 甲勲章の有無 */
+  def isGradeA: Boolean = medals == 1
 }
 
 object Basic extends SQLSyntaxSupport[Basic] {

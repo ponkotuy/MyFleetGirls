@@ -18,7 +18,7 @@ object View extends Controller {
 
   def index = Action.async {
     Future {
-      val newest = db.Admiral.findNewest(limit = 20)
+      val newest = db.Admiral.findNewestWithLv(limit = 20)
       val activeIds = db.Ship.findAllActiveUser(limit = 20)
       val actives = db.Admiral.findAllInWithLv(activeIds)
       val baseCounts = db.UserSettings.countAllByBase()

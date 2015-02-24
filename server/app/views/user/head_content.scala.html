@@ -9,7 +9,6 @@
     8 -> "少佐", 9 -> "中堅少佐", 10 -> "新米少佐"
   )(r)
 }
-@isGradeA(medals: Int): Boolean = { medals == 1 }
 @navbar("user")
 <input type="text" id="userid" value=@user.admiral.id hidden="hidden" />
 <div class="jumbotron">
@@ -26,7 +25,7 @@
       }
     }
     @user.map
-    @if(isGradeA(user.admiral.medals)) {
+    @if(user.isGradeA) {
       、甲勲章所持
     }
     </p>
