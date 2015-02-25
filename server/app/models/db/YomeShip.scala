@@ -55,6 +55,15 @@ object YomeShip extends SQLSyntaxSupport[YomeShip] {
     withSQL(select(sqls"count(1)").from(YomeShip as ys)).map(rs => rs.long(1)).single().apply().get
   }
 
+  def countAllByShip()(implicit session: DBSession = autoSession): List[(Int, Long)] = {
+    withSQL {
+      select(ys.shipId, sqls.count).from(YomeShip as ys)
+        .groupBy(ys.shipId)
+    }.map { rs =>
+      rs.int(1) -> rs.long(2)
+    }.list().apply()
+  }
+
   def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[YomeShip] = {
     withSQL {
       select.from(YomeShip as ys).where.append(sqls"${where}")

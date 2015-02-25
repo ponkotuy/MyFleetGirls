@@ -11,10 +11,17 @@ import scala.xml.Elem
  * Date: 15/01/29.
  */
 trait Ranking {
-  def title: String // Titleとして使用
-  def divClass: String // Ranking一覧で、Ranking毎のdivのclass設定に使用
-  def comment: List[String] // 注釈。同じコメントは1つに纏められます
-  def rankingQuery(limit: Int): List[RankingElement] // Rankingを生成するのに使用
+  // Titleとして使用
+  def title: String
+
+  // Ranking一覧で、Ranking毎のdivのclass設定に使用
+  def divClass: String
+
+  // 注釈。同じコメントは1つに纏められます
+  def comment: Seq[String]
+
+  // Rankingを生成するのに使用
+  def rankingQuery(limit: Int): Seq[RankingElement]
 }
 
 object Ranking {
@@ -31,6 +38,7 @@ object Ranking {
     CachedRanking(MarriedRanking),
     CachedRanking(SumShipExpRanking),
     CachedRanking(ExpByShipRanking),
+    CachedRanking(YomeByShipRanking),
     CachedRanking(ItemBookRanking),
     CachedRanking(FirstShipRate)
   )

@@ -19,7 +19,7 @@ case object ExpByShipRanking extends Ranking {
   lazy val ms = MasterShipBase.syntax("ms")
 
   override val title: String = "艦娘別Exp"
-  override val comment: List[String] = List("艦娘別Expは進化前で集計しています")
+  override val comment: List[String] = List(s"${title}は進化前で集計しています")
   override val divClass: String = colmd3
 
   override def rankingQuery(limit: Int): List[RankingElement] =
@@ -40,14 +40,20 @@ case object ExpByShipRanking extends Ranking {
     }.list().apply()
 
     // 進化元に集約
-    val map = mutable.Map[Int, Long]().withDefaultValue(0L)
-    result.foreach { case (master, count) =>
-      map(EvolutionBase(master.id)) += count
-    }
+    val map = aggregateCountToBase(result.map { case (master, count) => master.id -> count })
 
     // 名前付与
     val masters = MasterShipBase.findAll()
       .map(ship => ship.id -> ship.name).toMap
     map.map { case (id, count) => (id, masters(id), count) }.toList.sortBy(_._3).reverse.take(limit)
+  }
+
+  /** 進化元に集約 */
+  def aggregateCountToBase(xs: Seq[(Int, Long)]): Seq[(Int, Long)] = {
+    val map = mutable.Map[Int, Long]().withDefaultValue(0L)
+    xs.foreach { case (shipId, count) =>
+      map(EvolutionBase(shipId)) += count
+    }
+    map.toSeq
   }
 }
