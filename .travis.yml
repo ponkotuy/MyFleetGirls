@@ -1,6 +1,7 @@
 language: scala
 
-scala: 2.11.5
+scala:
+  - 2.11.5
 
 sudo: false
 
