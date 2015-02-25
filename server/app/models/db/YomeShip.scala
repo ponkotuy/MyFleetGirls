@@ -55,12 +55,14 @@ object YomeShip extends SQLSyntaxSupport[YomeShip] {
     withSQL(select(sqls"count(1)").from(YomeShip as ys)).map(rs => rs.long(1)).single().apply().get
   }
 
-  def countAllByShip()(implicit session: DBSession = autoSession): List[(Int, Long)] = {
+  def countAllByShip()(implicit session: DBSession = autoSession): List[(MasterShipBase, Long)] = {
     withSQL {
-      select(ys.shipId, sqls.count).from(YomeShip as ys)
-        .groupBy(ys.shipId)
+      select(sqls.count, ms.resultAll).from(YomeShip as ys)
+        .innerJoin(Ship as s).on(sqls.eq(ys.shipId, s.id).and.eq(ys.memberId, s.memberId))
+        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+        .groupBy(ms.id)
     }.map { rs =>
-      rs.int(1) -> rs.long(2)
+      MasterShipBase(ms)(rs) -> rs.long(1)
     }.list().apply()
   }
 

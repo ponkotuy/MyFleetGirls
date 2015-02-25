@@ -2,7 +2,7 @@ package ranking
 
 import controllers.routes
 import models.db.{MasterShipBase, YomeShip}
-import ranking.common.{RankingElement, Ranking}
+import ranking.common.{Ranking, RankingElement}
 
 /**
  *
@@ -18,7 +18,7 @@ case object YomeByShipRanking extends Ranking {
 
   override val divClass = colmd3
 
-  override def rankingQuery(limit: Int) = {
+  override def rankingQuery(limit: Int): Vector[RankingElement] = {
     countAllByShip().take(limit).map { case (ship, count) =>
       val url = routes.ViewSta.shipBook(ship.id).toString()
       RankingElement(ship.name, <span>{count}</span>, url)
@@ -29,10 +29,11 @@ case object YomeByShipRanking extends Ranking {
     val result = YomeShip.countAllByShip()
 
     // 進化元に集約
-    val map = ExpByShipRanking.aggregateCountToBase(result)
+    val map = ExpByShipRanking.aggregateCountToBase(result.map { case (ship, count) => ship.id -> count })
 
     // 名前付与
-    val masters = MasterShipBase.findAll().map(ship => ship.id -> ship).toMap
-    map.map { case (id, count) => masters(id) -> count }.toVector.sortBy(-_._2)
+    val masters: Map[Int, MasterShipBase] = MasterShipBase.findAll().map(ship => ship.id -> ship)(collection.breakOut)
+    val ranking: Vector[(MasterShipBase, Long)] = map.map { case (id, count) => masters(id) -> count }(collection.breakOut)
+    ranking.sortBy(-_._2).takeWhile(_._2 > 1)
   }
 }
