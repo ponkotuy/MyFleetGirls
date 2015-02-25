@@ -19,7 +19,7 @@ case object YomeByShipRanking extends Ranking {
   override val divClass = colmd3
 
   override def rankingQuery(limit: Int) = {
-    countAllByShip().map { case (ship, count) =>
+    countAllByShip().take(limit).map { case (ship, count) =>
       val url = routes.ViewSta.shipBook(ship.id).toString()
       RankingElement(ship.name, <span>{count}</span>, url)
     }
