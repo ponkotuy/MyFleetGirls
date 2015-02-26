@@ -2,7 +2,7 @@ $(document).ready ->
   # Initial
   param = fromURLParameter(location.hash.replace(/^\#/, ''))
   if param.detail?
-    $('#modal').modal({remote: "rank/#{param.detail}"})
+    $('#modal').modal({remote: "/entire/sta/rank/#{param.detail}"})
 
   # Modal Hook
   $('#modal').on 'shown.bs.modal', (e) ->

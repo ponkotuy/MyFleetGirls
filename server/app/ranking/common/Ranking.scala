@@ -1,7 +1,6 @@
 package ranking.common
 
 import models.join.ShipWithName
-import ranking._
 
 import scala.concurrent.duration.Duration
 import scala.xml.Elem
@@ -30,18 +29,7 @@ object Ranking {
   val comment7days = "7日以内にデータ更新のあった提督に限ります"
   val comment30days = "図鑑に限り30日以内に図鑑を開いてデータ更新した提督に限ります"
 
-  val values: Array[Ranking] = Array(
-    CachedRanking(MaterialRanking),
-    CachedRanking(FirstShipRanking),
-    CachedRanking(LuckRanking),
-    CachedRanking(ShipBookRanking),
-    CachedRanking(MarriedRanking),
-    CachedRanking(SumShipExpRanking),
-    CachedRanking(ExpByShipRanking),
-    CachedRanking(YomeByShipRanking),
-    CachedRanking(ItemBookRanking),
-    CachedRanking(FirstShipRate)
-  )
+  def values = RankingType.values.flatMap(_.rankings)
 
   def fromString(str: String): Option[Ranking] = values.find(_.toString == str)
 

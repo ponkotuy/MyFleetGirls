@@ -1,15 +1,32 @@
-@(rankings: Seq[_root_.ranking.common.Ranking])
+@(typ: _root_.ranking.common.RankingType)
+
+@import _root_.ranking.common.RankingType
 
 @main {
   <title>ランキング -MyFleetGirls-</title>
   <script src="@Js.Common"></script>
   <script src="@Js.Coffee("ranking")"></script>
+  <style>
+    ul.nav-pills {
+      margin-top: 20px;
+    }
+
+    ul.nav-pills > li {
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+  </style>
 } {
   @statistics_head("ranking") {
+    <ul class="nav nav-pills">
+      <li role="presentation" @if(typ == RankingType.Admiral){ class="active" }><a href="@routes.ViewSta.rankingWithType("Admiral")">提督ランキング</a></li>
+      <li role="presentation" @if(typ == RankingType.Ship){ class="active" }><a href="@routes.ViewSta.rankingWithType("Ship")">艦娘ランキング</a></li>
+    </ul>
+
     <div class="row">
-      @rankings.map { ranking =>
+      @typ.rankings.map { ranking =>
         <div class="@ranking.divClass">
-          <h2><a data-toggle="modal" href="rank/@ranking.toString" class="modal_link" data-target="#modal" data-name="@ranking">@ranking.title</a></h2>
+          <h2><a data-toggle="modal" href="@routes.ViewSta.rankingDetails(ranking.toString)" class="modal_link" data-target="#modal" data-name="@ranking">@ranking.title</a></h2>
           <table class="table table-striped table-condensed">
             <tbody>
               @ranking.rankingQuery(20).map { case elem =>
@@ -31,7 +48,7 @@
       <div class="col-md-3 col-sm-4">
         <h2>注釈</h2>
         <ul>
-          @rankings.flatMap(_.comment).distinct.map { comment =>
+          @typ.rankings.flatMap(_.comment).distinct.map { comment =>
             <li>@comment</li>
           }
         </ul>

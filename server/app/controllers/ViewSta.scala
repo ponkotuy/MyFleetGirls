@@ -7,7 +7,7 @@ import models.view.{CItem, CShip}
 import org.json4s._
 import org.json4s.native.Serialization.write
 import play.api.mvc._
-import ranking.common.Ranking
+import ranking.common.{RankingType, Ranking}
 import scalikejdbc._
 
 import scala.util.Try
@@ -115,7 +115,13 @@ object ViewSta extends Controller {
       .toList.sortBy(_._2).reverse.take(30)
   }
 
-  def ranking() = actionAsync { Ok(views.html.sta.ranking(Ranking.values)) }
+  def ranking() = actionAsync(Redirect(routes.ViewSta.rankingWithType("Admiral")))
+
+  def rankingWithType(typ: String) = actionAsync {
+    RankingType.fromStr(typ).map { ranking =>
+      Ok(views.html.sta.ranking(ranking))
+    }.getOrElse(NotFound("Not found page type"))
+  }
 
   def rankingDetails(_ranking: String) = actionAsync {
     Ranking.fromString(_ranking).map { ranking =>

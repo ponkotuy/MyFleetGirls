@@ -111,6 +111,7 @@ GET     /entire/sta/drop_alpha/:area/:info controllers.ViewSta.dropAlpha(area: I
 GET     /entire/sta/route/:area/:info controllers.ViewSta.route(area: Int, info: Int)
 GET     /entire/sta/route_fleet/:area/:info/:dep/:dest controllers.ViewSta.routeFleet(area: Int, info: Int, dep: Int, dest: Int, from: String ?= "", to: String ?= "")
 GET     /entire/sta/ranking         controllers.ViewSta.ranking()
+GET     /entire/sta/ranking/:typ    controllers.ViewSta.rankingWithType(typ: String)
 GET     /entire/sta/rank/:ranking   controllers.ViewSta.rankingDetails(ranking: String)
 GET     /entire/sta/book            controllers.ViewSta.shipList()
 GET     /entire/sta/book/:sid       controllers.ViewSta.shipBook(sid: Int)
