@@ -9,7 +9,7 @@ import scalikejdbc._
  * @author ponkotuy
  * Date: 15/02/27.
  */
-object MarriedByShipRanking extends Ranking {
+case object MarriedByShipRanking extends Ranking {
   import ranking.common.Ranking._
   // Titleとして使用
   override def title: String = "結婚数"
