@@ -29,6 +29,6 @@ case object ExpByShipRanking extends Ranking {
     }.map { rs =>
       rs.int(ms.resultName.id) -> rs.long(sqls"total")
     }.list().apply()
-    ShipCommon.toRankingElement(expSum).take(20)
+    ShipCommon.toRankingElement(expSum).take(limit)
   }
 }
