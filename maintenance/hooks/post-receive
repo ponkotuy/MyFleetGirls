@@ -27,7 +27,8 @@ sleep 3
 sbt compile
 sbt start -Dhttp.port=$port &
 
-sleep 60
+sleep 120
+echo "Kill old process"
 if [ $port -eq $port1 ]
 then
     kill `cat ../$port2/$pid`

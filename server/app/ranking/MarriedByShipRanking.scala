@@ -12,7 +12,7 @@ import scalikejdbc._
 case object MarriedByShipRanking extends Ranking {
   import ranking.common.Ranking._
   // Titleとして使用
-  override def title: String = "結婚数"
+  override def title: String = "ケッコン数"
 
   // 注釈。同じコメントは1つに纏められます
   override def comment: Seq[String] = List("進化前で集計しています")
