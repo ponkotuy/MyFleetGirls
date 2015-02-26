@@ -1,11 +1,8 @@
 package ranking
 
-import controllers.routes
 import models.db._
 import ranking.common.{Ranking, RankingElement}
 import scalikejdbc._
-
-import scala.collection.mutable
 
 /**
  *
@@ -18,42 +15,20 @@ case object ExpByShipRanking extends Ranking {
   lazy val s = Ship.syntax("s")
   lazy val ms = MasterShipBase.syntax("ms")
 
-  override val title: String = "艦娘別Exp"
-  override val comment: List[String] = List(s"${title}は進化前で集計しています")
+  override val title: String = "合計経験値"
+  override val comment: List[String] = List("進化前で集計しています")
   override val divClass: String = colmd3
 
-  override def rankingQuery(limit: Int): List[RankingElement] =
-    findAllOrderByExpSum(limit).map { case (id, name, exp) =>
-      val url = routes.ViewSta.shipBook(id).toString()
-      RankingElement(name, <span>{f"$exp%,d"}</span>, url)
-    }
-
-  private def findAllOrderByExpSum(limit: Int = 10)(
-      implicit session: DBSession = Ship.autoSession): List[(Int, String, Long)] = {
-    val result = withSQL {
+  override def rankingQuery(limit: Int): Seq[RankingElement] = {
+    implicit val session = Ship.autoSession
+    val expSum = withSQL {
       select(ms.resultAll, sqls"sum(s.exp) as total").from(Ship as s)
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
         .groupBy(s.shipId)
         .orderBy(sqls"total").desc
     }.map { rs =>
-      MasterShipBase.apply(ms)(rs) -> rs.long(sqls"total")
+      rs.int(ms.resultName.id) -> rs.long(sqls"total")
     }.list().apply()
-
-    // 進化元に集約
-    val map = aggregateCountToBase(result.map { case (master, count) => master.id -> count })
-
-    // 名前付与
-    val masters = MasterShipBase.findAll()
-      .map(ship => ship.id -> ship.name).toMap
-    map.map { case (id, count) => (id, masters(id), count) }.toList.sortBy(_._3).reverse.take(limit)
-  }
-
-  /** 進化元に集約 */
-  def aggregateCountToBase(xs: Seq[(Int, Long)]): Seq[(Int, Long)] = {
-    val map = mutable.Map[Int, Long]().withDefaultValue(0L)
-    xs.foreach { case (shipId, count) =>
-      map(EvolutionBase(shipId)) += count
-    }
-    map.toSeq
+    ShipCommon.toRankingElement(expSum).take(20)
   }
 }

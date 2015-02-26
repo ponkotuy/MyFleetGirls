@@ -30,6 +30,7 @@ object RankingType {
     override val rankings: Array[Ranking] = Array(
       CachedRanking(ExpByShipRanking),
       CachedRanking(YomeByShipRanking),
+      CachedRanking(MarriedByShipRanking),
       CachedRanking(FirstShipRate)
     )
   }

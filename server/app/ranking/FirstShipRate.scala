@@ -31,7 +31,7 @@ case object FirstShipRate extends Ranking {
     }.toList
   }
 
-  override def comment: List[String] = Nil
+  override def comment: List[String] = List("進化前で集計しています")
 
   override def divClass: String = colmd3
 }

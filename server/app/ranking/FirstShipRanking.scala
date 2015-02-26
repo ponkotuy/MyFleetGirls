@@ -16,10 +16,11 @@ case object FirstShipRanking extends Ranking {
   import Ranking._
 
   def a = Admiral.a
-  lazy val s = Ship.syntax("s")
-  lazy val ms = MasterShipBase.syntax("ms")
-  lazy val mst = MasterStype.syntax("mst")
-  lazy val mss = MasterShipSpecs.syntax("mss")
+
+  val s = Ship.syntax("s")
+  val ms = MasterShipBase.syntax("ms")
+  val mst = MasterStype.syntax("mst")
+  val mss = MasterShipSpecs.syntax("mss")
 
   override val title: String = "初期艦Lv"
   override val divClass: String = collg3
