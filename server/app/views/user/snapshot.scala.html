@@ -1,4 +1,5 @@
 @(user: User, snaps: Seq[DeckSnapshotWithShip])
+@import com.github.nscala_time.time.Imports.DateTime
 
 @main {
   <title>艦隊スナップショット -@{user.admiral.nickname}提督-</title>
@@ -24,14 +25,17 @@
       @snaps.map { snap =>
         <div class="panel panel-default" id="snap@snap.id">
           <div class="panel-heading">
-            <div style="float: right; width: 80px; margin-top: -5px;">
-              <div class="input-group input-group-sm favorite-group" data-path="@routes.UserView.snapshot(user.admiral.id)#snap@snap.id" data-title="@snap.title -@{user.admiral.nickname}提督のスナップショット-">
-                <span class="input-group-btn">
-                  <button class="btn btn-default btn-add-favorite" type="button">
-                    <span class="text-warning glyphicon glyphicon-star"></span>
-                  </button>
-                </span>
-                <input type="text" readonly="readonly" class="form-control fav-counter" style="width:35px;" />
+            <div style="float: right;">
+              <div style="float: left; margin-right: 1em;">（@{new DateTime(snap.created).toString("yyyy-MM-dd HH:mm")} 登録）</div>
+              <div style="float: left; width: 80px; margin-top: -5px;">
+                <div class="input-group input-group-sm favorite-group" data-path="@routes.UserView.snapshot(user.admiral.id)#snap@snap.id" data-title="@snap.title -@{user.admiral.nickname}提督のスナップショット-">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default btn-add-favorite" type="button">
+                      <span class="text-warning glyphicon glyphicon-star"></span>
+                    </button>
+                  </span>
+                  <input type="text" readonly="readonly" class="form-control fav-counter" style="width:35px;" />
+                </div>
               </div>
             </div>
             <h2 class="panel-title"><a href="#snap@snap.id">@snap.title</a></h2>

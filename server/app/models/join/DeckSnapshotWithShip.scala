@@ -17,4 +17,5 @@ trait DeckSnapshotWith {
   def title = deck.title
   def comment = deck.comment
   def memberId = deck.memberId
+  def created = deck.created
 }
