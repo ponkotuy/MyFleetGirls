@@ -95,13 +95,13 @@ object ViewSta extends Controller {
 
   def routeFleet(area: Int, info: Int, dep: Int, dest: Int, from: String, to: String) = actionAsync {
     val period = Period.fromStr(from, to)
-    val m = db.MapRoute.syntax
+    val mr = db.MapRoute.mr
     val fleets = db.MapRoute.findFleetBy(
-      sqls.eq(m.areaId, area)
-        .and.eq(m.infoNo, info)
-        .and.eq(m.dep, dep)
-        .and.eq(m.dest, dest)
-        .and.append(period.where(m.created))
+      sqls.eq(mr.areaId, area)
+        .and.eq(mr.infoNo, info)
+        .and.eq(mr.dep, dep)
+        .and.eq(mr.dest, dest)
+        .and.append(period.where(mr.created))
     )
     val counts = fleetCounts(fleets)
     val cDep = db.CellInfo.findOrDefault(area, info, dep)

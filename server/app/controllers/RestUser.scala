@@ -119,6 +119,7 @@ object RestUser extends Controller {
     val where = missionWhere(memberId, missionId)
     val missions = db.MissionHistory.findAllByWithMaster(where, limit, offset)
       .sortBy(-_.completeTime)
+    if(missions.isEmpty) throw new RuntimeException("Not found mission")
     val ships = db.MissionHistoryShip.findAllWithMasterShipBy(sqls"mhs.mission_id in (${missions.map(_.missionId)})")
     missions.map { m => m.toJsonWithShip(ships) }
   }

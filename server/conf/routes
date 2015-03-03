@@ -56,7 +56,6 @@ GET     /rest/v1/cell_info          controllers.Rest.cellInfo(area: Int ?= -1, i
 GET     /rest/v1/maps               controllers.Rest.maps()
 GET     /rest/v1/drop_from_ship/:shipId controllers.Rest.dropFromShip(shipId: Int, from: String ?= "", to: String ?= "")
 GET     /rest/v1/activities         controllers.Rest.activities(from: Long ?= 0L, limit: Int ?= 20, offset: Int ?= 0)
-GET     /rest/v1/remodel/log/:slotId controllers.Rest.remodelLog(slotId: Int)
 GET     /rest/v1/remodel/log/summary/:slotId controllers.Rest.remodelLogSummary(slotId: Int)
 GET     /rest/v1/remodel/master/:slotId controllers.Rest.masterRemodel(slotId: Int)
 GET     /rest/v1/book/ships         controllers.Rest.bookShips(q: String ?= "")

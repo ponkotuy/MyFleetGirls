@@ -16,7 +16,7 @@ object MyFleetGirlsBuild extends Build {
     .aggregate(server, client, library)
 
   lazy val rootSettings = Defaults.defaultSettings ++ settings ++ Seq(
-    commands ++= Seq(proxy, assembl, run, stage, start, dist, zip, genMapper)
+    commands ++= Seq(proxy, assembl, run, stage, start, dist, zip, genMapper, prof, runTester)
   )
 
   lazy val server = Project(id = "server", base = file("server"))
@@ -42,6 +42,8 @@ object MyFleetGirlsBuild extends Build {
   lazy val profiler = Project(id = "profiler", base = file("profiler"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .dependsOn(server)
+
+  lazy val tester = Project(id = "tester", base = file("tester"))
 
   override lazy val settings = super.settings ++ Seq(
     version := ver,
@@ -107,6 +109,12 @@ object MyFleetGirlsBuild extends Build {
 
   def prof = Command.command("prof") { state =>
     val subState = Command.process("project  profiler", state)
+    Command.process("run", subState)
+    state
+  }
+
+  def runTester = Command.command("runTester") { state =>
+    val subState = Command.process("project tester", state)
     Command.process("run", subState)
     state
   }

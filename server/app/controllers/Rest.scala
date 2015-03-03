@@ -138,10 +138,6 @@ object Rest extends Controller {
       }
   }
 
-  def remodelLog(slotId: Int) = returnJson {
-    db.RemodelSlot.findAllWithSecondShipBy(sqls"r.slot_id = ${slotId}").sortBy(-_.remodel.created)
-  }
-
   def remodelLogSummary(slotId: Int) = returnJson {
     val aWeekAgo = DateTime.now - 7.weeks
     val where = sqls"slot_id = ${slotId}".and.append(sqls"created > ${aWeekAgo.getMillis}")

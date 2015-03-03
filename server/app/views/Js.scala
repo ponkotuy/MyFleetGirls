@@ -51,7 +51,7 @@ object About {
   val Host = "http://myfleetweb.herokuapp.com"
   val Top = s"$Host/entire/about"
 
-  val ChangeLog = s"$Top/change_log"
+  val ChangeLog = s"$Top/change"
   val Faq = s"$Top/faq"
   val SetupDetail = s"$Top/setup_detail"
 }
