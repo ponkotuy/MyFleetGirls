@@ -22,6 +22,7 @@ object Tester extends App {
       HTTP.get(url).status
     } match {
       case Success(200) => println(s"Success: $url".green)
+      case Success(302) => println(s"Redirect: $url".green)
       case Success(status) => println(s"Bad status $status: $url".red)
       case Failure(e) => println(s"Error ${e.getMessage}: $url".red)
     }

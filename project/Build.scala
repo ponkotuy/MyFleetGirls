@@ -113,9 +113,9 @@ object MyFleetGirlsBuild extends Build {
     state
   }
 
-  def runTester = Command.command("runTester") { state =>
+  def runTester = Command.single("runTester") { (state, arg) =>
     val subState = Command.process("project tester", state)
-    Command.process("run", subState)
+    Command.process(s"run $arg", subState)
     state
   }
 }
