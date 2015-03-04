@@ -18,11 +18,11 @@ object Mission extends SQLSyntaxSupport[Mission] {
   def apply(x: SyntaxProvider[Mission])(rs: WrappedResultSet): Mission = apply(x.resultName)(rs)
   def apply(x: ResultName[Mission])(rs: WrappedResultSet): Mission = autoConstruct(rs, x)
 
-  lazy val m = Mission.syntax("m")
-  lazy val mm = MasterMission.syntax("mm")
-  lazy val dp = DeckPort.syntax("dp")
-  lazy val ds = DeckShip.syntax("ds")
-  lazy val s = Ship.syntax("s")
+  val m = Mission.syntax("m")
+  val mm = MasterMission.syntax("mm")
+  val dp = DeckPort.syntax("dp")
+  val ds = DeckShip.syntax("ds")
+  val s = Ship.syntax("s")
 
   def create(m: data.Mission, memberId: Long, deckId: Int, created: Long = System.currentTimeMillis())(
       implicit session: DBSession = Mission.autoSession): Mission = {
