@@ -26,8 +26,7 @@ object RestUser extends Controller {
 
   def conds(memberId: Long) = returnJson {
     val ships = db.Ship.findAllByUserWithName(memberId)
-    val now = System.currentTimeMillis()
-    ships.map(ShipWithCondition.fromShip).map(_.cond < 49)
+    ships.map(ShipWithCondition.fromShip).filter(_.cond < 49)
   }
 
   def createShips(memberId: Long, limit: Int, offset: Int, large: Boolean) = returnJson {
