@@ -1,6 +1,7 @@
 package controllers
 
 import models.db
+import models.other.ShipWithCondition
 import models.req.{AllCrawlAPI, SortType}
 import org.json4s.JsonDSL._
 import org.json4s._
@@ -26,15 +27,7 @@ object RestUser extends Controller {
   def conds(memberId: Long) = returnJson {
     val ships = db.Ship.findAllByUserWithName(memberId)
     val now = System.currentTimeMillis()
-    for {
-      ship <- ships
-      cond = ship.cond + ((now - ship.created) / (3L * 60 * 1000) * 3).toInt
-      if cond < 49
-    } yield {
-      Map[String, Any](
-        "id" -> ship.id, "name" -> ship.name, "stype" -> ship.stName, "cond" -> cond, "rest" -> (49 - cond)
-      )
-    }
+    ships.map(ShipWithCondition.fromShip).map(_.cond < 49)
   }
 
   def createShips(memberId: Long, limit: Int, offset: Int, large: Boolean) = returnJson {

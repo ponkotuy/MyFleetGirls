@@ -90,10 +90,12 @@
             </div>
             <table class="table table-striped">
               <thead>
-                <tr><th>名前</th><th>Cond</th><th>残り時間</th></tr>
+                <tr><th>艦隊</th><th>名前</th><th>Cond</th><th>残り時間</th></tr>
               </thead>
               <tbody>
                 <tr v-repeat="ship: conds">
+                  <td v-if="ship.deckId">{{ship.deckId}}</td>
+                  <td v-if="!ship.deckId">-</td>
                   <td><a href="@routes.UserView.ship(user.admiral.id)#modal=true&id={{ship.id}}">{{ship.name}}</a></td>
                   <td>{{ship.cond}}</td>
                   <td>約{{ship.rest}}分</td>

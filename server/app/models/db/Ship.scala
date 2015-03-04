@@ -51,7 +51,6 @@ object Ship extends SQLSyntaxSupport[Ship] {
 
   val s = Ship.syntax("s")
   val ms = MasterShipBase.syntax("ms")
-  val ds = DeckShip.syntax("ds")
   val ssi = ShipSlotItem.syntax("ssi")
   val mst = MasterStype.syntax("mst")
   val mss = MasterShipSpecs.syntax("mss")
