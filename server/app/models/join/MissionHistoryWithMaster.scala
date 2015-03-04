@@ -5,7 +5,8 @@ import org.json4s.JsonDSL._
 import models.db._
 
 /**
- * Created by yosuke on 15/01/16.
+ * @author ponkotuy
+ * Date: 15/01/16.
  */
 case class MissionHistoryWithMaster(history: MissionHistory, master: MasterMission) {
   def missionId = history.id

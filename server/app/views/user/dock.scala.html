@@ -49,12 +49,13 @@
             </div>
             <table class="table table-striped">
               <thead>
-                <tr><th>ID</th><th>艦隊名</th><th>遠征先</th><th>残り時間</th></tr>
+                <tr><th>ID</th><th>艦隊名</th><th>Area</th><th>遠征先</th><th>残り時間</th></tr>
               </thead>
               <tbody>
                 <tr v-repeat="mission: missions">
                   <td>{{mission.deckId}}</td>
                   <td>{{mission.deckName}}</td>
+                  <td>{{mission.mapArea}}</td>
                   <td>{{mission.missionName}}</td>
                   <td>{{timeView(mission.completeTime, '帰投')}}</td>
                 </tr>

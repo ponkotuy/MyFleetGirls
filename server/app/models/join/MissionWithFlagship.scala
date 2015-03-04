@@ -17,7 +17,8 @@ case class MissionWithFlagship(
     deckName: String,
     completeTime: Long,
     created: Long,
-    flagshipId: Int) extends UserActivity {
+    flagshipId: Int,
+    mapArea: Int) extends UserActivity {
   override def title: String = "任務"
   override def url: String = routes.UserView.dock(memberId).url
   override def message: String = s"${deckName}艦隊が${missionName}から帰還しました"
@@ -44,7 +45,8 @@ object MissionWithFlagship {
       rs.string(dp.name),
       rs.long(m.completeTime),
       rs.long(m.created),
-      rs.int(s.shipId)
+      rs.int(s.shipId),
+      rs.int(mm.mapArea)
     )
 }
 
