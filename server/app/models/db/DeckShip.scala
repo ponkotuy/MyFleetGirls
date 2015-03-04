@@ -40,7 +40,7 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
         .from(DeckShip as ds)
         .innerJoin(Ship as s).on(sqls"${ds.shipId} = ${s.id} and ${ds.memberId} = ${s.memberId}")
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .where.eq(ds.memberId, memberId)
+        .where.eq(ds.memberId, memberId).orderBy(ds.deckId, ds.num)
     }.map(DeckShipWithName(ds, s, ms)).list().apply()
   }
 
