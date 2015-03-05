@@ -1,7 +1,7 @@
 
 name := "MyFleetGirlsServer"
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.6"
 
 val scalikeJdbcVer = "2.2.+"
 
