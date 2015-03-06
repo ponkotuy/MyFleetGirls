@@ -1,5 +1,5 @@
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.6"
 
 libraryDependencies ++= Seq(
   "net.ceedubs" %% "ficus" % "1.1.2",
