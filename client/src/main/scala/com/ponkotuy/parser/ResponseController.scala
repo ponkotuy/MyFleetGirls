@@ -85,6 +85,8 @@ class ResponseController extends Log {
         lazyPost { (a, b) => Post.remodelDetail(obj, req)(a, b)}
       case RemodelSlot =>
         lazyPost { (a, b) => Post.remodelSlot(obj, req)(a, b)}
+      case MissionResult =>
+
       case LoginCheck | Deck | UseItem | Practice | Record | MapCell | UpdateDeckName | Charge | MissionStart |
            KaisouPowerup | Remodeling | Marriage | KaisouLock | PracticeBattle | PracticeMidnightBattle |
            PracticeBattleResult | HenseiLock | GetOthersDeck | SortieBattle | ClearItemGet | NyukyoStart | MasterUseItem |
