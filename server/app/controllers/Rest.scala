@@ -61,8 +61,8 @@ object Rest extends Controller {
   def dropFromShip(shipId: Int, from: String, to: String) = returnJson {
     val fromTo = Period.fromStr(from, to).where(sqls"br.created")
     val allCounts = db.BattleResult.countAllGroupByCells(fromTo).toMap
-    val dropCounts = db.BattleResult.countAllGroupByCells(sqls"get_ship_id = ${shipId} and $fromTo")
-    dropCounts.map { case (cell, count) =>
+    val dropCounts = db.BattleResult.countAllGroupByCells(sqls.eq(sqls"get_ship_id", shipId).and.append(fromTo))
+    dropCounts.take(51).map { case (cell, count) =>
       Map("cell" -> cell.toJson, "count" -> count, "sum" -> allCounts.get(cell))
     }
   }
