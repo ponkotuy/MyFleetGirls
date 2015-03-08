@@ -103,7 +103,7 @@ object MyFleetGirlsBuild extends Build {
     p.Process("""rm server/public/zip/MyFleetGirls.zip""").run()
     p.Process("""zip -j server/public/zip/MyFleetGirls.zip update/target/update.jar LICENSE update/update.properties package/resources/application.conf.sample package/resources/MyFleetGirls.bat package/resources/MyFleetGirls.sh package/resources/MyFleetGirls.command package/resources/IE_PROXY.REG""").run()
     p.Process("""cp client/target/scala-2.11/MyFleetGirls.jar LICENSE MyFleetGirls.bat MyFleetGirls.sh MyFleetGirls.command package/resources/application.conf.sample package/resources/IE_PROXY.REG server/public/client/""").run()
-    p.Process("""cd server/public/client && gzip -9 -c MyFleetGirls.jar > MyFleetGirls.jar.gz""").run()
+    p.Process("""cd server/public/client && pack200 --unknown-attribute=pass MyFleetGirls.jar.pack.gz MyFleetGirls.jar 2> /dev/null""").run()
     Thread.sleep(1000L)
     state
   }
