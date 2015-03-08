@@ -88,6 +88,9 @@
                   <td><strong>{{c.count}}</strong> / {{c.sum}}</td>
                   <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
                 </tr>
+                <tr v-if="isDropOver">
+                  <td>など</td>
+                </tr>
               </tbody>
             </table>
           </div>

@@ -14,6 +14,8 @@ vueSettings =
     itemId: -1
     sCounts: []
     dropCounts: []
+    isDropOver: false
+    DropSizeMax: 50
     iCounts: []
     period: false
     start_period: moment({year: 2014, month: 0, day: 1}).format('YYYY-MM-DD')
@@ -42,7 +44,8 @@ vueSettings =
       $.getJSON "/rest/v1/recipe/from_ship/#{sid}", @getFromTo(), (ret) =>
         @sCounts = ret
       $.getJSON "/rest/v1/drop_from_ship/#{sid}", @getFromTo(), (ret) =>
-        @dropCounts = ret
+        @dropCounts = ret.slice(0, @DropSizeMax)
+        @isDropOver = ret.length > @DropSizeMax
     getICounts: (iid) ->
       @resetCounts()
       $.getJSON "/rest/v1/recipe/from_item/#{iid}", @getFromTo(), (ret) =>
