@@ -72,14 +72,11 @@ public class Main {
             connection.connect();
             int responseCode = connection.getResponseCode();
             if ( responseCode == HttpURLConnection.HTTP_OK ) {
-              Files.deleteIfExists(dst);
               try (InputStream is = connection.getInputStream()) {
-                try (OutputStream os = Files.newOutputStream(dst, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW)) {
-                  if ( isGziped(connection) ) {
-                    readAll(new GZIPInputStream(is), os);
-                  } else {
-                    readAll(is, os);
-                  }
+                if ( isGziped(connection) ) {
+                  Files.copy(new GZIPInputStream(is), dst, StandardCopyOption.REPLACE_EXISTING);
+                } else {
+                  Files.copy(is, dst, StandardCopyOption.REPLACE_EXISTING);
                 }
               }
               long requestModified = connection.getLastModified();
@@ -108,16 +105,5 @@ public class Main {
         }
       }
       return false;
-    }
-
-    public static void readAll(InputStream is, OutputStream os) throws IOException {
-        byte [] buffer = new byte[1024];
-        while(true) {
-            int len = is.read(buffer);
-            if(len < 0) {
-                break;
-            }
-            os.write(buffer, 0, len);
-        }
     }
 }
