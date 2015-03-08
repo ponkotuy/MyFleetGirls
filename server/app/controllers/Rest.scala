@@ -5,6 +5,7 @@ import com.ponkotuy.tool.Checksum
 import models.db
 import models.join.{ItemMat, ShipDrop, ShipWithFav}
 import models.query.Period
+import models.response.DropRate
 import org.json4s.JsonDSL._
 import org.json4s._
 import play.api.mvc.Controller
@@ -61,10 +62,10 @@ object Rest extends Controller {
   def dropFromShip(shipId: Int, from: String, to: String) = returnJson {
     val fromTo = Period.fromStr(from, to).where(sqls"br.created")
     val allCounts = db.BattleResult.countAllGroupByCells(fromTo).toMap
-    val dropCounts = db.BattleResult.countAllGroupByCells(sqls"get_ship_id = ${shipId} and $fromTo")
+    val dropCounts = db.BattleResult.countAllGroupByCells(sqls.eq(sqls"get_ship_id", shipId).and.append(fromTo))
     dropCounts.map { case (cell, count) =>
-      Map("cell" -> cell.toJson, "count" -> count, "sum" -> allCounts.get(cell))
-    }
+      DropRate(cell, count, allCounts.getOrElse(cell, Long.MaxValue))
+    }.sortBy(-_.count).map(_.toJson).take(51)
   }
 
   def recipeFromItem(itemId: Int, from: String, to: String) = returnJson {
