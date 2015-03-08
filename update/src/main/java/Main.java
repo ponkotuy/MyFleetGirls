@@ -9,6 +9,7 @@ import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.zip.GZIPInputStream;
 
 /**
  *
@@ -66,13 +67,19 @@ public class Main {
             connection.setInstanceFollowRedirects(true);
             connection.setIfModifiedSince(fileModified.toMillis());
             connection.setUseCaches(false);
+            connection.setRequestProperty("Accept-Encoding","gzip");
+            connection.setRequestProperty("User-Agent","MyFleetGirls Updater");
             connection.connect();
             int responseCode = connection.getResponseCode();
             if ( responseCode == HttpURLConnection.HTTP_OK ) {
               Files.deleteIfExists(dst);
               try (InputStream is = connection.getInputStream()) {
                 try (OutputStream os = Files.newOutputStream(dst, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW)) {
-                  readAll(is, os);
+                  if ( isGziped(connection) ) {
+                    readAll(new GZIPInputStream(is), os);
+                  } else {
+                    readAll(is, os);
+                  }
                 }
               }
               long requestModified = connection.getLastModified();
@@ -88,6 +95,19 @@ public class Main {
         } finally {
           connection.disconnect();
         }
+    }
+
+    public static boolean isGziped(HttpURLConnection connection) {
+      List<String> contentEncodings = connection.getHeaderFields().get( "Content-Encoding" );
+      if ( contentEncodings != null ) {
+        for ( int i = 0; i < contentEncodings.size(); ++i ) {
+          String contentEncoding = contentEncodings.get( i );
+          if ( "gzip".equals(contentEncoding) ) {
+            return true;
+          }
+        }
+      }
+      return false;
     }
 
     public static void readAll(InputStream is, OutputStream os) throws IOException {
