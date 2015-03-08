@@ -10,11 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.GZIPInputStream;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Pack200;
+
+import static java.net.HttpURLConnection.*;
+import static java.nio.file.StandardOpenOption.*;
+import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 
 /**
  *
- * @author ponkotuy
- * Date: 14/04/06.
+ * @author ponkotuy, b-wind
+ * Date: 15/03/09.
  */
 public class Main {
     public static void main(String[] args) {
@@ -47,7 +55,7 @@ public class Main {
         FileSystem fs = FileSystems.getDefault();
         Path path = fs.getPath(fName);
         Properties p = new Properties();
-        try(InputStream is = Files.newInputStream(path, StandardOpenOption.READ)) {
+        try(InputStream is = Files.newInputStream(path, READ)) {
             p.load(is);
         }
         List<String> result = new ArrayList<>(p.size());
@@ -59,7 +67,7 @@ public class Main {
     }
 
     public static boolean request(URL url, Path dst) throws IOException {
-        FileTime fileModified = Files.getLastModifiedTime(dst,LinkOption.NOFOLLOW_LINKS);
+        FileTime fileModified = Files.getLastModifiedTime(dst,NOFOLLOW_LINKS);
         HttpURLConnection connection = null;
         try {
             connection = (HttpURLConnection)url.openConnection();
@@ -67,16 +75,23 @@ public class Main {
             connection.setInstanceFollowRedirects(true);
             connection.setIfModifiedSince(fileModified.toMillis());
             connection.setUseCaches(false);
-            connection.setRequestProperty("Accept-Encoding","gzip");
+            connection.setRequestProperty("Accept-Encoding","pack200-gzip, gzip");
             connection.setRequestProperty("User-Agent","MyFleetGirls Updater");
             connection.connect();
             int responseCode = connection.getResponseCode();
-            if ( responseCode == HttpURLConnection.HTTP_OK ) {
+            if ( responseCode == HTTP_OK ) {
               try (InputStream is = connection.getInputStream()) {
-                if ( isGziped(connection) ) {
-                  Files.copy(new GZIPInputStream(is), dst, StandardCopyOption.REPLACE_EXISTING);
+                if ( contentEncoding(connection,"pack200-gzip") ) {
+                  Pack200.Unpacker unpacker = Pack200.newUnpacker();
+                  try (OutputStream os = Files.newOutputStream(dst, WRITE, CREATE, TRUNCATE_EXISTING)) {
+                    try (JarOutputStream jar = new JarOutputStream(os)) {
+                      unpacker.unpack(is, jar);
+                    }
+                  }
+                } else if ( contentEncoding(connection,"gzip") ) {
+                  Files.copy(new GZIPInputStream(is), dst, REPLACE_EXISTING);
                 } else {
-                  Files.copy(is, dst, StandardCopyOption.REPLACE_EXISTING);
+                  Files.copy(is, dst, REPLACE_EXISTING);
                 }
               }
               long requestModified = connection.getLastModified();
@@ -84,7 +99,7 @@ public class Main {
                 Files.setLastModifiedTime(dst,FileTime.fromMillis(requestModified));
               }
               return true;
-            } else if ( responseCode == HttpURLConnection.HTTP_NOT_MODIFIED ) {
+            } else if ( responseCode == HTTP_NOT_MODIFIED ) {
               return false;
             } else {
               throw new RuntimeException("Unknown status:"+responseCode);
@@ -94,16 +109,12 @@ public class Main {
         }
     }
 
-    public static boolean isGziped(HttpURLConnection connection) {
+    public static boolean contentEncoding(HttpURLConnection connection,String encoding) {
       List<String> contentEncodings = connection.getHeaderFields().get( "Content-Encoding" );
-      if ( contentEncodings != null ) {
-        for ( int i = 0; i < contentEncodings.size(); ++i ) {
-          String contentEncoding = contentEncodings.get( i );
-          if ( "gzip".equals(contentEncoding) ) {
-            return true;
-          }
-        }
+      if ( contentEncodings != null && contentEncodings.contains(encoding) ) {
+        return true;
+      } else {
+        return false;
       }
-      return false;
     }
 }
