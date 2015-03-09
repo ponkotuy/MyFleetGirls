@@ -11,8 +11,8 @@ libraryDependencies ++= Seq(
   "com.twitter" %% "finagle-http" % "6.24.0",
   "com.netaporter" %% "scala-uri" % "0.4.4",
   "org.json4s" %% "json4s-native" % "3.2.11",
-  "org.apache.httpcomponents" % "httpclient" % "4.3.6",
-  "org.apache.httpcomponents" % "httpmime" % "4.3.6"
+  "org.apache.httpcomponents" % "httpclient" % "4.4",
+  "org.apache.httpcomponents" % "httpmime" % "4.4"
 )
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions")

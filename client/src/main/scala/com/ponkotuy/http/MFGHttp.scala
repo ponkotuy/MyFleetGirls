@@ -7,6 +7,7 @@ import com.ponkotuy.config.ClientConfig
 import com.ponkotuy.data.{Auth, MyFleetAuth}
 import com.ponkotuy.parser.SoundUrlId
 import com.ponkotuy.util.Log
+import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.{CloseableHttpResponse, HttpGet, HttpHead, HttpPost}
 import org.apache.http.entity.ContentType
@@ -28,14 +29,23 @@ import scala.collection.mutable
  */
 object MFGHttp extends Log {
   val UTF8 = Charset.forName("UTF-8")
+  val config = RequestConfig.custom()
+      .setConnectTimeout(60*1000)
+      .setRedirectsEnabled(true)
+      .build()
   val httpBuilder = HttpClientBuilder.create()
+      .setDefaultRequestConfig(config)
 
   implicit val formats = Serialization.formats(NoTypeHints)
 
   def get(uStr: String, ver: Int = 1): Option[String] = {
+    getOrig(ClientConfig.getUrl(2) + uStr)
+  }
+
+  def getOrig(url: String): Option[String] = {
     try {
       val http = httpBuilder.build()
-      val get = new HttpGet(ClientConfig.getUrl(2) + uStr)
+      val get = new HttpGet(url)
       Some(allRead(http.execute(get).getEntity.getContent))
     } catch {
       case e: Throwable =>
