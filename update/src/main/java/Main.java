@@ -1,9 +1,14 @@
+import javax.net.ssl.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.*;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -14,7 +19,7 @@ import java.util.Properties;
  * Date: 14/04/06.
  */
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         try {
             List<String> urls = getProperties("update.properties");
             for(String uStr: urls) {
@@ -26,12 +31,12 @@ public class Main {
                     } else {
                         System.out.println(dst.getFileName() + "の更新を見つけました。更新します");
                         Files.delete(dst);
-                        download(url, dst);
+                        download(withRedirect(url), dst);
                         System.out.println(dst.getFileName() + "のダウンロードが完了しました");
                     }
                 } else {
                     System.out.println(dst.getFileName() + "は存在しません。ダウンロードします。");
-                    download(url, dst);
+                    download(withRedirect(url), dst);
                     System.out.println(dst.getFileName() + "のダウンロードが完了しました");
                 }
             }
@@ -46,7 +51,7 @@ public class Main {
     }
 
     public static boolean compareFileSize(URL url, Path dst) throws IOException {
-        return Files.size(dst) == url.openConnection().getContentLengthLong();
+        return Files.size(dst) == withRedirect(url).getContentLengthLong();
     }
 
     public static List<String> getProperties(String fName) throws IOException {
@@ -64,12 +69,46 @@ public class Main {
         return result;
     }
 
-    public static void download(URL url, Path dst) throws IOException {
-        try(InputStream is = url.openConnection().getInputStream()) {
+    public static URLConnection withRedirect(URL url) throws IOException {
+        if(url.getProtocol().equals("http")) {
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            int code = http.getResponseCode();
+            if(300 <= code && code < 400) { // Redirect
+                URL newUrl = new URL(http.getHeaderField("Location"));
+                return withRedirect(newUrl);
+            } else if(200 <= code && code < 300) {
+                return http;
+            } else {
+                throw new IOException("Error status code: " + code);
+            }
+        } else if(url.getProtocol().equals("https")) {
+            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
+            // TODO: オレオレ証明書設定。本番で外しても動くことを確認したらすみやかに削除
+            https.setSSLSocketFactory(getSSLSocketFactory());
+            https.setHostnameVerifier(new MyVerifier());
+            return https;
+        }
+        throw new IOException("Unknown protocol: " + url.getProtocol());
+    }
+
+    public static void download(URLConnection conn, Path dst) throws IOException {
+        try(InputStream is = conn.getInputStream()) {
             try (OutputStream os = Files.newOutputStream(dst, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW)) {
                 readAll(is, os);
             }
         }
+    }
+
+    private static SSLSocketFactory getSSLSocketFactory() throws SSLException {
+        SSLContext sc;
+        try {
+            sc = SSLContext.getInstance("SSL");
+            TrustManager[] tms = {new MyTrustManager()};
+            sc.init(null, tms, null);
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new SSLException(e);
+        }
+        return sc.getSocketFactory();
     }
 
     public static void readAll(InputStream is, OutputStream os) throws IOException {
