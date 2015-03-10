@@ -50,9 +50,6 @@ public class Connection {
     }
 
     public static void download(URLConnection conn, Path dst) throws IOException {
-        if(Files.exists(dst))
-
-
         conn.connect();
 
         String content = conn.getHeaderField("Content-Encoding");

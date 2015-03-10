@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.*;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -25,13 +26,10 @@ public class Main {
                 if(!Files.exists(dst)) {
                     System.out.println(dst.getFileName() + "は存在しません。ダウンロードします。");
                 }
-                long lastModified = Files.getLastModifiedTime(dst, NOFOLLOW_LINKS).toMillis();
-                URLConnection conn = Connection.withRedirect(url, lastModified);
+                URLConnection conn = Connection.withRedirect(url, getFileSize(dst));
                 if(conn == null) {
                     System.out.println(dst.getFileName() + "に変更はありません");
                 } else {
-                    System.out.println(dst.getFileName() + "の更新を見つけました。更新します");
-                    Files.delete(dst);
                     Connection.download(conn, dst);
                     System.out.println(dst.getFileName() + "のダウンロードが完了しました");
                 }
@@ -46,7 +44,7 @@ public class Main {
         }
     }
 
-    public static List<String> getProperties(String fName) throws IOException {
+    private static List<String> getProperties(String fName) throws IOException {
         FileSystem fs = FileSystems.getDefault();
         Path path = fs.getPath(fName);
         Properties p = new Properties();
@@ -59,5 +57,15 @@ public class Main {
             result.add(p.getProperty(key));
         }
         return result;
+    }
+
+    private static long getFileSize(Path dst) {
+        FileTime fTime;
+        try {
+            fTime = Files.getLastModifiedTime(dst, NOFOLLOW_LINKS);
+            return fTime.toMillis();
+        } catch(IOException | NullPointerException e) {
+            return 0L;
+        }
     }
 }
