@@ -67,13 +67,17 @@ public class Main {
     }
 
     public static boolean request(URL url, Path dst) throws IOException {
-        FileTime fileModified = Files.getLastModifiedTime(dst,NOFOLLOW_LINKS);
+        FileTime fileModified = Files.exists(dst)
+            ? Files.getLastModifiedTime(dst,NOFOLLOW_LINKS)
+            : null;
         HttpURLConnection connection = null;
         try {
             connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             connection.setInstanceFollowRedirects(true); // 301,302 Redirect の自動適応
-            connection.setIfModifiedSince(fileModified.toMillis()); // ローカルファイルの最終更新時刻を設定
+            if ( fileModifiled != null ) {
+                connection.setIfModifiedSince(fileModified.toMillis()); // ローカルファイルの最終更新時刻を設定
+            }
             connection.setUseCaches(false);
             connection.setRequestProperty("Accept-Encoding","pack200-gzip, gzip"); //  gzip pack200 形式の Content Negotiation 設定
             connection.setRequestProperty("User-Agent","MyFleetGirls Updater");
