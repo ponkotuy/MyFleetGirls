@@ -75,7 +75,7 @@ public class Main {
             connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             connection.setInstanceFollowRedirects(true); // 301,302 Redirect の自動適応
-            if ( fileModifiled != null ) {
+            if ( fileModified != null ) {
                 connection.setIfModifiedSince(fileModified.toMillis()); // ローカルファイルの最終更新時刻を設定
             }
             connection.setUseCaches(false);
@@ -84,23 +84,23 @@ public class Main {
             connection.connect();
             int responseCode = connection.getResponseCode();
             if ( responseCode == HTTP_OK ) { // 202 OK
-              try (InputStream is = connection.getInputStream()) {
-                if ( contentEncoding(connection,"pack200-gzip") ) {
-                  Pack200.Unpacker unpacker = Pack200.newUnpacker();
-                  try (OutputStream os = Files.newOutputStream(dst, WRITE, CREATE, TRUNCATE_EXISTING)) {
-                    try (JarOutputStream jar = new JarOutputStream(os)) {
-                      unpacker.unpack(new GZIPInputStream(is), jar);
+                try (InputStream is = connection.getInputStream()) {
+                    if ( contentEncoding(connection,"pack200-gzip") ) {
+                    Pack200.Unpacker unpacker = Pack200.newUnpacker();
+                    try (OutputStream os = Files.newOutputStream(dst, WRITE, CREATE, TRUNCATE_EXISTING)) {
+                      try (JarOutputStream jar = new JarOutputStream(os)) {
+                        unpacker.unpack(new GZIPInputStream(is), jar);
+                      }
                     }
-                  }
                 } else if ( contentEncoding(connection,"gzip") ) {
-                  Files.copy(new GZIPInputStream(is), dst, REPLACE_EXISTING);
+                    Files.copy(new GZIPInputStream(is), dst, REPLACE_EXISTING);
                 } else {
-                  Files.copy(is, dst, REPLACE_EXISTING);
+                    Files.copy(is, dst, REPLACE_EXISTING);
                 }
               }
               long requestModified = connection.getLastModified();
               if ( requestModified != 0 ) {
-                Files.setLastModifiedTime(dst,FileTime.fromMillis(requestModified)); // サーバー側の最終更新時刻に合わせる
+                  Files.setLastModifiedTime(dst,FileTime.fromMillis(requestModified)); // サーバー側の最終更新時刻に合わせる
               }
               return true;
             } else if ( responseCode == HTTP_NOT_MODIFIED ) { // 304 Not Modified
@@ -114,11 +114,11 @@ public class Main {
     }
 
     public static boolean contentEncoding(HttpURLConnection connection,String encoding) {
-      List<String> contentEncodings = connection.getHeaderFields().get( "Content-Encoding" );
-      if ( contentEncodings != null && contentEncodings.contains(encoding) ) {
-        return true;
-      } else {
-        return false;
-      }
+        List<String> contentEncodings = connection.getHeaderFields().get( "Content-Encoding" );
+        if ( contentEncodings != null && contentEncodings.contains(encoding) ) {
+          return true;
+        } else {
+          return false;
+        }
     }
 }
