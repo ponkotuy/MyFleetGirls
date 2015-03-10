@@ -5,4 +5,4 @@ create table ago_progress(
         reach_boss int not null,
         win_boss int not null,
         primary key(member_id)
-) engine = ARIA, default charset=utf8;
+) engine = ARIA, default charset=utf8mb4;
