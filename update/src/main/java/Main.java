@@ -89,7 +89,7 @@ public class Main {
                   Pack200.Unpacker unpacker = Pack200.newUnpacker();
                   try (OutputStream os = Files.newOutputStream(dst, WRITE, CREATE, TRUNCATE_EXISTING)) {
                     try (JarOutputStream jar = new JarOutputStream(os)) {
-                      unpacker.unpack(is, jar);
+                      unpacker.unpack(new GZIPInputStream(is), jar);
                     }
                   }
                 } else if ( contentEncoding(connection,"gzip") ) {
