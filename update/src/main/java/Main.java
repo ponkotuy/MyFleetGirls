@@ -72,14 +72,14 @@ public class Main {
         try {
             connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setInstanceFollowRedirects(true);
-            connection.setIfModifiedSince(fileModified.toMillis());
+            connection.setInstanceFollowRedirects(true); // 301,302 Redirect の自動適応
+            connection.setIfModifiedSince(fileModified.toMillis()); // ローカルファイルの最終更新時刻を設定
             connection.setUseCaches(false);
-            connection.setRequestProperty("Accept-Encoding","pack200-gzip, gzip");
+            connection.setRequestProperty("Accept-Encoding","pack200-gzip, gzip"); //  gzip pack200 形式の Content Negotiation 設定
             connection.setRequestProperty("User-Agent","MyFleetGirls Updater");
             connection.connect();
             int responseCode = connection.getResponseCode();
-            if ( responseCode == HTTP_OK ) {
+            if ( responseCode == HTTP_OK ) { // 202 OK
               try (InputStream is = connection.getInputStream()) {
                 if ( contentEncoding(connection,"pack200-gzip") ) {
                   Pack200.Unpacker unpacker = Pack200.newUnpacker();
@@ -96,10 +96,10 @@ public class Main {
               }
               long requestModified = connection.getLastModified();
               if ( requestModified != 0 ) {
-                Files.setLastModifiedTime(dst,FileTime.fromMillis(requestModified));
+                Files.setLastModifiedTime(dst,FileTime.fromMillis(requestModified)); // サーバー側の最終更新時刻に合わせる
               }
               return true;
-            } else if ( responseCode == HTTP_NOT_MODIFIED ) {
+            } else if ( responseCode == HTTP_NOT_MODIFIED ) { // 304 Not Modified
               return false;
             } else {
               throw new RuntimeException("Unknown status:"+responseCode);
