@@ -86,39 +86,35 @@ public class Main {
             if ( responseCode == HTTP_OK ) { // 202 OK
                 try (InputStream is = connection.getInputStream()) {
                     if ( contentEncoding(connection,"pack200-gzip") ) {
-                    Pack200.Unpacker unpacker = Pack200.newUnpacker();
-                    try (OutputStream os = Files.newOutputStream(dst, WRITE, CREATE, TRUNCATE_EXISTING)) {
-                      try (JarOutputStream jar = new JarOutputStream(os)) {
-                        unpacker.unpack(new GZIPInputStream(is), jar);
-                      }
+                        Pack200.Unpacker unpacker = Pack200.newUnpacker();
+                        try (OutputStream os = Files.newOutputStream(dst, WRITE, CREATE, TRUNCATE_EXISTING)) {
+                            try (JarOutputStream jar = new JarOutputStream(os)) {
+                                unpacker.unpack(new GZIPInputStream(is), jar);
+                            }
+                        }
+                    } else if ( contentEncoding(connection,"gzip") ) {
+                        Files.copy(new GZIPInputStream(is), dst, REPLACE_EXISTING);
+                    } else {
+                        Files.copy(is, dst, REPLACE_EXISTING);
                     }
-                } else if ( contentEncoding(connection,"gzip") ) {
-                    Files.copy(new GZIPInputStream(is), dst, REPLACE_EXISTING);
-                } else {
-                    Files.copy(is, dst, REPLACE_EXISTING);
                 }
-              }
-              long requestModified = connection.getLastModified();
-              if ( requestModified != 0 ) {
-                  Files.setLastModifiedTime(dst,FileTime.fromMillis(requestModified)); // サーバー側の最終更新時刻に合わせる
-              }
-              return true;
+                long requestModified = connection.getLastModified();
+                if ( requestModified != 0 ) {
+                    Files.setLastModifiedTime(dst,FileTime.fromMillis(requestModified)); // サーバー側の最終更新時刻に合わせる
+                }
+                return true;
             } else if ( responseCode == HTTP_NOT_MODIFIED ) { // 304 Not Modified
-              return false;
+                return false;
             } else {
-              throw new RuntimeException("Unknown status:"+responseCode);
+                throw new RuntimeException("Unknown status:"+responseCode);
             }
         } finally {
-          connection.disconnect();
+            if(connection != null) connection.disconnect();
         }
     }
 
     public static boolean contentEncoding(HttpURLConnection connection,String encoding) {
         List<String> contentEncodings = connection.getHeaderFields().get( "Content-Encoding" );
-        if ( contentEncodings != null && contentEncodings.contains(encoding) ) {
-          return true;
-        } else {
-          return false;
-        }
+        return contentEncodings != null && contentEncodings.contains(encoding);
     }
 }
