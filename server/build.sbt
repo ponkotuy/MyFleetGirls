@@ -19,7 +19,9 @@ libraryDependencies ++= Seq(
   "net.sf.ehcache" % "ehcache" % "2.9.0"
 )
 
-lazy val root = (project in file("server/")).enablePlugins(PlayScala)
+lazy val root = (project in file("server/")).enablePlugins(PlayScala).enablePlugins(SbtWeb)
+
+pipelineStages := Seq(gzip)
 
 includeFilter in (Assets, LessKeys.less) := "*.less"
 

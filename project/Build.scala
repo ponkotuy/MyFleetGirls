@@ -5,10 +5,12 @@ import sbtassembly.Plugin._
 import AssemblyKeys._
 import sbtbuildinfo.Plugin._
 import play._
+import com.typesafe.sbt.web.SbtWeb
 
 object MyFleetGirlsBuild extends Build {
 
   val ver = "1.3.3"
+
   val scalaVer = "2.11.6"
 
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
@@ -25,6 +27,7 @@ object MyFleetGirlsBuild extends Build {
     .enablePlugins(PlayScala).settings(
       scalaVersion := scalaVer
     )
+    .enablePlugins(SbtWeb)
 
   lazy val client = Project(id = "client", base = file("client"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
