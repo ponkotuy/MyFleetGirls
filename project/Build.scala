@@ -8,7 +8,7 @@ import play._
 
 object MyFleetGirlsBuild extends Build {
 
-  val ver = "1.3.2"
+  val ver = "1.3.3"
   val scalaVer = "2.11.6"
 
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
