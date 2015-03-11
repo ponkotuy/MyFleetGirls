@@ -1,10 +1,10 @@
 package com.ponkotuy.run
 
+import com.ponkotuy.build.BuildInfo
+import com.ponkotuy.config.ClientConfig
+import com.ponkotuy.http.MFGHttp
 import com.ponkotuy.intercept.KCIntercepter
 import com.ponkotuy.proxy.FinagleProxy
-import com.ponkotuy.config.ClientConfig
-import com.ponkotuy.build.BuildInfo
-import scala.io.{Codec, Source}
 
 /**
  *
@@ -29,7 +29,9 @@ object Main extends App {
     println()
     try {
       val url = s"${ClientConfig.post}/assets/message"
-      Source.fromURL(url)(Codec.UTF8).getLines().foreach(println)
+      MFGHttp.getOrig(url).foreach { str =>
+        str.lines.foreach(println)
+      }
     } catch {
       case e: Throwable =>
     }
