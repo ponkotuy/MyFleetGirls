@@ -20,7 +20,7 @@ public class MFGKeyStore {
         TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
         tmf.init(trustStore);
 
-        sslContext= SSLContext.getInstance("SSL");
+        sslContext= SSLContext.getInstance("TLSv1");
         sslContext.init(null,tmf.getTrustManagers(),null);
     }
 
