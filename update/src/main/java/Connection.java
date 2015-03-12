@@ -1,4 +1,3 @@
-import javax.net.ssl.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,13 +7,11 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Pack200;
 import java.util.zip.GZIPInputStream;
 
-import static java.net.HttpURLConnection.*;
+import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.nio.file.StandardOpenOption.*;
 
@@ -29,12 +26,6 @@ public class Connection {
         conn.setRequestProperty("User-Agent", "MyFleetGirls Updater");
         conn.setUseCaches(false);
         conn.setIfModifiedSince(lastModified);
-        if(url.getProtocol().equals("https")) {
-            HttpsURLConnection https = (HttpsURLConnection) conn;
-            // TODO: オレオレ証明書設定。本番で外しても動くことを確認したらすみやかに削除
-            https.setSSLSocketFactory(getSSLSocketFactory());
-            https.setHostnameVerifier(new MyVerifier());
-        }
         HttpURLConnection http = (HttpURLConnection) conn;
         int code = http.getResponseCode();
         if(code == HTTP_NOT_MODIFIED) {
@@ -81,17 +72,5 @@ public class Connection {
             Pack200.Unpacker unpacker = Pack200.newUnpacker();
             unpacker.unpack(new GZIPInputStream(is), jar);
         }
-    }
-
-    private static SSLSocketFactory getSSLSocketFactory() throws SSLException {
-        SSLContext sc;
-        try {
-            sc = SSLContext.getInstance("SSL");
-            TrustManager[] tms = {new MyTrustManager()};
-            sc.init(null, tms, null);
-        } catch(NoSuchAlgorithmException | KeyManagementException e) {
-            throw new SSLException(e);
-        }
-        return sc.getSocketFactory();
     }
 }
