@@ -3,7 +3,7 @@
 # MyFleetGirls のデータ送信先サーバーアドレスです。
 # 通常変更する必要はありません
 url {
-    post: "https://myfleet.moe"
+    post: "http://myfleet.moe"
 }
 
 # MyFleetGirls アプリケーションはこのポート番号で proxy として待ち受けます。
