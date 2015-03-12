@@ -129,7 +129,7 @@ object MFGHttp extends Log {
   }
 
   def allRead(is: InputStream): String = {
-    val reader = new InputStreamReader(is)
+    val reader = new InputStreamReader(is, "UTF-8")
     val builder = mutable.StringBuilder.newBuilder
     val buf = new Array[Char](1024)
     var num = reader.read(buf)
