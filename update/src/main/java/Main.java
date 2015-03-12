@@ -8,6 +8,7 @@ import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.security.GeneralSecurityException;
 
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 
@@ -38,6 +39,9 @@ public class Main {
             System.err.println("おやっ、URLの書式に異常です！ぽんこつさんが悪いです！");
             System.exit(1);
         } catch(IOException e) {
+            System.err.println("おやっ、SecurityException です！");
+            System.exit(1);
+        } catch(GeneralSecurityException e) {
             System.err.println("おやっ、IOExceptionです！");
             e.printStackTrace(System.err);
             System.exit(1);
