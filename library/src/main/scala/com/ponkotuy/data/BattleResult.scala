@@ -21,6 +21,8 @@ case class BattleResult(
       ("ドロップ艦娘", getShip.map(_.name).getOrElse("なし"))
     )
   )
+
+  def win: Boolean = winRank == "S" || winRank == "A" || winRank == "B"
 }
 
 object BattleResult {

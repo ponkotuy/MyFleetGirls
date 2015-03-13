@@ -116,6 +116,7 @@ class DependentPost {
       val next = data.MapStart.fromJson(obj)
       mapNext = Some(next)
       startFleet = req("api_deck_id").toInt
+      MFGHttp.post("/map_start", write(mapNext))
       println(next.summary)
     }
   }
