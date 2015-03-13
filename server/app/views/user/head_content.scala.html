@@ -13,21 +13,17 @@
 <input type="text" id="userid" value=@user.admiral.id hidden="hidden" />
 <div class="jumbotron">
   <div class="container">
+    <p>
+      @{for {
+        base <- user.setting.base
+        server <- KCServer.fromNumber(base)
+      } yield { <span class="label label-default">{server.name}</span> }}
+      @if(user.isGradeA) { <span class="label label-danger">甲勲章</span> }
+    </p>
     <h1>@{user.admiral.nickname}@rank(user.basic.rank)<small>Lv@{user.basic.lv}</small></h1>
     @tweet()
     <p>
-    @{
-      for {
-        base <- user.setting.base
-        server <-KCServer.fromNumber(base)
-      } yield {
-          s"${server.name}所属、"
-      }
-    }
     @user.map
-    @if(user.isGradeA) {
-      、甲勲章所持
-    }
     </p>
   </div>
 </div>
