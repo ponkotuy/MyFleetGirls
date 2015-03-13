@@ -1,7 +1,7 @@
 
 import akka.actor.Props
 import com.github.nscala_time.time.StaticDateTimeZone
-import models.db.{Admiral, Material, Quest}
+import models.db.{AGOProgress, Admiral, Material, Quest}
 import org.joda.time.{DateTimeConstants, LocalDate}
 import play.api._
 import play.api.mvc._
@@ -38,6 +38,8 @@ object Global extends WithFilters(Cors) with GlobalSettings{
   private def deleteWeeklyQuest(): Unit = {
     Logger.info("Delete Weekly Quest")
     Quest.deleteAllBy(sqls"typ = 3")
+    Logger.info("Delete AGOProgress")
+    AGOProgress.deleteAll()
   }
 
   private def deleteMonthlyQuest(): Unit = {

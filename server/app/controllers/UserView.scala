@@ -1,6 +1,7 @@
 package controllers
 
 import com.github.nscala_time.time.Imports._
+import models.db.AGOProgress
 import org.json4s.native.Serialization.write
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits._
@@ -198,7 +199,8 @@ object UserView extends Controller {
   }
 
   def quest(memberId: Long) = userView(memberId) { user =>
-    Ok(views.html.user.quest(user))
+    val ago = AGOProgress.find(memberId)
+    Ok(views.html.user.quest(user, ago))
   }
 
   def statistics(memberId: Long) = userView(memberId) { user =>
