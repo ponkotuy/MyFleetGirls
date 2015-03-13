@@ -1,16 +1,23 @@
-@import models.join.User
-
-@(user: User)
-@import views.Js
+@(user: User, ago: Option[AGOProgress])
 
 @main {
-  <title>任務（クエスト） -@{user.admiral.nickname}提督-</title>
+  <title>任務 -@{user.admiral.nickname}提督-</title>
   <script src="@Js.Vue"></script>
   <script src="@Js.Coffee("quest")"></script>
 } {
   @head_content(user) {
     @usertab(user,"quest") {
       <div id="quest">
+        @ago.map { a =>
+          <div id="a_go" class="alert @if(a.isClear){alert-success}else{alert-info}" role="alert">
+            <strong>あ号カウンター</strong>
+            出撃: @a.sortie/@AGOClear.sortie,
+            ランクS: @a.rankS/@AGOClear.rankS,
+            ボス到達: @a.reachBoss/@AGOClear.reachBoss,
+            ボス撃破: @a.winBoss/@AGOClear.winBoss
+          </div>
+        }
+
         <div id="daily_quest" v-if="daily_quests.length > 0">
           <h3>Daily</h3>
           <table class="table table-hover table-condensed">

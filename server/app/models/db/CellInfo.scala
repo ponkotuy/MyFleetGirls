@@ -42,6 +42,9 @@ object CellInfo extends SQLSyntaxSupport[CellInfo] {
   def find(areaId: Int, infoNo: Int, cell: Int): Option[CellInfo] =
     all.find(c => c.areaId == areaId && c.infoNo == infoNo && c.cell == cell)
 
+  def findOrDefault(areaId: Int, infoNo: Int, cell: Int): CellInfo =
+    find(areaId, infoNo, cell).getOrElse(noAlphabet(areaId, infoNo, cell))
+
   /** from Heap */
   def findAll(): List[CellInfo] = all
 
@@ -113,5 +116,7 @@ object CellInfo extends SQLSyntaxSupport[CellInfo] {
       delete.from(CellInfo).where.eq(column.areaId, entity.areaId).and.eq(column.cell, entity.cell).and.eq(column.infoNo, entity.infoNo)
     }.update().apply()
   }
+
+  def noAlphabet(area: Int, info: Int, cell: Int): CellInfo = CellInfo(area, info, cell, "", false, false)
 
 }

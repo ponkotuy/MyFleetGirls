@@ -132,13 +132,13 @@ object Post extends Controller {
   }
 
   def battleResult = authAndParse[(BattleResult, MapStart)] { case (auth, (result, map)) =>
-    db.AGOProgress.maybeUpdate(auth.id, result, map)
+    db.AGOProgress.incWithBattle(auth.id, result, map)
     db.BattleResult.create(result, map, auth.id)
     Ok("Success")
   }
 
   def mapStart = authAndParse[MapStart] { case (auth, mapStart) =>
-    db.AGOProgress.maybeUpdate(auth.id, mapStart)
+    db.AGOProgress.incSortie(auth.id)
     Ok("Success")
   }
 

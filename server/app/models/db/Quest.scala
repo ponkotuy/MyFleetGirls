@@ -5,7 +5,7 @@ import com.ponkotuy.data
 import util.scalikejdbc.BulkInsert._
 
 /**
- * 所謂任務なんだけど、View側はmissionにしちゃった（てへぺろ
+ * 任務
  *
  * @param category: 1編成 2出撃 3演習 4遠征 5補給/入渠 6工廠 7改装
  * @param typ: 1Once 2Daily 3Weekly 4, 5限定Daily 6Monthly
