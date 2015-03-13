@@ -39,10 +39,11 @@ public class Main {
             System.err.println("おやっ、URLの書式に異常です！ぽんこつさんが悪いです！");
             System.exit(1);
         } catch(IOException e) {
-            System.err.println("おやっ、SecurityException です！");
+            System.err.println("おやっ、IOExceptionです！");
+            e.printStackTrace(System.err);
             System.exit(1);
         } catch(GeneralSecurityException e) {
-            System.err.println("おやっ、IOExceptionです！");
+            System.err.println("おやっ、SecurityException です！");
             e.printStackTrace(System.err);
             System.exit(1);
         }
