@@ -10,6 +10,7 @@ import java.nio.file.attribute.FileTime;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Pack200;
 import java.util.zip.GZIPInputStream;
+import java.security.GeneralSecurityException;
 
 import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -20,13 +21,17 @@ import static java.nio.file.StandardOpenOption.*;
  * @since 15/03/11.
  */
 public class Connection {
-    public static URLConnection withRedirect(URL url, long lastModified) throws IOException {
+    public static URLConnection withRedirect(URL url, long lastModified) throws IOException,GeneralSecurityException {
         URLConnection conn = url.openConnection();
         conn.setRequestProperty("Accept-Encoding", "pack200-gzip, gzip");
         conn.setRequestProperty("User-Agent", "MyFleetGirls Updater");
         conn.setUseCaches(false);
         conn.setIfModifiedSince(lastModified);
         HttpURLConnection http = (HttpURLConnection) conn;
+        MFGKeyStore keyStore = new MFGKeyStore(); 
+        keyStore.setSSLSocketFactory(http);
+
+        http.connect();
         int code = http.getResponseCode();
         if(code == HTTP_NOT_MODIFIED) {
             return null;
@@ -41,8 +46,6 @@ public class Connection {
     }
 
     public static void download(URLConnection conn, Path dst) throws IOException {
-        conn.connect();
-
         String content = conn.getHeaderField("Content-Encoding");
         try(InputStream is = conn.getInputStream()) {
             if(content == null) {
