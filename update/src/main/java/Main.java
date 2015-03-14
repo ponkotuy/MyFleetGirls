@@ -27,7 +27,7 @@ public class Main {
                 if(!Files.exists(dst)) {
                     System.out.println(dst.getFileName() + "は存在しません。ダウンロードします。");
                 }
-                URLConnection conn = Connection.withRedirect(url, getFileSize(dst));
+                URLConnection conn = Connection.withRedirect(url, getLastModified(dst));
                 if(conn == null) {
                     System.out.println(dst.getFileName() + "に変更はありません");
                 } else {
@@ -64,7 +64,7 @@ public class Main {
         return result;
     }
 
-    private static long getFileSize(Path dst) {
+    private static long getLastModified(Path dst) {
         FileTime fTime;
         try {
             fTime = Files.getLastModifiedTime(dst, NOFOLLOW_LINKS);

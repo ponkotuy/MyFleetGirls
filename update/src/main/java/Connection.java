@@ -28,7 +28,7 @@ public class Connection {
         conn.setUseCaches(false);
         conn.setIfModifiedSince(lastModified);
         HttpURLConnection http = (HttpURLConnection) conn;
-        MFGKeyStore keyStore = new MFGKeyStore(); 
+        MFGKeyStore keyStore = new MFGKeyStore();
         keyStore.setSSLSocketFactory(http);
 
         http.connect();
