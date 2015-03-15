@@ -2,6 +2,7 @@ package com.ponkotuy.http
 
 import java.io._
 import java.nio.charset.Charset
+import javax.net.ssl.SSLContext
 
 import com.ponkotuy.config.ClientConfig
 import com.ponkotuy.data.{Auth, MyFleetAuth}
@@ -29,12 +30,14 @@ import scala.collection.mutable
  */
 object MFGHttp extends Log {
   val UTF8 = Charset.forName("UTF-8")
+  val sslContext: SSLContext = new MFGKeyStore().getSslContext
   val config = RequestConfig.custom()
       .setConnectTimeout(60*1000)
       .setRedirectsEnabled(true)
       .build()
   val httpBuilder = HttpClientBuilder.create()
       .setDefaultRequestConfig(config)
+      .setSslcontext(sslContext)
 
   implicit val formats = Serialization.formats(NoTypeHints)
 

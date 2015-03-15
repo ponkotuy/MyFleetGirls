@@ -30,6 +30,7 @@ newrelic/
 
 # Settings
 application.conf
+myfleetgirls.keystore
 server/conf/application.conf
 project/scalikejdbc.properties
 
