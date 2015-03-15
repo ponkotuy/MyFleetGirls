@@ -33,22 +33,25 @@ object AGOProgress extends SQLSyntaxSupport[AGOProgress] {
     select.from(AGOProgress as ap).where.eq(ap.memberId, memberId)
   }.map(AGOProgress(ap)).single().apply()
 
-  private def agoAccept(memberId: Long)(f: AGOProgress => Unit): Unit = {
-    val acceptedAGO = Quest.find(AgoQuest, memberId).exists(2 <= _.state)
-    if(acceptedAGO) f(find(memberId).getOrElse(new AGOProgress(memberId, 0, 0, 0, 0)))
+  private def agoState(memberId: Long): Int = Quest.find(AgoQuest, memberId).map(_.state).getOrElse(0)
+
+  def incSortie(memberId: Long)(implicit session: DBSession = autoSession): Unit = {
+    if(agoState(memberId) >= 2) {
+      val ago = find(memberId).getOrElse(start(memberId))
+      ago.copy(sortie = ago.sortie + 1).save()
+    }
   }
 
-  def incSortie(memberId: Long)(implicit session: DBSession = autoSession): Unit = agoAccept(memberId) { p =>
-    p.copy(sortie = p.sortie + 1).save()
-  }
-
-  def incWithBattle(memberId: Long, battleResult: data.BattleResult, mapStart: data.MapStart)(implicit session: DBSession = autoSession): Unit = agoAccept(memberId) { p =>
-    val cellInfo = CellInfo.find(mapStart.mapAreaId, mapStart.mapInfoNo, mapStart.no)
-    val boss = cellInfo.exists(_.boss)
-    val reachBoss = p.reachBoss + cond(boss)
-    val winBoss = p.winBoss + cond(boss && battleResult.win)
-    val rankS = p.rankS + cond(battleResult.winRank == "S")
-    new AGOProgress(memberId, p.sortie, rankS, reachBoss, winBoss).save()
+  def incWithBattle(memberId: Long, battleResult: data.BattleResult, mapStart: data.MapStart)(implicit session: DBSession = autoSession): Unit = {
+    if(agoState(memberId) >= 2) {
+      val ago = find(memberId).getOrElse(start(memberId))
+      val cellInfo = CellInfo.find(mapStart.mapAreaId, mapStart.mapInfoNo, mapStart.no)
+      val boss = cellInfo.exists(_.boss)
+      val reachBoss = ago.reachBoss + cond(boss)
+      val winBoss = ago.winBoss + cond(boss && battleResult.win)
+      val rankS = ago.rankS + cond(battleResult.winRank == "S")
+      new AGOProgress(memberId, ago.sortie, rankS, reachBoss, winBoss).save()
+    }
   }
 
   private def cond(b: Boolean): Int = if(b) 1 else 0
@@ -61,6 +64,8 @@ object AGOProgress extends SQLSyntaxSupport[AGOProgress] {
   def deleteAll()(implicit session: DBSession = autoSession) = withSQL {
     delete.from(AGOProgress)
   }.update().apply()
+
+  def start(memberId: Long) = AGOProgress(memberId, 0, 0, 0, 0)
 }
 
 object AGOClear {

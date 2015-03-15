@@ -18,7 +18,6 @@ public class MFGKeyStore {
             InputStream io = new FileInputStream(TrustStoreFile);
             trustStore.load(io, TrustStorePass.toCharArray());
         } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
             try {
                 ClassLoader cl = getClass().getClassLoader();
                 File file = new File(cl.getResource(TrustStoreFile).getFile());
