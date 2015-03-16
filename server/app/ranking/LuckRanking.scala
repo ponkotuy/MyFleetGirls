@@ -22,7 +22,12 @@ case object LuckRanking extends Ranking {
       ship <- Ship.findAllWithSpec(sqls"s.lucky > (mss.lucky_min + 6) and s.created > ${oldest}").sortBy(-_.upLucky).take(limit)
       admiral <- Admiral.find(ship.memberId)
     } yield {
-      RankingElement(admiral.nickname, <span>+{ship.upLucky} <small>{ship.name}{ship.spec.luckyMin}→{ship.lucky}</small></span>, routes.UserView.user(admiral.id).url)
+      RankingElement(
+        admiral.nickname,
+        <span>+{ship.upLucky} <small>{ship.name}{ship.spec.luckyMin}→{ship.lucky}</small></span>,
+        routes.UserView.user(admiral.id).url,
+        ship.upLucky
+      )
     }
   }
 }

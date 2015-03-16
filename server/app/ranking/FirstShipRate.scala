@@ -27,7 +27,7 @@ case object FirstShipRate extends Ranking {
     counts.toList.sortBy(-_._2).map { case (sid, count) =>
       val master = masters(sid)
       val url = routes.ViewSta.shipBook(sid).toString()
-      RankingElement(master.name, <span><strong>{f"$count%,d"}</strong>{s" / $sum"}</span>, url)
+      RankingElement(master.name, <span><strong>{f"$count%,d"}</strong>{s" / $sum"}</span>, url, count)
     }.toList
   }
 

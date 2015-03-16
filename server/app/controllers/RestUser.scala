@@ -134,4 +134,12 @@ object RestUser extends Controller {
   def bookShips(memberId: Long) = returnJson {
     db.ShipBook.findAllBy(sqls"sb.member_id = ${memberId} and sb.index_no < 100000")
   }
+
+  def honors(memberId: Long, set: Boolean) = returnJson {
+    val where = sqls.toAndConditionOpt(
+      Some(sqls.eq(db.Honor.column.memberId, memberId)),
+      if(set) Some(sqls.eq(db.Honor.column.set, true)) else None
+    ).getOrElse(sqls"true")
+    db.Honor.findAllBy(where)
+  }
 }

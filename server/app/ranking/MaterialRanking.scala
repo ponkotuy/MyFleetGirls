@@ -26,7 +26,7 @@ case object MaterialRanking extends Ranking {
   override def rankingQuery(limit: Int): List[RankingElement] = {
     findAllOrderByMaterial(limit, agoMillis(7.days)).map { case (admiral, count) =>
       val url = routes.UserView.material(admiral.id).toString()
-      RankingElement(admiral.nickname, <span>{f"$count%,d"}</span>, url)
+      RankingElement(admiral.nickname, <span>{f"$count%,d"}</span>, url, count)
     }
   }
 

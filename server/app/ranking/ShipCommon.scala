@@ -22,7 +22,7 @@ object ShipCommon {
     val withMasters = result.flatMap { case (id, count) => masters.get(id).map(_ -> count) }
     withMasters.map { case (master, count) =>
       val url = routes.ViewSta.shipBook(master.id).toString()
-      RankingElement(master.name, <span>{f"$count%,d"}</span>, url)
+      RankingElement(master.name, <span>{f"$count%,d"}</span>, url, count)
     }
   }
 

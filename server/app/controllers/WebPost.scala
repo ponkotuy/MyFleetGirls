@@ -122,4 +122,17 @@ object WebPost extends Controller {
       }
     }.getOrElse { BadRequest("Invalid data") }
   }
+
+  def setHonor() = formAsync { implicit req =>
+    def set(setHonor: SetHonor) = {
+      if(uuidCheck(setHonor.memberId, req.session.get("key"))) {
+        db.Honor.updateUnset(setHonor.memberId)
+        db.Honor.find(setHonor.memberId, setHonor.name)
+        Ok("Success")
+      } else {
+        Unauthorized("Authorication failure")
+      }
+    }
+    SetHonor.form.bindFromRequest().fold(form => BadRequest(form.errorsAsJson), set)
+  }
 }
