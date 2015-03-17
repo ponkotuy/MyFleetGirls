@@ -136,6 +136,13 @@ object Ship extends SQLSyntaxSupport[Ship] {
     }.toList().apply()
   }
 
+  // Slotは常にNil
+  def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[Ship] = {
+    withSQL {
+      select.from(Ship as s).where(where)
+    }.map(Ship(s, Nil)).list().apply()
+  }
+
   def findAllByUser(memberId: Long)(implicit session: DBSession = Ship.autoSession): List[Ship] = {
     val slots = ShipSlotItem.findAllBy(sqls"member_id = ${memberId}")
     withSQL {

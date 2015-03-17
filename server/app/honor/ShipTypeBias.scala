@@ -14,6 +14,14 @@ object ShipTypeBias extends HonorCategory {
   override def approved(memberId: Long): List[String] = {
     val ships = Ship.findAllByUserWithName(memberId)
     val result = STypeExp.fromShips(ships).maxBy(_.exp)
-    s"${result.name}提督" :: (if(result.name == "駆逐艦") "ロリコン提督" :: Nil else Nil)
+    s"${result.name}提督" :: OriginalHonors.get(result.name).toList
   }
+
+  val OriginalHonors = Map(
+    "駆逐艦" -> "ロリコン提督",
+    "戦艦" -> "大艦巨砲主義",
+    "正規空母" -> "アウトレンジ戦法",
+    "重雷装巡洋艦" -> "超重雷撃",
+    "潜水艦" -> "オリョクル提督"
+  )
 }
