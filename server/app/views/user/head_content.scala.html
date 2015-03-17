@@ -19,7 +19,7 @@
         server <- KCServer.fromNumber(base)
       } yield { <span class="label label-default">{server.name}</span> }}
       @if(user.isGradeA) { <span class="label label-danger">甲勲章</span> }
-      <a @if(user.isMine){href="@routes.UserView.honor(user.admiral.id)"}>
+      <a href="@routes.UserView.honor(user.admiral.id)">
         <span class="label label-primary">
           @user.honor match {
             case Some(ho) => {@ho.name}

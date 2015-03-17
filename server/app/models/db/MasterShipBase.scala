@@ -25,6 +25,10 @@ object MasterShipBase extends SQLSyntaxSupport[MasterShipBase] {
   val mso = MasterShipOther.syntax("mso")
   val msb = MasterShipBase.syntax("msb") // 2つのMasterShipBaseを区別する必要がある時用
 
+  def find(id: Int)(implicit session: DBSession = autoSession): Option[MasterShipBase] = withSQL {
+    select.from(MasterShipBase as ms).where.eq(ms.id, id)
+  }.map(MasterShipBase(ms)).single().apply()
+
   def findAllInOneBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[MasterShipAll] = withSQL {
     select.from(MasterShipBase as ms)
       .innerJoin(MasterShipSpecs as mss).on(ms.id, mss.id)

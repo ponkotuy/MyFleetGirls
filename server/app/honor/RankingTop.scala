@@ -19,10 +19,9 @@ object RankingTop extends HonorCategory {
     val admiralName = Admiral.find(memberId).map(_.nickname)
     val tops = rankings.filter { case (admiral, xs) =>
       val top = xs.head.num
-      xs.takeWhile(_.num == top).exists(admiralName.contains)
+      xs.takeWhile(_.num == top).exists(x => admiralName.contains(x.name))
     }.keys
-    tops.map(toHonor)(breakOut)
+    val ins = rankings.filter { case (_, xs) => xs.exists(x => admiralName.contains(x.name)) }.keys
+    (tops.map(top => s"${top.title}トップ") ++ ins.map(in => s"${in.title}ランクイン")).toList
   }
-
-  private def toHonor(ranking: Ranking): String = s"${ranking.title}1位"
 }

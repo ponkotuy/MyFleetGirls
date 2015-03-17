@@ -22,8 +22,16 @@ object ShipMaster extends HonorCategory {
     }
     val result = lvs.toVector.sortBy(-_._2).takeWhile(_._2 >= 200).map(_._1).take(5)
     val mss = MasterShipBase.findAllBy(sqls.in(MasterShipBase.column.id, result))
-    mss.map(toHonor)
+    mss.flatMap { ms => toHonor(ms) :: OriginalHonor.get(ms.id).toList }
   }
 
   private def toHonor(ms: MasterShipBase): String = s"${ms.name}提督"
+
+  val OriginalHonor = Map(
+    71 -> "我輩は利根提督である",
+    45 -> "夕立提督っぽい",
+    35 -> "ハラショー",
+    56 -> "アイドル提督",
+    51 -> "俺の名は天龍提督"
+  )
 }

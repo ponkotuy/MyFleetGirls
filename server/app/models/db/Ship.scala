@@ -178,6 +178,10 @@ object Ship extends SQLSyntaxSupport[Ship] {
       .groupBy(s.shipId)
   }.map { rs => rs.int(1) -> rs.long("cnt") }.toTraversable().apply().toMap
 
+  def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = withSQL {
+    select(sqls.count).from(Ship as s).where(where)
+  }.map(_.long(1)).single().apply().get
+
   def create(s: data.Ship, memberId: Long)(implicit session: DBSession = Ship.autoSession): Unit = {
     val created = System.currentTimeMillis()
     ShipSlotItem.bulkInsert(s.slot, memberId, s.id)

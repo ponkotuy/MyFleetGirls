@@ -16,11 +16,11 @@ object Yome extends HonorCategory {
   override def category: Int = 2
 
   override def approved(memberId: Long): List[String] = {
-    val yomes: Set[Int] = db.YomeShip.findAllBy(sqls.eq(db.YomeShip.column.memberId, memberId))
+    val yomes: Set[Int] = db.YomeShip.findAllByWithName(sqls.eq(db.YomeShip.ys.memberId, memberId))
         .map { s => EvolutionBase(s.shipId) }(breakOut)
     val married: Set[Int] = Ship.findAllByUser(memberId)
-      .filter(100 <= _.lv)
-      .map { s => EvolutionBase(s.shipId) }(breakOut)
+        .filter(100 <= _.lv)
+        .map { s => EvolutionBase(s.shipId) }(breakOut)
     val ids = yomes & married
     val result = MasterShipBase.findAllBy(sqls.in(MasterShipBase.column.id, ids.toSeq))
     result.map(toHonor)
