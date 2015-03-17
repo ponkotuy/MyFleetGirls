@@ -41,6 +41,7 @@
 /rest/v1/10007732/quest
 /rest/v1/10007732/snap/3
 /rest/v2/user/10007732/book/ships
+/rest/v2/user/10007732/honors
 /rest/v1/image/ship/188/5.jpg
 /rest/v1/sound/ship/188/1.mp3
 /rest/v1/sound/random
@@ -91,5 +92,6 @@
 /user/10007732/mission
 /user/10007732/quest
 /user/10007732/statistics
+/user/10007732/honor
 /assets/zip/MyFleetGirls.zip
 /assets/client/MyFleetGirls.jar
