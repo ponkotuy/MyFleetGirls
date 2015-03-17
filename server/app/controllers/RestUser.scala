@@ -1,5 +1,6 @@
 package controllers
 
+import honor.Honors
 import models.db
 import models.other.ShipWithCondition
 import models.req.{AllCrawlAPI, SortType}
@@ -133,5 +134,9 @@ object RestUser extends Controller {
 
   def bookShips(memberId: Long) = returnJson {
     db.ShipBook.findAllBy(sqls"sb.member_id = ${memberId} and sb.index_no < 100000")
+  }
+
+  def honors(memberId: Long, set: Boolean) = returnJson {
+    Honors.fromUser(memberId, set)
   }
 }

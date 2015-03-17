@@ -21,7 +21,7 @@ case object MarriedRanking extends Ranking {
   override def rankingQuery(limit: Int): List[RankingElement] = {
     findAllOrderByMarriedCount(limit, agoMillis(7.days)).map { case (admiral, count) =>
       val url = routes.UserView.book(admiral.id).toString()
-      RankingElement(admiral.nickname, <span>{count}</span>, url)
+      RankingElement(admiral.nickname, <span>{count}</span>, url, count)
     }
   }
 

@@ -29,7 +29,7 @@ case object FirstShipRanking extends Ranking {
   override def rankingQuery(limit: Int): List[RankingElement] = {
     findAllByOrderByExp(sqls"s.id = 1", limit, agoMillis(7.days)).map { case (admiral, ship) =>
       val url = routes.UserView.top(admiral.id).toString()
-      RankingElement(admiral.nickname, toElem(ship), url)
+      RankingElement(admiral.nickname, toElem(ship), url, ship.exp)
     }
   }
 
@@ -48,5 +48,4 @@ case object FirstShipRanking extends Ranking {
       Admiral(a)(rs) -> ShipWithName(Ship(s, Nil)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs))
     }.list().apply()
   }
-
 }
