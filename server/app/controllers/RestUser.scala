@@ -1,5 +1,6 @@
 package controllers
 
+import honor.Honors
 import models.db
 import models.other.ShipWithCondition
 import models.req.{AllCrawlAPI, SortType}
@@ -136,10 +137,6 @@ object RestUser extends Controller {
   }
 
   def honors(memberId: Long, set: Boolean) = returnJson {
-    val where = sqls.toAndConditionOpt(
-      Some(sqls.eq(db.Honor.column.memberId, memberId)),
-      if(set) Some(sqls.eq(db.Honor.column.set, true)) else None
-    ).getOrElse(sqls"true")
-    db.Honor.findAllBy(where)
+    Honors.fromUser(memberId, set)
   }
 }

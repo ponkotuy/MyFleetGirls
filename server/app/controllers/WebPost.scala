@@ -127,7 +127,7 @@ object WebPost extends Controller {
     def set(setHonor: SetHonor) = {
       if(uuidCheck(setHonor.memberId, req.session.get("key"))) {
         db.Honor.updateUnset(setHonor.memberId)
-        db.Honor.find(setHonor.memberId, setHonor.name)
+        db.Honor.findName(setHonor.memberId, setHonor.name)
         Ok("Success")
       } else {
         Unauthorized("Authorication failure")

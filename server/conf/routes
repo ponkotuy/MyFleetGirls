@@ -3,163 +3,164 @@
 # ~~~~
 
 # Post
-POST    /post/v1/basic              controllers.Post.basic
-POST    /post/v1/admiral_settings   controllers.Post.admiralSettings
-POST    /post/v1/material           controllers.Post.material
-POST    /post/v1/ship               controllers.Post.ship
-POST    /post/v2/ship               controllers.Post.ship2
-POST    /post/v1/update_ship        controllers.Post.updateShip
-POST    /post/v1/ndock              controllers.Post.ndock
-POST    /post/v1/createship         controllers.Post.createShip
-POST    /post/v2/createship         controllers.Post.createShip2
-POST    /post/v1/createitem         controllers.Post.createItem
-POST    /post/v1/kdock              controllers.Post.kdock
-POST    /post/v1/delete_kdock       controllers.Post.deleteKDock
-POST    /post/v1/deckport           controllers.Post.deckPort
-POST    /post/v1/book/ship          controllers.Post.shipBook
-POST    /post/v1/book/item          controllers.Post.itemBook
-POST    /post/v1/mapinfo            controllers.Post.mapInfo
-POST    /post/v1/slotitem           controllers.Post.slotItem
-POST    /post/v1/battle_result      controllers.Post.battleResult
-POST    /post/v1/map_start          controllers.Post.mapStart
-POST    /post/v1/map_route          controllers.Post.mapRoute
-POST    /post/v1/questlist          controllers.Post.questlist
-POST    /post/v1/remodel_slot       controllers.Post.remodelSlot
-POST    /post/v1/remodel            controllers.Post.remodel
-POST    /post/v1/master_remodel     controllers.Post.masterRemodel
-POST    /passwd/post/v1/register_snap controllers.WebPost.registerSnap
-POST    /passwd/post/v1/delete_snap controllers.WebPost.deleteSnap
-POST    /passwd/post/v1/update_snap controllers.WebPost.updateSnap
-POST    /passwd/post/v1/settings    controllers.WebPost.settings
-DELETE  /passwd/post/v1/yome        controllers.WebPost.deleteYome
-POST    /passwd/post/v1/set_session controllers.WebPost.setSession
-POST    /passwd/post/v1/set_honor   controllers.WebPost.setHonor
-POST    /post/v1/master/ship        controllers.PostMaster.ship
-POST    /post/v1/master/mission     controllers.PostMaster.mission
-POST    /post/v1/master/slotitem    controllers.PostMaster.slotitem
-POST    /post/v1/master/stype       controllers.PostMaster.stype
-POST    /post/v1/swf/ship/:shipId   controllers.PostFile.ship(shipId: String)
-POST    /post/v1/mp3/kc/:shipKey/:soundId controllers.PostFile.sound(shipKey: String, soundId: Int)
+POST          /post/v1/basic                                                controllers.Post.basic
+POST          /post/v1/admiral_settings                                     controllers.Post.admiralSettings
+POST          /post/v1/material                                             controllers.Post.material
+POST          /post/v1/ship                                                 controllers.Post.ship
+POST          /post/v2/ship                                                 controllers.Post.ship2
+POST          /post/v1/update_ship                                          controllers.Post.updateShip
+POST          /post/v1/ndock                                                controllers.Post.ndock
+POST          /post/v1/createship                                           controllers.Post.createShip
+POST          /post/v2/createship                                           controllers.Post.createShip2
+POST          /post/v1/createitem                                           controllers.Post.createItem
+POST          /post/v1/kdock                                                controllers.Post.kdock
+POST          /post/v1/delete_kdock                                         controllers.Post.deleteKDock
+POST          /post/v1/deckport                                             controllers.Post.deckPort
+POST          /post/v1/book/ship                                            controllers.Post.shipBook
+POST          /post/v1/book/item                                            controllers.Post.itemBook
+POST          /post/v1/mapinfo                                              controllers.Post.mapInfo
+POST          /post/v1/slotitem                                             controllers.Post.slotItem
+POST          /post/v1/battle_result                                        controllers.Post.battleResult
+POST          /post/v1/map_start                                            controllers.Post.mapStart
+POST          /post/v1/map_route                                            controllers.Post.mapRoute
+POST          /post/v1/questlist                                            controllers.Post.questlist
+POST          /post/v1/remodel_slot                                         controllers.Post.remodelSlot
+POST          /post/v1/remodel                                              controllers.Post.remodel
+POST          /post/v1/master_remodel                                       controllers.Post.masterRemodel
+POST          /passwd/post/v1/register_snap                                 controllers.WebPost.registerSnap
+POST          /passwd/post/v1/delete_snap                                   controllers.WebPost.deleteSnap
+POST          /passwd/post/v1/update_snap                                   controllers.WebPost.updateSnap
+POST          /passwd/post/v1/settings                                      controllers.WebPost.settings
+DELETE        /passwd/post/v1/yome                                          controllers.WebPost.deleteYome
+POST          /passwd/post/v1/set_session                                   controllers.WebPost.setSession
+POST          /passwd/post/v1/set_honor                                     controllers.WebPost.setHonor
+POST          /post/v1/master/ship                                          controllers.PostMaster.ship
+POST          /post/v1/master/mission                                       controllers.PostMaster.mission
+POST          /post/v1/master/slotitem                                      controllers.PostMaster.slotitem
+POST          /post/v1/master/stype                                         controllers.PostMaster.stype
+POST          /post/v1/swf/ship/:shipId                                     controllers.PostFile.ship(shipId: String)
+POST          /post/v1/mp3/kc/:shipKey/:soundId                             controllers.PostFile.sound(shipKey: String, soundId: Int)
 
 # Rest
 # v1はdeprecatedで、新規実装は全てv2にすること
-GET     /rest/v1/search_user        controllers.Rest.searchUser(q: String)
-GET     /rest/v1/search_base_user   controllers.Rest.searchBaseUser(base: Int, q: String ?= "")
-GET     /rest/v1/search_master      controllers.Rest.searchMaster(q: String)
-GET     /rest/v1/search_master_ship controllers.Rest.searchMasterShip(q: String)
-GET     /rest/v2/master/ship/count  controllers.Rest.masterShipCount()
-GET     /rest/v2/master/ship/hash   controllers.Rest.masterShipHash()
-GET     /rest/v1/recipe/from_ship/:shipId controllers.Rest.recipeFromShip(shipId: Int, from: String ?= "", to: String ?= "")
-GET     /rest/v1/recipe/from_item/:itemId controllers.Rest.recipeFromItem(itemId: Int, from: String ?= "", to: String ?= "")
-GET     /rest/v1/drop/:rank/:area/:info/:cell controllers.Rest.dropCell(area: Int, info: Int, cell: Int, rank: String, from: String ?= "", to: String ?= "")
-GET     /rest/v1/drop_alpha/:rank/:area/:info/:alpha controllers.Rest.dropCellAlpha(area: Int, info: Int, alpha: String, rank: String, from: String ?= "", to: String ?= "")
-GET     /rest/v1/route/:area/:info  controllers.Rest.route(area: Int, info: Int, from: String ?= "", to ?= "")
-GET     /rest/v1/cell_info          controllers.Rest.cellInfo(area: Int ?= -1, info: Int ?= -1)
-GET     /rest/v1/maps               controllers.Rest.maps()
-GET     /rest/v1/drop_from_ship/:shipId controllers.Rest.dropFromShip(shipId: Int, from: String ?= "", to: String ?= "")
-GET     /rest/v1/activities         controllers.Rest.activities(from: Long ?= 0L, limit: Int ?= 20, offset: Int ?= 0)
-GET     /rest/v1/remodel/log/summary/:slotId controllers.Rest.remodelLogSummary(slotId: Int)
-GET     /rest/v1/remodel/master/:slotId controllers.Rest.masterRemodel(slotId: Int)
-GET     /rest/v1/book/ships         controllers.Rest.bookShips(q: String ?= "")
-GET     /rest/v2/master/mission/hash controllers.Rest.missionHash
-GET     /rest/v2/master/slotitem/hash controllers.Rest.slotitemHash
-GET     /rest/v2/master/stype/hash  controllers.Rest.stypeHash
-GET     /rest/v1/:userId/materials  controllers.RestUser.materials(userId: Long)
-GET     /rest/v1/:userId/basics     controllers.RestUser.basics(userId: Long)
-GET     /rest/v1/:userId/ndocks     controllers.RestUser.ndocks(userId: Long)
-GET     /rest/v1/:userId/kdocks     controllers.RestUser.kdocks(userId: Long)
-GET     /rest/v1/:userId/missions   controllers.RestUser.missions(userId: Long)
-GET     /rest/v1/:userId/conds      controllers.RestUser.conds(userId: Long)
-GET     /rest/v1/:userId/create_ships controllers.RestUser.createShips(userId: Long, limit: Int ?= 10, offset: Int ?= 0, large: Boolean ?= false)
-GET     /rest/v1/:userId/create_ship_count controllers.RestUser.createShipCount(userId: Long, large: Boolean ?= false)
-GET     /rest/v1/:userId/create_items controllers.RestUser.createItems(userId: Long, limit: Int ?= 10, offset: Int ?= 0)
-GET     /rest/v1/:userId/create_item_count controllers.RestUser.createItemCount(userId: Long)
-GET     /rest/v2/user/:userId/remodels/list controllers.RestUser.remodels(userId: Long, limit: Int ?= 10, offset: Int ?= 0)
-GET     /rest/v2/user/:userId/remodels/count controllers.RestUser.remodelCount(userId: Long)
-GET     /rest/v1/:userId/battle_result controllers.RestUser.battleResult(userId: Long, limit: Int ?= 10, offset: Int ?= 0, boss: Boolean ?= false, drop: Boolean ?= false, rank: String ?= "SABCDE", area: Option[Int], info: Option[Int])
-GET     /rest/v1/:userId/battle_result_count controllers.RestUser.battleResultCount(userId: Long, boss: Boolean ?= false, drop: Boolean ?= false, rank: String ?= "SABCDE", area: Option[Int], info: Option[Int])
-GET     /rest/v1/:userId/route_log  controllers.RestUser.routeLog(userId: Long, limit: Int ?= 10, offset: Int ?= 0, area: Int ?= -1, info: Int ?= -1)
-GET     /rest/v1/:userId/route_log_count controllers.RestUser.routeLogCount(userId: Long, area: Int ?= -1, info: Int ?= -1)
-GET     /rest/v2/user/:userId/mission controllers.RestUser.mission(userId: Long, limit: Int ?= 10, offset: Int ?= 0, missionId: Option[Int])
-GET     /rest/v2/user/:userId/mission_count controllers.RestUser.missionCount(userId: Long, missionId: Option[Int])
-GET     /rest/v1/:userId/quest      controllers.RestUser.quest(userId: Long)
-GET     /rest/v1/:userId/snap/:snapId controllers.RestUser.snap(userId: Long, snapId: Long)
-GET     /rest/v2/user/:userId/book/ships controllers.RestUser.bookShips(userId: Long)
-GET     /rest/v2/user/:userId/honors controllers.RestUser.honors(userId: Long, set: Boolean ?= false)
-GET     /rest/v1/image/ship/:shipId/:swfId.jpg controllers.RestImage.ship(shipId: Int, swfId: Int)
-GET     /rest/v1/sound/ship/:shipId/:soundId.mp3 controllers.RestSound.ship(shipId: Int, soundId: Int)
-HEAD    /rest/v1/image/ship/:shipId/:swfId.jpg controllers.RestImage.shipHead(shipId: Int, swfId: Int)
-HEAD    /rest/v1/image/ship_obf/:shipKey.jpg controllers.RestImage.shipKeyHead(shipKey: String)
-HEAD    /rest/v1/sound/ship/:shipId/:soundId.mp3 controllers.RestSound.shipHead(shipId: Int, soundId: Int)
-HEAD    /rest/v1/sound/ship_obf/:shipKey/:soundId.mp3 controllers.RestSound.shipKeyHead(shipKey: String, soundId: Int)
-GET     /rest/v1/sound/random       controllers.RestSound.random()
+GET           /rest/v1/search_user                                          controllers.Rest.searchUser(q: String)
+GET           /rest/v1/search_base_user                                     controllers.Rest.searchBaseUser(base: Int, q: String ?= "")
+GET           /rest/v1/search_master                                        controllers.Rest.searchMaster(q: String)
+GET           /rest/v1/search_master_ship                                   controllers.Rest.searchMasterShip(q: String)
+GET           /rest/v2/master/ship/count                                    controllers.Rest.masterShipCount()
+GET           /rest/v2/master/ship/hash                                     controllers.Rest.masterShipHash()
+GET           /rest/v1/recipe/from_ship/:shipId                             controllers.Rest.recipeFromShip(shipId: Int, from: String ?= "", to: String ?= "")
+GET           /rest/v1/recipe/from_item/:itemId                             controllers.Rest.recipeFromItem(itemId: Int, from: String ?= "", to: String ?= "")
+GET           /rest/v1/drop/:rank/:area/:info/:cell                         controllers.Rest.dropCell(area: Int, info: Int, cell: Int, rank: String, from: String ?= "", to: String ?= "")
+GET           /rest/v1/drop_alpha/:rank/:area/:info/:alpha                  controllers.Rest.dropCellAlpha(area: Int, info: Int, alpha: String, rank: String, from: String ?= "", to: String ?= "")
+GET           /rest/v1/route/:area/:info                                    controllers.Rest.route(area: Int, info: Int, from: String ?= "", to ?= "")
+GET           /rest/v1/cell_info                                            controllers.Rest.cellInfo(area: Int ?= -1, info: Int ?= -1)
+GET           /rest/v1/maps                                                 controllers.Rest.maps()
+GET           /rest/v1/drop_from_ship/:shipId                               controllers.Rest.dropFromShip(shipId: Int, from: String ?= "", to: String ?= "")
+GET           /rest/v1/activities                                           controllers.Rest.activities(from: Long ?= 0L, limit: Int ?= 20, offset: Int ?= 0)
+GET           /rest/v1/remodel/log/summary/:slotId                          controllers.Rest.remodelLogSummary(slotId: Int)
+GET           /rest/v1/remodel/master/:slotId                               controllers.Rest.masterRemodel(slotId: Int)
+GET           /rest/v1/book/ships                                           controllers.Rest.bookShips(q: String ?= "")
+GET           /rest/v2/master/mission/hash                                  controllers.Rest.missionHash
+GET           /rest/v2/master/slotitem/hash                                 controllers.Rest.slotitemHash
+GET           /rest/v2/master/stype/hash                                    controllers.Rest.stypeHash
+GET           /rest/v1/:userId/materials                                    controllers.RestUser.materials(userId: Long)
+GET           /rest/v1/:userId/basics                                       controllers.RestUser.basics(userId: Long)
+GET           /rest/v1/:userId/ndocks                                       controllers.RestUser.ndocks(userId: Long)
+GET           /rest/v1/:userId/kdocks                                       controllers.RestUser.kdocks(userId: Long)
+GET           /rest/v1/:userId/missions                                     controllers.RestUser.missions(userId: Long)
+GET           /rest/v1/:userId/conds                                        controllers.RestUser.conds(userId: Long)
+GET           /rest/v1/:userId/create_ships                                 controllers.RestUser.createShips(userId: Long, limit: Int ?= 10, offset: Int ?= 0, large: Boolean ?= false)
+GET           /rest/v1/:userId/create_ship_count                            controllers.RestUser.createShipCount(userId: Long, large: Boolean ?= false)
+GET           /rest/v1/:userId/create_items                                 controllers.RestUser.createItems(userId: Long, limit: Int ?= 10, offset: Int ?= 0)
+GET           /rest/v1/:userId/create_item_count                            controllers.RestUser.createItemCount(userId: Long)
+GET           /rest/v2/user/:userId/remodels/list                           controllers.RestUser.remodels(userId: Long, limit: Int ?= 10, offset: Int ?= 0)
+GET           /rest/v2/user/:userId/remodels/count                          controllers.RestUser.remodelCount(userId: Long)
+GET           /rest/v1/:userId/battle_result                                controllers.RestUser.battleResult(userId: Long, limit: Int ?= 10, offset: Int ?= 0, boss: Boolean ?= false, drop: Boolean ?= false, rank: String ?= "SABCDE", area: Option[Int], info: Option[Int])
+GET           /rest/v1/:userId/battle_result_count                          controllers.RestUser.battleResultCount(userId: Long, boss: Boolean ?= false, drop: Boolean ?= false, rank: String ?= "SABCDE", area: Option[Int], info: Option[Int])
+GET           /rest/v1/:userId/route_log                                    controllers.RestUser.routeLog(userId: Long, limit: Int ?= 10, offset: Int ?= 0, area: Int ?= -1, info: Int ?= -1)
+GET           /rest/v1/:userId/route_log_count                              controllers.RestUser.routeLogCount(userId: Long, area: Int ?= -1, info: Int ?= -1)
+GET           /rest/v2/user/:userId/mission                                 controllers.RestUser.mission(userId: Long, limit: Int ?= 10, offset: Int ?= 0, missionId: Option[Int])
+GET           /rest/v2/user/:userId/mission_count                           controllers.RestUser.missionCount(userId: Long, missionId: Option[Int])
+GET           /rest/v1/:userId/quest                                        controllers.RestUser.quest(userId: Long)
+GET           /rest/v1/:userId/snap/:snapId                                 controllers.RestUser.snap(userId: Long, snapId: Long)
+GET           /rest/v2/user/:userId/book/ships                              controllers.RestUser.bookShips(userId: Long)
+GET           /rest/v2/user/:userId/honors                                  controllers.RestUser.honors(userId: Long, set: Boolean ?= false)
+GET           /rest/v1/image/ship/:shipId/:swfId.jpg                        controllers.RestImage.ship(shipId: Int, swfId: Int)
+GET           /rest/v1/sound/ship/:shipId/:soundId.mp3                      controllers.RestSound.ship(shipId: Int, soundId: Int)
+HEAD          /rest/v1/image/ship/:shipId/:swfId.jpg                        controllers.RestImage.shipHead(shipId: Int, swfId: Int)
+HEAD          /rest/v1/image/ship_obf/:shipKey.jpg                          controllers.RestImage.shipKeyHead(shipKey: String)
+HEAD          /rest/v1/sound/ship/:shipId/:soundId.mp3                      controllers.RestSound.shipHead(shipId: Int, soundId: Int)
+HEAD          /rest/v1/sound/ship_obf/:shipKey/:soundId.mp3                 controllers.RestSound.shipKeyHead(shipKey: String, soundId: Int)
+GET           /rest/v1/sound/random                                         controllers.RestSound.random()
 
 # View
-GET     /                           controllers.View.index
-GET     /passwd/entire/login  controllers.View.login(init: String ?= "", back: String ?= "/")
-GET     /entire/about               controllers.ViewAbout.setup
-GET     /entire/about/change        controllers.ViewAbout.changeLog
-GET     /entire/about/faq           controllers.ViewAbout.faq
-GET     /entire/about/setup_detail  controllers.ViewAbout.setupDetail
-GET     /entire/activities          controllers.ViewSta.activities
-GET     /entire/statistics          controllers.ViewSta.statistics(from: String ?= "", to: String ?= "")
-GET     /entire/sta/cship/:fuel/:ammo/:steel/:bauxite/:develop controllers.ViewSta.cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int, from: String ?= "", to: String ?= "")
-GET     /entire/sta/citem/:fuel/:ammo/:steel/:bauxite/:sType controllers.ViewSta.citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: String, from: String ?= "", to: String ?= "")
+GET           /                                                             controllers.View.index
+GET           /passwd/entire/login                                          controllers.View.login(init: String ?= "", back: String ?= "/")
+GET           /entire/about                                                 controllers.ViewAbout.setup
+GET           /entire/about/change                                          controllers.ViewAbout.changeLog
+GET           /entire/about/faq                                             controllers.ViewAbout.faq
+GET           /entire/about/setup_detail                                    controllers.ViewAbout.setupDetail
+GET           /entire/activities                                            controllers.ViewSta.activities
+GET           /entire/statistics                                            controllers.ViewSta.statistics(from: String ?= "", to: String ?= "")
+GET           /entire/sta/cship/:fuel/:ammo/:steel/:bauxite/:develop        controllers.ViewSta.cship(fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int, from: String ?= "", to: String ?= "")
+GET           /entire/sta/citem/:fuel/:ammo/:steel/:bauxite/:sType          controllers.ViewSta.citem(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: String, from: String ?= "", to: String ?= "")
 # GET     /entire/sta/citem_form/:fuel/:ammo/:steel/:bauxite/:sType controllers.ViewSta.citemForm(fuel: Int, ammo: Int, steel: Int, bauxite: Int, sType: String)
-GET     /entire/sta/from_ship       controllers.ViewSta.fromShip()
-GET     /entire/sta/drop_stage      controllers.ViewSta.dropStage()
-GET     /entire/sta/drop/:area/:info controllers.ViewSta.drop(area: Int, info: Int)
-GET     /entire/sta/drop_alpha/:area/:info controllers.ViewSta.dropAlpha(area: Int, info: Int)
-GET     /entire/sta/route/:area/:info controllers.ViewSta.route(area: Int, info: Int)
-GET     /entire/sta/route_fleet/:area/:info/:dep/:dest controllers.ViewSta.routeFleet(area: Int, info: Int, dep: Int, dest: Int, from: String ?= "", to: String ?= "")
-GET     /entire/sta/ranking         controllers.ViewSta.ranking()
-GET     /entire/sta/ranking/:typ    controllers.ViewSta.rankingWithType(typ: String)
-GET     /entire/sta/rank/:ranking   controllers.ViewSta.rankingDetails(ranking: String)
-GET     /entire/sta/book            controllers.ViewSta.shipList()
-GET     /entire/sta/book/:sid       controllers.ViewSta.shipBook(sid: Int)
-GET     /entire/sta/remodel_slot    controllers.ViewSta.remodelSlot()
-GET     /entire/sta/search_snap     controllers.ViewSta.searchSnap(q: String ?= "", page: Int ?= 0)
-GET     /u/:user                    controllers.UserView.name(user: String)
-GET     /user/:userId               controllers.UserView.user2(userId: Long)
-GET     /user/:userId/              controllers.UserView.user(userId: Long)
-GET     /user/:userId/top           controllers.UserView.top(userId: Long)
-GET     /user/:userId/favorite      controllers.UserView.favorite(userId: Long)
-GET     /user/:userId/fav_froms     controllers.UserView.favFroms(userId: Long, url: String)
-GET     /user/:userId/snapshot      controllers.UserView.snapshot(userId: Long)
-GET     /passwd/user/:userId/register_snap/:deckId controllers.UserView.registerSnap(userId: Long, deckId: Int)
-GET     /passwd/user/delete_snap/:snapId controllers.UserView.deleteSnap(snapId: Long)
-GET     /user/:userId/material      controllers.UserView.material(userId: Long)
-GET     /user/:userId/ship          controllers.UserView.ship(userId: Long)
-GET     /user/:userId/ship_page/:shipId controllers.UserView.shipPage(userId: Long, shipId: Int)
-GET     /user/:userId/book          controllers.UserView.book(userId: Long)
-GET     /user/:userId/ship_image_book controllers.UserView.shipImageBook(userId: Long)
-GET     /user/:userId/dock          controllers.UserView.dock(userId: Long)
-GET     /user/:userId/create        controllers.UserView.create(userId: Long)
-GET     /user/:userId/slotitem      controllers.UserView.slotitem(userId: Long)
-GET     /user/:userId/shipslotitem/:itemId controllers.UserView.shipslotitem(userId: Long, itemId: Int)
-GET     /user/:userId/aship/:shipId controllers.UserView.aship(userId: Long, shipId: Int)
-GET     /user/:userId/snap_aship/:shipId controllers.UserView.snapAship(userId: Long, shipId: Int)
-GET     /user/:userId/fleet/:deckId controllers.UserView.fleet(userId: Long, deckId: Int)
-GET     /user/:userId/naval_battle  controllers.UserView.navalBattle(userId: Long)
-GET     /user/:userId/route_log     controllers.UserView.routeLog(userId: Long)
-GET     /user/:userId/mission       controllers.UserView.mission(userId: Long)
-GET     /user/:userId/quest         controllers.UserView.quest(userId: Long)
-GET     /user/:userId/statistics    controllers.UserView.statistics(userId: Long)
+GET           /entire/sta/from_ship                                         controllers.ViewSta.fromShip()
+GET           /entire/sta/drop_stage                                        controllers.ViewSta.dropStage()
+GET           /entire/sta/drop/:area/:info                                  controllers.ViewSta.drop(area: Int, info: Int)
+GET           /entire/sta/drop_alpha/:area/:info                            controllers.ViewSta.dropAlpha(area: Int, info: Int)
+GET           /entire/sta/route/:area/:info                                 controllers.ViewSta.route(area: Int, info: Int)
+GET           /entire/sta/route_fleet/:area/:info/:dep/:dest                controllers.ViewSta.routeFleet(area: Int, info: Int, dep: Int, dest: Int, from: String ?= "", to: String ?= "")
+GET           /entire/sta/ranking                                           controllers.ViewSta.ranking()
+GET           /entire/sta/ranking/:typ                                      controllers.ViewSta.rankingWithType(typ: String)
+GET           /entire/sta/rank/:ranking                                     controllers.ViewSta.rankingDetails(ranking: String)
+GET           /entire/sta/book                                              controllers.ViewSta.shipList()
+GET           /entire/sta/book/:sid                                         controllers.ViewSta.shipBook(sid: Int)
+GET           /entire/sta/remodel_slot                                      controllers.ViewSta.remodelSlot()
+GET           /entire/sta/search_snap                                       controllers.ViewSta.searchSnap(q: String ?= "", page: Int ?= 0)
+GET           /u/:user                                                      controllers.UserView.name(user: String)
+GET           /user/:userId                                                 controllers.UserView.user2(userId: Long)
+GET           /user/:userId/                                                controllers.UserView.user(userId: Long)
+GET           /user/:userId/top                                             controllers.UserView.top(userId: Long)
+GET           /user/:userId/favorite                                        controllers.UserView.favorite(userId: Long)
+GET           /user/:userId/fav_froms                                       controllers.UserView.favFroms(userId: Long, url: String)
+GET           /user/:userId/snapshot                                        controllers.UserView.snapshot(userId: Long)
+GET           /passwd/user/:userId/register_snap/:deckId                    controllers.UserView.registerSnap(userId: Long, deckId: Int)
+GET           /passwd/user/delete_snap/:snapId                              controllers.UserView.deleteSnap(snapId: Long)
+GET           /user/:userId/material                                        controllers.UserView.material(userId: Long)
+GET           /user/:userId/ship                                            controllers.UserView.ship(userId: Long)
+GET           /user/:userId/ship_page/:shipId                               controllers.UserView.shipPage(userId: Long, shipId: Int)
+GET           /user/:userId/book                                            controllers.UserView.book(userId: Long)
+GET           /user/:userId/ship_image_book                                 controllers.UserView.shipImageBook(userId: Long)
+GET           /user/:userId/dock                                            controllers.UserView.dock(userId: Long)
+GET           /user/:userId/create                                          controllers.UserView.create(userId: Long)
+GET           /user/:userId/slotitem                                        controllers.UserView.slotitem(userId: Long)
+GET           /user/:userId/shipslotitem/:itemId                            controllers.UserView.shipslotitem(userId: Long, itemId: Int)
+GET           /user/:userId/aship/:shipId                                   controllers.UserView.aship(userId: Long, shipId: Int)
+GET           /user/:userId/snap_aship/:shipId                              controllers.UserView.snapAship(userId: Long, shipId: Int)
+GET           /user/:userId/fleet/:deckId                                   controllers.UserView.fleet(userId: Long, deckId: Int)
+GET           /user/:userId/naval_battle                                    controllers.UserView.navalBattle(userId: Long)
+GET           /user/:userId/route_log                                       controllers.UserView.routeLog(userId: Long)
+GET           /user/:userId/mission                                         controllers.UserView.mission(userId: Long)
+GET           /user/:userId/quest                                           controllers.UserView.quest(userId: Long)
+GET           /user/:userId/statistics                                      controllers.UserView.statistics(userId: Long)
+GET           /user/:userId/honor                                           controllers.UserView.honor(userId: Long)
 
 # WebSocket
-GET     /ws/v1/user/:userId         controllers.UserWS.info(userId: Long)
+GET           /ws/v1/user/:userId                                           controllers.UserWS.info(userId: Long)
 
 # Atom
-GET     /atom/v1/activities.rdf     controllers.Atom.activities()
-GET     /atom/v1/user/:userId/activities.rdf controllers.Atom.userActivities(userId: Long)
+GET           /atom/v1/activities.rdf                                       controllers.Atom.activities()
+GET           /atom/v1/user/:userId/activities.rdf                          controllers.Atom.userActivities(userId: Long)
 
 # Fav
-PUT     /passwd/put/v1/fav          controllers.Fav.put
-GET     /rest/v1/fav_count/:url     controllers.Fav.getCount(url: String)
-GET     /rest/v1/is_faved/:url      controllers.Fav.isFaved(url: String)
-DELETE  /passwd/delete/v1/fav/:id   controllers.Fav.delete(id: Long)
+PUT           /passwd/put/v1/fav                                            controllers.Fav.put
+GET           /rest/v1/fav_count/:url                                       controllers.Fav.getCount(url: String)
+GET           /rest/v1/is_faved/:url                                        controllers.Fav.isFaved(url: String)
+DELETE        /passwd/delete/v1/fav/:id                                     controllers.Fav.delete(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.MyAssets.at(path="/public", file)
+GET           /assets/*file                                                 controllers.MyAssets.at(path="/public", file)
 # To reverse routing
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET           /assets/*file                                                 controllers.Assets.at(path="/public", file)

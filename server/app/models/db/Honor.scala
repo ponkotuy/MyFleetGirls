@@ -7,7 +7,7 @@ case class Honor(
   memberId: Long,
   category: Int,
   name: String,
-  set: Boolean) {
+  setBadge: Boolean) {
 
   def save()(implicit session: DBSession = Honor.autoSession): Honor = Honor.save(this)(session)
 
@@ -20,7 +20,7 @@ object Honor extends SQLSyntaxSupport[Honor] {
 
   override val tableName = "honor"
 
-  override val columns = Seq("id", "member_id", "category", "name", "set")
+  override val columns = Seq("id", "member_id", "category", "name", "set_badge")
 
   def apply(h: SyntaxProvider[Honor])(rs: WrappedResultSet): Honor = apply(h.resultName)(rs)
   def apply(h: ResultName[Honor])(rs: WrappedResultSet): Honor = new Honor(
@@ -28,7 +28,7 @@ object Honor extends SQLSyntaxSupport[Honor] {
     memberId = rs.get(h.memberId),
     category = rs.get(h.category),
     name = rs.get(h.name),
-    set = rs.get(h.set)
+    setBadge = rs.get(h.setBadge)
   )
 
   val h = Honor.syntax("h")
@@ -41,7 +41,7 @@ object Honor extends SQLSyntaxSupport[Honor] {
     }.map(Honor(h.resultName)).single().apply()
   }
 
-  def find(memberId: Long, name: String)(implicit session: DBSession = autoSession): Option[Honor] = withSQL {
+  def findName(memberId: Long, name: String)(implicit session: DBSession = autoSession): Option[Honor] = withSQL {
     select.from(Honor as h).where.eq(h.memberId, memberId).and.eq(h.name, name)
   }.map(Honor(h)).single().apply()
 
@@ -69,27 +69,20 @@ object Honor extends SQLSyntaxSupport[Honor] {
     memberId: Long,
     category: Int,
     name: String,
-    set: Boolean)(implicit session: DBSession = autoSession): Honor = {
-    val generatedKey = withSQL {
+    setBadge: Boolean)(implicit session: DBSession = autoSession): Long = {
+    withSQL {
       insert.into(Honor).columns(
         column.memberId,
         column.category,
         column.name,
-        column.set
+        column.setBadge
       ).values(
             memberId,
             category,
             name,
-            set
+            setBadge
           )
     }.updateAndReturnGeneratedKey().apply()
-
-    Honor(
-      id = generatedKey,
-      memberId = memberId,
-      category = category,
-      name = name,
-      set = set)
   }
 
   def save(entity: Honor)(implicit session: DBSession = autoSession): Honor = {
@@ -99,14 +92,14 @@ object Honor extends SQLSyntaxSupport[Honor] {
         column.memberId -> entity.memberId,
         column.category -> entity.category,
         column.name -> entity.name,
-        column.set -> entity.set
+        column.setBadge -> entity.setBadge
       ).where.eq(column.id, entity.id)
     }.update().apply()
     entity
   }
 
   def updateUnset(memberId: Long)(implicit session: DBSession = autoSession): Unit = applyUpdate {
-    update(Honor).set(column.set -> false).where.eq(column.memberId, memberId)
+    update(Honor).set(column.setBadge -> false).where.eq(column.memberId, memberId)
   }
 
   def destroy(entity: Honor)(implicit session: DBSession = autoSession): Unit = {

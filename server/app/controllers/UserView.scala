@@ -1,6 +1,7 @@
 package controllers
 
 import com.github.nscala_time.time.Imports._
+import honor.Honors
 import models.db.AGOProgress
 import org.json4s.native.Serialization.write
 import play.api.mvc._
@@ -210,5 +211,11 @@ object UserView extends Controller {
     val histgramJson = HistgramShipLv.fromShips(ships).map(_.toJsonElem)
     val bestShipExpJson = BestShipExp.fromShips(ships).map(_.toJsonElem)
     Ok(views.html.user.statistics(user, stypeExps, write(stypeExpJson), write(histgramJson), write(bestShipExpJson)))
+  }
+
+  def honor(memberId: Long) = userView(memberId) { user =>
+    Honors.create(memberId)
+    val honors = Honors.fromUser(memberId, false)
+    Ok(views.html.user.honor(user, honors))
   }
 }
