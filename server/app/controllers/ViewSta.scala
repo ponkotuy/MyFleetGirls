@@ -166,5 +166,10 @@ object ViewSta extends Controller {
     Ok(views.html.sta.search_snap(result))
   }
 
+  def honor() = actionAsync {
+    val honors = db.Honor.findAllByWithAdmiral(sqls.eq(db.Honor.h.setBadge, true))
+    Ok(views.html.sta.honor(honors))
+  }
+
   private def toP(d: Double): String = f"${d*100}%.1f"
 }

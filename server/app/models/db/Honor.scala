@@ -1,5 +1,6 @@
 package models.db
 
+import models.join.HonorWithAdmiral
 import scalikejdbc._
 
 case class Honor(
@@ -32,6 +33,7 @@ object Honor extends SQLSyntaxSupport[Honor] {
   )
 
   val h = Honor.syntax("h")
+  val a = Admiral.syntax("a")
 
   override val autoSession = AutoSession
 
@@ -57,6 +59,17 @@ object Honor extends SQLSyntaxSupport[Honor] {
     withSQL {
       select.from(Honor as h).where.append(sqls"${where}")
     }.map(Honor(h.resultName)).list().apply()
+  }
+
+  def findAllByWithAdmiral(where: SQLSyntax)(implicit session: DBSession = autoSession): List[HonorWithAdmiral] = {
+    val records = withSQL {
+      select.from(Honor as h)
+        .innerJoin(Admiral as a).on(h.memberId, a.id)
+        .where(where)
+    }.map { rs =>
+      (Honor(h)(rs), Admiral(a)(rs))
+    }.list().apply()
+    HonorWithAdmiral.fromRecords(records)
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {

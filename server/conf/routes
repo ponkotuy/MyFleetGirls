@@ -119,6 +119,7 @@ GET           /entire/sta/book                                              cont
 GET           /entire/sta/book/:sid                                         controllers.ViewSta.shipBook(sid: Int)
 GET           /entire/sta/remodel_slot                                      controllers.ViewSta.remodelSlot()
 GET           /entire/sta/search_snap                                       controllers.ViewSta.searchSnap(q: String ?= "", page: Int ?= 0)
+GET           /entire/sta/honor                                             controllers.ViewSta.honor()
 GET           /u/:user                                                      controllers.UserView.name(user: String)
 GET           /user/:userId                                                 controllers.UserView.user2(userId: Long)
 GET           /user/:userId/                                                controllers.UserView.user(userId: Long)

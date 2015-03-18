@@ -1,0 +1,47 @@
+@(honors: Seq[HonorWithAdmiral])
+
+@main {
+  <title>設定称号一覧</title>
+} {
+  @statistics_head("honor") {
+    <div class="page-header">
+      <h1>設定称号一覧</h1>
+    </div>
+
+    <div class="row" id="honor_parent" aria-multiselectable="true">
+      <div class="col-sm-4">
+        <ul class="list-group">
+          @honors.map { honor =>
+            <a href="#" data-toggle="modal" data-target="#modal@honor.hashCode()">
+              <li class="list-group-item">
+                <span class="badge">@honor.admirals.size</span>
+                @honor.name
+              </li>
+            </a>
+
+            <div class="modal fade" id="modal@honor.hashCode()" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">@honor.name</h4>
+                  </div>
+
+                  <div class="modal-body">
+                    <ul>
+                      @honor.admirals.map { a =>
+                        <li><a href="@routes.UserView.top(a.id)">@a.nickname</a></li>
+                      }
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </ul>
+      </div>
+    </div>
+  }
+}
