@@ -21,7 +21,8 @@ object Yome extends HonorCategory {
     val married: Set[Int] = Ship.findAllByUser(memberId)
         .filter(100 <= _.lv)
         .map { s => EvolutionBase(s.shipId) }(breakOut)
-    val ids = yomes & married
+    val maxLv = Ship.findByUserMaxLvWithName(memberId).map(s => EvolutionBase(s.shipId))
+    val ids = yomes & (married ++ maxLv)
     val result = MasterShipBase.findAllBy(sqls.in(MasterShipBase.column.id, ids.toSeq))
     result.map(toHonor)
   }
