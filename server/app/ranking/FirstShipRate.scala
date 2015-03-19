@@ -21,7 +21,7 @@ case object FirstShipRate extends Ranking {
     db.Ship.countAllShip(sqls"s.id = 1").foreach { case (sid, count) =>
       counts(EvolutionBase(sid)) += count
     }
-    val masters = db.MasterShipBase.findAllBy(sqls"ms.id in (${counts.keys.toSet})")
+    val masters = db.MasterShipBase.findAllBy(sqls.in(db.MasterShipBase.ms.id, counts.keys.toSeq))
       .map { it => it.id -> it }.toMap
     val sum = counts.values.sum
     counts.toList.sortBy(-_._2).map { case (sid, count) =>
