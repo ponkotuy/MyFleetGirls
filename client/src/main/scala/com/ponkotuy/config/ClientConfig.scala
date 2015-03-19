@@ -20,7 +20,7 @@ object ClientConfig {
     }
   }
 
-  lazy val post = config.getString("url.post")
+  lazy val post = config.getString("url.post").replace("http:", "https:")
   def postUrl(ver: Int = 1) = post + s"/post/v${ver}"
   def getUrl(ver: Int = 1) = config.getString("url.post") + s"/rest/v${ver}"
   def proxyPort = config.getInt("proxy.port")
