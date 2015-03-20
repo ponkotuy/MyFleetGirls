@@ -47,20 +47,26 @@ public class Connection {
 
     public static void download(URLConnection conn, Path dst) throws IOException {
         String content = conn.getHeaderField("Content-Encoding");
+        Path tempFile = Files.createTempFile("myfleetgirls",null);
+        tempFile.toFile().deleteOnExit();
         try(InputStream is = conn.getInputStream()) {
             if(content == null) {
-                Files.copy(is, dst, REPLACE_EXISTING);
+                Files.copy(is, tempFile);
+                Files.copy(tempFile, dst, REPLACE_EXISTING);
             } else switch (content) {
                 case "pack200-gzip":
-                    pack20ODownload(conn, dst);
+                    pack20ODownload(conn, tempFile);
+                    Files.copy(tempFile, dst, REPLACE_EXISTING);
                     break;
                 case "gzip":
                     try(GZIPInputStream gzipIs = new GZIPInputStream(is)){
-                        Files.copy(gzipIs, dst, REPLACE_EXISTING);
+                        Files.copy(gzipIs, tempFile);
                     }
+                    Files.copy(tempFile, dst, REPLACE_EXISTING);
                     break;
                 default:
-                    Files.copy(is, dst, REPLACE_EXISTING);
+                    Files.copy(is, tempFile);
+                    Files.copy(tempFile, dst, REPLACE_EXISTING);
             }
         }
 
