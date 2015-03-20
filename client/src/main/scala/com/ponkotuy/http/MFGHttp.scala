@@ -15,7 +15,6 @@ import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.entity.mime.content.FileBody
 import org.apache.http.impl.client.HttpClientBuilder
-import org.apache.http.impl.client.LaxRedirectStrategy
 import org.apache.http.message.BasicNameValuePair
 import org.json4s._
 import org.json4s.native.Serialization
@@ -39,7 +38,6 @@ object MFGHttp extends Log {
   val httpBuilder = HttpClientBuilder.create()
       .setDefaultRequestConfig(config)
       .setSslcontext(sslContext)
-      .setRedirectStrategy(new LaxRedirectStrategy())
 
   implicit val formats = Serialization.formats(NoTypeHints)
 
