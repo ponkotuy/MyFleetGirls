@@ -55,7 +55,9 @@ public class Connection {
                     pack20ODownload(conn, dst);
                     break;
                 case "gzip":
-                    Files.copy(new GZIPInputStream(is), dst, REPLACE_EXISTING);
+                    try(GZIPInputStream gzipIs = new GZIPInputStream(is)){
+                        Files.copy(gzipIs, dst, REPLACE_EXISTING);
+                    }
                     break;
                 default:
                     Files.copy(is, dst, REPLACE_EXISTING);
@@ -70,10 +72,11 @@ public class Connection {
 
     public static void pack20ODownload(URLConnection conn, Path dst) throws IOException {
         try(InputStream is = conn.getInputStream();
+            GZIPInputStream gzipIs = new GZIPInputStream(is);
             OutputStream os = Files.newOutputStream(dst, WRITE, CREATE, TRUNCATE_EXISTING);
             JarOutputStream jar = new JarOutputStream(os)) {
             Pack200.Unpacker unpacker = Pack200.newUnpacker();
-            unpacker.unpack(new GZIPInputStream(is), jar);
+            unpacker.unpack(gzipIs, jar);
         }
     }
 }
