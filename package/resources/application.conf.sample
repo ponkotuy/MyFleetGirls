@@ -2,7 +2,7 @@
 
 # MyFleetGirls のデータ送信先サーバーアドレスです。
 # 通常変更する必要はありません
-Url {
+url {
     post: "https://myfleet.moe"
 }
 
