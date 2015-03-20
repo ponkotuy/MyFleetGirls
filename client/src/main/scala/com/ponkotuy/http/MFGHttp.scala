@@ -36,7 +36,7 @@ object MFGHttp extends Log {
       .setRedirectsEnabled(true)
       .build()
   val httpBuilder = HttpClientBuilder.create()
-      .setUserAgent("${BuildInfo.name} client ver:${BuildInfo.version}")
+      .setUserAgent(s"${BuildInfo.name} client ver:${BuildInfo.version} / ")
       .setDefaultRequestConfig(config)
       .setSslcontext(sslContext)
 
