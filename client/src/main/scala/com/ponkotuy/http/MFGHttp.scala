@@ -15,7 +15,6 @@ import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.entity.mime.content.FileBody
 import org.apache.http.impl.client.HttpClientBuilder
-import org.apache.http.impl.client.LaxRedirectStrategy
 import org.apache.http.message.BasicNameValuePair
 import org.json4s._
 import org.json4s.native.Serialization
@@ -39,7 +38,6 @@ object MFGHttp extends Log {
   val httpBuilder = HttpClientBuilder.create()
       .setDefaultRequestConfig(config)
       .setSslcontext(sslContext)
-      .setRedirectStrategy(new LaxRedirectStrategy())
 
   implicit val formats = Serialization.formats(NoTypeHints)
 
@@ -61,12 +59,22 @@ object MFGHttp extends Log {
 
   def post(uStr: String, data: String, ver: Int = 1)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return }
+    val url = ClientConfig.postUrl(ver) + uStr
+    val content = Map("auth" -> write(auth), "auth2" -> write(auth2), "data" -> data)
+    postOrig(url, content)
+  }
+
+  def postOrig(url: String, data: Map[String, String]): Unit = {
     try {
       val http = httpBuilder.build()
-      val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
-      val entity = createEntity(Map("auth" -> write(auth), "auth2" -> write(auth2), "data" -> data))
-      post.setEntity(entity)
+      val post = new HttpPost(url)
+      post.setEntity(createEntity(data))
       val res = http.execute(post)
+      val status = res.getStatusLine.getStatusCode
+      if(300 <= status && status < 400) {
+        val location = res.getFirstHeader("Location").getValue
+        postOrig(location, data)
+      }
       alertResult(res)
     } catch {
       case e: Throwable => error(e.getStackTrace.mkString("\n"))
