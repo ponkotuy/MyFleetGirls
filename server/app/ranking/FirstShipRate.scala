@@ -5,8 +5,6 @@ import models.db
 import ranking.common.{Ranking, RankingElement}
 import scalikejdbc._
 
-import scala.collection.mutable
-
 /**
  *
  * @author ponkotuy
@@ -17,18 +15,17 @@ case object FirstShipRate extends Ranking {
   override val title: String = "初期艦"
 
   override def rankingQuery(limit: Int): List[RankingElement] = {
-    val counts = mutable.Map[Int, Long]().withDefaultValue(0)
-    db.Ship.countAllShip(sqls"s.id = 1").foreach { case (sid, count) =>
-      counts(EvolutionBase(sid)) += count
-    }
-    val masters = db.MasterShipBase.findAllBy(sqls"ms.id in (${counts.keys.toSet})")
+    val counts = db.Ship.countAllShip(sqls"s.id = 1")
+      .groupBy(t => EvolutionBase(t._1))
+      .mapValues(_.values.sum)
+    val masters = db.MasterShipBase.findAllBy(sqls.in(db.MasterShipBase.ms.id, counts.keys.toSeq))
       .map { it => it.id -> it }.toMap
     val sum = counts.values.sum
     counts.toList.sortBy(-_._2).map { case (sid, count) =>
       val master = masters(sid)
       val url = routes.ViewSta.shipBook(sid).toString()
       RankingElement(master.name, <span><strong>{f"$count%,d"}</strong>{s" / $sum"}</span>, url, count)
-    }.toList
+    }
   }
 
   override def comment: List[String] = List("進化前で集計しています")
