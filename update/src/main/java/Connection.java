@@ -51,7 +51,7 @@ public class Connection {
         tempFile.toFile().deleteOnExit();
         try(InputStream is = conn.getInputStream()) {
             if(content == null) {
-                Files.copy(is, tempFile);
+                Files.copy(is, tempFile, REPLACE_EXISTING);
                 Files.copy(tempFile, dst, REPLACE_EXISTING);
             } else switch (content) {
                 case "pack200-gzip":
@@ -60,12 +60,12 @@ public class Connection {
                     break;
                 case "gzip":
                     try(GZIPInputStream gzipIs = new GZIPInputStream(is)){
-                        Files.copy(gzipIs, tempFile);
+                        Files.copy(gzipIs, tempFile, REPLACE_EXISTING);
                     }
                     Files.copy(tempFile, dst, REPLACE_EXISTING);
                     break;
                 default:
-                    Files.copy(is, tempFile);
+                    Files.copy(is, tempFile, REPLACE_EXISTING);
                     Files.copy(tempFile, dst, REPLACE_EXISTING);
             }
         }
