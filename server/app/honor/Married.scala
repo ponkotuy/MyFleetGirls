@@ -23,12 +23,12 @@ object Married extends HonorCategory {
       } else Nil
     }
     List(
+      if(married == 0) Some("独身カッコカリ") else None,
       if(marriedDist.size == 1) Some("一途") else None,
       if(married >= 2) Some("重婚カッコカリ") else None,
       if(married >= 10) Some("ハーレムカッコガチ") else None
     ).flatten ++
         marriedOne.map(s => s"${s.name}に一途") ++
         (if(marriedDist.size == 1 && married >= 2) marriedOne.map(s => s"${s.name}の園") else Nil)
-
   }
 }

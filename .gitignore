@@ -40,3 +40,6 @@ project/scalikejdbc.properties
 server/public/*.png
 logs
 message
+
+# Mac
+.DS_Store
