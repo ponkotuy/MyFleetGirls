@@ -68,6 +68,8 @@ public class Connection {
                     Files.copy(is, tempFile, REPLACE_EXISTING);
                     Files.copy(tempFile, dst, REPLACE_EXISTING);
             }
+        }finally{
+            Files.deleteIfExists(tempFile);
         }
 
         long requestModified = conn.getLastModified();
