@@ -47,19 +47,29 @@ public class Connection {
 
     public static void download(URLConnection conn, Path dst) throws IOException {
         String content = conn.getHeaderField("Content-Encoding");
+        Path tempFile = Files.createTempFile("myfleetgirls",null);
+        tempFile.toFile().deleteOnExit();
         try(InputStream is = conn.getInputStream()) {
             if(content == null) {
-                Files.copy(is, dst, REPLACE_EXISTING);
+                Files.copy(is, tempFile, REPLACE_EXISTING);
+                Files.copy(tempFile, dst, REPLACE_EXISTING);
             } else switch (content) {
                 case "pack200-gzip":
-                    pack20ODownload(conn, dst);
+                    pack20ODownload(conn, tempFile);
+                    Files.copy(tempFile, dst, REPLACE_EXISTING);
                     break;
                 case "gzip":
-                    Files.copy(new GZIPInputStream(is), dst, REPLACE_EXISTING);
+                    try(GZIPInputStream gzipIs = new GZIPInputStream(is)){
+                        Files.copy(gzipIs, tempFile, REPLACE_EXISTING);
+                    }
+                    Files.copy(tempFile, dst, REPLACE_EXISTING);
                     break;
                 default:
-                    Files.copy(is, dst, REPLACE_EXISTING);
+                    Files.copy(is, tempFile, REPLACE_EXISTING);
+                    Files.copy(tempFile, dst, REPLACE_EXISTING);
             }
+        }finally{
+            Files.deleteIfExists(tempFile);
         }
 
         long requestModified = conn.getLastModified();
@@ -70,10 +80,11 @@ public class Connection {
 
     public static void pack20ODownload(URLConnection conn, Path dst) throws IOException {
         try(InputStream is = conn.getInputStream();
+            GZIPInputStream gzipIs = new GZIPInputStream(is);
             OutputStream os = Files.newOutputStream(dst, WRITE, CREATE, TRUNCATE_EXISTING);
             JarOutputStream jar = new JarOutputStream(os)) {
             Pack200.Unpacker unpacker = Pack200.newUnpacker();
-            unpacker.unpack(new GZIPInputStream(is), jar);
+            unpacker.unpack(gzipIs, jar);
         }
     }
 }
