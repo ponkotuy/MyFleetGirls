@@ -24,13 +24,7 @@ object Honor extends SQLSyntaxSupport[Honor] {
   override val columns = Seq("id", "member_id", "category", "name", "set_badge")
 
   def apply(h: SyntaxProvider[Honor])(rs: WrappedResultSet): Honor = apply(h.resultName)(rs)
-  def apply(h: ResultName[Honor])(rs: WrappedResultSet): Honor = new Honor(
-    id = rs.get(h.id),
-    memberId = rs.get(h.memberId),
-    category = rs.get(h.category),
-    name = rs.get(h.name),
-    setBadge = rs.get(h.setBadge)
-  )
+  def apply(h: ResultName[Honor])(rs: WrappedResultSet): Honor = autoConstruct(rs, h)
 
   val h = Honor.syntax("h")
   val a = Admiral.syntax("a")
