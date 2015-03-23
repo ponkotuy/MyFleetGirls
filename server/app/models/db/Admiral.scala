@@ -91,6 +91,10 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
       .and.in(a.id, ids)
   }.map(AdmiralWithLv(a, b)).list().apply()
 
+  def countAll()(implicit session: DBSession = autoSession): Long = withSQL {
+    select(sqls"count(1)").from(Admiral as a)
+  }.map(rs => rs.long(1)).single().apply().get
+
   def save(a: Admiral)(implicit session: DBSession = Admiral.autoSession): Admiral = {
     withSQL {
       update(Admiral).set(column.id -> a.id, column.nickname -> a.nickname)
