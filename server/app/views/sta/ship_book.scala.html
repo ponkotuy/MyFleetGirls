@@ -1,4 +1,4 @@
-@(master: MasterShipAll, ships: Seq[ShipWithAdmiral], admiral: Option[Admiral], yomes: Seq[ShipWithAdmiral])
+@(master: MasterShipAll, ships: Seq[ShipWithAdmiral], admiral: Option[Admiral], yomes: Seq[ShipWithAdmiral], heldRate: Double)
 
 @main {
   <title>@master.name -艦娘図鑑-</title>
@@ -73,6 +73,7 @@
       @if(ships.nonEmpty) {
         <div class="col-md-4 col-sm-5">
           <h3>所持ユーザ</h3>
+          @{heldRate * 100}%のユーザが@{master.name}を所持しています
           <table class="table table-condensed table-striped">
             @ships.zipWithIndex.map { case (ship, i) =>
               <tr>
