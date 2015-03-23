@@ -189,6 +189,12 @@ object Ship extends SQLSyntaxSupport[Ship] {
     select(sqls.count).from(Ship as s).where(where)
   }.map(_.long(1)).single().apply().get
 
+  def countAdmiral(where: SQLSyntax)(implicit session: DBSession = autoSession): Int = withSQL {
+    select(sqls.count).from(Ship as s)
+        .where(where)
+        .groupBy(s.memberId)
+  }.map(_.long(1)).traversable().apply().size
+
   def create(s: data.Ship, memberId: Long)(implicit session: DBSession = Ship.autoSession): Unit = {
     val created = System.currentTimeMillis()
     ShipSlotItem.bulkInsert(s.slot, memberId, s.id)

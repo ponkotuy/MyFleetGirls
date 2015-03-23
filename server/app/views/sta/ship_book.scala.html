@@ -72,8 +72,7 @@
 
       @if(ships.nonEmpty) {
         <div class="col-md-4 col-sm-5">
-          <h3>所持ユーザ</h3>
-          @{heldRate * 100}%のユーザが@{master.name}を所持しています
+          <h3>所持ユーザ<small>所持率@{f"${heldRate * 100}%.1f%%"}</small></h3>
           <table class="table table-condensed table-striped">
             @ships.zipWithIndex.map { case (ship, i) =>
               <tr>
