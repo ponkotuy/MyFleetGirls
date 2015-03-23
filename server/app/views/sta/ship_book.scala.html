@@ -1,4 +1,10 @@
-@(master: MasterShipAll, ships: Seq[ShipWithAdmiral], admiral: Option[Admiral], yomes: Seq[ShipWithAdmiral], heldRate: Double)
+@(
+    master: MasterShipAll,
+    ships: Seq[ShipWithAdmiral],
+    admiral: Option[Admiral],
+    yomes: Seq[ShipWithAdmiral],
+    heldRate: Double,
+    bookRate: Double)
 
 @main {
   <title>@master.name -艦娘図鑑-</title>
@@ -72,7 +78,7 @@
 
       @if(ships.nonEmpty) {
         <div class="col-md-4 col-sm-5">
-          <h3>所持ユーザ<small>所持率@{f"${heldRate * 100}%.1f%%"}</small></h3>
+          <h3>所持提督<small>所持@{f"${heldRate * 100}%.1f%%"}@if(bookRate > 0){@{f":図鑑${bookRate * 100}%.1f%%"}}</small></h3>
           <table class="table table-condensed table-striped">
             @ships.zipWithIndex.map { case (ship, i) =>
               <tr>

@@ -1,5 +1,6 @@
 package models.db
 
+import models.view.ShipBookCountByShip
 import scalikejdbc._
 import com.ponkotuy.data
 
@@ -27,8 +28,7 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
 
   def apply(sb: ResultName[ShipBook])(rs: WrappedResultSet): ShipBook = autoConstruct(rs, sb)
 
-  lazy val sb = ShipBook.syntax("sb")
-  lazy val ms = MasterShipBase.syntax("ms")
+  val sb = ShipBook.syntax("sb")
 
   override val autoSession = AutoSession
 
@@ -63,6 +63,10 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
       select(sqls"count(1)").from(ShipBook as sb).where.append(sqls"${where}")
     }.map(_.long(1)).single().apply().get
   }
+
+  def countGroupByShip(where: SQLSyntax)(implicit session: DBSession = autoSession): List[ShipBookCountByShip] = withSQL {
+    select(sb.id, sb.name, sqls.count).from(ShipBook as sb).where(where).groupBy(sb.id)
+  }.map(ShipBookCountByShip(sb.resultName)).list().apply()
 
   def create(
       memberId: Long,
