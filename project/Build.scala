@@ -53,6 +53,7 @@ object MyFleetGirlsBuild extends Build {
     scalaVersion := scalaVer,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions"),
     updateOptions := updateOptions.value.withCircularDependencyLevel(CircularDependencyLevel.Error),
+    updateOptions := updateOptions.value.withCachedResolution(true),
     jarName in assembly := "MyFleetGirls.jar",
     incOptions := incOptions.value.withNameHashing(true)
   )
