@@ -4,7 +4,7 @@ import com.ponkotuy.build.BuildInfo
 import com.ponkotuy.config.ClientConfig
 import com.ponkotuy.http.MFGHttp
 import com.ponkotuy.intercept.KCIntercepter
-import com.ponkotuy.proxy.FinagleProxy
+import com.ponkotuy.proxy.LittleProxy
 
 /**
  *
@@ -14,7 +14,7 @@ import com.ponkotuy.proxy.FinagleProxy
 object Main extends App {
   try {
     message()
-    new FinagleProxy(ClientConfig.proxyPort, new KCIntercepter).start()
+    new LittleProxy(ClientConfig.proxyPort, new KCIntercepter).start()
   } catch {
     case e: ExceptionInInitializerError =>
       e.printStackTrace()

@@ -4,7 +4,7 @@ import com.netaporter.uri.Uri
 import com.ponkotuy.parser.{Query, ResponseController}
 import com.ponkotuy.util.Log
 import com.ponkotuy.value.KCServer
-import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
+import io.netty.handler.codec.http.HttpRequest
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
@@ -16,12 +16,16 @@ import scala.concurrent.Future
  */
 class KCIntercepter extends Intercepter with Log {
   val controller = new ResponseController
-  override def input(req: HttpRequest, res: HttpResponse, uri: Uri): Unit = {
+  override def input(req: HttpRequest, res: Array[Byte], uri: Uri): Unit = {
     Future {
       if(!valid(req)) return
       try {
         val q = Query(req, res, uri)
-        if(q.parsable) controller.query(q)
+        try {
+          if(q.parsable) controller.query(q)
+        } finally {
+          q.close()
+        }
       } catch {
         case e: Throwable => error((e.getMessage +: e.getStackTrace).mkString("\n"))
       }

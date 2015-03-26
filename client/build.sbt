@@ -8,11 +8,11 @@ scalaVersion := "2.11.6"
 
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.2.1",
-  "com.twitter" %% "finagle-http" % "6.24.0",
   "com.netaporter" %% "scala-uri" % "0.4.4",
   "org.json4s" %% "json4s-native" % "3.2.11",
   "org.apache.httpcomponents" % "httpclient" % "4.4",
-  "org.apache.httpcomponents" % "httpmime" % "4.4"
+  "org.apache.httpcomponents" % "httpmime" % "4.4",
+  "org.littleshoot" % "littleproxy" % "1.0.0-beta8"
 )
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions")

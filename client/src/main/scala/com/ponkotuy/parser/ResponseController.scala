@@ -96,7 +96,7 @@ class ResponseController extends Log {
       case _ =>
         if(ClientConfig.Auth.master) {
           info(s"ResType: $typ")
-          info(s"Req: ${q.reqCont}")
+          info(s"Req: ${q.reqMap}")
           q.resJson.left.map(jsonInfo(_))
         }
     }

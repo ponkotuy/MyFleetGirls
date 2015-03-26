@@ -1,8 +1,8 @@
 package com.ponkotuy.util
 
-import com.twitter.logging.{LoggerFactory, Logger}
 import org.json4s._
 import org.json4s.native.JsonMethods._
+
 import scala.util.Try
 
 /** Log Trait
@@ -13,8 +13,12 @@ import scala.util.Try
   * Date 14/02/22
   */
 trait Log {
-  private lazy val factory = new LoggerFactory(node = getClass.toString, level = Some(Logger.DEBUG))
-  lazy val logger: Logger = factory()
+  lazy val logger = new {
+    def debug(str: String) = {}
+    def info(str: String) = println(str)
+    def error(str: String) = println(str)
+    def fatal(str: String) = println(str)
+  }
 
   protected def debug(obj: Any, size: Int = 1000): Unit = logger.debug(obj.toString.take(size))
   protected def info(obj: Any, size: Int = 1000): Unit = logger.info(obj.toString.take(size))

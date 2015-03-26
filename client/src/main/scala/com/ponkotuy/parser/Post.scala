@@ -1,14 +1,11 @@
 package com.ponkotuy.parser
 
-import java.io.ByteArrayOutputStream
-
 import com.ponkotuy.data._
 import com.ponkotuy.data.master._
 import com.ponkotuy.http.MFGHttp
 import com.ponkotuy.tool.{Checksum, TempFileTool}
 import com.ponkotuy.util.Log
 import com.ponkotuy.value.KCServer
-import org.jboss.netty.buffer.ChannelBuffer
 import org.json4s.JsonAST.JValue
 import org.json4s._
 import org.json4s.native.Serialization.write
@@ -25,7 +22,7 @@ object Post extends Log {
     masterShip(obj)
     masterMission(obj)
     masterSlotitem(obj)
-    masterSType((obj))
+    masterSType(obj)
   }
 
   def masterShip(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
@@ -133,7 +130,7 @@ object Post extends Log {
 
   def swfShip(q: Query)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     parseKey(q.toString).filterNot(MFGHttp.existsImage).foreach { key =>
-      val swf = allRead(q.res.getContent)
+      val swf = q.resBytes
       TempFileTool.save(swf, "swf") { file =>
         val stCode = MFGHttp.postFile("/swf/ship/" + key, "image")(file)
         if(stCode < 400) println(s"初めての艦娘を見て画像を転送しました")
@@ -143,7 +140,7 @@ object Post extends Log {
 
   def mp3kc(q: Query)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     SoundUrlId.parseURL(q.toString).filterNot(MFGHttp.existsSound).foreach { case SoundUrlId(shipKey, soundId) =>
-      val sound = allRead(q.res.getContent)
+      val sound = q.resBytes
       TempFileTool.save(sound, "mp3") { file =>
         val stCode = MFGHttp.postFile(s"/mp3/kc/${shipKey}/${soundId}", "sound")(file)
         if(stCode < 400) println(s"初めて (ShipKey -> $shipKey, SoundID -> $soundId) の声を聞いた")
@@ -166,12 +163,6 @@ object Post extends Log {
       val filename = str.split('/').last
       filename.takeWhile(_ != '.')
     }.toOption
-
-  private def allRead(cb: ChannelBuffer): Array[Byte] = {
-    val baos = new ByteArrayOutputStream()
-    cb.getBytes(0, baos, cb.readableBytes())
-    baos.toByteArray
-  }
 }
 
 case class SoundUrlId(shipKey: String, soundId: Int)
