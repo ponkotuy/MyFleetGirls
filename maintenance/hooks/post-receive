@@ -1,7 +1,6 @@
 #!/bin/bash
 
 JAVA_HOME=$HOME/etc/soft/jdk1.8.0
-home=/home/yosuke
 pid=server/target/universal/stage/RUNNING_PID
 port1=9003
 port2=9004
@@ -14,7 +13,7 @@ else
 fi
 
 # Directory
-myfleet_dir=$home/service/MyFleetGirls/$port
+myfleet_dir=$HOME/service/MyFleetGirls/$port
 cd $myfleet_dir
 
 # Kill old process

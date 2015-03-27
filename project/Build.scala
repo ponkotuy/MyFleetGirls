@@ -103,12 +103,16 @@ object MyFleetGirlsBuild extends Build {
   }
 
   def zip = Command.command("zip") { state =>
+    def hash(file: String): Option[String] = {
+      (p.Process(s"md5sum ${file}").!!).split(' ').headOption
+    }
     Command.process("assembly", state)
     p.Process("""rm server/public/zip/MyFleetGirls.zip""").run()
-    p.Process("""rm server/public/client/MyFleetGirls.jar""").run()
     p.Process("""rm server/public/client/MyFleetGirls.jar.pack.gz""").run()
     p.Process("""zip -j server/public/zip/MyFleetGirls.zip update/target/update.jar LICENSE update/update.properties update/myfleetgirls.keystore package/resources/application.conf.sample package/resources/MyFleetGirls.bat package/resources/MyFleetGirls.sh package/resources/MyFleetGirls.command package/resources/IE_PROXY.REG""").run()
-    p.Process("""cp client/target/scala-2.11/MyFleetGirls.jar LICENSE MyFleetGirls.bat MyFleetGirls.sh MyFleetGirls.command update/update.properties update/myfleetgirls.keystore package/resources/application.conf.sample package/resources/IE_PROXY.REG server/public/client/""").run()
+    if(hash("server/public/client/MyFleetGirls.jar") != hash("client/target/scala-2.11/MyFleetGirls.jar"))
+      p.Process("""cp client/target/scala-2.11/MyFleetGirls.jar server/public/client/""").run()
+    p.Process("""cp LICENSE MyFleetGirls.bat MyFleetGirls.sh MyFleetGirls.command update/update.properties update/myfleetgirls.keystore package/resources/application.conf.sample package/resources/IE_PROXY.REG server/public/client/""").run()
     p.Process(Seq("sh", "-c", "pack200 --unknown-attribute=pass server/public/client/MyFleetGirls.jar.pack.gz server/public/client/MyFleetGirls.jar 2> /dev/null")).run()
     Thread.sleep(20000L)
     state
