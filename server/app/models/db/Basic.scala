@@ -33,7 +33,7 @@ case class Basic(
     import DiffCalc._
     Iterator(
       neq(lv, x.lv),
-      ratio(experience, x.experience),
+      diffRatio(10000.0)(experience, x.experience),
       neq(rank, x.rank),
       ratio(fCoin, x.fCoin),
       ratio(stWin, x.stWin),
@@ -47,6 +47,8 @@ case class Basic(
 
   /** 甲勲章の有無 */
   def isGradeA: Boolean = medals == 1
+
+  def destroy()(implicit session: DBSession = Basic.autoSession): Unit = Basic.destroy(id)
 }
 
 object Basic extends SQLSyntaxSupport[Basic] {
@@ -95,9 +97,14 @@ object Basic extends SQLSyntaxSupport[Basic] {
       .limit(1)
   }.map(Basic(b)).headOption().apply()
 
-  def findAllByUser(memberId: Long)(implicit session: DBSession = Basic.autoSession): List[Basic] = withSQL {
+  def findAllByUser(memberId: Long, from: Long = 0, to: Long = Long.MaxValue)(
+      implicit session: DBSession = Basic.autoSession): List[Basic] = withSQL {
     select.from(Basic as b)
-      .where.eq(b.memberId, memberId)
+      .where.eq(b.memberId, memberId).and.between(b.created, from , to)
       .orderBy(b.created).desc
   }.map(Basic(b)).list().apply()
+
+  def destroy(id: Long)(implicit session: DBSession = autoSession): Unit = applyUpdate {
+    delete.from(Basic).where.eq(column.id, id)
+  }
 }

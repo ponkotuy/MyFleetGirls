@@ -1,11 +1,11 @@
 
 import akka.actor.Props
 import com.github.nscala_time.time.StaticDateTimeZone
-import models.db.{AGOProgress, Admiral, Material, Quest}
+import models.db._
 import org.joda.time.{DateTimeConstants, LocalDate}
 import play.api._
-import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits._
+import play.api.mvc._
 import play.libs.Akka
 import scalikejdbc._
 import util.{Cron, CronSchedule, CronScheduler}
@@ -21,12 +21,15 @@ import scala.concurrent.duration._
 object Global extends WithFilters(Cors) with GlobalSettings{
   import util.Cron._
 
+  val Japan = StaticDateTimeZone.forOffsetHours(9)
+
   override def onStart(app: Application): Unit = {
     val cron = Akka.system().actorOf(Props[CronScheduler], "cron")
     cron ! CronSchedule(Cron(0, 5, aster, aster, aster), _ => deleteDailyQuest())
     cron ! CronSchedule(Cron(0, 5, aster, aster, DateTimeConstants.MONDAY), _ => deleteWeeklyQuest())
     cron ! CronSchedule(Cron(0, 5, 1, aster, aster), _ => deleteMonthlyQuest())
     cron ! CronSchedule(Cron(17, 3, aster, aster, aster), _ => cutMaterialRecord())
+    cron ! CronSchedule(Cron(23, 3, aster, aster, aster), _ => cutBasicRecord())
     Akka.system().scheduler.schedule(0.seconds, 45.seconds, cron, "minutes")
   }
 
@@ -49,15 +52,30 @@ object Global extends WithFilters(Cors) with GlobalSettings{
 
   private def cutMaterialRecord(): Unit = {
     Logger.info("Cut Material Record")
-    Admiral.findAll().map { user =>
-      val monthAgo = System.currentTimeMillis() - 30L*24*60*60*1000
+    Admiral.findAll().foreach { user =>
+      val monthAgo = System.currentTimeMillis() - 30.days.toMillis
       val materials = Material.findAllByUser(user.id, to = monthAgo)
       val days = materials.groupBy { mat =>
-        new LocalDate(mat.created, StaticDateTimeZone.forOffsetHours(9))
+        new LocalDate(mat.created, Japan)
       }.values
-      days.map { daily =>
+      days.foreach { daily =>
         val rest = Set(daily.minBy(_.steel).id, daily.maxBy(_.steel).id)
         daily.filterNot(mat => rest.contains(mat.id)).foreach(_.destroy())
+      }
+    }
+  }
+
+  private def cutBasicRecord(): Unit = {
+    Logger.info("Cut Basic Record")
+    Admiral.findAll().foreach { user =>
+      val monthAgo = System.currentTimeMillis() - 30.days.toMillis
+      val basics = Basic.findAllByUser(user.id, to = monthAgo)
+      val days = basics.groupBy { b =>
+        new LocalDate(b.created, Japan)
+      }.values
+      days.foreach { daily =>
+        val rest = Set(daily.minBy(_.experience).id, daily.maxBy(_.experience).id)
+        daily.filterNot(b => rest.contains(b.id)).foreach(_.destroy())
       }
     }
   }
