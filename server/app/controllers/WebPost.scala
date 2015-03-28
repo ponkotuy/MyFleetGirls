@@ -26,6 +26,7 @@ object WebPost extends Controller {
               val deckSnap = db.DeckSnapshot.create(snap.userId, deck.name, snap.title, snap.comment, current)
               val ships = db.DeckShip.findAllByDeck(snap.userId, snap.deckport)
               db.DeckShipSnapshot.bulkInsert(ships.map(_.ship), deckSnap.id)
+              db.SnapshotText.create(deckSnap)
               Ok("Success")
             case None => BadRequest("Invalid deckport")
           }
