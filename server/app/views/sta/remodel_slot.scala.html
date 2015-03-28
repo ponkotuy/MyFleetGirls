@@ -38,6 +38,7 @@
                 <tr>
                   <th>From</th>
                   <th>To</th>
+                  <th>2番艦</th>
                   <th>開発資材</th>
                   <th>改修資材</th>
                   <th>消費装備</th>
@@ -51,6 +52,7 @@
                     <span v-show="m.master.slotitemLevel == 10 && !m.to">？？？</span>
                     <span v-show="m.to">{{m.to.after.name}}<span v-show="m.to && m.to.remodelAfter && m.to.remodelAfter.level > 0">{{m.to.remodelAfter.level}}</span></span>
                   </td>
+                  <td>{{m.secondShip}}</td>
                   <td>{{m.master.develop}}/{{m.master.certainDevelop}}</td>
                   <td>{{m.master.remodel}}/{{m.master.certainRemodel}}</td>
                   <td><span v-show="m.use">{{m.use.name}}<span v-show="m.master.useSlotitemNum > 1"> x{{m.master.useSlotitemNum}}</span></span></td>

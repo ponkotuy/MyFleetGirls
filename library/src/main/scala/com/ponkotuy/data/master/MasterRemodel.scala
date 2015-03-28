@@ -15,7 +15,8 @@ case class MasterRemodel(
     slotitemId: Int,
     slotitemNum: Int,
     changeFlag: Boolean,
-    origSlotId: Int) {
+    origSlotId: Int,
+    secondShipId: Int) {
   def sumKit: Int = develop + remodel + certainDevelop + certainRemodel + slotitemNum
 }
 
@@ -30,7 +31,7 @@ object MasterRemodel {
       api_req_slot_id: Int,
       api_req_slot_num: Int,
       api_change_flag: Int) {
-    def build(origSlotId: Int): MasterRemodel =
+    def build(origSlotId: Int, secondShipId: Int): MasterRemodel =
       MasterRemodel(
         api_req_buildkit,
         api_req_remodelkit,
@@ -39,15 +40,16 @@ object MasterRemodel {
         api_req_slot_id,
         api_req_slot_num,
         api_change_flag != 0,
-        origSlotId)
+        origSlotId,
+        secondShipId)
   }
 
-  def fromJson(obj: JValue, req: Map[String, String]): Option[MasterRemodel] = {
+  def fromJson(obj: JValue, req: Map[String, String], shipIds: Seq[Int]): Option[MasterRemodel] = {
     for {
       raw <- obj.extractOpt[RawMasterRemodel]
       slotId <- req.get("api_slot_id")
     } yield {
-      raw.build(slotId.toInt)
+      raw.build(slotId.toInt, shipIds(1))
     }
   }
 }

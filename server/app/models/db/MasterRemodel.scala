@@ -7,15 +7,16 @@ import com.ponkotuy.data
 import scala.util.Try
 
 case class MasterRemodel(
-  slotitemId: Int,
-  slotitemLevel: Int,
-  develop: Int,
-  remodel: Int,
-  certainDevelop: Int,
-  certainRemodel: Int,
-  useSlotitemId: Int,
-  useSlotitemNum: Int,
-  changeFlag: Boolean) {
+    slotitemId: Int,
+    slotitemLevel: Int,
+    secondShipId: Int,
+    develop: Int,
+    remodel: Int,
+    certainDevelop: Int,
+    certainRemodel: Int,
+    useSlotitemId: Int,
+    useSlotitemNum: Int,
+    changeFlag: Boolean) {
 
   def save()(implicit session: DBSession = MasterRemodel.autoSession): MasterRemodel = MasterRemodel.save(this)(session)
 
@@ -30,30 +31,24 @@ object MasterRemodel extends SQLSyntaxSupport[MasterRemodel] {
 
   override val tableName = "master_remodel"
 
-  override val columns = Seq("slotitem_id", "slotitem_level", "develop", "remodel", "certain_develop", "certain_remodel", "use_slotitem_id", "use_slotitem_num", "change_flag")
+  override val columns = Seq("slotitem_id", "slotitem_level", "second_ship_id", "develop", "remodel", "certain_develop", "certain_remodel", "use_slotitem_id", "use_slotitem_num", "change_flag")
 
   def apply(mr: SyntaxProvider[MasterRemodel])(rs: WrappedResultSet): MasterRemodel = apply(mr.resultName)(rs)
-  def apply(mr: ResultName[MasterRemodel])(rs: WrappedResultSet): MasterRemodel = new MasterRemodel(
-    slotitemId = rs.get(mr.slotitemId),
-    slotitemLevel = rs.get(mr.slotitemLevel),
-    develop = rs.get(mr.develop),
-    remodel = rs.get(mr.remodel),
-    certainDevelop = rs.get(mr.certainDevelop),
-    certainRemodel = rs.get(mr.certainRemodel),
-    useSlotitemId = rs.get(mr.useSlotitemId),
-    useSlotitemNum = rs.get(mr.useSlotitemNum),
-    changeFlag = rs.get(mr.changeFlag)
-  )
+  def apply(mr: ResultName[MasterRemodel])(rs: WrappedResultSet): MasterRemodel = autoConstruct(rs, mr)
 
   val mr = MasterRemodel.syntax("mr")
   val msi1 = MasterSlotItem.syntax("msi1")
   val msi2 = MasterSlotItem.syntax("msi2")
+  val ms = MasterShipBase.syntax("ms")
 
   override val autoSession = AutoSession
 
-  def find(slotitemId: Int, slotitemLevel: Int)(implicit session: DBSession = autoSession): Option[MasterRemodel] = {
+  def find(slotitemId: Int, slotitemLevel: Int, secondShipId: Int)(implicit session: DBSession = autoSession): Option[MasterRemodel] = {
     withSQL {
-      select.from(MasterRemodel as mr).where.eq(mr.slotitemId, slotitemId).and.eq(mr.slotitemLevel, slotitemLevel)
+      select.from(MasterRemodel as mr)
+          .where.eq(mr.slotitemId, slotitemId)
+            .and.eq(mr.slotitemLevel, slotitemLevel)
+            .and.eq(mr.secondShipId, secondShipId)
     }.map(MasterRemodel(mr.resultName)).single().apply()
   }
 
@@ -76,10 +71,11 @@ object MasterRemodel extends SQLSyntaxSupport[MasterRemodel] {
       select.from(MasterRemodel as mr)
         .innerJoin(MasterSlotItem as msi1).on(mr.slotitemId, msi1.id)
         .leftJoin(MasterSlotItem as msi2).on(mr.useSlotitemId, msi2.id)
+        .innerJoin(MasterShipBase as ms).on(mr.secondShipId, ms.id)
         .where(where).orderBy(mr.slotitemLevel)
     }.map { rs =>
       val use = Try { MasterSlotItem(msi2)(rs) }.toOption
-      MasterRemodelWithName(MasterRemodel(mr)(rs), MasterSlotItem(msi1)(rs), use)
+      MasterRemodelWithName(MasterRemodel(mr)(rs), MasterSlotItem(msi1)(rs), use, MasterShipBase(ms)(rs))
     }.list().apply()
   }
 
@@ -90,14 +86,18 @@ object MasterRemodel extends SQLSyntaxSupport[MasterRemodel] {
   }
 
   def createFromData(x: data.master.MasterRemodel, memberId: Long)(implicit session: DBSession = autoSession): Unit = {
-    SlotItem.find(x.origSlotId, memberId).map { item =>
-      val orig = find(item.slotitemId, item.level)
+    for {
+      item <- SlotItem.find(x.origSlotId, memberId)
+      secondShip <- Ship.find(memberId, x.secondShipId)
+    } yield {
+      val orig = find(item.slotitemId, item.level, x.secondShipId)
       // 間違えてLevelが低い状態でmasterを登録した可能性があるので、元のデータを消しておく
       val isDestroy = orig.filter(_.sumKit > x.sumKit).map(_.destroy()).isDefined
       if(orig.isEmpty || isDestroy) {
         create(
           item.slotitemId,
           item.level,
+          secondShip.shipId,
           x.develop,
           x.remodel,
           x.certainDevelop,
@@ -111,19 +111,21 @@ object MasterRemodel extends SQLSyntaxSupport[MasterRemodel] {
   }
 
   def create(
-    slotitemId: Int,
-    slotitemLevel: Int,
-    develop: Int,
-    remodel: Int,
-    certainDevelop: Int,
-    certainRemodel: Int,
-    useSlotitemId: Int,
-    useSlotitemNum: Int,
-    changeFlag: Boolean)(implicit session: DBSession = autoSession): MasterRemodel = {
+      slotitemId: Int,
+      slotitemLevel: Int,
+      secondShipId: Int,
+      develop: Int,
+      remodel: Int,
+      certainDevelop: Int,
+      certainRemodel: Int,
+      useSlotitemId: Int,
+      useSlotitemNum: Int,
+      changeFlag: Boolean)(implicit session: DBSession = autoSession): MasterRemodel = {
     withSQL {
       insert.into(MasterRemodel).columns(
         column.slotitemId,
         column.slotitemLevel,
+        column.secondShipId,
         column.develop,
         column.remodel,
         column.certainDevelop,
@@ -134,6 +136,7 @@ object MasterRemodel extends SQLSyntaxSupport[MasterRemodel] {
       ).values(
           slotitemId,
           slotitemLevel,
+          secondShipId,
           develop,
           remodel,
           certainDevelop,
@@ -147,6 +150,7 @@ object MasterRemodel extends SQLSyntaxSupport[MasterRemodel] {
     MasterRemodel(
       slotitemId = slotitemId,
       slotitemLevel = slotitemLevel,
+      secondShipId = secondShipId,
       develop = develop,
       remodel = remodel,
       certainDevelop = certainDevelop,
@@ -161,6 +165,7 @@ object MasterRemodel extends SQLSyntaxSupport[MasterRemodel] {
       update(MasterRemodel).set(
         column.slotitemId -> entity.slotitemId,
         column.slotitemLevel -> entity.slotitemLevel,
+        column.secondShipId -> entity.secondShipId,
         column.develop -> entity.develop,
         column.remodel -> entity.remodel,
         column.certainDevelop -> entity.certainDevelop,

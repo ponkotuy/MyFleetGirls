@@ -82,7 +82,7 @@ class ResponseController extends Log {
       case RemodelSlotlist =>
         lazyPost { (a, b) => dependent.remodelSlotList(obj)(a, b) }
       case RemodelSlotlistDetail =>
-        lazyPost { (a, b) => Post.remodelDetail(obj, req)(a, b)}
+        lazyPost { (a, b) => dependent.remodelDetail(obj, req)(a, b)}
       case RemodelSlot =>
         lazyPost { (a, b) => Post.remodelSlot(obj, req)(a, b)}
       case LoginCheck | Deck | UseItem | Practice | Record | MapCell | UpdateDeckName | Charge | MissionStart |

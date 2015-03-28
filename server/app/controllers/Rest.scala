@@ -3,7 +3,7 @@ package controllers
 import com.github.nscala_time.time.Imports._
 import com.ponkotuy.tool.Checksum
 import models.db
-import models.join.{ItemMat, ShipDrop, ShipWithFav}
+import models.join.{MasterRemodelJson, ItemMat, ShipDrop, ShipWithFav}
 import models.query.Period
 import models.response.DropRate
 import org.json4s.JsonDSL._
@@ -152,7 +152,8 @@ object Rest extends Controller {
   }
 
   def masterRemodel(slotId: Int) = returnJson {
-    db.MasterRemodel.findAllByWithName(sqls"slotitem_id = ${slotId}")
+    val origs = db.MasterRemodel.findAllByWithName(sqls"slotitem_id = ${slotId}")
+    MasterRemodelJson.fromWithName(origs)
   }
 
   def missionHash() = returnString {

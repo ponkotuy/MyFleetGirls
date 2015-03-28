@@ -2,6 +2,7 @@ package com.ponkotuy.parser
 
 import com.ponkotuy.data
 import com.ponkotuy.data._
+import com.ponkotuy.data.master.MasterRemodel
 import com.ponkotuy.http.MFGHttp
 import org.json4s._
 import org.json4s.native.Serialization.write
@@ -149,4 +150,11 @@ class DependentPost {
       MFGHttp.post("/remodel_slot", write(result))
     }
   }
+
+  def remodelDetail(obj: JValue, req: Map[String, String])(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit =
+    synchronized {
+      MasterRemodel.fromJson(obj, req, firstFleet).foreach { remodel =>
+        MFGHttp.post("/master_remodel", write(remodel))
+      }
+    }
 }
