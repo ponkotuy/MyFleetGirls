@@ -10,6 +10,7 @@ import play.libs.Akka
 import scalikejdbc._
 import util.{Cron, CronSchedule, CronScheduler}
 
+import scala.collection.breakOut
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
@@ -30,6 +31,7 @@ object Global extends WithFilters(Cors) with GlobalSettings{
     cron ! CronSchedule(Cron(0, 5, 1, aster, aster), _ => deleteMonthlyQuest())
     cron ! CronSchedule(Cron(17, 3, aster, aster, aster), _ => cutMaterialRecord())
     cron ! CronSchedule(Cron(23, 3, aster, aster, aster), _ => cutBasicRecord())
+    cron ! CronSchedule(Cron(41, 3, aster, aster, aster), _ => addSnapIndex()) // TODO 1回実行するだけで良いので消す
     Akka.system().scheduler.schedule(0.seconds, 45.seconds, cron, "minutes")
   }
 
@@ -78,6 +80,13 @@ object Global extends WithFilters(Cors) with GlobalSettings{
         daily.filterNot(b => rest.contains(b.id)).foreach(_.destroy())
       }
     }
+  }
+
+  private def addSnapIndex(): Unit = {
+    Logger.info("Add Snapshot Fulltext Index")
+    val snapIds = DeckSnapshot.findAll()
+    val indexIds: Set[Long] = SnapshotText.findAll().map(_.id)(breakOut)
+    snapIds.filterNot { s => indexIds.contains(s.id) }.foreach(SnapshotText.create)
   }
 }
 
