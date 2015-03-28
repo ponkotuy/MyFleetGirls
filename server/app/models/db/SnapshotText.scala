@@ -79,7 +79,7 @@ object SnapshotText extends SQLSyntaxSupport[SnapshotText] {
     val equips = ships.flatMap(_.slot)
     val equipNames = MasterSlotItem.findAllBy(sqls.in(msi.id, equips)).map(_.name)
     val shipNames = MasterShipBase.findAllBy(sqls.in(ms.id, ships.map(_.shipId))).map(_.name)
-    val content = (Vector(snap.name, snap.comment) ++ equipNames ++ shipNames).mkString(" ")
+    val content = (Vector(snap.name, snap.title, snap.comment) ++ equipNames ++ shipNames).mkString(" ")
     createOrig(snap.id, content)
   }
 
