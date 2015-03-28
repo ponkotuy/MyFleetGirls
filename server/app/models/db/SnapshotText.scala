@@ -52,6 +52,22 @@ object SnapshotText extends SQLSyntaxSupport[SnapshotText] {
     }.map(SnapshotText(st.resultName)).list().apply()
   }
 
+  def search(q: String, limit: Int = 10, offset: Int = 0)(implicit session: DBSession = autoSession): List[Long] = {
+    withSQL {
+      select(column.id).from(SnapshotText as st)
+          .where(sqls"MATCH(content) AGAINST(${q})")
+          .orderBy(sqls"MATCH(content) AGAINST(${q})").desc
+          .limit(limit).offset(offset)
+    }.map(_.long(1)).list().apply()
+  }
+
+  def searchCount(q: String)(implicit session: DBSession = autoSession): Long = {
+    withSQL {
+      select(sqls.count).from(SnapshotText as st)
+          .where(sqls"MATCH(content) AGAINST(${q})")
+    }.map(_.long(1)).single().apply().getOrElse(0L)
+  }
+
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       select(sqls"count(1)").from(SnapshotText as st).where.append(sqls"${where}")
