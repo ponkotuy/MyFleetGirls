@@ -60,7 +60,9 @@
           <h2 class="panel-title"><a href="@routes.UserView.snapshot(x.memberId)#snap@x.id">@x.title</a>（<a href="@routes.UserView.snapshot(x.memberId)">@{x.admiral.nickname}提督</a>）</h2>
         </div>
 
-        <div class="panel-body">@x.comment</div>
+        <div class="panel-body">
+          @x.comments.map { it => @it <br> }
+        </div>
         <table class="table table-striped">
           <thead>
             <tr>

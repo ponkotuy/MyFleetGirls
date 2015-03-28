@@ -41,7 +41,9 @@
             <h2 class="panel-title"><a href="#snap@snap.id">@snap.title</a></h2>
           </div>
 
-          <div class="panel-body">@snap.comment</div>
+          <div class="panel-body">
+            @snap.comments.map { it => @it <br> }
+          </div>
           <table class="table table-striped">
             <thead>
               <tr>
