@@ -3,8 +3,9 @@ package models.db
 import scalikejdbc._
 
 case class SnapshotText(
-  id: Long,
-  content: String) {
+    id: Long,
+    content: String,
+    created: Long) {
 
   def save()(implicit session: DBSession = SnapshotText.autoSession): SnapshotText = SnapshotText.save(this)(session)
 
@@ -17,13 +18,10 @@ object SnapshotText extends SQLSyntaxSupport[SnapshotText] {
 
   override val tableName = "snapshot_text"
 
-  override val columns = Seq("id", "content")
+  override val columns = Seq("id", "content", "created")
 
   def apply(st: SyntaxProvider[SnapshotText])(rs: WrappedResultSet): SnapshotText = apply(st.resultName)(rs)
-  def apply(st: ResultName[SnapshotText])(rs: WrappedResultSet): SnapshotText = new SnapshotText(
-    id = rs.get(st.id),
-    content = rs.get(st.content)
-  )
+  def apply(st: ResultName[SnapshotText])(rs: WrappedResultSet): SnapshotText = autoConstruct(rs, st)
 
   val st = SnapshotText.syntax("st")
   val msi = MasterSlotItem.syntax("msi")
@@ -56,7 +54,7 @@ object SnapshotText extends SQLSyntaxSupport[SnapshotText] {
     withSQL {
       select(column.id).from(SnapshotText as st)
           .where(sqls"MATCH(content) AGAINST(${q})")
-          .orderBy(sqls"MATCH(content) AGAINST(${q})").desc
+          .orderBy(sqls"MATCH(content) AGAINST(${q})".desc, st.created.desc)
           .limit(limit).offset(offset)
     }.map(_.long(1)).list().apply()
   }
@@ -80,32 +78,32 @@ object SnapshotText extends SQLSyntaxSupport[SnapshotText] {
     val equipNames = MasterSlotItem.findAllBy(sqls.in(msi.id, equips)).map(_.name)
     val shipNames = MasterShipBase.findAllBy(sqls.in(ms.id, ships.map(_.shipId))).map(_.name)
     val content = (Vector(snap.name, snap.title, snap.comment) ++ equipNames ++ shipNames).mkString(" ")
-    createOrig(snap.id, content)
+    createOrig(snap.id, content, snap.created)
   }
 
   def createOrig(
-    id: Long,
-    content: String)(implicit session: DBSession = autoSession): SnapshotText = {
+      id: Long,
+      content: String,
+      created: Long)(implicit session: DBSession = autoSession): Unit = {
     withSQL {
       insert.into(SnapshotText).columns(
         column.id,
-        column.content
+        column.content,
+        column.created
       ).values(
-            id,
-            content
-          )
+          id,
+          content,
+          created
+        )
     }.update().apply()
-
-    SnapshotText(
-      id = id,
-      content = content)
   }
 
   def save(entity: SnapshotText)(implicit session: DBSession = autoSession): SnapshotText = {
     withSQL {
       update(SnapshotText).set(
         column.id -> entity.id,
-        column.content -> entity.content
+        column.content -> entity.content,
+        column.created -> entity.created
       ).where.eq(column.id, entity.id)
     }.update().apply()
     entity

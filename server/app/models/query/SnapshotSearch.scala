@@ -4,6 +4,8 @@ import models.db.{DeckSnapshot, SnapshotText}
 import models.join.DeckSnapshotWithAdmiral
 import scalikejdbc._
 
+import scala.collection.breakOut
+
 /**
  *
  * @author ponkotuy
@@ -23,7 +25,10 @@ object SnapshotSearch {
   def search(q: String, page: Int): SnapshotSearch = {
     val ids = SnapshotText.search(q, limit = PageCount, offset = page*PageCount)
     val count = SnapshotText.searchCount(q)
-    val snaps = DeckSnapshot.findAllByWithAdmiral(sqls.in(DeckSnapshot.ds.id, ids))
-    SnapshotSearch(q, snaps, count, page)
+    val snaps: Map[Long, DeckSnapshotWithAdmiral] =
+      DeckSnapshot.findAllByWithAdmiral(sqls.in(DeckSnapshot.ds.id, ids))
+          .map(snap => snap.deck.id -> snap)(breakOut)
+    val sortedSnaps = ids.flatMap(snaps.get)
+    SnapshotSearch(q, sortedSnaps, count, page)
   }
 }
