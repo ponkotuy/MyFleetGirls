@@ -22,11 +22,19 @@
         <h1>艦隊スナップショット</h1>
       </div>
 
-      @snaps.map { snap =>
+      @snaps.zipWithIndex.map { case (snap, idx) =>
         <div class="panel panel-default" id="snap@snap.id">
           <div class="panel-heading">
             <div style="float: right;">
               <div style="float: left; margin-right: 1em;">（@{new DateTime(snap.created).toString("yyyy-MM-dd HH:mm")} 登録）</div>
+              @if(user.isMine) {
+                <button class="btn btn-default btn-xs" type="button" style="float : left ;" onclick="downSnap ( @user.admiral.id, @snap.id)">
+                <span class="glyphicon glyphicon-chevron-down"></span>
+                </button>
+                <button class="btn btn-default btn-xs" type="button" style="float : left ;" @if(idx == 0){disabled="disabled"} onclick="upSnap(@user.admiral.id, @snap.id)">
+                  <span class="glyphicon glyphicon-chevron-up"></span>
+                </button>
+              }
               <div style="float: left; width: 80px; margin-top: -5px;">
                 <div class="input-group input-group-sm favorite-group" data-path="@routes.UserView.snapshot(user.admiral.id)#snap@snap.id" data-title="@snap.title -@{user.admiral.nickname}提督のスナップショット-">
                   <span class="input-group-btn">

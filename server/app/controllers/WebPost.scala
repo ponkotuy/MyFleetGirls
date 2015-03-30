@@ -2,6 +2,7 @@ package controllers
 
 import java.util.UUID
 
+import controllers.form.SetSnapshotOrder
 import models.db
 import models.req._
 import play.api.mvc._
@@ -58,11 +59,39 @@ object WebPost extends Controller {
     UpdateSnapshot.fromReq(request.body).map { update =>
       if(uuidCheck(update.userId, request.session.get("key"))) {
         db.DeckSnapshot.find(update.snapId).map { snap =>
-          db.DeckSnapshot(snap.id, snap.memberId, snap.name, update.title, update.comment, snap.created).save()
+          db.DeckSnapshot(snap.id, snap.memberId, snap.name, update.title, update.comment, snap.created, 0).save()
           Ok("Success")
         }.getOrElse(BadRequest("Invalid snapId"))
       } else { Unauthorized("Authentication failure") }
     }.getOrElse(BadRequest("Invalid data"))
+  }
+
+  def setOrder() = formAsync { implicit req =>
+    def f(order: SetSnapshotOrder) = {
+      if(!uuidCheck(order.memberId, req.session.get("key"))) Unauthorized("Authorication failure")
+      else {
+        val ordered = db.DeckSnapshot.findAllOrder(order.memberId)
+        val idx = ordered.indexWhere(_.id == order.snapId)
+        if(idx == -1) BadRequest(s"Not found snapId = ${order.snapId}")
+        else {
+          val snap = ordered(idx)
+          if(order.sortOrder > 0) {
+            ordered.lift(idx + 1).fold(BadRequest("Not found destination")) { dest =>
+              snap.copy(sortOrder = snap.sortOrder + 1).save()
+              dest.copy(sortOrder = dest.sortOrder - 1).save()
+              Ok("Success")
+            }
+          } else {
+            ordered.lift(idx - 1).fold(BadRequest("Not found destination")) { dest =>
+              snap.copy(sortOrder = snap.sortOrder - 1).save()
+              dest.copy(sortOrder = dest.sortOrder + 1).save()
+              Ok("Success")
+            }
+          }
+        }
+      }
+    }
+    SetSnapshotOrder.form.bindFromRequest().fold(_ => BadRequest("Invalid data"), f)
   }
 
   def settings = formAsync { request =>

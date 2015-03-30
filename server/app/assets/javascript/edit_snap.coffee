@@ -29,3 +29,12 @@ vueOpt =
           @title = data.title
           @comment = data.comment
 
+@downSnap = (userId, snapId) ->
+  @setOrder({userId: userId, snapId: snapId, sortOrder: +1})
+@upSnap = (userId, snapId) ->
+  @setOrder({userId: userId, snapId: snapId, sortOrder: -1})
+
+@setOrder = (data) ->
+  $.post('/post/v1/snapshot/set_order', data)
+    .success ->
+      location.reload(true)

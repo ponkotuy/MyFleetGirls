@@ -12,6 +12,7 @@ case class DeckSnapshotWithAdmiral(deck: DeckSnapshot, ships: Seq[ShipSnapshotWi
 trait DeckSnapshotWith {
   def deck: DeckSnapshot
   def ships: Seq[ShipSnapshotWithName]
+  def sortorder: Int = deck.sortOrder
 
   def id = deck.id
   def title = deck.title

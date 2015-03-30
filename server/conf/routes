@@ -30,6 +30,7 @@ POST          /post/v1/master_remodel                                       cont
 POST          /passwd/post/v1/register_snap                                 controllers.WebPost.registerSnap
 POST          /passwd/post/v1/delete_snap                                   controllers.WebPost.deleteSnap
 POST          /passwd/post/v1/update_snap                                   controllers.WebPost.updateSnap
+POST          /post/v1/snapshot/set_order                                   controllers.WebPost.setOrder
 POST          /passwd/post/v1/settings                                      controllers.WebPost.settings
 DELETE        /passwd/post/v1/yome                                          controllers.WebPost.deleteYome
 POST          /passwd/post/v1/set_session                                   controllers.WebPost.setSession

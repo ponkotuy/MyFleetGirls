@@ -61,7 +61,7 @@ object UserView extends Controller {
   }
 
   def snapshot(memberId: Long) = userView(memberId) { user =>
-    val snaps = db.DeckSnapshot.findAllByWithShip(sqls"member_id = ${memberId}")
+    val snaps = db.DeckSnapshot.findAllOrderWithShip(memberId)
     Ok(views.html.user.snapshot(user, snaps))
   }
 
