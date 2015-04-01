@@ -14,7 +14,7 @@ trait HonorCategory {
 }
 
 object Honors {
-  val values: Vector[HonorCategory] = Vector(ShipMaster, Yome, RankingTop, AllClear, ShipMaxLv, FleetAdmiral, Practice, ShipTypeBias, InitShip, Married, ManyShip, Rookie, FleetGroup, Lucky)
+  val values: Vector[HonorCategory] = Vector(ShipMaster, Yome, RankingTop, AllClear, ShipMaxLv, FleetAdmiral, Practice, ShipTypeBias, InitShip, Married, ManyShip, Rookie, FleetGroup, Lucky, SpecialDay)
 
   def fromUser(memberId: Long, set: Boolean = false) = {
     val where = sqls.toAndConditionOpt(
