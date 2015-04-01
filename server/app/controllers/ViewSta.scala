@@ -1,7 +1,7 @@
 package controllers
 
 import models.db
-import models.join.{ItemMat, Mat, ShipWithName}
+import models.join.{HonorWithRate, ItemMat, Mat, ShipWithName}
 import models.query.{Period, SnapshotSearch}
 import models.view.{CItem, CShip}
 import org.json4s._
@@ -172,7 +172,8 @@ object ViewSta extends Controller {
 
   def honor() = actionAsync {
     val honors = db.Honor.findAllByWithAdmiral(sqls.eq(db.Honor.h.setBadge, true))
-    Ok(views.html.sta.honor(honors))
+    val withRates = HonorWithRate.fromWithAdmiral(honors).sortBy(-_.rate)
+    Ok(views.html.sta.honor(withRates))
   }
 
   private def toP(d: Double): String = f"${d*100}%.1f"
