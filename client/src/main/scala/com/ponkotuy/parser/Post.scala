@@ -25,7 +25,7 @@ object Post extends Log {
     masterShip(obj)
     masterMission(obj)
     masterSlotitem(obj)
-    masterSType((obj))
+    masterSType(obj)
   }
 
   def masterShip(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
@@ -135,8 +135,7 @@ object Post extends Log {
     parseKey(q.toString).filterNot(MFGHttp.existsImage).foreach { key =>
       val swf = allRead(q.res.getContent)
       TempFileTool.save(swf, "swf") { file =>
-        val stCode = MFGHttp.postFile("/swf/ship/" + key, "image")(file)
-        if(stCode < 400) println(s"初めての艦娘を見て画像を転送しました")
+        MFGHttp.postFile("/swf/ship/" + key, "image")(file)
       }
     }
   }
@@ -145,8 +144,7 @@ object Post extends Log {
     SoundUrlId.parseURL(q.toString).filterNot(MFGHttp.existsSound).foreach { case SoundUrlId(shipKey, soundId) =>
       val sound = allRead(q.res.getContent)
       TempFileTool.save(sound, "mp3") { file =>
-        val stCode = MFGHttp.postFile(s"/mp3/kc/${shipKey}/${soundId}", "sound")(file)
-        if(stCode < 400) println(s"初めて (ShipKey -> $shipKey, SoundID -> $soundId) の声を聞いた")
+        MFGHttp.postFile(s"/mp3/kc/${shipKey}/${soundId}", "sound")(file)
       }
     }
   }
