@@ -70,9 +70,20 @@ object Post extends Log {
     }
   }
 
+  var basicMessage = false
   def basic(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     val basic = Basic.fromJSON(obj)
-    MFGHttp.post("/basic", write(basic))
+    val status = MFGHttp.post("/basic", write(basic))
+    if(!basicMessage && (status / 100) == 2) {
+      basicMessage = true
+      println()
+      println("============================================")
+      if(auth2.isEmpty) println("パスワード認証無し") else println("パスワード認証に成功")
+      println("MyFleetGirlsサーバへの接続に成功しました")
+      println(s"URL: https://myfleet.moe/user/${auth.get.memberId}")
+      println("============================================")
+      println()
+    }
     println(basic.summary)
   }
 

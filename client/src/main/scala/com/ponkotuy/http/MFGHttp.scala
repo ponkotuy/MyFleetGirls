@@ -57,14 +57,14 @@ object MFGHttp extends Log {
     }
   }
 
-  def post(uStr: String, data: String, ver: Int = 1)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return }
+  def post(uStr: String, data: String, ver: Int = 1)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Int = {
+    if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return 1 }
     val url = ClientConfig.postUrl(ver) + uStr
     val content = Map("auth" -> write(auth), "auth2" -> write(auth2), "data" -> data)
     postOrig(url, content)
   }
 
-  def postOrig(url: String, data: Map[String, String]): Unit = {
+  def postOrig(url: String, data: Map[String, String]): Int = {
     try {
       val http = httpBuilder.build()
       val post = new HttpPost(url)
@@ -77,7 +77,7 @@ object MFGHttp extends Log {
       }
       alertResult(res)
     } catch {
-      case e: Throwable => error(e.getStackTrace.mkString("\n"))
+      case e: Throwable => error(e.getStackTrace.mkString("\n")); 1
     }
   }
 
