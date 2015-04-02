@@ -18,29 +18,65 @@ import com.ponkotuy.tool.Pretty
  * Date: 14/02/20
  */
 case class Basic(
-    lv: Int, experience: Int, rank: Int,
-    maxChara: Int, fCoin: Int,
-    stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int, medals: Int) {
+    lv: Int,
+    experience: Int,
+    rank: Int,
+    maxChara: Int,
+    fCoin: Int,
+    stWin: Int, stLose: Int,
+    msCount: Int, msSuccess: Int,
+    ptWin: Int, ptLose: Int,
+    medals: Int,
+    comment: String,
+    deckCount: Int,
+    kdockCount: Int,
+    ndockCount: Int,
+    largeDock: Boolean) {
   def summary: String = Pretty(Map(("Lv", lv), ("経験値", experience)))
 }
 
 object Basic {
   implicit val formats = DefaultFormats
 
-  def fromJSON(json: JValue): Basic = {
-    implicit def toInt(json: JValue) = json.extract[Int]
-    val lv = json \ "api_level"
-    val experience = json \ "api_experience"
-    val rank = json \ "api_rank"
-    val maxChara = json \ "api_max_chara"
-    val fCoin = json \ "api_fcoin"
-    val stWin = json \ "api_st_win"
-    val stLose = json \ "api_st_lose"
-    val msCount = json \ "api_ms_count"
-    val msSuccess = json \ "api_ms_success"
-    val ptWin = json \ "api_pt_win"
-    val ptLose: Int = json \ "api_pt_lose"
-    val medals = json \ "api_medals"
-    Basic(lv, experience, rank, maxChara, fCoin, stWin, stLose, msCount, msSuccess, ptWin, ptLose, medals)
+  def fromJSON(json: JValue): Basic = json.extract[RawBasic].build
+
+  private case class RawBasic(
+      api_level: Int,
+      api_experience: Int,
+      api_rank: Int,
+      api_max_chara: Int,
+      api_fcoin: Int,
+      api_st_win: Int,
+      api_st_lose: Int,
+      api_ms_count: Int,
+      api_ms_success: Int,
+      api_pt_win: Int,
+      api_pt_lose: Int,
+      api_medals: Int,
+      api_comment: String,
+      api_count_deck: Int,
+      api_count_kdock: Int,
+      api_count_ndock: Int,
+      api_large_dock: Int) {
+    def build: Basic = {
+      Basic(
+        lv = api_level,
+        experience = api_experience,
+        rank = api_rank,
+        maxChara = api_max_chara,
+        fCoin = api_fcoin,
+        stWin = api_st_win,
+        stLose = api_st_lose,
+        msCount = api_ms_count,
+        msSuccess = api_ms_success,
+        ptWin = api_pt_win,
+        ptLose = api_pt_lose,
+        medals = api_medals,
+        comment = api_comment,
+        deckCount = api_count_deck,
+        kdockCount = api_count_kdock,
+        ndockCount = api_count_ndock,
+        largeDock = api_large_dock != 0)
+    }
   }
 }
