@@ -19,8 +19,13 @@
         server <- KCServer.fromNumber(base)
       } yield { <span class="label label-default">{server.name}</span> }}
       @if(user.isGradeA) { <span class="label label-danger">甲勲章</span> }
+      @if(user.basic.comment.nonEmpty){
+        <span class="label label-info">
+        @user.basic.comment
+        </span>
+      }
       <a href="@routes.UserView.honor(user.admiral.id)">
-        <span class="label label-primary">
+        <span class="label label-primary" style="margin-left: 6px">
           @user.honor match {
             case Some(ho) => {@ho.name}
             case None => {称号未設定}

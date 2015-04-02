@@ -23,7 +23,8 @@ case class Basic(
     lv: Int, experience: Int, rank: Int,
     maxChara: Int, fCoin: Int,
     stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int, medals: Int,
-    created: Long) {
+    created: Long,
+    comment: String, deckCount: Int, kdockCount: Int, ndockCount: Int, largeDock: Boolean) {
   def save()(implicit session: DBSession = Basic.autoSession): Basic = Basic.save(this)
 
   /**
@@ -41,7 +42,12 @@ case class Basic(
       ratio(msCount, x.msCount),
       ratio(ptWin, x.ptWin),
       ratio(ptLose, x.ptLose),
-      neq(medals, x.medals)
+      neq(medals, x.medals),
+      neq(comment, x.comment),
+      neq(deckCount, x.deckCount),
+      neq(kdockCount, x.kdockCount),
+      neq(ndockCount, x.ndockCount),
+      neq(largeDock, x.largeDock)
     ).max
   }
 
@@ -66,7 +72,10 @@ object Basic extends SQLSyntaxSupport[Basic] {
         column.stWin -> b.stWin, column.stLose -> b.stLose,
         column.msCount -> b.msCount, column.msSuccess -> b.msSuccess,
         column.ptWin -> b.ptWin, column.ptLose -> b.ptLose,
-        column.medals -> b.medals
+        column.medals -> b.medals,
+        column.comment -> b.comment,
+        column.deckCount -> b.deckCount, column.kdockCount -> b.kdockCount, column.ndockCount -> b.ndockCount,
+        column.largeDock -> b.largeDock
       )
     }.update()
     b
@@ -83,7 +92,10 @@ object Basic extends SQLSyntaxSupport[Basic] {
         column.msCount -> b.msCount, column.msSuccess -> b.msSuccess,
         column.ptWin -> b.ptWin, column.ptLose -> b.ptLose,
         column.medals -> b.medals,
-        column.created -> created
+        column.created -> created,
+        column.comment -> b.comment,
+        column.deckCount -> b.deckCount, column.kdockCount -> b.kdockCount, column.ndockCount -> b.ndockCount,
+        column.largeDock -> b.largeDock
       )
     }.updateAndReturnGeneratedKey().apply()
   }
