@@ -15,4 +15,6 @@ object AllClear extends HonorCategory {
     val info = MapInfo.findAllBy(sqls.eq(MapInfo.column.memberId, memberId))
     if(info.forall(_.cleared) && info.nonEmpty) "全クリア" :: Nil else Nil
   }
+
+  override val comment: String = "未クリア海域が無い状態にする"
 }

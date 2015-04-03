@@ -1,5 +1,6 @@
 package models.db
 
+import honor.{Honors, HonorCategory}
 import models.join.HonorWithAdmiral
 import scalikejdbc._
 
@@ -14,6 +15,9 @@ case class Honor(
 
   def destroy()(implicit session: DBSession = Honor.autoSession): Unit = Honor.destroy(this)(session)
 
+  def categoryOpt: Option[HonorCategory] = Honors.category(category)
+
+  def comment: String = categoryOpt.map(_.comment).getOrElse("")
 }
 
 

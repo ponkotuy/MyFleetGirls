@@ -29,4 +29,6 @@ object Yome extends HonorCategory {
   }
 
   private def toHonor(ms: MasterShipBase): String = s"${ms.name}は嫁"
+
+  override val comment: String = "Lvが100以上または所持艦の中でLvが最大で、なおかつ嫁設定済"
 }

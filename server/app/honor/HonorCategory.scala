@@ -11,6 +11,7 @@ import collection.breakOut
 trait HonorCategory {
   def category: Int
   def approved(memberId: Long): List[String]
+  def comment: String
 }
 
 object Honors {
@@ -33,4 +34,8 @@ object Honors {
       }
     }
   }
+
+  def category(cat: Int): Option[HonorCategory] = values.find(_.category == cat)
+
+  def comment(cat: Int): Option[String] = category(cat).map(_.comment)
 }

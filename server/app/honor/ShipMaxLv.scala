@@ -12,4 +12,6 @@ object ShipMaxLv extends HonorCategory {
   override def approved(memberId: Long): List[String] = {
     if(Ship.findAllByUser(memberId).exists(_.lv == 150)) "最強の一隻" :: Nil else Nil
   }
+
+  override val comment: String = "艦娘をLv150にする"
 }

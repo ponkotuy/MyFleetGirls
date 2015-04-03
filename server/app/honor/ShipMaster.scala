@@ -38,4 +38,6 @@ object ShipMaster extends HonorCategory {
     125 -> "お嬢様提督",
     15 -> "クソ提督"
   )
+
+  override val comment: String = "ある艦娘（改造後含む）の合計Lvが200以上。特定艦娘固有称号含む"
 }

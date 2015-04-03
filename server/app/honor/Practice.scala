@@ -17,4 +17,6 @@ object Practice extends HonorCategory {
       else Nil
     }.getOrElse(Nil)
   }
+
+  override val comment: String = "演習の勝率80%以上または50%以下"
 }

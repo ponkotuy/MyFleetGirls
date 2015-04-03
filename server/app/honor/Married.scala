@@ -31,4 +31,6 @@ object Married extends HonorCategory {
         marriedOne.map(s => s"${s.name}に一途") ++
         (if(marriedDist.size == 1 && married >= 2) marriedOne.map(s => s"${s.name}の園") else Nil)
   }
+
+  override val comment: String = "ケッコン艦が0、1、2以上、10以上でそれぞれ獲得。ケッコン艦が2以上なおかつそれが同種である場合に別の称号"
 }

@@ -23,4 +23,6 @@ object RankingTop extends HonorCategory {
     val ins = rankings.filter { case (_, xs) => xs.exists(x => admiralName.contains(x.name)) }.keys
     (tops.map(top => s"${top.title}トップ") ++ ins.map(in => s"${in.title}ランクイン")).toList
   }
+
+  override val comment: String = "ランキングトップとランクイン"
 }

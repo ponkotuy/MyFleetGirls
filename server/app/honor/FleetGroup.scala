@@ -21,4 +21,6 @@ object FleetGroup extends HonorCategory {
   }
 
   val OriginalHonor = Map(1L -> "鎮守府の朝チュン")
+
+  override val comment: String = "特定の艦娘をそれぞれ所持する"
 }

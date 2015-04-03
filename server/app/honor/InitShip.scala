@@ -21,4 +21,6 @@ object InitShip extends HonorCategory {
     }
     result.getOrElse(Nil)
   }
+
+  override val comment: String = "選んだ初期艦の称号が手に入る。初期艦Lv150で追加称号"
 }

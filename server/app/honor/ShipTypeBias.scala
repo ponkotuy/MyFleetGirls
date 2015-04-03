@@ -24,4 +24,6 @@ object ShipTypeBias extends HonorCategory {
     "重雷装巡洋艦" -> "超重雷撃",
     "潜水艦" -> "オリョクル提督"
   )
+
+  override val comment: String = "各ユーザ統計の経験値取得比率が最も高い艦種"
 }

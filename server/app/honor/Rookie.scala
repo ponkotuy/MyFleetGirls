@@ -15,4 +15,6 @@ object Rookie extends HonorCategory {
       "駆け出し提督"
     }.toList
   }
+
+  override def comment: String = "Lv50以下"
 }

@@ -11,15 +11,22 @@
       </div>
 
       <form>
-        @honors.groupBy(_.category).toVector.sortBy(_._1).map { case (_, xs) =>
-          <div style="margin-bottom: 10px;">
-            @xs.map { x =>
-              <label class="radio-inline">
-                <input type="radio" name="honor" value="@x.name" @if(x.setBadge){checked="checked"}>@x.name
-              </label>
-            }
-          </div>
-        }
+        <table class="table">
+          @honors.groupBy(_.category).toVector.sortBy(_._1).map { case (_, xs) =>
+            <tr>
+              <th>
+                @xs.map { x =>
+                  <label class="radio-inline">
+                    <input type="radio" name="honor" value="@x.name" @if(x.setBadge){checked="checked"}>@x.name
+                  </label><br>
+                }
+              </th>
+              <td style="vertical-align: middle;">
+                @xs.head.comment
+              </td>
+            </tr>
+          }
+        </table>
         <button type="button" class="btn btn-primary" id="submit" @if(!user.isMine){disabled="disabled"}>設定変更</button>
         @if(!user.isMine){<p class="text-danger">ログインが必要です</p>}
       </form>

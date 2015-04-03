@@ -20,4 +20,6 @@ object Lucky extends HonorCategory {
     names.map("幸運の" + _.name).distinct ++
         (if(luckyMax.nonEmpty) Some("幸運の女神") else None)
   }
+
+  override val comment: String = "運のステータスがMAXになる"
 }

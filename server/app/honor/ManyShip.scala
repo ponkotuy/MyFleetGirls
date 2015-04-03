@@ -17,4 +17,6 @@ object ManyShip extends HonorCategory {
     val count = Ship.countBy(sqls.eq(s.memberId, memberId).and.ge(s.lv, 50))
     if(50 <= count) "精鋭の大艦隊" :: Nil else Nil
   }
+
+  override def comment: String = "Lv50以上の艦が50隻以上"
 }

@@ -13,4 +13,6 @@ object FleetAdmiral extends HonorCategory {
   override def approved(memberId: Long): List[String] = {
     if(Basic.findByUser(memberId).exists(_.rank == 1)) "元帥" :: Nil else Nil
   }
+
+  override val comment: String = "元帥になる"
 }

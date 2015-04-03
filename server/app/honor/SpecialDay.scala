@@ -17,6 +17,8 @@ object SpecialDay extends HonorCategory {
   }
 
   val Honors = Map(MonthDay(4, 1) -> "エイプリルフール")
+
+  override val comment: String = "固有の日に称号ページを開く"
 }
 
 case class MonthDay(month: Int, day: Int)
