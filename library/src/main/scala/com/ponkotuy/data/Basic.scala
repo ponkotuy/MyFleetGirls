@@ -57,7 +57,7 @@ object Basic {
       api_count_deck: Int,
       api_count_kdock: Int,
       api_count_ndock: Int,
-      api_large_dock: Int) {
+      api_large_dock: Option[Int]) {
     def build: Basic = {
       Basic(
         lv = api_level,
@@ -76,7 +76,7 @@ object Basic {
         deckCount = api_count_deck,
         kdockCount = api_count_kdock,
         ndockCount = api_count_ndock,
-        largeDock = api_large_dock != 0)
+        largeDock = api_large_dock.forall(_ != 0))
     }
   }
 }
