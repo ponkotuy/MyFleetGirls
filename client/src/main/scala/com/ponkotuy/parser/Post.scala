@@ -176,6 +176,14 @@ object Post extends Log {
     cb.getBytes(0, baos, cb.readableBytes())
     baos.toByteArray
   }
+
+  def rankingList(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
+    auth.map(_.memberId).orElse(auth2.map(_.id)).map { memberId =>
+      Ranking.fromJson(obj).filter(_.memberId == memberId).foreach { rank =>
+        // TODO
+      }
+    }
+  }
 }
 
 case class SoundUrlId(shipKey: String, soundId: Int)

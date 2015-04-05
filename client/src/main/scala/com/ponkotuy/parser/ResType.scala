@@ -75,7 +75,7 @@ object ResType extends Log {
   case object SortieBattleResult extends ResType(s"\\A$ReqSortie/battleresult\\z".r)
   case object ClearItemGet extends ResType(s"\\A$ReqQuest/clearitemget\\z".r)
   case object NyukyoStart extends ResType(s"\\A$ReqNyukyo/start\\z".r)
-  case object RankingList extends ResType(s"\\A$ReqRanking/getlist\\z".r) // 基地のランキング。取るべきではない
+  case object RankingList extends ResType(s"\\A$ReqRanking/getlist\\z".r)
   case object CombinedBattleResult extends ResType(s"\\A$ReqCombined/battleresult\\z".r)
   case object MasterPractice extends ResType(s"\\A$GetMaster/practice\\z".r)
   case object MasterUseItem extends ResType(s"\\A$GetMaster/useitem\\z".r) // 高速修復材とかの説明
