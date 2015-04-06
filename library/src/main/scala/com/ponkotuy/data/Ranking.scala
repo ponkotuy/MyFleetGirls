@@ -1,5 +1,6 @@
 package com.ponkotuy.data
 
+import com.ponkotuy.tool.RankingDiff
 import org.json4s._
 
 /**
@@ -7,7 +8,7 @@ import org.json4s._
  * @author ponkotuy
  * Date: 15/04/06.
  */
-case class Ranking(no: Int, memberId: Long, rate: Int)
+case class Ranking(no: Int, memberId: Long, rate: Int) extends RankingDiff
 
 object Ranking {
   implicit val format = DefaultFormats

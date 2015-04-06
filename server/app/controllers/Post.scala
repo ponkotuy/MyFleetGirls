@@ -6,9 +6,7 @@ import com.ponkotuy.value.KCServer
 import controllers.Common._
 import models.db
 import play.api.mvc._
-
-import scala.concurrent.ExecutionContext.Implicits._
-import scala.concurrent.Future
+import scalikejdbc.{AutoSession, DBSession}
 
 /**
  *
@@ -41,10 +39,6 @@ object Post extends Controller {
     }
   }
 
-  def ship = Action.async {
-    Future { Gone("Obsolete this version API. Your client need updated.") }
-  }
-
   def ship2 = authAndParse[List[Ship]] { case (auth, ships) =>
     db.Ship.deleteAllByUser(auth.id)
     db.Ship.bulkInsert(ships, auth.id)
@@ -59,16 +53,6 @@ object Post extends Controller {
   def ndock = authAndParse[List[NDock]] { case (auth, docks) =>
     db.NDock.deleteAllByUser(auth.id)
     docks.foreach(dock => db.NDock.create(dock, auth.id))
-    Ok("Success")
-  }
-
-  def createShip = authAndParse[CreateShipAndDock] { case (auth, CreateShipAndDock(ship, dock)) =>
-    try {
-      db.CreateShip.createFromKDock(ship, dock, auth.id)
-    } catch {
-      case e: Throwable =>
-        Ok("Duplicate Entry")
-    }
     Ok("Success")
   }
 
@@ -170,6 +154,19 @@ object Post extends Controller {
 
   def masterRemodel() = authAndParse[MasterRemodel] { case (auth, request) =>
     db.MasterRemodel.createFromData(request, auth.id)
+    Ok("Success")
+  }
+
+  def ranking() = authAndParse[Ranking] { case (auth, request) =>
+    db.Ranking.findNewest(auth.id) match {
+      case None => insertRanking(auth, request)
+      case Some(before) =>
+        if(before.diff(request) > 0.0) insertRanking(auth, request) else Ok("No change")
+    }
+  }
+
+  private def insertRanking(auth: db.Admiral, rank: Ranking)(implicit session: DBSession = AutoSession) = {
+    db.Ranking.create(auth.id, rank.no, rank.rate, System.currentTimeMillis())
     Ok("Success")
   }
 }

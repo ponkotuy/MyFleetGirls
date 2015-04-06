@@ -1,8 +1,8 @@
 package models.db
 
+import com.ponkotuy.tool.DiffCalc
 import scalikejdbc._
 import com.ponkotuy.data
-import tool.DiffCalc
 
 /**
  *

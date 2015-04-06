@@ -178,9 +178,9 @@ object Post extends Log {
   }
 
   def rankingList(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    auth.map(_.memberId).orElse(auth2.map(_.id)).map { memberId =>
+    auth.map(_.memberId).orElse(auth2.map(_.id)).foreach { memberId =>
       Ranking.fromJson(obj).filter(_.memberId == memberId).foreach { rank =>
-        // TODO
+        MFGHttp.post("/ranking", write(rank))
       }
     }
   }
