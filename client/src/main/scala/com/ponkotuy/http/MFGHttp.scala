@@ -2,6 +2,7 @@ package com.ponkotuy.http
 
 import java.io._
 import java.nio.charset.Charset
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
 
 import com.ponkotuy.config.ClientConfig
@@ -11,17 +12,20 @@ import com.ponkotuy.util.Log
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.{CloseableHttpResponse, HttpGet, HttpHead, HttpPost}
+import org.apache.http.client.utils.HttpClientUtils
 import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.entity.mime.content.FileBody
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager
 import org.apache.http.message.BasicNameValuePair
-import org.apache.http.client.utils.HttpClientUtils
+import org.apache.http.config.RegistryBuilder
+import org.apache.http.conn.socket.ConnectionSocketFactory
+import org.apache.http.conn.socket.PlainConnectionSocketFactory
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import org.json4s._
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
-
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
@@ -37,11 +41,16 @@ object MFGHttp extends Log {
       .setConnectTimeout(60*1000)
       .setRedirectsEnabled(true)
       .build()
+  val registry = RegistryBuilder.create[ConnectionSocketFactory]()
+    .register("http", PlainConnectionSocketFactory.getSocketFactory())
+    .register("https", new SSLConnectionSocketFactory(sslContext))
+    .build()
+  val cm = new PoolingHttpClientConnectionManager(registry,null,null,null,10 * 60, TimeUnit.SECONDS)
+  cm.setDefaultMaxPerRoute(0)
   val httpBuilder = HttpClientBuilder.create()
       .setDefaultRequestConfig(config)
-      .setConnectionManager(new PoolingHttpClientConnectionManager())
+      .setConnectionManager(cm)
       .setSslcontext(sslContext)
-      .setMaxConnPerRoute(0)
   val http = httpBuilder.build();
 
   implicit val formats = Serialization.formats(NoTypeHints)
