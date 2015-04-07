@@ -40,17 +40,14 @@ object MFGHttp extends Log {
   val config = RequestConfig.custom()
       .setConnectTimeout(60*1000)
       .setRedirectsEnabled(true)
+      .setStaleConnectionCheckEnabled(true)
       .build()
-  val registry = RegistryBuilder.create[ConnectionSocketFactory]()
-    .register("http", PlainConnectionSocketFactory.getSocketFactory())
-    .register("https", new SSLConnectionSocketFactory(sslContext))
-    .build()
-  val cm = new PoolingHttpClientConnectionManager(registry,null,null,null,10 * 60, TimeUnit.SECONDS)
-  cm.setDefaultMaxPerRoute(0)
   val httpBuilder = HttpClientBuilder.create()
       .setDefaultRequestConfig(config)
-      .setConnectionManager(cm)
+      .setSSLSocketFactory(new SSLConnectionSocketFactory(sslContext))
       .setSslcontext(sslContext)
+      .setConnectionTimeToLive(5 * 60 , TimeUnit.SECONDS)
+      .setMaxConnPerRoute(1)
   val http = httpBuilder.build();
 
   implicit val formats = Serialization.formats(NoTypeHints)
@@ -60,7 +57,6 @@ object MFGHttp extends Log {
   }
 
   def getOrig(url: String): Option[String] = {
-    val http = httpBuilder.build();
     val get = new HttpGet(url)
     var res:CloseableHttpResponse = null
     try {
