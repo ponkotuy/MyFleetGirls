@@ -66,6 +66,7 @@ GET           /rest/v2/master/slotitem/hash                                 cont
 GET           /rest/v2/master/stype/hash                                    controllers.Rest.stypeHash
 GET           /rest/v1/:userId/materials                                    controllers.RestUser.materials(userId: Long)
 GET           /rest/v1/:userId/basics                                       controllers.RestUser.basics(userId: Long)
+GET           /rest/v2/user/:userId/scores                                  controllers.RestUser.scores(userId: Long)
 GET           /rest/v1/:userId/ndocks                                       controllers.RestUser.ndocks(userId: Long)
 GET           /rest/v1/:userId/kdocks                                       controllers.RestUser.kdocks(userId: Long)
 GET           /rest/v1/:userId/missions                                     controllers.RestUser.missions(userId: Long)

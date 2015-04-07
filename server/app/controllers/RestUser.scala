@@ -19,6 +19,8 @@ object RestUser extends Controller {
 
   def basics(userId: Long) = returnJson(db.Basic.findAllByUser(userId))
 
+  def scores(memberId: Long) = returnJson(db.Ranking.findAllBy(sqls.eq(db.Ranking.r.memberId, memberId)))
+
   def ndocks(memberId: Long) = returnJson(db.NDock.findAllByUserWithName(memberId))
 
   def kdocks(memberId: Long) = returnJson(db.KDock.findAllByUserWithName(memberId))
