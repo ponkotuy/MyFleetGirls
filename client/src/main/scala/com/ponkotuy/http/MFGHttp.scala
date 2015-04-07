@@ -15,6 +15,7 @@ import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.entity.mime.content.FileBody
 import org.apache.http.impl.client.HttpClientBuilder
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager
 import org.apache.http.message.BasicNameValuePair
 import org.json4s._
 import org.json4s.native.Serialization
@@ -38,6 +39,9 @@ object MFGHttp extends Log {
   val httpBuilder = HttpClientBuilder.create()
       .setDefaultRequestConfig(config)
       .setSslcontext(sslContext)
+      .setConnectionManager(new PoolingHttpClientConnectionManager())
+      .setMaxConnPerRoute(0)
+  val http = httpBuilder.build();
 
   implicit val formats = Serialization.formats(NoTypeHints)
 
@@ -47,7 +51,6 @@ object MFGHttp extends Log {
 
   def getOrig(url: String): Option[String] = {
     try {
-      val http = httpBuilder.build()
       val get = new HttpGet(url)
       Some(allRead(http.execute(get).getEntity.getContent))
     } catch {
@@ -66,7 +69,6 @@ object MFGHttp extends Log {
 
   def postOrig(url: String, data: Map[String, String]): Int = {
     try {
-      val http = httpBuilder.build()
       val post = new HttpPost(url)
       post.setEntity(createEntity(data))
       val res = http.execute(post)
@@ -83,7 +85,6 @@ object MFGHttp extends Log {
 
   def masterPost(uStr: String, data: String, ver: Int = 1)(implicit auth2: Option[MyFleetAuth]): Unit = {
     try {
-      val http = httpBuilder.build()
       val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
       val entity = createEntity(Map("auth2" -> write(auth2), "data" -> data))
       post.setEntity(entity)
@@ -105,7 +106,6 @@ object MFGHttp extends Log {
       implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Int = {
     if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return 601 }
     try {
-      val http = httpBuilder.build()
       val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
       val entity = MultipartEntityBuilder.create()
       entity.setCharset(UTF8)
