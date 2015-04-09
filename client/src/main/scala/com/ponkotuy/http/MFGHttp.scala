@@ -2,6 +2,7 @@ package com.ponkotuy.http
 
 import java.io._
 import java.nio.charset.Charset
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
 
 import com.ponkotuy.config.ClientConfig
@@ -11,15 +12,20 @@ import com.ponkotuy.util.Log
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.{CloseableHttpResponse, HttpGet, HttpHead, HttpPost}
+import org.apache.http.client.utils.HttpClientUtils
 import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.entity.mime.content.FileBody
 import org.apache.http.impl.client.HttpClientBuilder
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager
 import org.apache.http.message.BasicNameValuePair
+import org.apache.http.config.RegistryBuilder
+import org.apache.http.conn.socket.ConnectionSocketFactory
+import org.apache.http.conn.socket.PlainConnectionSocketFactory
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import org.json4s._
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
-
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
@@ -34,10 +40,15 @@ object MFGHttp extends Log {
   val config = RequestConfig.custom()
       .setConnectTimeout(60*1000)
       .setRedirectsEnabled(true)
+      .setStaleConnectionCheckEnabled(true)
       .build()
   val httpBuilder = HttpClientBuilder.create()
       .setDefaultRequestConfig(config)
+      .setSSLSocketFactory(new SSLConnectionSocketFactory(sslContext))
       .setSslcontext(sslContext)
+      .setConnectionTimeToLive(5 * 60 , TimeUnit.SECONDS)
+      .setMaxConnPerRoute(1)
+  val http = httpBuilder.build();
 
   implicit val formats = Serialization.formats(NoTypeHints)
 
@@ -46,14 +57,17 @@ object MFGHttp extends Log {
   }
 
   def getOrig(url: String): Option[String] = {
+    val get = new HttpGet(url)
+    var res:CloseableHttpResponse = null
     try {
-      val http = httpBuilder.build()
-      val get = new HttpGet(url)
-      Some(allRead(http.execute(get).getEntity.getContent))
+      res = http.execute(get)
+      Some(allRead(res.getEntity.getContent))
     } catch {
       case e: Throwable =>
         error(e.getStackTrace.mkString("\n"))
         None
+    } finally {
+      HttpClientUtils.closeQuietly(res)
     }
   }
 
@@ -65,11 +79,11 @@ object MFGHttp extends Log {
   }
 
   def postOrig(url: String, data: Map[String, String]): Int = {
+    val post = new HttpPost(url)
+    post.setEntity(createEntity(data))
+    var res:CloseableHttpResponse = null
     try {
-      val http = httpBuilder.build()
-      val post = new HttpPost(url)
-      post.setEntity(createEntity(data))
-      val res = http.execute(post)
+      res = http.execute(post)
       val status = res.getStatusLine.getStatusCode
       if(300 <= status && status < 400) {
         val location = res.getFirstHeader("Location").getValue
@@ -78,19 +92,23 @@ object MFGHttp extends Log {
       alertResult(res)
     } catch {
       case e: Throwable => error(e.getStackTrace.mkString("\n")); 1
+    } finally {
+      HttpClientUtils.closeQuietly(res)
     }
   }
 
   def masterPost(uStr: String, data: String, ver: Int = 1)(implicit auth2: Option[MyFleetAuth]): Unit = {
+    val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
+    val entity = createEntity(Map("auth2" -> write(auth2), "data" -> data))
+    post.setEntity(entity)
+    var res:CloseableHttpResponse = null
     try {
-      val http = httpBuilder.build()
-      val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
-      val entity = createEntity(Map("auth2" -> write(auth2), "data" -> data))
-      post.setEntity(entity)
-      val res = http.execute(post)
+      res = http.execute(post)
       alertResult(res)
     } catch {
       case e: Throwable => error(e.getStackTrace.mkString("\n"))
+    } finally {
+      HttpClientUtils.closeQuietly(res)
     }
   }
 
@@ -104,19 +122,21 @@ object MFGHttp extends Log {
   def postFile(uStr: String, fileBodyKey: String, ver: Int = 1)(file: File)(
       implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Int = {
     if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return 601 }
+    val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
+    val entity = MultipartEntityBuilder.create()
+    entity.setCharset(UTF8)
+    entity.addTextBody("auth", write(auth), ContentType.APPLICATION_JSON)
+    entity.addTextBody("auth2", write(auth2), ContentType.APPLICATION_JSON)
+    entity.addPart(fileBodyKey, new FileBody(file))
+    post.setEntity(entity.build())
+    var res:CloseableHttpResponse = null
     try {
-      val http = httpBuilder.build()
-      val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
-      val entity = MultipartEntityBuilder.create()
-      entity.setCharset(UTF8)
-      entity.addTextBody("auth", write(auth), ContentType.APPLICATION_JSON)
-      entity.addTextBody("auth2", write(auth2), ContentType.APPLICATION_JSON)
-      entity.addPart(fileBodyKey, new FileBody(file))
-      post.setEntity(entity.build())
-      val res = http.execute(post)
+      res = http.execute(post)
       alertResult(res)
     } catch {
       case e: Throwable => error((e.getMessage :+ e.getStackTrace).mkString("\n")); 600
+    } finally {
+      HttpClientUtils.closeQuietly(res)
     }
   }
 
@@ -136,9 +156,14 @@ object MFGHttp extends Log {
     head(s"/sound/ship_obf/${s.shipKey}/${s.soundId}.mp3", ver = 1).getStatusLine.getStatusCode == 200
 
   private def head(uStr: String, ver: Int = 1) = {
-    val http = httpBuilder.build()
     val head = new HttpHead(ClientConfig.getUrl(ver) + uStr)
-    http.execute(head)
+    var res:CloseableHttpResponse = null
+    try {
+      res = http.execute(head)
+    } finally {
+      HttpClientUtils.closeQuietly(res)
+    }
+    res
   }
 
   def allRead(is: InputStream): String = {
