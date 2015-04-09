@@ -21,10 +21,16 @@ import static java.nio.file.StandardOpenOption.*;
  * @since 15/03/11.
  */
 public class Connection {
+    private static String USER_AGENT = null;
+
+    static {
+        USER_AGENT = String.format("MyFleetGirls Updater w/%s (%s)", System.getProperty("java.vm.version"), System.getProperty("os.name"));
+    }
+
     public static URLConnection withRedirect(URL url, long lastModified) throws IOException,GeneralSecurityException {
         URLConnection conn = url.openConnection();
         conn.setRequestProperty("Accept-Encoding", "pack200-gzip, gzip");
-        conn.setRequestProperty("User-Agent", "MyFleetGirls Updater");
+        conn.setRequestProperty("User-Agent", USER_AGENT);
         conn.setUseCaches(false);
         conn.setIfModifiedSince(lastModified);
         HttpURLConnection http = (HttpURLConnection) conn;

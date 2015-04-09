@@ -43,6 +43,7 @@ object MFGHttp extends Log {
       .setStaleConnectionCheckEnabled(true)
       .build()
   val httpBuilder = HttpClientBuilder.create()
+      .setUserAgent(s"${BuildInfo.name} client ver:${BuildInfo.version} w/JVM: ${util.Properties.versionString}")
       .setDefaultRequestConfig(config)
       .setSSLSocketFactory(new SSLConnectionSocketFactory(sslContext))
       .setSslcontext(sslContext)
