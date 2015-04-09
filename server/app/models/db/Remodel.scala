@@ -39,7 +39,6 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
   val r = Remodel.syntax("r")
   val before = MasterSlotItem.syntax("bef")
   val after = MasterSlotItem.syntax("aft")
-  val uItem = MasterSlotItem.syntax("uItem")
   val ras = RemodelAfterSlot.syntax("ras")
   val mr = MasterRemodel.syntax("mr")
   val ms = MasterShipBase.syntax("ms")
@@ -75,8 +74,6 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
         .innerJoin(MasterSlotItem as before).on(r.beforeItemId, before.id)
         .innerJoin(MasterSlotItem as after).on(r.afterItemId, after.id)
         .leftJoin(RemodelAfterSlot as ras).on(r.id, ras.remodelId)
-        .leftJoin(MasterRemodel as mr).on(sqls.eq(r.beforeItemId, mr.slotitemId).and.eq(r.beforeItemLevel, mr.slotitemLevel))
-        .leftJoin(MasterSlotItem as uItem).on(mr.useSlotitemId, uItem.id)
         .leftJoin(MasterShipBase as ms).on(r.secondShipId, ms.id)
         .where(where).orderBy(r.created).desc
         .limit(limit).offset(offset)
@@ -85,10 +82,8 @@ object Remodel extends SQLSyntaxSupport[Remodel] {
       val bItem = MasterSlotItem(before)(rs)
       val aItem = MasterSlotItem(after)(rs)
       val aSlot = Try { RemodelAfterSlot(ras)(rs) }.toOption
-      val master = Try { MasterRemodel(mr)(rs) }.toOption
-      val useItem = Try { MasterSlotItem(uItem)(rs) }.toOption
       val secondShip = Try { MasterShipBase(ms)(rs) }.toOption
-      RemodelWithName(remodel, bItem, aItem, aSlot, master, useItem, secondShip)
+      RemodelWithName(remodel, bItem, aItem, aSlot, secondShip)
     }.list().apply()
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
