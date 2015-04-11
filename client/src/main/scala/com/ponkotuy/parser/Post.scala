@@ -25,27 +25,12 @@ object Post extends Log {
     println(s"所属： ${kcServer.name}")
   }
 
-  def ship(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    val ship = Ship.fromJson(obj)
-    MFGHttp.post("/ship", write(ship), ver = 2)
-    println(s"所持艦娘数 -> ${ship.size}")
-  }
-
   def update_ship(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     val update = Ship.fromJson(obj \ "api_ship_data")
     MFGHttp.post("/update_ship", write(update))
   }
 
   def ndock(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    val docks = NDock.fromJson(obj)
-    MFGHttp.post("/ndock", write(docks))
-    docks.filterNot(_.shipId == 0).map(_.summary).foreach(println)
-  }
-
-  def material(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    val material = Material.fromJson(obj)
-    MFGHttp.post("/material", write(material))
-    println(material.summary)
   }
 
   def slotitem(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {

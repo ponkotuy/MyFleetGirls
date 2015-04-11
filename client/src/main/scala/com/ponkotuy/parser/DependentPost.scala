@@ -20,7 +20,6 @@ class DependentPost {
   implicit val formats = DefaultFormats
   type Req = Map[String, String]
 
-  val FleetMax = 4
 
   // 現在進行中のStage情報がBattleResultで必要なので置いておく
   private[this] var mapNext: Option[data.MapStart] = None
@@ -100,17 +99,7 @@ class DependentPost {
   }
 
   def deckport(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    synchronized {
-      val decks = DeckPort.fromJson(obj)
-      firstFleet = extractFleetShips(decks)(1)
-      fleets = (1 to FleetMax).map(extractFleetShips(decks))
-      if(decks.nonEmpty) MFGHttp.post("/deckport", write(decks))
-      decks.map(_.summary).foreach(println)
-    }
   }
-
-  private def extractFleetShips(decks: Iterable[DeckPort])(num: Int): List[Int] =
-    decks.find(_.id == num).map(_.ships).getOrElse(Nil)
 
   def mapStart(req: Req, obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     synchronized {

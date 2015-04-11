@@ -26,7 +26,7 @@ case class Authentication(auth: Auth, auth2: Option[MyFleetAuth]) extends Result
 
 sealed trait HttpPostable extends Result {
   def message: String
-  def printMessage: Unit = {
+  def printMessage(): Unit = {
     if(message.nonEmpty) println(message)
   }
 }
@@ -56,13 +56,9 @@ object ResType extends Log {
   val ReqCombined = s"$Api/api_req_combined_battle"
 
   /*
-  case object Material extends ResType(s"\\A$GetMember/material\\z".r)
   case object Record extends ResType(s"\\A$GetMember/record\\z".r) // Basicの綺麗版
-  case object Ship2 extends ResType(s"\\A$GetMember/ship2\\z".r) // どうせship3に含まれているんだろう？
   case object Ship3 extends ResType(s"\\A$GetMember/ship3\\z".r)
-  case object NDock extends ResType(s"\\A$GetMember/ndock\\z".r)
   case object KDock extends ResType(s"\\A$GetMember/kdock\\z".r)
-  case object Deck extends ResType(s"\\A$GetMember/deck\\z".r) // DeckPortと何が違うのか分からなくて困っている
   case object DeckPort extends ResType(s"\\A$GetMember/deck_port\\z".r)
   case object UseItem extends ResType(s"\\A$GetMember/useitem\\z".r) // 家具箱とか
   case object SlotItem extends ResType(s"\\A$GetMember/slot_item\\z".r) // 旧slotitem 新slot_item
@@ -101,9 +97,7 @@ object ResType extends Log {
   case object MasterPractice extends ResType(s"\\A$GetMaster/practice\\z".r)
   case object MasterUseItem extends ResType(s"\\A$GetMaster/useitem\\z".r) // 高速修復材とかの説明
   case object MasterFurniture extends ResType(s"\\A$GetMaster/furniture\\z".r) // 家具の説明
-//  case object MasterSlotItem extends ResType(s"\\A$GetMaster/slotitem\\z".r)
   case object MasterMapArea extends ResType(s"\\A$GetMaster/maparea\\z".r) // 鎮守府海域・南西諸島海域など
-  case object Port extends ResType(s"\\A$Api/api_port/port\\z".r)
   case object ShipSWF extends ResType("""\A/kcs/resources/swf/ships/[a-z]+\.swf\z""".r)
   case object SoundMP3 extends ResType("""\A/kcs/sound/kc[a-z]+/[0-9]+\.mp3""".r)
 
@@ -122,7 +116,12 @@ object ResType extends Log {
   val values: Set[ResType] = Set(
     ApiStart2,
     Basic,
-    LoginCheck
+    LoginCheck,
+    Port,
+    Material,
+    DeckPort,
+    NDock,
+    Ship2
   )
 
   def fromUri(uri: String): Option[ResType] = {

@@ -28,7 +28,7 @@ class PostActor extends Actor {
     case pos: HttpPostable =>
       if(isAuth) {
         MFGHttp.post(pos)
-        pos.printMessage
+        pos.printMessage()
         Thread.sleep(WaitTime)
       } else queue.enqueue(pos)
     case a: Authentication => // これが来たら認証待ちQueueを吐き出す
