@@ -56,6 +56,16 @@ object Post extends Controller {
     Ok("Success")
   }
 
+  def createShip = authAndParse[CreateShipAndDock] { case (auth, CreateShipAndDock(ship, dock)) =>
+    try {
+      db.CreateShip.createFromKDock(ship, dock, auth.id)
+    } catch {
+      case e: Throwable =>
+        Ok("Duplicate Entry")
+    }
+    Ok("Success")
+  }
+
   def createShip2 = authAndParse[CreateShipWithId] { case (auth, CreateShipWithId(ship, id)) =>
     db.CreateShip.create(ship, auth.id, id)
     Ok("Success")
