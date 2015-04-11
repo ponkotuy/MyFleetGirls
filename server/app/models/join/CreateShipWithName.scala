@@ -36,7 +36,7 @@ case class CreateShipWithName2(memberId: Long, resultShip: Int, largeFlag: Boole
 
 object CreateShipWithName2 {
   def apply(cs: SyntaxProvider[CreateShip], ms: SyntaxProvider[MasterShipBase])(
-    rs: WrappedResultSet): CreateShipWithName2 =
+      rs: WrappedResultSet): CreateShipWithName2 =
     new CreateShipWithName2(
       rs.long(cs.memberId),
       rs.int(cs.resultShip),

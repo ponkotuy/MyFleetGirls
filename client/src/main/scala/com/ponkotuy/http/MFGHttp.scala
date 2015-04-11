@@ -8,6 +8,7 @@ import javax.net.ssl.SSLContext
 import com.ponkotuy.config.ClientConfig
 import com.ponkotuy.data.{Auth, MyFleetAuth}
 import com.ponkotuy.parser.SoundUrlId
+import com.ponkotuy.restype.{NormalPostable, MasterPostable, HttpPostable}
 import com.ponkotuy.util.Log
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.entity.UrlEncodedFormEntity
@@ -72,6 +73,13 @@ object MFGHttp extends Log {
     }
   }
 
+  def post(p: HttpPostable)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Int = {
+    p match {
+      case m: MasterPostable => masterPost(m.url, m.data, m.ver)
+      case n: NormalPostable => post(n.url, n.data, n.ver)
+    }
+  }
+
   def post(uStr: String, data: String, ver: Int = 1)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Int = {
     if(auth.isEmpty) { info(s"Not Authorized: $uStr"); return 1 }
     val url = ClientConfig.postUrl(ver) + uStr
@@ -98,7 +106,7 @@ object MFGHttp extends Log {
     }
   }
 
-  def masterPost(uStr: String, data: String, ver: Int = 1)(implicit auth2: Option[MyFleetAuth]): Unit = {
+  def masterPost(uStr: String, data: String, ver: Int = 1)(implicit auth2: Option[MyFleetAuth]): Int = {
     val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
     val entity = createEntity(Map("auth2" -> write(auth2), "data" -> data))
     post.setEntity(entity)
@@ -107,7 +115,7 @@ object MFGHttp extends Log {
       res = http.execute(post)
       alertResult(res)
     } catch {
-      case e: Throwable => error(e.getStackTrace.mkString("\n"))
+      case e: Throwable => error(e.getStackTrace.mkString("\n")); 1
     } finally {
       HttpClientUtils.closeQuietly(res)
     }

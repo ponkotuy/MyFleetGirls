@@ -1,7 +1,10 @@
-package com.ponkotuy.parser
+package com.ponkotuy.restype
 
 import com.netaporter.uri.Uri
+import com.ponkotuy.data.{MyFleetAuth, Auth}
 import com.ponkotuy.util.Log
+import org.json4s._
+
 import scala.util.matching.Regex
 
 /**
@@ -11,9 +14,29 @@ import scala.util.matching.Regex
  * @author ponkotuy
  * Date: 14/02/19.
  */
-sealed abstract class ResType(val regexp: Regex)
+abstract class ResType {
+  import ResType._
+  def regexp: Regex
+  def postables(req: Req, obj: JValue): Seq[Result]
+  implicit def formats: Formats = DefaultFormats
+}
+
+sealed trait Result
+case class Authentication(auth: Auth, auth2: Option[MyFleetAuth]) extends Result
+
+sealed trait HttpPostable extends Result {
+  def message: String
+  def printMessage: Unit = {
+    if(message.nonEmpty) println(message)
+  }
+}
+case class NormalPostable(url: String, data: String, ver: Int = 1, message: String = "") extends HttpPostable
+case class MasterPostable(url: String, data: String, ver: Int = 1, message: String = "") extends HttpPostable
+
 
 object ResType extends Log {
+  type Req = Map[String, String]
+
   val Api = "/kcsapi"
   val AuthMember = s"$Api/api_auth_member"
   val GetMaster = s"$Api/api_get_master"
@@ -32,10 +55,8 @@ object ResType extends Log {
   val ReqRanking = s"$Api/api_req_ranking"
   val ReqCombined = s"$Api/api_req_combined_battle"
 
-  case object LoginCheck extends ResType(s"\\A$AuthMember/logincheck\\z".r) // 取るべきではない
-  case object ApiStart2 extends ResType(s"\\A$Api/api_start2\\z".r) // Master含む新API
+  /*
   case object Material extends ResType(s"\\A$GetMember/material\\z".r)
-  case object Basic extends ResType(s"\\A$GetMember/basic\\z".r)
   case object Record extends ResType(s"\\A$GetMember/record\\z".r) // Basicの綺麗版
   case object Ship2 extends ResType(s"\\A$GetMember/ship2\\z".r) // どうせship3に含まれているんだろう？
   case object Ship3 extends ResType(s"\\A$GetMember/ship3\\z".r)
@@ -80,13 +101,13 @@ object ResType extends Log {
   case object MasterPractice extends ResType(s"\\A$GetMaster/practice\\z".r)
   case object MasterUseItem extends ResType(s"\\A$GetMaster/useitem\\z".r) // 高速修復材とかの説明
   case object MasterFurniture extends ResType(s"\\A$GetMaster/furniture\\z".r) // 家具の説明
-  case object MasterSlotItem extends ResType(s"\\A$GetMaster/slotitem\\z".r)
+//  case object MasterSlotItem extends ResType(s"\\A$GetMaster/slotitem\\z".r)
   case object MasterMapArea extends ResType(s"\\A$GetMaster/maparea\\z".r) // 鎮守府海域・南西諸島海域など
   case object Port extends ResType(s"\\A$Api/api_port/port\\z".r)
   case object ShipSWF extends ResType("""\A/kcs/resources/swf/ships/[a-z]+\.swf\z""".r)
   case object SoundMP3 extends ResType("""\A/kcs/sound/kc[a-z]+/[0-9]+\.mp3""".r)
 
-  val values = Set(
+  val values: Set[ResType] = Set(
     LoginCheck, ApiStart2, Material, Basic, Record, Ship2, Ship3, NDock, KDock,
     Deck, DeckPort, UseItem, SlotItem, Practice, PictureBook, MapInfo, MapCell, QuestList,
     UpdateDeckName, CreateShip, GetShip, CreateItem,
@@ -96,6 +117,12 @@ object ResType extends Log {
     MapStart, MapNext, SortieBattle, SortieBattleResult, ClearItemGet, NyukyoStart, RankingList, CombinedBattleResult,
     MasterPractice, MasterUseItem, MasterFurniture, MasterSlotItem, MasterMapArea,
     Port, ShipSWF, SoundMP3
+  )
+  */
+  val values: Set[ResType] = Set(
+    ApiStart2,
+    Basic,
+    LoginCheck
   )
 
   def fromUri(uri: String): Option[ResType] = {

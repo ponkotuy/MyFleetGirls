@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream
 import java.util.zip.GZIPInputStream
 
 import com.netaporter.uri.Uri
+import com.ponkotuy.restype.ResType
 import com.ponkotuy.tool.PostQueryParser
 import org.jboss.netty.buffer.ChannelBuffer
 import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}

@@ -1,20 +1,13 @@
 package com.ponkotuy.parser
 
-import com.netaporter.uri.Uri
-import com.ponkotuy.config.ClientConfig
-import com.ponkotuy.data
-import com.ponkotuy.util.Log
-import com.ponkotuy.value.KCServer
-import org.json4s.JsonAST.JValue
-import org.json4s._
-
 /**
  *
  * @author ponkotuy
  * Date: 14/03/03
  */
+/*
 class ResponseController extends Log {
-  import com.ponkotuy.parser.ResType._
+  import ResType._
 
   private[this] var initSended = false
 
@@ -119,3 +112,4 @@ class ResponseController extends Log {
     }
   }
 }
+*/
