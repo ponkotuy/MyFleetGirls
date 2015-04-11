@@ -11,11 +11,14 @@ import scalikejdbc._
 
 case class CreateShipWithName(
     fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int,
-    largeFlag: Boolean, created: Long, name: String)
+    largeFlag: Boolean, created: Long, name: String, firstShip: Option[String])
 
 object CreateShipWithName {
-  def apply(cs: SyntaxProvider[CreateShip], ms: SyntaxProvider[MasterShipBase])(
-    rs: WrappedResultSet): CreateShipWithName =
+  def apply(
+      cs: SyntaxProvider[CreateShip],
+      ms: SyntaxProvider[MasterShipBase],
+      msb: SyntaxProvider[MasterShipBase])(
+      rs: WrappedResultSet): CreateShipWithName =
     new CreateShipWithName(
       rs.int(cs.fuel),
       rs.int(cs.ammo),
@@ -24,7 +27,8 @@ object CreateShipWithName {
       rs.int(cs.develop),
       rs.boolean(cs.largeFlag),
       rs.long(cs.created),
-      rs.string(ms.name)
+      rs.string(ms.name),
+      rs.stringOpt(msb.name)
     )
 }
 

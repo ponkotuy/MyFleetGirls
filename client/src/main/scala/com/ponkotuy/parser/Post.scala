@@ -81,7 +81,7 @@ object Post extends Log {
     println(basic.summary)
   }
 
-  private def printBasicMessage(): Unit = {
+  private def printBasicMessage()(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
     println()
     println("============================================")
     if(auth2.isEmpty) println("パスワード認証無し") else println("パスワード認証に成功")

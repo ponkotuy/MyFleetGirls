@@ -57,7 +57,7 @@ class DependentPost {
 
   def setCreateShip(req: Req): Unit = {
     synchronized {
-      val createShip = data.CreateShip.fromMap(req)
+      val createShip = data.CreateShip.fromMap(req, firstFleet.head)
       createShips(createShip.kDock) = createShip
     }
   }

@@ -10,12 +10,14 @@ import sqls.distinct
   * data.KDockのデータを用いて補完する必要がある
   *
   * @author ponkotuy
+  * @param firstShip: master shipのidであってshipのidでない
   * Date: 14/03/04.
   */
 case class CreateShip(
     memberId: Long, resultShip: Int,
     fuel: Int, ammo: Int, steel: Int, bauxite: Int, develop: Int,
-    kDock: Int, highspeed: Boolean, largeFlag: Boolean, completeTime: Long, created: Long)
+    kDock: Int, highspeed: Boolean, largeFlag: Boolean, completeTime: Long, created: Long,
+    firstShip: Option[Int])
 
 object CreateShip extends SQLSyntaxSupport[CreateShip] {
   def apply(x: SyntaxProvider[CreateShip])(rs: WrappedResultSet): CreateShip = apply(x.resultName)(rs)
@@ -34,13 +36,14 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
 
   def findAllByUserWithName(memberId: Long, large: Boolean, limit: Int = Int.MaxValue, offset: Int = 0)(
       implicit session: DBSession = CreateShip.autoSession): List[CreateShipWithName] = withSQL {
-    select(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop, cs.largeFlag, cs.created, ms.name)
+    select(cs.fuel, cs.ammo, cs.steel, cs.bauxite, cs.develop, cs.largeFlag, cs.created, ms.name, msb.name)
       .from(CreateShip as cs)
       .innerJoin(MasterShipBase as ms).on(cs.resultShip, ms.id)
+      .leftJoin(MasterShipBase as msb).on(cs.firstShip, msb.id)
       .where.eq(cs.memberId, memberId).and.eq(cs.largeFlag, large)
       .orderBy(cs.created).desc
       .limit(limit).offset(offset)
-  }.map(CreateShipWithName(cs, ms)).toList().apply()
+  }.map(CreateShipWithName(cs, ms, msb)).toList().apply()
 
   def findAllByMatWithName(m: Mat, limit: Int = Int.MaxValue, offset: Int = 0)(
       implicit session: DBSession = autoSession): List[CreateShipWithName2] = withSQL {
@@ -100,24 +103,28 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       implicit session: DBSession = CreateShip.autoSession): Unit = {
     require(cs.equalKDock(kd))
     val created = System.currentTimeMillis()
+    val firstShip = Ship.find(memberId, cs.firstShip).map(_.shipId)
     applyUpdate {
       insert.into(CreateShip).namedValues(
         column.memberId -> memberId, column.resultShip -> kd.shipId,
         column.fuel -> cs.fuel, column.ammo -> cs.ammo, column.steel -> cs.steel, column.bauxite -> cs.bauxite,
         column.develop -> cs.develop, column.kDock -> cs.kDock, column.highspeed -> cs.highspeed,
-        column.largeFlag -> cs.largeFlag, column.completeTime -> kd.completeTime, column.created -> created
+        column.largeFlag -> cs.largeFlag, column.completeTime -> kd.completeTime, column.created -> created,
+        column.firstShip -> firstShip
       )
     }
   }
 
   def create(cs: data.CreateShip, memberId: Long, resultShip: Int)(implicit session: DBSession = autoSession): Unit = {
     val created = System.currentTimeMillis()
+    val firstShip = Ship.find(memberId, cs.firstShip).map(_.shipId)
     applyUpdate {
       insert.into(CreateShip).namedValues(
         column.memberId -> memberId, column.resultShip -> resultShip,
         column.fuel -> cs.fuel, column.ammo -> cs.ammo, column.steel -> cs.steel, column.bauxite -> cs.bauxite,
         column.develop -> cs.develop, column.kDock -> cs.kDock, column.highspeed -> cs.highspeed,
-        column.largeFlag -> cs.largeFlag, column.completeTime -> created, column.created -> created
+        column.largeFlag -> cs.largeFlag, column.completeTime -> created, column.created -> created,
+        column.firstShip -> firstShip
       )
     }
   }
