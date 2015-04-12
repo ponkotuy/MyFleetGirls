@@ -10,13 +10,15 @@ import scala.util.matching.Regex
  * @author ponkotuy
  * Date: 15/04/12.
  */
-case object Material extends ResType {
+case object QuestList extends ResType {
   import ResType._
 
-  override def regexp: Regex = s"\\A$GetMember/material\\z".r
+  override def regexp: Regex = s"\\A$GetMember/questlist\\z".r
 
   override def postables(q: Query): Seq[Result] = {
-    val material = data.Material.fromJson(q.obj)
-    NormalPostable("/material", write(material), 1, material.summary) :: Nil
+    val qList = data.QuestList.fromJson(q.obj)
+    if (qList.nonEmpty) {
+      NormalPostable("/questlist", write(qList)) :: Nil
+    } else Nil
   }
 }

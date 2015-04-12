@@ -2,6 +2,7 @@ package com.ponkotuy.restype
 
 import com.ponkotuy.data.master._
 import com.ponkotuy.http.MFGHttp
+import com.ponkotuy.parser.Query
 import com.ponkotuy.tool.Checksum
 import org.json4s.JsonAST.JValue
 import org.json4s.native.Serialization._
@@ -18,11 +19,11 @@ case object ApiStart2 extends ResType {
 
   override val regexp: Regex = s"\\A/$Api/api_start2\\z".r
 
-  override def postables(req: Req, obj: JValue): Seq[HttpPostable] = {
-    (masterShip(obj) ::
-        masterMission(obj) ::
-        masterSlotitem(obj) ::
-        masterSType(obj) :: Nil).flatten
+  override def postables(q: Query): Seq[HttpPostable] = {
+    (masterShip(q.obj) ::
+        masterMission(q.obj) ::
+        masterSlotitem(q.obj) ::
+        masterSType(q.obj) :: Nil).flatten
   }
 
   private def masterShip(obj: JValue): Option[HttpPostable] = {
@@ -62,5 +63,4 @@ case object ApiStart2 extends ResType {
       Some(MasterPostable("/master/stype", write(masterSType), 1, "Success sending MasterStype data"))
     } else None
   }
-
 }

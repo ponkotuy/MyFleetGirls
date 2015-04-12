@@ -1,6 +1,6 @@
 package com.ponkotuy.restype
 
-import org.json4s.JValue
+import com.ponkotuy.parser.Query
 
 /**
  *
@@ -8,9 +8,8 @@ import org.json4s.JValue
  * Date: 15/04/11.
  */
 case object LoginCheck extends ResType {
-  import ResType._
 
   override val regexp = "\\A/kcsapi/api_auth_member/logincheck\\z".r
 
-  override def postables(req: Req, obj: JValue): Seq[HttpPostable] = Nil
+  override def postables(q: Query): Seq[HttpPostable] = Nil
 }

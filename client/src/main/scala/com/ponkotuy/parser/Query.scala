@@ -18,14 +18,19 @@ import scala.util.Try
  * @author ponkotuy
  * Date: 14/03/21.
  */
-case class Query(req: HttpRequest, res: HttpResponse, uri: Uri) {
+case class Query(request: HttpRequest, response: HttpResponse, uri: Uri) {
   def host = uri.host
   lazy val resType = ResType.fromUri(uri.toString())
-  def resCont: String = Query.toString(res.getContent)
+  def resCont: String = Query.toString(response.getContent)
   def resJson: Either[JValue, String] = KCJson.toAst(resCont)
-  def reqCont: String = Query.toString(req.getContent)
+  def reqCont: String = Query.toString(request.getContent)
   def reqMap: Map[String, String] = PostQueryParser.parse(reqCont)
   def parsable: Boolean = resType.isDefined
+  def req = reqMap
+  def obj = resJson match {
+    case Left(value) => value
+    case Right(message) => JObject()
+  }
 }
 
 object Query {

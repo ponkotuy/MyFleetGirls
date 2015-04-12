@@ -1,14 +1,9 @@
 package com.ponkotuy.parser
 
-import java.io.ByteArrayOutputStream
-
 import com.ponkotuy.data._
 import com.ponkotuy.http.MFGHttp
-import com.ponkotuy.tool.TempFileTool
 import com.ponkotuy.util.Log
 import com.ponkotuy.value.KCServer
-import org.jboss.netty.buffer.ChannelBuffer
-import org.json4s.JsonAST.JValue
 import org.json4s._
 import org.json4s.native.Serialization.write
 
@@ -25,82 +20,7 @@ object Post extends Log {
     println(s"所属： ${kcServer.name}")
   }
 
-  def update_ship(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    val update = Ship.fromJson(obj \ "api_ship_data")
-    MFGHttp.post("/update_ship", write(update))
-  }
-
-  def ndock(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-  }
-
-  def slotitem(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    val items = SlotItem.fromJson(obj)
-    MFGHttp.post("/slotitem", write(items))
-    println(s"所持装備数 -> ${items.size}")
-  }
-
-  def book(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    val books = Book.fromJson(obj)
-    if(books.isEmpty) return
-    books.head match {
-      case _: ShipBook => MFGHttp.post("/book/ship", write(books))
-      case _: ItemBook => MFGHttp.post("/book/item", write(books))
-    }
-  }
-
-  def mapinfo(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    val maps = MapInfo.fromJson(obj)
-    MFGHttp.post("/mapinfo", write(maps))
-  }
-
-  def questlist(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    val qList = QuestList.fromJson(obj)
-    if (qList.nonEmpty) {
-      MFGHttp.post("/questlist", write(qList))
-    }
-  }
-
-  def swfShip(q: Query)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    parseKey(q.toString).filterNot(MFGHttp.existsImage).foreach { key =>
-      val swf = allRead(q.res.getContent)
-      TempFileTool.save(swf, "swf") { file =>
-        MFGHttp.postFile("/swf/ship/" + key, "image")(file)
-      }
-    }
-  }
-
   def mp3kc(q: Query)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    SoundUrlId.parseURL(q.toString).filterNot(MFGHttp.existsSound).foreach { case SoundUrlId(shipKey, soundId) =>
-      val sound = allRead(q.res.getContent)
-      TempFileTool.save(sound, "mp3") { file =>
-        MFGHttp.postFile(s"/mp3/kc/${shipKey}/${soundId}", "sound")(file)
-      }
-    }
-  }
-
-  def remodelSlot(obj: JValue, req: Map[String, String])(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit =
-    Remodel.fromJson(obj, req).foreach { remodel =>
-      MFGHttp.post("/remodel", write(remodel))
-    }
-
-  private def parseKey(str: String): Option[String] =
-    Try {
-      val filename = str.split('/').last
-      filename.takeWhile(_ != '.')
-    }.toOption
-
-  private def allRead(cb: ChannelBuffer): Array[Byte] = {
-    val baos = new ByteArrayOutputStream()
-    cb.getBytes(0, baos, cb.readableBytes())
-    baos.toByteArray
-  }
-
-  def rankingList(obj: JValue)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Unit = {
-    auth.map(_.memberId).orElse(auth2.map(_.id)).foreach { memberId =>
-      Ranking.fromJson(obj).filter(_.memberId == memberId).foreach { rank =>
-        MFGHttp.post("/ranking", write(rank))
-      }
-    }
   }
 }
 

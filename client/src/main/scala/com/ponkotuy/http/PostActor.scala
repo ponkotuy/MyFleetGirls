@@ -1,12 +1,9 @@
 package com.ponkotuy.http
 
 import akka.actor.{Actor, Props}
-import com.netaporter.uri.Uri
 import com.ponkotuy.data.{Auth, MyFleetAuth}
 import com.ponkotuy.parser.Query
 import com.ponkotuy.restype.{Authentication, HttpPostable}
-import com.ponkotuy.value.KCServer
-import org.json4s._
 
 import scala.collection.mutable
 
@@ -60,29 +57,6 @@ class ControllerActor extends Actor {
   override def receive = {
     case q: Query =>
       val typ = q.resType.get
-      val req = q.reqMap
-      val obj: JValue = {
-        q.resJson match {
-          case Left(value) => value
-          case Right(message) =>
-            println(message)
-            JObject()
-        }
-      }
-      typ.postables(req, obj).foreach(poster ! _)
-  }
-}
-
-object Host {
-  private[this] var kcServer: Option[KCServer] = None
-  def get(): Option[KCServer] = kcServer
-  def set(uri: Uri): Unit = {
-    if(kcServer.isEmpty) {
-      val opt = for {
-        host <- uri.host
-        server <- KCServer.fromIP(host)
-      } yield server
-      kcServer = opt
-    }
+      typ.postables(q).foreach(poster ! _)
   }
 }

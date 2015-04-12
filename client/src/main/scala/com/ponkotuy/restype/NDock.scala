@@ -1,8 +1,8 @@
 package com.ponkotuy.restype
 
-import org.json4s.JValue
-import org.json4s.native.Serialization.write
 import com.ponkotuy.data
+import com.ponkotuy.parser.Query
+import org.json4s.native.Serialization.write
 
 import scala.util.matching.Regex
 
@@ -15,8 +15,8 @@ object NDock extends ResType {
 
   override def regexp: Regex = s"\\A$GetMember/ndock\\z".r
 
-  override def postables(req: Req, obj: JValue): Seq[Result] = {
-    val docks = data.NDock.fromJson(obj)
+  override def postables(q: Query): Seq[Result] = {
+    val docks = data.NDock.fromJson(q.obj)
     val message =  docks.filterNot(_.shipId == 0).map(_.summary).mkString("\n")
     NormalPostable("/ndock", write(docks), 1, message) :: Nil
   }

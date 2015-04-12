@@ -2,7 +2,7 @@ package com.ponkotuy.restype
 
 import com.ponkotuy.config.ClientConfig
 import com.ponkotuy.data
-import org.json4s.JValue
+import com.ponkotuy.parser.Query
 import org.json4s.native.Serialization._
 
 import scala.util.matching.Regex
@@ -14,14 +14,16 @@ import scala.util.matching.Regex
 case object Basic extends ResType {
   import ResType._
 
+  private[restype] var memberId: Option[Long] = None
+
   override def regexp: Regex = s"\\A$GetMember/basic\\z".r
 
-  override def postables(req: Req, obj: JValue): Seq[Result] = {
-    val auth = data.Auth.fromJSON(obj)
+  override def postables(q: Query): Seq[Result] = {
+    val auth = data.Auth.fromJSON(q.obj)
+    memberId = Some(auth.memberId)
     val auth2 = ClientConfig.auth(auth.memberId)
 
-    val basic = data.Basic.fromJSON(obj)
-    NormalPostable("/basic", write(basic), 1, basic.summary) ::
-        Authentication(auth, auth2) :: Nil
+    val basic = data.Basic.fromJSON(q.obj)
+    NormalPostable("/basic", write(basic), 1, basic.summary) :: Authentication(auth, auth2) :: Nil
   }
 }

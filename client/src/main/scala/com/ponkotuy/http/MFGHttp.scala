@@ -8,25 +8,23 @@ import javax.net.ssl.SSLContext
 import com.ponkotuy.config.ClientConfig
 import com.ponkotuy.data.{Auth, MyFleetAuth}
 import com.ponkotuy.parser.SoundUrlId
-import com.ponkotuy.restype.{NormalPostable, MasterPostable, HttpPostable}
+import com.ponkotuy.restype.{FilePostable, HttpPostable, MasterPostable, NormalPostable}
+import com.ponkotuy.tool.TempFileTool
 import com.ponkotuy.util.Log
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.{CloseableHttpResponse, HttpGet, HttpHead, HttpPost}
 import org.apache.http.client.utils.HttpClientUtils
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.entity.mime.content.FileBody
 import org.apache.http.impl.client.HttpClientBuilder
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager
 import org.apache.http.message.BasicNameValuePair
-import org.apache.http.config.RegistryBuilder
-import org.apache.http.conn.socket.ConnectionSocketFactory
-import org.apache.http.conn.socket.PlainConnectionSocketFactory
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import org.json4s._
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
+
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
@@ -50,7 +48,7 @@ object MFGHttp extends Log {
       .setSslcontext(sslContext)
       .setConnectionTimeToLive(5 * 60 , TimeUnit.SECONDS)
       .setMaxConnPerRoute(1)
-  val http = httpBuilder.build();
+  val http = httpBuilder.build()
 
   implicit val formats = Serialization.formats(NoTypeHints)
 
@@ -77,6 +75,11 @@ object MFGHttp extends Log {
     p match {
       case m: MasterPostable => masterPost(m.url, m.data, m.ver)
       case n: NormalPostable => post(n.url, n.data, n.ver)
+      case f: FilePostable =>
+        println(f.fileBodyKey, f.ext)
+        TempFileTool.save(f.file, f.ext) { file =>
+          postFile(f.url, f.fileBodyKey, f.ver)(file)
+        }
     }
   }
 
