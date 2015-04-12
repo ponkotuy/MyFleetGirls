@@ -2,6 +2,7 @@ package com.ponkotuy.restype
 
 import com.ponkotuy.data
 import com.ponkotuy.parser.Query
+import org.json4s.JsonAST.JValue
 import org.json4s.native.Serialization.write
 
 import scala.util.matching.Regex
@@ -20,8 +21,10 @@ case object DeckPort extends ResType {
 
   override def regexp: Regex = s"\\A$GetMember/deck_port\\z".r
 
-  override def postables(q: Query): Seq[Result] = {
-    val decks = data.DeckPort.fromJson(q.obj)
+  override def postables(q: Query): Seq[Result] = postablesFromObj(q.obj)
+
+  def postablesFromObj(obj: JValue): Seq[Result] = {
+    val decks = data.DeckPort.fromJson(obj)
     firstFleet = extractFleetShips(decks)(1)
     fleets = (1 to FleetMax).map(extractFleetShips(decks))
     if(decks.nonEmpty) {
@@ -30,6 +33,6 @@ case object DeckPort extends ResType {
     } else Nil
   }
 
-
   private def extractFleetShips(decks: Iterable[data.DeckPort])(num: Int): List[Int] =
-    decks.find(_.id == num).map(_.ships).getOrElse(Nil)}
+    decks.find(_.id == num).map(_.ships).getOrElse(Nil)
+}
