@@ -3,6 +3,7 @@ package com.ponkotuy.http
 import java.io._
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
+import java.net.ProxySelector
 import javax.net.ssl.SSLContext
 
 import com.ponkotuy.config.ClientConfig
@@ -18,6 +19,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.entity.mime.content.FileBody
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.apache.http.message.BasicNameValuePair
 import org.apache.http.config.RegistryBuilder
 import org.apache.http.conn.socket.ConnectionSocketFactory
@@ -49,6 +51,7 @@ object MFGHttp extends Log {
       .setSslcontext(sslContext)
       .setConnectionTimeToLive(5 * 60 , TimeUnit.SECONDS)
       .setMaxConnPerRoute(1)
+      .setRoutePlanner(new SystemDefaultRoutePlanner(ProxySelector.getDefault()))
   val http = httpBuilder.build();
 
   implicit val formats = Serialization.formats(NoTypeHints)
