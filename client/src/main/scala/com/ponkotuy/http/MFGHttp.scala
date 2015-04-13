@@ -5,6 +5,7 @@ import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
 
+import com.ponkotuy.build.BuildInfo
 import com.ponkotuy.config.ClientConfig
 import com.ponkotuy.data.{Auth, MyFleetAuth}
 import com.ponkotuy.parser.SoundUrlId
