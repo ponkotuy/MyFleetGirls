@@ -48,6 +48,7 @@ object MFGHttp extends Log {
       .setSslcontext(sslContext)
       .setConnectionTimeToLive(5 * 60 , TimeUnit.SECONDS)
       .setMaxConnPerRoute(1)
+      .setRetryHandler(new RetryWithWait(10, 10000L))
   val http = httpBuilder.build()
 
   implicit val formats = Serialization.formats(NoTypeHints)
