@@ -37,6 +37,7 @@ import scala.collection.mutable
  */
 object MFGHttp extends Log {
   val UTF8 = Charset.forName("UTF-8")
+  val userAgent = s"${BuildInfo.name} client ver:${BuildInfo.version} w/JVM: ${util.Properties.javaVersion}"
   val sslContext: SSLContext = new MFGKeyStore().getSslContext
   val config = RequestConfig.custom()
       .setConnectTimeout(60*1000)
@@ -44,7 +45,7 @@ object MFGHttp extends Log {
       .setStaleConnectionCheckEnabled(true)
       .build()
   val httpBuilder = HttpClientBuilder.create()
-      .setUserAgent(s"${BuildInfo.name} client ver:${BuildInfo.version} w/JVM: ${util.Properties.versionString}")
+      .setUserAgent(userAgent)
       .setDefaultRequestConfig(config)
       .setSSLSocketFactory(new SSLConnectionSocketFactory(sslContext))
       .setSslcontext(sslContext)
