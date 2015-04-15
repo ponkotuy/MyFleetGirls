@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit
 import java.net.ProxySelector
 import javax.net.ssl.SSLContext
 
+import com.ponkotuy.build.BuildInfo
 import com.ponkotuy.config.ClientConfig
 import com.ponkotuy.data.{Auth, MyFleetAuth}
 import com.ponkotuy.parser.SoundUrlId
@@ -38,6 +39,7 @@ import scala.collection.mutable
  */
 object MFGHttp extends Log {
   val UTF8 = Charset.forName("UTF-8")
+  val userAgent = s"${BuildInfo.name} client ver:${BuildInfo.version} w/JVM: ${util.Properties.javaVersion}"
   val sslContext: SSLContext = new MFGKeyStore().getSslContext
   val config = RequestConfig.custom()
       .setConnectTimeout(60*1000)
@@ -45,7 +47,7 @@ object MFGHttp extends Log {
       .setStaleConnectionCheckEnabled(true)
       .build()
   val httpBuilder = HttpClientBuilder.create()
-      .setUserAgent(s"${BuildInfo.name} client ver:${BuildInfo.version} w/JVM: ${util.Properties.versionString}")
+      .setUserAgent(userAgent)
       .setDefaultRequestConfig(config)
       .setSSLSocketFactory(new SSLConnectionSocketFactory(sslContext))
       .setSslcontext(sslContext)
