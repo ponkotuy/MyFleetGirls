@@ -1,9 +1,12 @@
 package com.ponkotuy.config
 
 import java.io.File
-import scala.util.Try
-import com.typesafe.config.ConfigFactory
+
 import com.ponkotuy.data.MyFleetAuth
+import com.typesafe.config.ConfigFactory
+import org.apache.http.HttpHost
+
+import scala.util.Try
 
 /**
  *
@@ -24,6 +27,15 @@ object ClientConfig {
   def postUrl(ver: Int = 1) = post + s"/post/v${ver}"
   def getUrl(ver: Int = 1) = config.getString("url.post") + s"/rest/v${ver}"
   def proxyPort = config.getInt("proxy.port")
+  lazy val clientProxyHost: Option[HttpHost] = {
+    for {
+      proxy <- Try { config.getConfig("url.proxy") }.toOption
+      port <- Try { proxy.getInt("port") }.toOption
+    } yield {
+      val host = Try { proxy.getString("host") }.getOrElse("localhost")
+      new HttpHost(host, port)
+    }
+  }
 
   @deprecated("Move to Auth.master", "0.13.0")
   def master: Boolean = Auth.master

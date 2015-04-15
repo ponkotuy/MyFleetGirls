@@ -51,8 +51,8 @@ object MFGHttp extends Log {
       .setSslcontext(sslContext)
       .setConnectionTimeToLive(5 * 60 , TimeUnit.SECONDS)
       .setMaxConnPerRoute(1)
-      .setRoutePlanner(new SystemDefaultRoutePlanner(ProxySelector.getDefault()))
-  val http = httpBuilder.build();
+  ClientConfig.clientProxyHost.foreach(httpBuilder.setProxy)
+  val http = httpBuilder.build()
 
   implicit val formats = Serialization.formats(NoTypeHints)
 
