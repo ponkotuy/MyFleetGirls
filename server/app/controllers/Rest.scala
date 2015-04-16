@@ -69,7 +69,7 @@ object Rest extends Controller {
   }
 
   def recipeFromItem(itemId: Int, from: String, to: String) = returnJson {
-    val fromTo = Period.fromStr(from, to).where(sqls"ci.created")
+    val fromTo = Period.fromStr(from, to).whereOpt(db.CreateItem.ci.created)
     val allCounts = {
       val counts = db.CreateItem.materialCount(fromTo)
       val builder = mutable.Map[ItemMat, Long]().withDefaultValue(0L)
@@ -77,7 +77,8 @@ object Rest extends Controller {
       counts.foreach { case (mat, count) => builder(mat) += count }
       builder.toMap
     }
-    val counts = db.CreateItem.materialCount(sqls"slotitem_id = ${itemId} and ${fromTo}")
+    val countWhere = sqls.toAndConditionOpt(fromTo, Some(sqls.eq(db.CreateItem.ci.slotitemId, itemId)))
+    val counts = db.CreateItem.materialCount(countWhere)
     counts.map { case (mat, count) =>
       Map("mat" -> mat, "count" -> count, "sum" -> allCounts.lift(mat).getOrElse(Long.MaxValue))
     }

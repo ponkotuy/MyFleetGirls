@@ -127,8 +127,8 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
   val CachePeriod = 1.day
   var cacheDate = new DateTime(0L)
 
-  def materialCount(where: SQLSyntax = sqls"true")(implicit session: DBSession = autoSession): List[(ItemMat, Long)] = {
-    if(where == sqls"true") {
+  def materialCount(where: Option[SQLSyntax] = None)(implicit session: DBSession = autoSession): List[(ItemMat, Long)] = {
+    if(where.isEmpty) {
       val now = DateTime.now
       if(cacheDate + CachePeriod < now) {
         materialCountCache = materialCountFromDB(where)
@@ -140,7 +140,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
     }
   }
 
-  private def materialCountFromDB(where: SQLSyntax = sqls"true")(implicit session: DBSession = autoSession): List[(ItemMat, Long)] =
+  private def materialCountFromDB(where: Option[SQLSyntax])(implicit session: DBSession = autoSession): List[(ItemMat, Long)] =
     withSQL {
       select(ci.fuel, ci.ammo, ci.steel, ci.bauxite, mst.id, mst.name, sqls"count(*) as count")
         .from(CreateItem as ci)
