@@ -50,6 +50,7 @@ object MFGHttp extends Log {
       .setSslcontext(sslContext)
       .setConnectionTimeToLive(5 * 60 , TimeUnit.SECONDS)
       .setMaxConnPerRoute(1)
+      .setRetryHandler(new RetryWithWait(10, 10000L))
   ClientConfig.clientProxyHost.foreach(httpBuilder.setProxy)
   val http = httpBuilder.build()
 
