@@ -113,7 +113,7 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
     val ships = userShips.flatMap { case (memberId, ids) =>
       val xs = Ship.findIn(memberId, ids)
       xs.map(x => (x.memberId, x.id) -> x)
-    }.toMap
+    }
     fleets.map { case (memberId, ids) =>
       ids.flatMap(id => ships.get((memberId, id))).toVector
     }.toList

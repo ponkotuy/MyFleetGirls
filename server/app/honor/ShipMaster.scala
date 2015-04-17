@@ -15,7 +15,7 @@ object ShipMaster extends HonorCategory {
   override def category = 1
 
   override def approved(memberId: Long): List[String] = {
-    val ships = Ship.findAllByUserWithName(memberId)
+    val ships = Ship.findAllByUser(memberId)
     val lvs = mutable.Map[Int, Int]().withDefaultValue(0)
     ships.foreach { ship =>
       lvs(EvolutionBase(ship.shipId)) += ship.lv
