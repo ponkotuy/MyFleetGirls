@@ -55,14 +55,14 @@ object Common extends Controller {
               reqHeadParse[MyFleetAuth](request)("auth2") match {
                 case Some(auth) =>
                   if(auth.id == oldAuth.memberId && Authentication.myfleetAuthOrCreate(auth)) f(ad)
-                  else Unauthorized("Failed Pasword Authentication")
+                  else Unauthorized("Password Authentication Failed")
                 case None =>
                   if(db.MyFleetAuth.find(oldAuth.memberId).isEmpty) f(ad)
-                  else Unauthorized("Require Password")
+                  else Unauthorized("Password Required")
               }
-            case None => Unauthorized("Failed Old Authentication")
+            case None => Unauthorized("Old Protocol Authentication Failed")
           }
-        case None => Unauthorized("Require Auth Data")
+        case None => Unauthorized("Authentication Data Required")
       }
     }
   }
