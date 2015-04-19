@@ -23,5 +23,5 @@ case object NotHave extends HonorCategory {
     }
   }
 
-  val Target = Set(184, 131, 143, 153, 161, 171)
+  val Target = Set(184, 131, 143, 153, 161, 171, 140, 138)
 }
