@@ -20,7 +20,6 @@ case object MapNext extends ResType {
     val next = data.MapStart.fromJson(q.obj)
     val result = MapStart.mapNext.map { dep =>
       val route = MapRoute.fromMapNext(dep, next, DeckPort.fleets(MapStart.startFleet - 1))
-      println(route)
       NormalPostable("/map_route", write(route), 1, route.summary)
     }
     MapStart.mapNext = Some(next)
