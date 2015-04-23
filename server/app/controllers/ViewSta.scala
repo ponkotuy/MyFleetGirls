@@ -23,7 +23,7 @@ object ViewSta extends Controller {
   def statistics(from: String, to: String) = actionAsync {
     val fromTo = Period.fromStr(from, to)
     val sCounts = db.CreateShip.materialCount(fromTo.where(sqls"cs.created")).take(50).takeWhile(_._2 > 1)
-    val iCounts = db.CreateItem.materialCount(fromTo.where(sqls"ci.created")).take(50).takeWhile(_._2 > 1)
+    val iCounts = db.CreateItem.materialCount(fromTo.whereOpt(sqls"ci.created")).take(50).takeWhile(_._2 > 1)
     Ok(views.html.sta.statistics(sCounts, iCounts, fromTo))
   }
 
@@ -59,7 +59,7 @@ object ViewSta extends Controller {
     val mat = ItemMat(fuel, ammo, steel, bauxite, sType)
     val citem = CItem(mat, fromTo)
     val ci = db.CreateItem.ci
-    val mst = db.MasterStype.ms
+    val mst = db.CreateItem.mst
     val citems = db.CreateItem.findAllByWithName(
       sqls.eq(ci.fuel, fuel).and.eq(ci.ammo, ammo).and.eq(ci.steel, steel).and.eq(ci.bauxite, bauxite).and.eq(mst.name, sType),
       limit = 100

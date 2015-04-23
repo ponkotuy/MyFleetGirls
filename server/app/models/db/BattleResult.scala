@@ -70,15 +70,34 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
 
   def findAllByWithCell(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0, orderBy: SQLSyntax = br.created.desc)(
       implicit session: DBSession = autoSession): List[BattleResultWithCell] = {
+    if(orderBy == br.created.desc) findAllByWithCellOrderByCreated(where, limit, offset)
+    else {
+      withSQL {
+        select.from(BattleResult as br)
+            .leftJoin(CellInfo as ci)
+              .on(sqls.eq(br.areaId, ci.areaId).and.eq(br.infoNo, ci.infoNo).and.eq(br.cell, ci.cell))
+            .where(where)
+            .orderBy(orderBy)
+            .limit(limit).offset(offset)
+      }.map(BattleResultWithCell(br, ci)).list().apply()
+    }
+  }
+
+  /**
+   * MariaDBがアホでcreatedのindexを使ってしまうので、SubQuery化した方がindexを2種類使えて早い事案
+   * @return
+   */
+  def findAllByWithCellOrderByCreated(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
+      implicit session: DBSession = autoSession): List[BattleResultWithCell] = {
     withSQL {
       select.from(BattleResult as br)
-        .leftJoin(CellInfo as ci)
-          .on(sqls"${br.areaId} = ${ci.areaId} and ${br.infoNo} = ${ci.infoNo} and ${br.cell} = ${ci.cell}")
-        .where.append(sqls"${where}")
-        .orderBy(orderBy)
-        .limit(limit).offset(offset)
-    }.map(BattleResultWithCell(br, ci)).list().apply()
-  }
+          .leftJoin(CellInfo as ci)
+            .on(sqls.eq(br.areaId, ci.areaId).and.eq(br.infoNo, ci.infoNo).and.eq(br.cell, ci.cell))
+          .where.in(br.id, select(br.id).from(BattleResult as br).where(where))
+          .orderBy(br.created.desc)
+          .limit(limit).offset(offset)
+    }
+  }.map(BattleResultWithCell(br, ci)).list().apply()
 
   def findAllShipByNameLike(q: String)(implicit session: DBSession = autoSession): List[MasterShipBase] = {
     withSQL {

@@ -12,11 +12,13 @@ import scala.util.Try
 case class Period(from: Option[LocalDate], to: Option[LocalDate], default: Boolean) {
   import Period._
 
-  def where(target: SQLSyntax) = {
-    val x = from.map(it => sqls"${it.toDate.getTime} < $target").getOrElse(sqls"true")
-    val y = to.map(it => sqls"$target < ${it.toDate.getTime}").getOrElse(sqls"true")
-    x.and.append(y)
+  def where(target: SQLSyntax): SQLSyntax = whereOpt(target).getOrElse(sqls"true")
+  def whereOpt(target: SQLSyntax): Option[SQLSyntax] = {
+    val x = from.map { it => sqls.gt(target, it.toDate.getTime) }
+    val y = to.map { it => sqls.lt(target, it.toDate.getTime) }
+    sqls.toAndConditionOpt(x, y)
   }
+
   def fromStr = from.getOrElse(DefaultStart).toString(ISODateTimeFormat.date())
   def toStr = to.getOrElse(LocalDate.now()).toString(ISODateTimeFormat.date())
 }

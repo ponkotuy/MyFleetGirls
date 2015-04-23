@@ -4,6 +4,12 @@
 # 通常変更する必要はありません
 url {
     post: "https://myfleet.moe"
+
+    # 上記URLに接続する際のProxy設定です。一般的な環境では必要ないでしょう。
+    proxy {
+        # host: "localhost"
+        # port: 8888
+    }
 }
 
 # MyFleetGirls アプリケーションはこのポート番号で proxy として待ち受けます。
