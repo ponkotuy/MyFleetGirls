@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % scalikeJdbcVer,
   "org.json4s" %% "json4s-native" % "3.2.11",
   "com.github.tototoshi" %% "play-flyway" % "1.1.2",
-  "com.github.nscala-time" %% "nscala-time" % "1.6.0",
+  "com.github.nscala-time" %% "nscala-time" % "2.0.0",
   "mysql" % "mysql-connector-java" % "5.1.+",
   "org.scalatest" %% "scalatest" % "2.2.3" % "test",
   "c3p0" % "c3p0" % "0.9.1.2",
