@@ -114,7 +114,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
       select(ci.slotitemId, mi.name, sqls"count(*) as count").from(CreateItem as ci)
         .innerJoin(Ship as s).on(sqls"ci.flagship = s.id and ci.member_id = s.member_id")
         .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .innerJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id)
+        .leftJoin(MasterSlotItem as mi).on(ci.slotitemId, mi.id) // slotitemが無しのときでも消えないようにleftjoin
         .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
         .where(sqls"""ci.fuel = ${mat.fuel} and ci.ammo = ${mat.ammo} and ci.steel = ${mat.steel} and ci.bauxite = ${mat.bauxite} and mst.name = ${mat.sTypeName}""")
         .and.append(where)
