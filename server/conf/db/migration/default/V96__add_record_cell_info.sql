@@ -1,0 +1,20 @@
+
+insert into cell_info values
+    (30, 3, 1, 'A', true, false),
+    (30, 3, 2, 'B', true, false),
+    (30, 3, 3, 'C', false, false),
+    (30, 3, 4, 'D', false, false),
+    (30, 3, 5, 'E', false, false),
+    (30, 3, 6, 'F', false, false),
+    (30, 3, 7, 'G', false, false),
+    (30, 3, 8, 'H', false, false),
+    (30, 3, 9, 'I', false, false),
+    (30, 3, 10, 'J', false, true),
+    (30, 3, 11, 'D', false, false),
+    (30, 3, 12, 'G', false, false),
+    (30, 3, 13, 'J', false, true),
+    (30, 6, 6, 'F', true, false),
+    (30, 6, 11, 'K', false, false),
+    (30, 6, 15, 'O', false, true),
+    (30, 6, 17, 'H', false, false),
+    (30, 6, 19, 'M', false, false);
