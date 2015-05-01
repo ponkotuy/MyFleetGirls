@@ -18,7 +18,7 @@
         base <- user.setting.base
         server <- KCServer.fromNumber(base)
       } yield { <span class="label label-default">{server.name}</span> }}
-      @if(user.isGradeA) { <span class="label label-danger">甲勲章</span> }
+      @if(user.medals > 0) { <span class="label label-danger">甲勲章@if(user.medals > 1){x@user.medals}</span> }
       @if(user.basic.comment.nonEmpty){
         <span class="label label-info">
         @user.basic.comment

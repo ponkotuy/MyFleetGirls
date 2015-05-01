@@ -15,6 +15,6 @@ case class User(
     setting: UserSettings,
     logined: Option[Long]) {
   def isMine: Boolean = logined.contains(admiral.id)
-  def isGradeA: Boolean = basic.isGradeA
+  def medals = basic.medals
   lazy val honor: Option[Honor] = Honors.fromUser(admiral.id, true).headOption
 }

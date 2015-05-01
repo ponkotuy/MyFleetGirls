@@ -47,7 +47,7 @@
             <p v-if="users.length == 0">Not Found</p>
             <ul id="admirals" v-if="users">
               <li v-repeat="user: users">
-                <a href="/user/{{user.id}}/">{{user.nickname}}</a><small>Lv{{user.lv}}</small><span v-if="user.medals == 1" class="label label-warning">甲</span>
+                <a href="/user/{{user.id}}/">{{user.nickname}}</a><small>Lv{{user.lv}}</small><span v-if="user.medals > 0" class="label label-warning">{{user.medals}}</span>
               </li>
             </ul>
           </div>
@@ -57,7 +57,7 @@
           <h2>New</h2>
           <ul>
             @newest.map { a =>
-              <li><a href="@routes.UserView.user(a.id)">@a.nickname</a><small>Lv@a.lv</small>@if(a.isGradeA){<span class="label label-warning">甲</span>}</li>
+              <li><a href="@routes.UserView.user(a.id)">@a.nickname</a><small>Lv@a.lv</small>@if(a.medals > 0){<span class="label label-warning">@a.medals</span>}</li>
             }
           </ul>
         </div>
@@ -66,7 +66,7 @@
           <h2>Active</h2>
           <ul>
             @actives.map { a =>
-              <li><a href="@routes.UserView.user(a.id)">@a.nickname</a><small>Lv@a.lv</small>@if(a.isGradeA){<span class="label label-warning">甲</span>}</li>
+              <li><a href="@routes.UserView.user(a.id)">@a.nickname</a><small>Lv@a.lv</small>@if(a.medals > 0){<span class="label label-warning">@a.medals</span>}</li>
             }
           </ul>
         </div>

@@ -51,9 +51,6 @@ case class Basic(
     ).max
   }
 
-  /** 甲勲章の有無 */
-  def isGradeA: Boolean = medals == 1
-
   def destroy()(implicit session: DBSession = Basic.autoSession): Unit = Basic.destroy(id)
 }
 
