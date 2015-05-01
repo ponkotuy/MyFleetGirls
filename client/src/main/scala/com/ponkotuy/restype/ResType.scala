@@ -95,7 +95,8 @@ object ResType extends Log {
     SlotItem,
     MapStart,
     MapNext,
-    SortieBattleResult
+    SortieBattleResult,
+    CombinedBattleResult
   )
 
   def fromUri(uri: String): Option[ResType] = {

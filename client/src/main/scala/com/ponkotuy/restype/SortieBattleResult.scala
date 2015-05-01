@@ -20,3 +20,11 @@ case object SortieBattleResult extends ResType {
     NormalPostable("/battle_result", write((result, MapStart.mapNext)), 1, result.summary) :: Nil
   }
 }
+
+case object CombinedBattleResult extends ResType {
+  import ResType._
+
+  override def regexp: Regex = s"\\A$ReqCombined/battleresult\\z".r
+
+  override def postables(q: Query): Seq[Result] = SortieBattleResult.postables(q)
+}
