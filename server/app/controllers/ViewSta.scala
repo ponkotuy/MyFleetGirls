@@ -1,7 +1,7 @@
 package controllers
 
 import models.db
-import models.join.{HonorWithRate, ItemMat, Mat, ShipWithName}
+import models.join._
 import models.query.{Period, SnapshotSearch}
 import models.view.{CItem, CShip}
 import org.json4s._
@@ -83,15 +83,15 @@ object ViewSta extends Controller {
 
   def drop(area: Int, info: Int) = actionAsync {
     val cells = db.BattleResult.dropedCells(area, info)
-    Ok(views.html.sta.drop(area, info, cells))
+    Ok(views.html.sta.drop(Stage(area, info), cells))
   }
 
   def dropAlpha(area: Int, info: Int) = actionAsync {
     val cells = db.BattleResult.dropedCellsAlpha(area, info)
-    Ok(views.html.sta.drop_alpha(area, info, cells))
+    Ok(views.html.sta.drop_alpha(Stage(area, info), cells))
   }
 
-  def route(area: Int, info: Int) = actionAsync { Ok(views.html.sta.route(area, info)) }
+  def route(area: Int, info: Int) = actionAsync { Ok(views.html.sta.route(Stage(area, info))) }
 
   def routeFleet(area: Int, info: Int, dep: Int, dest: Int, from: String, to: String) = actionAsync {
     val period = Period.fromStr(from, to)
@@ -106,7 +106,7 @@ object ViewSta extends Controller {
     val counts = fleetCounts(fleets)
     val cDep = db.CellInfo.findOrDefault(area, info, dep)
     val cDest = db.CellInfo.findOrDefault(area, info, dest)
-    Ok(views.html.sta.modal_route(area, info, cDep, cDest, counts))
+    Ok(views.html.sta.modal_route(Stage(area, info), cDep, cDest, counts))
   }
 
   private def fleetCounts(fleets: Seq[Seq[ShipWithName]]): Seq[(Seq[String], Int)] = {

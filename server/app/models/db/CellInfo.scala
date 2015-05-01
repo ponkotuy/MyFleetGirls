@@ -1,5 +1,6 @@
 package models.db
 
+import models.join.Stage
 import scalikejdbc._
 
 case class CellInfo(
@@ -14,8 +15,9 @@ case class CellInfo(
 
   def destroy()(implicit session: DBSession = CellInfo.autoSession): Unit = CellInfo.destroy(this)(session)
 
-  def pointStr: String = s"$areaId-$infoNo-$cell"
-  def pointAlpha: String = s"$areaId-$infoNo-$alphabet"
+  lazy val stage: Stage = Stage(areaId, infoNo)
+  def pointStr: String = s"$stage-$cell"
+  def pointAlpha: String = s"$stage-$alphabet"
 
 }
 

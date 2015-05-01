@@ -1,8 +1,8 @@
-@(area: Int, info: Int, dep: CellInfo, dest: CellInfo, depcounts: Seq[(Seq[String], Int)])
+@(stage: Stage, dep: CellInfo, dest: CellInfo, depcounts: Seq[(Seq[String], Int)])
 
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-  <h3 class="modal-title">編成 @area-@info from @dep.cell to @dest.cell</h3>
+  <h3 class="modal-title">編成 @stage from @dep.cell to @dest.cell</h3>
 </div>
 
 <div class="modal-body">

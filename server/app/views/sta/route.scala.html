@@ -1,16 +1,16 @@
-@(area: Int, info: Int)
+@(stage: Stage)
 
 @main {
-  <title>@area-@info -羅針盤-</title>
+  <title>@stage -羅針盤-</title>
   <script src="@Js.Vue"></script>
   <script src="@Js.Common"></script>
   <script src="@Js.MomentLocales"></script>
   <script src="@Js.Coffee("route")"></script>
 } {
   @statistics_head("drop") {
-    <div id="route_table" data-area="@area" data-info="@info">
+    <div id="route_table" data-area="@stage.area" data-info="@stage.info">
       <div class="page_header">
-        <h1>@area-@info 羅針盤</h1>
+        <h1>@stage 羅針盤</h1>
       </div>
 
       <form class="form-inline" role="form" action="@routes.ViewSta.statistics()">

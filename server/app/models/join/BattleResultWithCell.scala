@@ -20,12 +20,14 @@ case class BattleResultWithCell(br: BattleResult, ci: Option[CellInfo]) {
   def winRank: String = br.winRank
   def created: Long = br.created
 
+  lazy val stage = Stage(areaId, infoNo)
+
   def toJson: JObject = {
     implicit val defaults = DefaultFormats
     val alpha = alphabet.map(it => s"(${it})").getOrElse("")
     Extraction.decompose(br).asInstanceOf[JObject] ~
       ci.map(it => Extraction.decompose(it).asInstanceOf[JObject]).getOrElse(JObject()) ~
-      ("point" -> s"$areaId-$infoNo-$cell $alpha")
+      ("point" -> s"$stage-$cell $alpha")
   }
 }
 
