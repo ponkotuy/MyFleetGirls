@@ -20,13 +20,13 @@ cd $myfleet_dir
 kill `cat $pid`
 
 git --git-dir=.git pull
-sbt zip
+nice -n 10 sbt zip
 sleep 3
-/mnt/backup/service/dump/myfleet/dump.sh
-sbt compile
-sbt start -Dhttp.port=$port &
+nice -n 10 /mnt/backup/service/dump/myfleet/dump.sh
+nice -n 10 sbt compile
+nice -n 10 sbt start -Dhttp.port=$port &
 
-sleep 180
+sleep 120
 echo "Kill old process"
 if [ $port -eq $port1 ]
 then
