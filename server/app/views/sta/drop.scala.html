@@ -23,16 +23,16 @@
 
     <div class="panel-group" id="accordion">
       @cells.map { cell =>
-        <div class="panel panel-default" id="panel@cell.pointStr" data-cell="@cell.pointStr">
+        <div class="panel panel-default" id="panel@cell.rawPointStr" data-cell="@cell.rawPointStr">
           <div class="panel-heading">
             <h2 class="panel-title">
-              <a data-toggle="collapse" data-parent="#accordion" href="#collapse@cell.pointStr">
+              <a data-toggle="collapse" data-parent="#accordion" href="#collapse@cell.rawPointStr">
                 @cell.pointStr @if(cell.alphabet.nonEmpty){(@cell.alphabet)}
                 <small>@if(cell.start){Start} @if(cell.boss){BOSS}</small>
               </a>
             </h2>
           </div>
-          <div id="collapse@cell.pointStr" class="panel-collapse collapse" data-url="@routes.Rest.dropCell(cell.areaId, cell.infoNo, cell.cell, "(rank)", "(from)", "(to)")">
+          <div id="collapse@cell.rawPointStr" class="panel-collapse collapse" data-url="@routes.Rest.dropCell(cell.areaId, cell.infoNo, cell.cell, "(rank)", "(from)", "(to)")">
             <div class="panel-body">
               <form class="form-inline">
                 <label class="checkbox-inline">
@@ -53,7 +53,7 @@
                 <input type="text" class="datepicker form-control" v-model="from" />
                 〜
                 <input type="text" class="datepicker form-control" v-model="to" />
-                <div style="width:900px;height:600px;margin:auto;" id="sunburst@cell.pointStr" class="sunburst"></div>
+                <div style="width:900px;height:600px;margin:auto;" id="sunburst@cell.rawPointStr" class="sunburst"></div>
               </form>
             </div>
             <table class="table table-condensed table-hover">

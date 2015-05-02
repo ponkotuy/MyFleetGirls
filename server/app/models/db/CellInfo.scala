@@ -19,6 +19,9 @@ case class CellInfo(
   def pointStr: String = s"$stage-$cell"
   def pointAlpha: String = s"$stage-$alphabet"
 
+  def rawPointStr: String = s"$areaId-$infoNo-$cell"
+  def rawPointAlpha: String = s"$areaId-$infoNo-$alphabet"
+
 }
 
 
