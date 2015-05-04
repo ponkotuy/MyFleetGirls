@@ -1,7 +1,9 @@
 package com.ponkotuy.proxy
 
+import java.net.InetSocketAddress
 import com.netaporter.uri.Uri
 import com.ponkotuy.intercept.Intercepter
+import com.ponkotuy.config.ClientConfig
 import com.twitter.conversions.storage._
 import com.twitter.conversions.time._
 import com.twitter.finagle.builder.ClientBuilder
@@ -40,12 +42,14 @@ class FinagleProxy(port: Int, inter: Intercepter) {
 
   private def client(host: String) = {
     clients.getOrElseUpdate(host, {
-      ClientBuilder()
+      val builder = ClientBuilder()
         .codec(http.Http().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
         .timeout(30.seconds)
         .tcpConnectTimeout(30.seconds)
         .hosts(host)
-        .hostConnectionLimit(4).build()
+        .hostConnectionLimit(4)
+      ClientConfig.upstreamProxyHost.foreach( host => builder.httpProxy(new InetSocketAddress(host.getHostName,host.getPort)) )
+      builder.build()
     })
   }
 
