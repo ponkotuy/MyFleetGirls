@@ -37,6 +37,16 @@ object ClientConfig {
     }
   }
 
+  lazy val upstreamProxyHost: Option[HttpHost] = {
+    for {
+      upstream <- Try { config.getConfig("upstream_proxy") }.toOption 
+      port <- Try { upstream.getInt("port") }.toOption
+    } yield {
+      val host = Try { upstream.getString("host") }.getOrElse("localhost")
+      new HttpHost(host, port)
+    }
+  }
+
   @deprecated("Move to Auth.master", "0.13.0")
   def master: Boolean = Auth.master
   def auth(memberId: Long): Option[MyFleetAuth] = Auth.password.map(p => MyFleetAuth(memberId, p))
