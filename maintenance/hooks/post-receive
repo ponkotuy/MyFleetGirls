@@ -24,7 +24,7 @@ nice -n 10 sbt zip
 sleep 3
 nice -n 10 /mnt/backup/service/dump/myfleet/dump.sh
 nice -n 10 sbt compile
-nice -n 10 sbt start -Dhttp.port=$port &
+sbt start -Dhttp.port=$port &
 
 sleep 120
 echo "Kill old process"
