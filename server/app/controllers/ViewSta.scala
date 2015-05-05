@@ -171,7 +171,8 @@ object ViewSta extends Controller {
   }
 
   def honor() = actionAsync {
-    val honors = db.Honor.findAllByWithAdmiral(sqls.eq(db.Honor.h.setBadge, true))
+    val h = db.Honor.h
+    val honors = db.Honor.findAllByWithAdmiral(sqls.eq(h.setBadge, true).and.eq(h.invisible, false))
     val withRates = HonorWithRate.fromWithAdmiral(honors).sortBy(-_.rate)
     Ok(views.html.sta.honor(withRates))
   }

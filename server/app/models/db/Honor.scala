@@ -79,7 +79,9 @@ object Honor extends SQLSyntaxSupport[Honor] {
 
   def countName()(implicit session: DBSession = autoSession): Map[String, Long] = {
     withSQL {
-      select(h.name, sqls.count).from(Honor as h).groupBy(h.name)
+      select(h.name, sqls.count).from(Honor as h)
+          .where.eq(h.invisible, false)
+          .groupBy(h.name)
     }.map { rs =>
       rs.string(1) -> rs.long(2)
     }.list().apply().toMap
