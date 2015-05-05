@@ -30,7 +30,7 @@ object Honors {
     val before: Set[String] = fromUser(memberId, false).map(_.name)(breakOut)
     after.foreach { case (cat, xs) =>
       xs.foreach { x =>
-        if(!before.contains(x)) Honor.create(memberId, cat, x, false)
+        if(!before.contains(x)) Honor.create(memberId, cat, x, false, false)
       }
     }
   }

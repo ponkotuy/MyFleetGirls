@@ -15,10 +15,22 @@
           @honors.groupBy(_.category).toVector.sortBy(_._1).map { case (_, xs) =>
             <tr>
               <th>
-                @xs.map { x =>
-                  <label class="radio-inline">
-                    <input type="radio" name="honor" value="@x.name" @if(x.setBadge){checked="checked"}>@x.name
-                  </label><br>
+                @xs.filterNot(x => x.invisible && !user.isMine).map { x =>
+                  @if(x.invisible){
+                    @if(user.isMine) {
+                      <label class="radio-inline">
+                        <input type="radio" name="honor" value="@x.name" @if(x.setBadge){checked="checked"}>
+                        <span class="text-muted">@x.name</span>
+                      </label>
+                      <span class="glyphicon glyphicon-eye-open click-visible clickable" data-name="@x.name"></span>
+                    }
+                  } else {
+                    <label class="radio-inline">
+                      <input type="radio" name="honor" value="@x.name" @if(x.setBadge){checked="checked"}>@x.name
+                    </label>
+                    @if(user.isMine) { <span class="glyphicon glyphicon-eye-close click-invisible clickable" data-name="@x.name"></span> }
+                  }
+                  <br>
                 }
               </th>
               <td style="vertical-align: middle;">

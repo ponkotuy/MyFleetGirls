@@ -5,11 +5,12 @@ import models.join.HonorWithAdmiral
 import scalikejdbc._
 
 case class Honor(
-  id: Long,
-  memberId: Long,
-  category: Int,
-  name: String,
-  setBadge: Boolean) {
+    id: Long,
+    memberId: Long,
+    category: Int,
+    name: String,
+    setBadge: Boolean,
+    invisible: Boolean) {
 
   def save()(implicit session: DBSession = Honor.autoSession): Honor = Honor.save(this)(session)
 
@@ -25,7 +26,7 @@ object Honor extends SQLSyntaxSupport[Honor] {
 
   override val tableName = "honor"
 
-  override val columns = Seq("id", "member_id", "category", "name", "set_badge")
+  override val columns = Seq("id", "member_id", "category", "name", "set_badge", "invisible")
 
   def apply(h: SyntaxProvider[Honor])(rs: WrappedResultSet): Honor = apply(h.resultName)(rs)
   def apply(h: ResultName[Honor])(rs: WrappedResultSet): Honor = autoConstruct(rs, h)
@@ -85,21 +86,24 @@ object Honor extends SQLSyntaxSupport[Honor] {
   }
 
   def create(
-    memberId: Long,
-    category: Int,
-    name: String,
-    setBadge: Boolean)(implicit session: DBSession = autoSession): Long = {
+      memberId: Long,
+      category: Int,
+      name: String,
+      setBadge: Boolean,
+      invisible: Boolean)(implicit session: DBSession = autoSession): Long = {
     withSQL {
       insert.into(Honor).columns(
         column.memberId,
         column.category,
         column.name,
-        column.setBadge
+        column.setBadge,
+        column.invisible
       ).values(
             memberId,
             category,
             name,
-            setBadge
+            setBadge,
+            invisible
           )
     }.updateAndReturnGeneratedKey().apply()
   }
@@ -111,7 +115,8 @@ object Honor extends SQLSyntaxSupport[Honor] {
         column.memberId -> entity.memberId,
         column.category -> entity.category,
         column.name -> entity.name,
-        column.setBadge -> entity.setBadge
+        column.setBadge -> entity.setBadge,
+        column.invisible -> entity.invisible
       ).where.eq(column.id, entity.id)
     }.update().apply()
     entity
