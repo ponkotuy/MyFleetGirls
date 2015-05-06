@@ -1,9 +1,10 @@
 #!/bin/bash
 
-JAVA_HOME=$HOME/etc/soft/jdk1.8.0
+JAVA_HOME=$HOME/etc/soft/jdk1.8.0_45
 pid=server/target/universal/stage/RUNNING_PID
 port1=9003
 port2=9004
+NICE=19
 
 if [ `netstat -ant | grep ":$port1" | wc -l` -gt 0 ]
 then
@@ -20,13 +21,13 @@ cd $myfleet_dir
 kill `cat $pid`
 
 git --git-dir=.git pull
-nice -n 10 sbt zip
+nice -n $NICE sbt -java-home $JAVA_HOME zip
 sleep 3
-nice -n 10 /mnt/backup/service/dump/myfleet/dump.sh
-nice -n 10 sbt compile
-sbt start -Dhttp.port=$port &
+nice -n $NICE /mnt/backup/service/dump/myfleet/dump.sh
+nice -n $NICE sbt -java-home $JAVA_HOME stage
+JAVA_HOME=$JAVA_HOME server/target/universal/stage/bin/myfleetgirlsserver -J-Xms1G -J-Xmx2G -J-Xloggc:$myfleet_dir/gc.log -J-XX:+HeapDumpOnOutOfMemoryError &
 
-sleep 120
+sleep 10
 echo "Kill old process"
 if [ $port -eq $port1 ]
 then
