@@ -15,7 +15,7 @@ trait HonorCategory {
 }
 
 object Honors {
-  val values: Vector[HonorCategory] = Vector(ShipMaster, Yome, RankingTop, AllClear, ShipMaxLv, FleetAdmiral, Practice, ShipTypeBias, InitShip, Married, ManyShip, Rookie, FleetGroup, Lucky, SpecialDay, NotHave)
+  val values: Vector[HonorCategory] = Vector(ShipMaster, Yome, RankingTop, AllClear, ShipMaxLv, FleetAdmiral, Practice, ShipTypeBias, InitShip, Married, ManyShip, Rookie, FleetGroup, Lucky, SpecialDay, NotHave, HasUsers)
 
   def fromUser(memberId: Long, set: Boolean = false) = {
     val where = sqls.toAndConditionOpt(
@@ -30,7 +30,7 @@ object Honors {
     val before: Set[String] = fromUser(memberId, false).map(_.name)(breakOut)
     after.foreach { case (cat, xs) =>
       xs.foreach { x =>
-        if(!before.contains(x)) Honor.create(memberId, cat, x, false)
+        if(!before.contains(x)) Honor.create(memberId, cat, x, false, false)
       }
     }
   }
