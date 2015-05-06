@@ -16,21 +16,21 @@ import scala.collection.mutable
   * @param port: Server Port.
   * @param inter: com.ponkotuy.intercept.Intercepter
   */
-class FinagleProxy(port: Int, inter: Intercepter) {
+class FinagleProxy(host: String, port: Int, inter: Intercepter) {
   val clients: mutable.Map[String, Service[HttpRequest, HttpResponse]] = mutable.Map()
 
   val service = new Service[HttpRequest, HttpResponse] {
     def apply(req: HttpRequest): Future[HttpResponse] = {
       val uri = Uri.parse(req.getUri)
-      //req.setUri(uri.pathRaw)
       req.setUri(uri.path + uri.queryString)
       val res = client(uri.host.get + ":80").apply(req)
       res.foreach(rs => inter.input(req, rs, uri))
       res
     }
   }
+
   val server = try {
-    Http.serve(s":$port", service)
+    Http.serve(s"$host:$port", service)
   } catch {
     case e: ChannelException =>
       e.printStackTrace()
