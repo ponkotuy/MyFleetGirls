@@ -55,7 +55,7 @@ object WebPost extends Controller {
     UpdateSnapshot.fromReq(request.body).map { update =>
       if(uuidCheck(update.userId, request.session.get("key"))) {
         db.DeckSnapshot.find(update.snapId).map { snap =>
-          db.DeckSnapshot(snap.id, snap.memberId, snap.name, update.title, update.comment, snap.created, 0).save()
+          db.DeckSnapshot(snap.id, snap.memberId, snap.name, update.title, update.comment, snap.created, snap.sortOrder).save()
           Ok("Success")
         }.getOrElse(BadRequest("Invalid snapId"))
       } else Res.authFail
