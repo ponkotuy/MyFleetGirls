@@ -12,7 +12,8 @@ libraryDependencies ++= Seq(
   "com.netaporter" %% "scala-uri" % "0.4.6",
   "org.json4s" %% "json4s-native" % "3.2.11",
   "org.apache.httpcomponents" % "httpclient" % "4.4",
-  "org.apache.httpcomponents" % "httpmime" % "4.4"
+  "org.apache.httpcomponents" % "httpmime" % "4.4",
+  "com.typesafe.akka" %% "akka-actor" % "2.3.9"
 )
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions")

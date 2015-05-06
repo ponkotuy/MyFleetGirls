@@ -11,7 +11,7 @@ import java.nio.file.Files
 object TempFileTool {
   private val Fname = "tempfiletool_myfleet"
 
-  def save(dat: Array[Byte], extension: String)(f: File => Unit): Unit = {
+  def save[T](dat: Array[Byte], extension: String)(f: File => T): T = {
     val temp = Files.createTempFile(Fname, "." + extension)
     using(Files.newOutputStream(temp)) { buffer =>
       buffer.write(dat)
@@ -31,11 +31,11 @@ object TempFileTool {
     }
   }
 
-  def using[A <% Closeable](s: A)(f: A => Unit): Unit = {
+  def using[A <: Closeable, T](s: A)(f: A => T): T = {
     try f(s) finally s.close()
   }
 
-  def usingTmp(file: File)(f: File => Unit): Unit = {
+  def usingTmp[T](file: File)(f: File => T): T = {
     try f(file) finally file.delete()
   }
 }

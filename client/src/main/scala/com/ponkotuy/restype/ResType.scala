@@ -1,7 +1,10 @@
-package com.ponkotuy.parser
+package com.ponkotuy.restype
 
 import com.netaporter.uri.Uri
+import com.ponkotuy.parser.Query
 import com.ponkotuy.util.Log
+import org.json4s._
+
 import scala.util.matching.Regex
 
 /**
@@ -11,9 +14,15 @@ import scala.util.matching.Regex
  * @author ponkotuy
  * Date: 14/02/19.
  */
-sealed abstract class ResType(val regexp: Regex)
+abstract class ResType {
+  def regexp: Regex
+  def postables(q: Query): Seq[Result]
+  implicit def formats: Formats = DefaultFormats
+}
 
 object ResType extends Log {
+  type Req = Map[String, String]
+
   val Api = "/kcsapi"
   val AuthMember = s"$Api/api_auth_member"
   val GetMaster = s"$Api/api_get_master"
@@ -32,33 +41,13 @@ object ResType extends Log {
   val ReqRanking = s"$Api/api_req_ranking"
   val ReqCombined = s"$Api/api_req_combined_battle"
 
-  case object LoginCheck extends ResType(s"\\A$AuthMember/logincheck\\z".r) // 取るべきではない
-  case object ApiStart2 extends ResType(s"\\A$Api/api_start2\\z".r) // Master含む新API
-  case object Material extends ResType(s"\\A$GetMember/material\\z".r)
-  case object Basic extends ResType(s"\\A$GetMember/basic\\z".r)
+  /*
   case object Record extends ResType(s"\\A$GetMember/record\\z".r) // Basicの綺麗版
-  case object Ship2 extends ResType(s"\\A$GetMember/ship2\\z".r) // どうせship3に含まれているんだろう？
-  case object Ship3 extends ResType(s"\\A$GetMember/ship3\\z".r)
-  case object NDock extends ResType(s"\\A$GetMember/ndock\\z".r)
-  case object KDock extends ResType(s"\\A$GetMember/kdock\\z".r)
-  case object Deck extends ResType(s"\\A$GetMember/deck\\z".r) // DeckPortと何が違うのか分からなくて困っている
-  case object DeckPort extends ResType(s"\\A$GetMember/deck_port\\z".r)
   case object UseItem extends ResType(s"\\A$GetMember/useitem\\z".r) // 家具箱とか
-  case object SlotItem extends ResType(s"\\A$GetMember/slot_item\\z".r) // 旧slotitem 新slot_item
   case object Practice extends ResType(s"\\A$GetMember/practice\\z".r) // 演習相手。取るべきではない
-  case object PictureBook extends ResType(s"\\A$GetMember/picture_book\\z".r)
-  case object MapInfo extends ResType(s"\\A$GetMember/mapinfo\\z".r)
   case object MapCell extends ResType(s"\\A$GetMember/mapcell\\z".r) // Mapの各Cellで通ったことあるかどうか
-  case object QuestList extends ResType(s"\\A$GetMember/questlist\\z".r)
   case object UpdateDeckName extends ResType(s"\\A$ReqMember/updatedeckname\\z".r) // DeckName変更
-  case object CreateShip extends ResType(s"\\A$ReqKousyou/createship\\z".r)
-  case object GetShip extends ResType(s"\\A$ReqKousyou/getship\\z".r) // IDとshipIDのみ
-  case object CreateItem extends ResType(s"\\A$ReqKousyou/createitem\\z".r)
-  case object RemodelSlot extends ResType(s"\\A$ReqKousyou/remodel_slot\\z".r)
-  case object RemodelSlotlist extends ResType(s"\\A$ReqKousyou/remodel_slotlist\\z".r)
-  case object RemodelSlotlistDetail extends ResType(s"\\A$ReqKousyou/remodel_slotlist_detail\\z".r)
   case object Charge extends ResType(s"\\A$ReqHokyu/charge\\z".r)
-  case object HenseiChange extends ResType(s"\\A$ReqHensei/change\\z".r)
   case object HenseiLock extends ResType(s"\\A$ReqHensei/lock\\z".r)
   case object MissionStart extends ResType(s"\\A$ReqMission/start\\z".r)
   case object KaisouPowerup extends ResType(s"\\A$ReqKaisou/powerup\\z".r)
@@ -69,33 +58,45 @@ object ResType extends Log {
   case object PracticeMidnightBattle extends ResType(s"\\A$ReqPractice/midnight_battle\\z".r)
   case object PracticeBattleResult extends ResType(s"\\A$ReqPractice/battle_result\\z".r)
   case object GetOthersDeck extends ResType(s"\\A$ReqMember/getothersdeck\\z".r) // 演習相手。取るべきではない
-  case object MapStart extends ResType(s"\\A$ReqMap/start\\z".r)
-  case object MapNext extends ResType(s"\\A$ReqMap/next\\z".r)
   case object SortieBattle extends ResType(s"\\A$ReqSortie/battle\\z".r)
-  case object SortieBattleResult extends ResType(s"\\A$ReqSortie/battleresult\\z".r)
   case object ClearItemGet extends ResType(s"\\A$ReqQuest/clearitemget\\z".r)
   case object NyukyoStart extends ResType(s"\\A$ReqNyukyo/start\\z".r)
-  case object RankingList extends ResType(s"\\A$ReqRanking/getlist\\z".r)
   case object CombinedBattleResult extends ResType(s"\\A$ReqCombined/battleresult\\z".r)
   case object MasterPractice extends ResType(s"\\A$GetMaster/practice\\z".r)
   case object MasterUseItem extends ResType(s"\\A$GetMaster/useitem\\z".r) // 高速修復材とかの説明
   case object MasterFurniture extends ResType(s"\\A$GetMaster/furniture\\z".r) // 家具の説明
-  case object MasterSlotItem extends ResType(s"\\A$GetMaster/slotitem\\z".r)
   case object MasterMapArea extends ResType(s"\\A$GetMaster/maparea\\z".r) // 鎮守府海域・南西諸島海域など
-  case object Port extends ResType(s"\\A$Api/api_port/port\\z".r)
-  case object ShipSWF extends ResType("""\A/kcs/resources/swf/ships/[a-z]+\.swf\z""".r)
-  case object SoundMP3 extends ResType("""\A/kcs/sound/kc[a-z]+/[0-9]+\.mp3""".r)
+*/
 
-  val values = Set(
-    LoginCheck, ApiStart2, Material, Basic, Record, Ship2, Ship3, NDock, KDock,
-    Deck, DeckPort, UseItem, SlotItem, Practice, PictureBook, MapInfo, MapCell, QuestList,
-    UpdateDeckName, CreateShip, GetShip, CreateItem,
-    RemodelSlot, RemodelSlotlist, RemodelSlotlistDetail,
-    Charge, HenseiChange, HenseiLock, MissionStart, KaisouPowerup, Remodeling, Marriage, KaisouLock,
-    PracticeBattle, PracticeMidnightBattle, PracticeBattleResult, GetOthersDeck,
-    MapStart, MapNext, SortieBattle, SortieBattleResult, ClearItemGet, NyukyoStart, RankingList, CombinedBattleResult,
-    MasterPractice, MasterUseItem, MasterFurniture, MasterSlotItem, MasterMapArea,
-    Port, ShipSWF, SoundMP3
+  val values: Set[ResType] = Set(
+    ApiStart2,
+    Basic,
+    LoginCheck,
+    Port,
+    Material,
+    DeckPort,
+    Deck,
+    HenseiChange,
+    PictureBook,
+    NDock,
+    KDock,
+    CreateShip,
+    GetShip,
+    CreateItem,
+    MapInfo,
+    QuestList,
+    RemodelSlot,
+    RemodelSlotlist,
+    RemodelSlotlistDetail,
+    Ship2,
+    Ship3,
+    ShipSWF,
+    SoundMP3,
+    SlotItem,
+    MapStart,
+    MapNext,
+    SortieBattleResult,
+    CombinedBattleResult
   )
 
   def fromUri(uri: String): Option[ResType] = {
