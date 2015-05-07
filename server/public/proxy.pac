@@ -18,7 +18,7 @@ function FindProxyForURL(url, host) {
      isInNet(host, "203.104.209.23", "255.255.255.255") ||
      isInNet(host, "203.104.209.39", "255.255.255.255") ||
      isInNet(host, "203.104.209.55", "255.255.255.255")) {
-       return "PROXY localhost:8080";
+       return "PROXY 127.0.0.1:8080";
     }
   else {
     return "DIRECT";
