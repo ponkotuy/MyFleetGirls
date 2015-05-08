@@ -8,8 +8,7 @@ import javax.net.ssl.SSLContext
 import com.ponkotuy.build.BuildInfo
 import com.ponkotuy.config.ClientConfig
 import com.ponkotuy.data.{Auth, MyFleetAuth}
-import com.ponkotuy.parser.SoundUrlId
-import com.ponkotuy.restype.{FilePostable, HttpPostable, MasterPostable, NormalPostable}
+import com.ponkotuy.restype._
 import com.ponkotuy.tool.TempFileTool
 import com.ponkotuy.util.Log
 import org.apache.http.client.config.RequestConfig

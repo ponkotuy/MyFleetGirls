@@ -1,9 +1,10 @@
 package com.ponkotuy.restype
 
 import com.ponkotuy.http.MFGHttp
-import com.ponkotuy.parser.{Query, SoundUrlId}
+import com.ponkotuy.parser.Query
 import com.ponkotuy.restype.ShipSWF.allRead
 
+import scala.util.Try
 import scala.util.matching.Regex
 
 /**
@@ -18,5 +19,18 @@ case object SoundMP3 extends ResType {
       val sound = allRead(q.response.getContent)
       FilePostable(s"/mp3/kc/${shipKey}/${soundId}", "sound", 1, sound, "mp3")
     }.toList
+  }
+}
+
+case class SoundUrlId(shipKey: String, soundId: Int)
+
+object SoundUrlId {
+  val pattern = """.*/kcs/sound/kc([a-z]+)/(\d+).mp3""".r
+
+  def parseURL(url: String): Option[SoundUrlId] = {
+    url match {
+      case pattern(ship, sound) => Try { SoundUrlId(ship, sound.toInt) }.toOption
+      case _ => None
+    }
   }
 }

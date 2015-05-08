@@ -18,6 +18,6 @@ case object Port extends ResType {
         Material.postablesFromObj(q.obj \ "api_material") ++
         NDock.postablesFromObj(q.obj \ "api_ndock") ++
         DeckPort.postablesFromObj(q.obj \ "api_deck_port") ++
-        Basic.postablesFromObj(q.obj \ "api_basic")
+        Basic.postablesFromObj(q.obj \ "api_basic", q.uri)
   }
 }
