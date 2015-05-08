@@ -9,8 +9,10 @@ NICE=19
 if [ `netstat -ant | grep ":$port1" | wc -l` -gt 0 ]
 then
     port=$port2
+    kill_port=$port1
 else
     port=$port1
+    kill_port=$port2
 fi
 
 # Directory
@@ -25,13 +27,8 @@ nice -n $NICE sbt -java-home $JAVA_HOME zip
 sleep 3
 nice -n $NICE /mnt/backup/service/dump/myfleet/dump.sh
 nice -n $NICE sbt -java-home $JAVA_HOME stage
-JAVA_HOME=$JAVA_HOME server/target/universal/stage/bin/myfleetgirlsserver -J-Xms1G -J-Xmx2G -J-Xloggc:$myfleet_dir/gc.log -J-XX:+HeapDumpOnOutOfMemoryError &
+JAVA_HOME=$JAVA_HOME server/target/universal/stage/bin/myfleetgirlsserver -J-Xms1G -J-Xmx2G -J-Xloggc:$myfleet_dir/gc.log -J-XX:+HeapDumpOnOutOfMemoryError -Dhttp.port=$port &
 
 sleep 10
 echo "Kill old process"
-if [ $port -eq $port1 ]
-then
-    kill `cat ../$port2/$pid`
-else
-    kill `cat ../$port1/$pid`
-fi
+kill `cat ../$kill_port/$pid`
