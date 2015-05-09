@@ -20,7 +20,7 @@ object EvolutionBase {
   }
 
   // 大鯨→龍鳳、U-511→呂500など名称変更が入る艦娘のid mapping
-  val Aliases = Map(431 -> 436, 184 -> 185, 35 -> 147)
+  val Aliases = Map(431 -> 436, 184 -> 185, 35 -> 147, 441 -> 446)
 
   /* TODO: EHCacheの厳密なsizeを求めるのは非常に重く、EHCacheを使うべきでない */
   object Afters extends TimeToLiveCache[Int, Int] {
