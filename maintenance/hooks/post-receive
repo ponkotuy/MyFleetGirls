@@ -5,6 +5,11 @@ pid=server/target/universal/stage/RUNNING_PID
 port1=9003
 port2=9004
 NICE=19
+myfleet_base=$HOME/service/MyFleetGirls
+
+# pull
+cd $myfleet_base/9003 && git --git-dir=.git pull
+cd $myfleet_base/9004 && git --git-dir=.git pull
 
 if [ `netstat -ant | grep ":$port1" | wc -l` -gt 0 ]
 then
@@ -16,13 +21,12 @@ else
 fi
 
 # Directory
-myfleet_dir=$HOME/service/MyFleetGirls/$port
+myfleet_dir=$myfleet_base/$port
 cd $myfleet_dir
 
 # Kill old process
 kill `cat $pid`
 
-git --git-dir=.git pull
 nice -n $NICE sbt -java-home $JAVA_HOME zip
 sleep 3
 nice -n $NICE /mnt/backup/service/dump/myfleet/dump.sh
