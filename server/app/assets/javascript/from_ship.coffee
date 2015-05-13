@@ -59,7 +59,7 @@ vueSettings =
       @dropCounts = []
       @iCounts = []
     setHash: ->
-      param = query: @query
+      param = query: encodeURIComponent(@query)
       if @shipId != -1 then param.ship = @shipId
       else if @itemId != -1 then param.item = @itemId
       if @period
