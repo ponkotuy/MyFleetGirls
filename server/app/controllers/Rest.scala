@@ -60,9 +60,10 @@ object Rest extends Controller {
   }
 
   def dropFromShip(shipId: Int, from: String, to: String) = returnJson {
-    val fromTo = Period.fromStr(from, to).where(sqls"br.created")
+    val br = db.BattleResult.br
+    val fromTo = Period.fromStr(from, to).where(br.created)
     val allCounts = db.BattleResult.countAllGroupByCells(fromTo).toMap
-    val dropCounts = db.BattleResult.countAllGroupByCells(sqls.eq(sqls"get_ship_id", shipId).and.append(fromTo))
+    val dropCounts = db.BattleResult.countAllGroupByCells(sqls.eq(br.getShipId, shipId).and.append(fromTo))
     dropCounts.map { case (cell, count) =>
       DropRate(cell, count, allCounts.getOrElse(cell, Long.MaxValue))
     }.sortBy(-_.count).map(_.toJson).take(51)
