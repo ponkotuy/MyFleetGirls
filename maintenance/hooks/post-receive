@@ -31,6 +31,7 @@ nice -n $NICE sbt -java-home $JAVA_HOME zip
 sleep 3
 nice -n $NICE /mnt/backup/service/dump/myfleet/dump.sh
 nice -n $NICE sbt -java-home $JAVA_HOME stage
+sleep 3
 JAVA_HOME=$JAVA_HOME server/target/universal/stage/bin/myfleetgirlsserver -J-Xms1G -J-Xmx2G -J-Xloggc:$myfleet_dir/gc.log -J-XX:+PrintGCDetails -J-XX:+PrintGCDateStamps -J-XX:+HeapDumpOnOutOfMemoryError -Dhttp.port=$port &
 
 sleep 10
