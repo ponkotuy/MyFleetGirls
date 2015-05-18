@@ -4,8 +4,13 @@ JAVA_HOME=$HOME/etc/soft/jdk1.8.0_45
 pid=server/target/universal/stage/RUNNING_PID
 port1=9003
 port2=9004
-NICE=19
+nice=19
 myfleet_base=$HOME/service/MyFleetGirls
+orig_jar=client/target/scala-2.11/MyFleetGirls.jar
+pub_dir=server/public
+pub_client=$pub_dir/client
+pub_zip=$pub_dir/zip
+pub_jar=$pub_client/MyFleetGirls.jar
 
 # pull
 cd $myfleet_base/9003 && git --git-dir=.git pull
@@ -27,19 +32,19 @@ cd $myfleet_dir
 # Kill old process
 kill `cat $pid`
 
-#
-nice -n $NICE sbt -java-home $JAVA_HOME assembly
-if [ "`md5sum server/public/client/MyFleetGirls.jar | cut -d " " -f1`" != "`md5sum  client/target/scala-2.11/MyFleetGirls.jar | cut -d " " -f1`" ]; then
-    mv server/public/zip/MyFleetGirls.zip server/public/zip/MyFleetGirls.zip.old
-    mv server/public/client/MyFleetGirls.jar.pack.gz server/public/client/MyFleetGirls.jar.pack.gz.old
-    nice -n $NICE zip -j server/public/zip/MyFleetGirls.zip update/target/update.jar LICENSE update/update.properties update/myfleetgirls.keystore package/resources/application.conf.sample package/resources/MyFleetGirls.bat package/resources/MyFleetGirls.sh package/resources/MyFleetGirls.command package/resources/IE_PROXY.REG
-    cp LICENSE MyFleetGirls.bat MyFleetGirls.sh MyFleetGirls.command update/update.properties update/myfleetgirls.keystore package/resources/application.conf.sample package/resources/IE_PROXY.REG client/target/scala-2.11/MyFleetGirls.jar server/public/client/
-    nice -n $NICE pack200 --unknown-attribute=pass server/public/client/MyFleetGirls.jar.pack.gz server/public/client/MyFleetGirls.jar 2> /dev/null
+# zipped
+nice -n $nice ionice -c 3 sbt -java-home $JAVA_HOME assembly
+if ! cmp -s $pub_jar $orig_jar
+then
+    mv $pub_zip/MyFleetGirls.zip $pub_zip/MyFleetGirls.zip.old
+    mv $pub_jar.pack.gz $pub_jar.pack.gz.old
+    nice -n $nice ionice -c 3 zip -j $pub_zip/MyFleetGirls.zip update/target/update.jar LICENSE update/update.properties update/myfleetgirls.keystore package/resources/application.conf.sample package/resources/MyFleetGirls.bat package/resources/MyFleetGirls.sh package/resources/MyFleetGirls.command package/resources/IE_PROXY.REG
+    cp LICENSE MyFleetGirls.bat MyFleetGirls.sh MyFleetGirls.command update/update.properties update/myfleetgirls.keystore package/resources/application.conf.sample package/resources/IE_PROXY.REG $orig_jar $pub_client/
+    nice -n $nice ionice -c 3 pack200 --unknown-attribute=pass $pub_jar.pack.gz $pub_jar 2> /dev/null
 fi
 
-nice -n $NICE /mnt/backup/service/dump/myfleet/dump.sh
-nice -n $NICE sbt -java-home $JAVA_HOME stage
-sleep 3
+nice -n $nice ionice -c 3 /mnt/backup/service/dump/myfleet/dump.sh
+nice -n $nice ionice -c 3 sbt -java-home $JAVA_HOME stage
 JAVA_HOME=$JAVA_HOME server/target/universal/stage/bin/myfleetgirlsserver -J-Xms1G -J-Xmx2G -J-Xloggc:$myfleet_dir/gc.log -J-XX:+PrintGCDetails -J-XX:+PrintGCDateStamps -J-XX:+HeapDumpOnOutOfMemoryError -Dhttp.port=$port &
 
 sleep 10
