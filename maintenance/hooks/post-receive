@@ -1,23 +1,26 @@
 #!/bin/bash
 
-JAVA_HOME=$HOME/etc/soft/jdk1.8.0_45
+JAVA_HOME="$HOME/etc/soft/jdk1.8.0_45"
 pid=server/target/universal/stage/RUNNING_PID
+server_opt='-J-Xms1G -J-Xmx2G -J-Xloggc:$myfleet_dir/gc.log -J-XX:+PrintGCDetails -J-XX:+PrintGCDateStamps -J-XX:+HeapDumpOnOutOfMemoryError -Dhttp.port=$port' 
 port1=9003
 port2=9004
-nice=19
+nice='nice -n 19 ionice -c 3'
 myfleet_base=$HOME/service/MyFleetGirls
 orig_jar=client/target/scala-2.11/MyFleetGirls.jar
 pub_dir=server/public
 pub_client=$pub_dir/client
 pub_zip=$pub_dir/zip
 pub_jar=$pub_client/MyFleetGirls.jar
+pub_files='LICENSE update/{target/update.jar,update.properties,myfleetgirls.keystore} package/resources/*'
+
+export JAVA_HOME
 
 # pull
 cd $myfleet_base/9003 && git --git-dir=.git pull
 cd $myfleet_base/9004 && git --git-dir=.git pull
 
-if [ `netstat -ant | grep ":$port1" | wc -l` -gt 0 ]
-then
+if [ `lsof -iTCP:${port1}" | grep LISTEN | wc -l` -gt 0 ] ; then
     port=$port2
     kill_port=$port1
 else
@@ -33,19 +36,18 @@ cd $myfleet_dir
 kill `cat $pid`
 
 # zipped
-nice -n $nice ionice -c 3 sbt -java-home $JAVA_HOME assembly
-if ! cmp -s $pub_jar $orig_jar
-then
+$nise sbt -java-home $JAVA_HOME assembly
+if ! cmp -s $pub_jar $orig_jar ; then
     mv $pub_zip/MyFleetGirls.zip $pub_zip/MyFleetGirls.zip.old
-    mv $pub_jar.pack.gz $pub_jar.pack.gz.old
-    nice -n $nice ionice -c 3 zip -j $pub_zip/MyFleetGirls.zip update/target/update.jar LICENSE update/update.properties update/myfleetgirls.keystore package/resources/application.conf.sample package/resources/MyFleetGirls.bat package/resources/MyFleetGirls.sh package/resources/MyFleetGirls.command package/resources/IE_PROXY.REG
-    cp LICENSE MyFleetGirls.bat MyFleetGirls.sh MyFleetGirls.command update/update.properties update/myfleetgirls.keystore package/resources/application.conf.sample package/resources/IE_PROXY.REG $orig_jar $pub_client/
-    nice -n $nice ionice -c 3 pack200 --unknown-attribute=pass $pub_jar.pack.gz $pub_jar 2> /dev/null
+    mv ${pub_jar}.pack.gz ${pub_jar}.pack.gz.old
+    eval $nise zip -j $pub_zip/MyFleetGirls.zip $pub_files
+    eval cp $orig_jar $pub_files $pub_client/
+    $nice pack200 --unknown-attribute=pass ${pub_jar}.pack.gz $pub_jar 2> /dev/null
 fi
 
-nice -n $nice ionice -c 3 /mnt/backup/service/dump/myfleet/dump.sh
-nice -n $nice ionice -c 3 sbt -java-home $JAVA_HOME stage
-JAVA_HOME=$JAVA_HOME server/target/universal/stage/bin/myfleetgirlsserver -J-Xms1G -J-Xmx2G -J-Xloggc:$myfleet_dir/gc.log -J-XX:+PrintGCDetails -J-XX:+PrintGCDateStamps -J-XX:+HeapDumpOnOutOfMemoryError -Dhttp.port=$port &
+$nice /mnt/backup/service/dump/myfleet/dump.sh
+$nice sbt -java-home $JAVA_HOME stage
+eval server/target/universal/stage/bin/myfleetgirlsserver $server_opt &
 
 sleep 10
 echo "Kill old process"
