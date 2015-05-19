@@ -20,7 +20,7 @@ export JAVA_HOME
 cd $myfleet_base/9003 && git --git-dir=.git pull
 cd $myfleet_base/9004 && git --git-dir=.git pull
 
-if [ `lsof -iTCP:${port1}" | grep LISTEN | wc -l` -gt 0 ] ; then
+if [ `lsof -iTCP:${port1} | grep LISTEN | wc -l` -gt 0 ] ; then
     port=$port2
     kill_port=$port1
 else
