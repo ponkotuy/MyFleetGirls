@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -u 
+
 JAVA_HOME="$HOME/etc/soft/jdk1.8.0_45"
 pid=server/target/universal/stage/RUNNING_PID
 server_opt='-J-Xms1G -J-Xmx2G -J-Xloggc:$myfleet_dir/gc.log -J-XX:+PrintGCDetails -J-XX:+PrintGCDateStamps -J-XX:+HeapDumpOnOutOfMemoryError -Dhttp.port=$port' 
