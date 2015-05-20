@@ -5,17 +5,21 @@ import scalikejdbc._
 import com.ponkotuy.data
 
 case class ShipBook(
-  memberId: Long,
-  id: Int,
-  indexNo: Int,
-  isDameged: Boolean,
-  name: String,
-  updated: Long,
-  isMarried: Boolean) {
+    memberId: Long,
+    id: Int,
+    indexNo: Int,
+    isDameged: Boolean,
+    name: String,
+    updated: Long,
+    isMarried: Boolean) {
+
+  import ShipBook._
 
   def save()(implicit session: DBSession = ShipBook.autoSession): ShipBook = ShipBook.save(this)(session)
 
   def destroy()(implicit session: DBSession = ShipBook.autoSession): Unit = ShipBook.destroy(this)(session)
+
+  def fixedName = fixName(name)
 
 }
 
@@ -55,7 +59,7 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
   def findAllUnique()(implicit session: DBSession = autoSession): List[(Int, String)] = withSQL {
     select(sb.indexNo, sb.name).from(ShipBook as sb).groupBy(sb.indexNo)
   }.map { rs =>
-    rs.int(1) -> rs.string(2)
+    rs.int(1) -> fixName(rs.string(2))
   }.list().apply()
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
@@ -134,6 +138,14 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
     withSQL {
       delete.from(ShipBook).where.eq(column.indexNo, entity.indexNo).and.eq(column.memberId, entity.memberId)
     }.update().apply()
+  }
+
+  /** DBのデータ(というより入力のデータ)が改改とかになっててダサいので削る */
+  def fixName(name: String) = {
+    if(name.endsWith("改改")) name.init
+    else if(name.endsWith("改二改二")) name.init.init
+    else if(name.endsWith("改二改")) name.init
+    else name
   }
 
 }
