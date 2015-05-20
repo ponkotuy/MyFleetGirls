@@ -19,7 +19,7 @@ case class ShipBook(
 
   def destroy()(implicit session: DBSession = ShipBook.autoSession): Unit = ShipBook.destroy(this)(session)
 
-  def fixedName = fixName(name)
+  def fixedName = fixName(id, name)
 
 }
 
@@ -59,7 +59,8 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
   def findAllUnique()(implicit session: DBSession = autoSession): List[(Int, String)] = withSQL {
     select(sb.indexNo, sb.name).from(ShipBook as sb).groupBy(sb.indexNo)
   }.map { rs =>
-    rs.int(1) -> fixName(rs.string(2))
+    val id = rs.int(1)
+    id -> fixName(id, rs.string(2))
   }.list().apply()
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
@@ -141,11 +142,10 @@ object ShipBook extends SQLSyntaxSupport[ShipBook] {
   }
 
   /** DBのデータ(というより入力のデータ)が改改とかになっててダサいので削る */
-  def fixName(name: String) = {
-    if(name.endsWith("改改")) name.init
-    else if(name.endsWith("改二改二")) name.init.init
-    else if(name.endsWith("改二改")) name.init
-    else name
+  def fixName(id: Long, name: String) = {
+    if(id < 100000) name
+    else if(100000 < id && id < 200000) name.init
+    else name.init.init
   }
 
 }
