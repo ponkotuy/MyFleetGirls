@@ -50,7 +50,7 @@
               <td>{{m.mapArea}}</td>
               <td>{{m.number}}</td>
               <td>{{m.name}}</td>
-              <td><span v-repeat="s: m.ships">{{s.name}}<small>Lv{{s.lv}}</small> </span></td>
+              <td><span v-repeat="s: m.ships">{{s.name}}<small>Lv{{s.lv}}</small> </span></td> <!-- 元の艦娘のIDが残ってないのでURL作れないかなしい -->
               <td>{{toDate(m.completeTime)}}</td>
             </tr>
           </tbody>
