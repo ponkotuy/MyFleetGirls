@@ -35,7 +35,7 @@
       @decks.map { ship =>
         <tr>
           <td>@ship.stName</td>
-          <td>@ship.name</td>
+          <td><a href="#modal=true&id=@ship.id" onclick="location.hash = 'modal=true&id=@ship.id'; location.reload(false);">@ship.name</a></td>
           <td style="padding:0px;"><div style="background-color:#D9EDF7;width:@{(ship.expRate*100).toInt}%;padding:5px;">@ship.lv</div></td>
           <td style="padding:0px;"><div style="background-color:@if(ship.lv > 100){#EBCCD1}else{#D9EDF7};width:@{(ship.entireExpRate*100).toInt}%;padding:5px;">@{f"${ship.exp}%,d"}</div></td>
           <td style="padding:0px;"><div style="background-color:@ship.hpRGB.toString;width:@{(ship.hpRate*100).toInt}%;padding:5px;">@ship.nowhp/@ship.maxhp</div></td>

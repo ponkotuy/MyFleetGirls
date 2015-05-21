@@ -6,13 +6,7 @@ $(document).ready ->
     sortDesc: 'icon-chevron-down glyphicon glyphicon-chevron-down'
 
   # Restore URL Parameter
-  param = fromURLParameter(location.hash.replace(/^\#/, ''))
-  param.lv = if param.lv? then decodeURIComponent(param.lv) else ""
-  if param.modal?
-    if param.fleet?
-      $('#modal').modal({remote: "fleet/#{param.id}"})
-    else
-      $('#modal').modal({remote: "aship/#{param.id}"})
+  param = restoreURLParam()
 
   $('#ship_table').tablesorter(
     sortList: [[3, 1], [4, 1]]
@@ -71,3 +65,13 @@ jqplotOpt =
       max: 120
       showTicks: false
       showTickMarks: false
+
+restoreURLParam = ->
+  param = fromURLParameter(location.hash.replace(/^\#/, ''))
+  param.lv = if param.lv? then decodeURIComponent(param.lv) else ""
+  if param.modal?
+    if param.fleet?
+      $('#modal').modal({remote: "fleet/#{param.id}"})
+    else
+      $('#modal').modal({remote: "aship/#{param.id}"})
+  param
