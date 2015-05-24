@@ -40,6 +40,8 @@ trait ShipParameter extends GraphData {
   def stName = stype.name
   def stAbbName = stAbbNames(stName)
 
+  def isDamaged = nowhp <= (maxhp / 2)
+
   lazy val slot: Seq[SlotItemWithMaster] = SlotItem.findIn(ship.slot, memberId)
   lazy val slotMaster: Seq[MasterSlotItem] = {
     val ids = slot.map(_.slotitemId)

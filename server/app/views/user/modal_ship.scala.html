@@ -37,7 +37,7 @@
       </td>
       <td>
         <div>
-          <img src="@routes.RestImage.ship(ship.shipId, 5)" alt="@ship.name" class="img-rounded" />
+          <img src="@routes.RestImage.ship(ship.shipId, if(ship.isDamaged) 7 else 5)" alt="@ship.name" class="img-rounded" />
           @if(ship.airSuperiority > 0) { <p style="margin: 5px;"><small>制空値</small>@ship.airSuperiority</p> }
           <ul>
             @ship.slotNames.map { slot =>

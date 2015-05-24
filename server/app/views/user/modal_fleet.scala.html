@@ -22,7 +22,7 @@
 <div class="modal-body">
   <div style="text-align: center;">
     @decks.map { ship =>
-      <img src="@routes.RestImage.ship(ship.shipId, 5)" alt="@ship.name" class="img-rounded" />
+      <img src="@routes.RestImage.ship(ship.shipId, if(ship.isDamaged) 7 else 5)" alt="@ship.name" class="img-rounded" />
     }
   </div>
   <table class="table table-condensed">

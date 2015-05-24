@@ -3,4 +3,4 @@
 @(ship: ShipWithName)
 
 <h3><a href="@{routes.UserView.ship(ship.memberId)}#modal=true&id=@ship.id">@ship.name</a><small>Lv@ship.lv</small></h3>
-<img src="@routes.RestImage.ship(ship.shipId, 5)" alt="@ship.name" />
+<img src="@routes.RestImage.ship(ship.shipId, if(ship.isDamaged) 7 else 5)" alt="@ship.name" />
