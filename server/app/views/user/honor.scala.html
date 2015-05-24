@@ -12,10 +12,10 @@
 
       <form>
         <table class="table">
-          @honors.groupBy(_.category).toVector.sortBy(_._1).map { case (_, xs) =>
+          @honors.filterNot(x => x.invisible && !user.isMine).groupBy(_.category).toVector.sortBy(_._1).map { case (_, xs) =>
             <tr>
               <th>
-                @xs.filterNot(x => x.invisible && !user.isMine).map { x =>
+                @xs.map { x =>
                   @if(x.invisible){
                     @if(user.isMine) {
                       <label class="radio-inline">
