@@ -42,6 +42,7 @@ object Post extends Controller {
   def ship2 = authAndParse[List[Ship]] { case (auth, ships) =>
     db.Ship.deleteAllByUser(auth.id)
     db.Ship.bulkInsert(ships, auth.id)
+    db.ShipHistory.bulkInsert(ships, auth.id)
     Res.success
   }
 
