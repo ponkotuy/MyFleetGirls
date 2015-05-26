@@ -1,9 +1,22 @@
 @(ship: ShipParameter, user: User, isSnap: Boolean)
 
 <!-- Require jqPlot -->
+<input type="hidden" id="shipid" value="@ship.id" />
 
 <script src="@Js.Coffee("bar")"></script>
+<script src="@Js.Coffee("graph")"></script>
 <script src="@Js.Coffee("modal_ship")"></script>
+
+<style>
+  div.chart {
+    height: 400px;
+  }
+
+  div.overview {
+    height: 160px;
+  }
+</style>
+
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 
@@ -72,6 +85,11 @@
       </tr>
     </tbody>
   </table>
+
+  <div id="exp">
+    <div id="exp_graph" class="chart width-adj"></div>
+    <div id="exp_overview" class="overview width-adj"></div>
+  </div>
 </div>
 
 <div class="modal-footer">
