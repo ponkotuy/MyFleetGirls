@@ -1,5 +1,3 @@
-@import models.join.ShipWithName
-
 @(ship: ShipWithName)
 
 <h3><a href="@{routes.UserView.ship(ship.memberId)}#modal=true&id=@ship.id">@ship.name</a><small>Lv@ship.lv</small></h3>

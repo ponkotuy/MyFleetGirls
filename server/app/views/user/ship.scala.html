@@ -5,10 +5,14 @@
 @main {
   <title>艦娘 -@{user.admiral.nickname}提督-</title>
   @Js.ImportJqplot("barRenderer", "categoryAxisRenderer", "pointLabels", "highlighter")
+  @Js.ScriptFlot("time", "selection")
+  <script src="@Js.MomentLocales"></script>
+  <script src="@Js.Lodash"></script>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/css/theme.bootstrap.css" />
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.13.3/jquery.tablesorter.widgets.min.js"></script>
   <script src="@Js.Common"></script>
+  <script src="@Js.Coffee("graph")"></script>
   <script src="@Js.Coffee("ship")"></script>
 } {
   @head_content(user) {

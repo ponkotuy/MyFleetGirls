@@ -1,3 +1,6 @@
+
+# Require graph.coffee
+
 @tweet = (name, lv) ->
   here = encodeURIComponent(location.href)
   text = "#{name} Lv#{lv}"
