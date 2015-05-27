@@ -58,3 +58,14 @@ object ShipExpGroup {
 
   def find(n: Int): Option[ShipExpGroup] = values.find(_.v == n)
 }
+
+sealed abstract class ShipExpAggPattern(val v: Int)
+
+object ShipExpAggPattern {
+  case object RawValue extends ShipExpAggPattern(1)
+  case object Diff extends ShipExpAggPattern(2)
+
+  val values = Vector(RawValue, Diff)
+
+  def find(n: Int): Option[ShipExpAggPattern] = values.find(_.v == n)
+}

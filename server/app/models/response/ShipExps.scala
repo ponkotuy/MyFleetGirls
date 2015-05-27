@@ -1,7 +1,5 @@
 package models.response
 
-import models.db.ShipHistory
-
 /**
  *
  * @author ponkotuy
@@ -10,7 +8,3 @@ import models.db.ShipHistory
 case class ShipExps(shipId: Int, name: String, exps: List[Exp])
 
 case class Exp(exp: Int, created: Long)
-
-object Exp {
-  def fromHistory(his: ShipHistory): Exp = Exp(his.exp, his.created)
-}

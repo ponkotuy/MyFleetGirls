@@ -92,7 +92,7 @@ GET           /rest/v1/:userId/quest                                        cont
 GET           /rest/v1/:userId/snap/:snapId                                 controllers.RestUser.snap(userId: Long, snapId: Long)
 GET           /rest/v2/user/:userId/book/ships                              controllers.RestUser.bookShips(userId: Long)
 GET           /rest/v2/user/:userId/honors                                  controllers.RestUser.honors(userId: Long, set: Boolean ?= false)
-GET           /rest/v2/user/:userId/ship/exps/:groupId                      controllers.RestUser.shipGroupExp(userId: Long, groupId: Int)
+GET           /rest/v2/user/:userId/ship/exps/:groupId                      controllers.RestUser.shipGroupExp(userId: Long, groupId: Int, agg: Int ?= 1)
 GET           /rest/v1/image/ship/:shipId/:swfId.jpg                        controllers.RestImage.ship(shipId: Int, swfId: Int)
 GET           /rest/v1/sound/ship/:shipId/:soundId.mp3                      controllers.RestSound.ship(shipId: Int, soundId: Int)
 HEAD          /rest/v1/image/ship/:shipId/:swfId.jpg                        controllers.RestImage.shipHead(shipId: Int, swfId: Int)

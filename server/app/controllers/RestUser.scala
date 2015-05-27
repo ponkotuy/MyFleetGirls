@@ -4,7 +4,7 @@ import honor.Honors
 import models.db
 import models.join.ShipWithName
 import models.other.ShipWithCondition
-import models.query.ShipExpGroup
+import models.query.{ShipExpAggPattern, ShipExpGroup}
 import models.req.{AllCrawlAPI, SortType}
 import models.response.{Exp, ShipExps}
 import org.json4s.JsonDSL._
@@ -153,8 +153,11 @@ object RestUser extends Controller {
     Honors.fromUser(memberId, set)
   }
 
-  def shipGroupExp(memberId: Long, groupId: Int, period: Long = 30.days.toMillis) = returnJson {
-    ShipExpGroup.find(groupId).map { group =>
+  def shipGroupExp(memberId: Long, groupId: Int, aggId: Int, period: Long = 30.days.toMillis) = returnJson {
+    val result = for {
+      group <- ShipExpGroup.find(groupId)
+      agg <- ShipExpAggPattern.find(aggId)
+    } yield {
       val ships = group.ships(memberId, period)
       val sh = db.ShipHistory.sh
       val from = System.currentTimeMillis() - period
@@ -164,9 +167,18 @@ object RestUser extends Controller {
         shipId -> histories.filter(_.shipId == shipId)
       }.filter(_._2.size > 2).flatMap { case (shipId, xs) =>
         names.get(shipId).map { ship =>
-          ShipExps(shipId, s"${ship.stAbbName} ${ship.name}", xs.map(Exp.fromHistory))
+          val min = xs.map(_.exp).min
+          val data = xs.map { x =>
+            val exp = agg match {
+              case ShipExpAggPattern.RawValue => x.exp
+              case ShipExpAggPattern.Diff => x.exp - min
+            }
+            Exp(exp, x.created)
+          }
+          ShipExps(shipId, s"${ship.stAbbName} ${ship.name}", data)
         }
       }
-    }.getOrElse(Nil)
+    }
+    result.getOrElse(Nil)
   }
 }

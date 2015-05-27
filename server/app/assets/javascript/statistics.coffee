@@ -2,12 +2,21 @@
 # Required Flot, MomentLocales, Lodash
 
 nowGroup = 1
+nowAgg = 2
 groupButtons = []
 plot = null
 
+highlight = (node) -> node.removeClass('btn-default').addClass('btn-primary')
+unhighlight = (node) -> node.removeClass('btn-primary').addClass('btn-default')
+
 @setGroup = (n) ->
-  $('button.group-button').removeClass('disabled')
+  unhighlight($('button.group-button'))
   nowGroup = n
+  drawGraph()
+
+@setAgg = (n) ->
+  unhighlight($('button.agg-button'))
+  nowAgg = n
   drawGraph()
 
 setGroupButtonClick = ->
@@ -15,7 +24,14 @@ setGroupButtonClick = ->
     group = parseInt($(this).attr('data-group'))
     $(this).click ->
       setGroup(group)
-      $(this).addClass('disabled')
+      highlight($(this))
+
+setAggButtonClick = ->
+  $('button.agg-button').each ->
+    agg = parseInt($(this).attr('data-agg'))
+    $(this).click ->
+      setAgg(agg)
+      highlight($(this))
 
 fixWidth = ->
   width = $('div.tab-content').width()
@@ -35,12 +51,13 @@ graphOption =
 
 drawGraph = ->
   userid = $('#userid').val()
-  $.getJSON "/rest/v2/user/#{userid}/ship/exps/#{nowGroup}", (data) ->
+  $.getJSON "/rest/v2/user/#{userid}/ship/exps/#{nowGroup}?agg=#{nowAgg}", (data) ->
     if data.length > 0
       raw = trans(data)
       plot = $.plot('#ship_exps_graph', raw, graphOption)
 
 $(document).ready ->
   setGroupButtonClick()
+  setAggButtonClick()
   fixWidth()
   drawGraph()
