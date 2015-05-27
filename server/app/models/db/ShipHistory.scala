@@ -123,7 +123,7 @@ object ShipHistory extends SQLSyntaxSupport[ShipHistory] {
   }
 
   def bulkInsert(ships: Seq[data.Ship], memberId: Long)(implicit session: DBSession = autoSession): Unit = {
-    val lasts: Map[Int, ShipHistory] = findAllLastest(sqls.in(sh.shipId, ships.map(_.id)))
+    val lasts: Map[Int, ShipHistory] = findAllLastest(sqls.eq(sh.memberId, memberId).and.in(sh.shipId, ships.map(_.id)))
         .map(s => s.shipId -> s)(breakOut)
     val inserts = ships.filter(s => 0.05 <= lasts.get(s.id).map(_.diff(s)).getOrElse(Double.MaxValue))
     if(inserts.isEmpty) return
