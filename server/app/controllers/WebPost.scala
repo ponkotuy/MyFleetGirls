@@ -5,7 +5,9 @@ import java.util.UUID
 import controllers.form.SetSnapshotOrder
 import models.db
 import models.req._
+import play.api.i18n.Messages.Implicits.applicationMessages
 import play.api.mvc._
+import play.api.Play.current
 import scalikejdbc._
 import tool.Authentication
 
@@ -153,7 +155,7 @@ object WebPost extends Controller {
         }
       } else Res.authFail
     }
-    SetHonor.form.bindFromRequest().fold(form => BadRequest(form.errorsAsJson), set)
+    SetHonor.form.bindFromRequest().fold(form => BadRequest(form.errorsAsJson(applicationMessages)), set)
   }
 
   def honorInvisible() = formAsync { implicit req =>
