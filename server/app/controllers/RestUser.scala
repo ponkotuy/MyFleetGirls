@@ -2,12 +2,18 @@ package controllers
 
 import honor.Honors
 import models.db
+import models.join.ShipWithName
 import models.other.ShipWithCondition
+import models.query.ShipExpGroup
 import models.req.{AllCrawlAPI, SortType}
+import models.response.{Exp, ShipExps}
 import org.json4s.JsonDSL._
 import org.json4s._
 import play.api.mvc.Controller
 import scalikejdbc._
+
+import scala.concurrent.duration._
+import scala.collection.breakOut
 
 /**
  * Date: 14/06/12.
@@ -145,5 +151,22 @@ object RestUser extends Controller {
 
   def honors(memberId: Long, set: Boolean) = returnJson {
     Honors.fromUser(memberId, set)
+  }
+
+  def shipGroupExp(memberId: Long, groupId: Int, period: Long = 30.days.toMillis) = returnJson {
+    ShipExpGroup.find(groupId).map { group =>
+      val ships = group.ships(memberId, period)
+      val sh = db.ShipHistory.sh
+      val from = System.currentTimeMillis() - period
+      val histories = db.ShipHistory.findAllBy(sqls.eq(sh.memberId, memberId).and.in(sh.shipId, ships).and.ge(sh.created, from))
+      val names: Map[Int, ShipWithName] = db.Ship.findIn(memberId, ships).map { s => s.id -> s }(breakOut)
+      ships.map { shipId =>
+        shipId -> histories.filter(_.shipId == shipId)
+      }.filter(_._2.size > 2).flatMap { case (shipId, xs) =>
+        names.get(shipId).map { ship =>
+          ShipExps(shipId, s"${ship.stAbbName} ${ship.name}", xs.map(Exp.fromHistory))
+        }
+      }
+    }.getOrElse(Nil)
   }
 }

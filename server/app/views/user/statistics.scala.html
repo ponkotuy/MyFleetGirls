@@ -1,17 +1,20 @@
-@import models.join.User
-
 @(user: User, stypeExp: Seq[tool.STypeExp] ,stypeExpJson: String, histgramJson: String, bestShipExpJson: String)
 
 @main {
   <title>統計 -@{user.admiral.nickname}提督-</title>
-  @Js.ScriptFlot("pie", "stack")
+  @Js.ScriptFlot("pie", "stack", "time")
+  <script src="@Js.MomentLocales"></script>
+  <script src="@Js.Lodash"></script>
   <script src="@Js.Lib("jquery.flot.axislabels")"></script>
   <script src="@Js.Coffee("pie")"></script>
   <script src="@Js.Coffee("stacked_chart")"></script>
-
+  <script src="@Js.Coffee("statistics")"></script>
   <style>
     .tickLabel { font-size: 150%; }
     .axisLabels { font-size: 150%; }
+    div.chart {
+      height: 500px;
+    }
   </style>
 } {
   @head_content(user) {
@@ -41,6 +44,19 @@
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div>
+        <h3>艦娘経験値グラフ</h3>
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default disabled group-button" data-group="1">Lv上位5隻</button>
+          <button type="button" class="btn btn-default group-button" data-group="2">取得上位5隻</button>
+          <button type="button" class="btn btn-default group-button" data-group="11">第一艦隊</button>
+          <button type="button" class="btn btn-default group-button" data-group="12">第二艦隊</button>
+          <button type="button" class="btn btn-default group-button" data-group="13">第三艦隊</button>
+          <button type="button" class="btn btn-default group-button" data-group="14">第四艦隊</button>
+        </div>
+        <div id="ship_exps_graph" class="chart width-adj"></div>
       </div>
 
       <div>
