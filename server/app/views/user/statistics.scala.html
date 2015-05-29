@@ -10,8 +10,8 @@
   <script src="@Js.Coffee("stacked_chart")"></script>
   <script src="@Js.Coffee("statistics")"></script>
   <style>
-    .tickLabel { font-size: 150%; }
-    .axisLabels { font-size: 150%; }
+    .bigAxis .tickLabel { font-size: 150%; }
+    .bigAxis .axisLabels { font-size: 150%; }
     div.chart {
       height: 500px;
     }
@@ -65,12 +65,12 @@
 
       <div>
         <h3>艦娘Lvヒストグラム</h3>
-        <div style="width: 680px ;height: 400px;" class="stacked" data-json="@histgramJson" data-type="bars" data-xaxis="Lv" data-yaxis="Count"></div>
+        <div style="width: 680px ;height: 400px;" class="stacked bigAxis" data-json="@histgramJson" data-type="bars" data-xaxis="Lv" data-yaxis="Count"></div>
       </div>
 
       <div>
         <h3>上位n艦の経験値取得に占める割合</h3>
-        <div style="width: 680px ;height: 400px;" class="stacked" data-json="@bestShipExpJson" data-type="steps" data-ymax="100" data-xaxis="" data-yaxis="%" data-clickable="false"></div>
+        <div style="width: 680px ;height: 400px;" class="stacked bigAxis" data-json="@bestShipExpJson" data-type="steps" data-ymax="100" data-xaxis="" data-yaxis="%" data-clickable="false"></div>
       </div>
     }
   }
