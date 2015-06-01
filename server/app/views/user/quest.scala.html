@@ -28,7 +28,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-repeat="q: daily_quests" v-class="text-muted: q.state == 3 || q.manualFlag, warning: q.state == 2" class="tltip" data-toggle="tooltip" data-placement="bottom" title="<p>{{q.detail}}</p> <p>[報酬]{{q.fuel}}/{{q.ammo}}/{{q.steel}}/{{q.bauxite}}</p>">
+              <tr v-repeat="q: daily_quests" v-class="text-muted: q.state == 3 || q.manualFlag, warning: q.state == 2 && !q.manualFlag" class="tltip" data-toggle="tooltip" data-placement="bottom" title="<p>{{q.detail}}</p> <p>[報酬]{{q.fuel}}/{{q.ammo}}/{{q.steel}}/{{q.bauxite}}</p>">
                 <td>{{q.id}}</td>
                 <td>{{catView(q.category)}}</td>
                 <td>{{q.title}}</td>
@@ -49,7 +49,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-repeat="q: weekly_quests" v-class="text-muted: q.state == 3 || q.manualFlag, warning: q.state == 2" class="tltip" data-toggle="tooltip" data-placement="bottom" title="<p>{{q.detail}}</p> <p>[報酬]{{q.fuel}}/{{q.ammo}}/{{q.steel}}/{{q.bauxite}}</p>">
+              <tr v-repeat="q: weekly_quests" v-class="text-muted: q.state == 3 || q.manualFlag, warning: q.state == 2 && !q.manualFlag" class="tltip" data-toggle="tooltip" data-placement="bottom" title="<p>{{q.detail}}</p> <p>[報酬]{{q.fuel}}/{{q.ammo}}/{{q.steel}}/{{q.bauxite}}</p>">
                 <td>{{q.id}}</td>
                 <td>{{catView(q.category)}}</td>
                 <td>{{q.title}}</td>
@@ -70,7 +70,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-repeat="q: monthly_quests" v-class="text-muted: q.state == 3 || q.manualFlag, warning: q.state == 2" class="tltip" data-toggle="tooltip" data-placement="bottom" title="<p>{{q.detail}}</p> <p>[報酬]{{q.fuel}}/{{q.ammo}}/{{q.steel}}/{{q.bauxite}}</p>">
+              <tr v-repeat="q: monthly_quests" v-class="text-muted: q.state == 3 || q.manualFlag, warning: q.state == 2 && !q.manualFlag" class="tltip" data-toggle="tooltip" data-placement="bottom" title="<p>{{q.detail}}</p> <p>[報酬]{{q.fuel}}/{{q.ammo}}/{{q.steel}}/{{q.bauxite}}</p>">
                 <td>{{q.id}}</td>
                 <td>{{catView(q.category)}}</td>
                 <td>{{q.title}}</td>
@@ -91,7 +91,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-repeat="q: once_quests" v-class="text-muted: q.state == 3 || q.manualFlag, warning: q.state == 2" class="tltip" data-toggle="tooltip" data-placement="bottom" title="<p>{{q.detail}}</p> <p>[報酬]{{q.fuel}}/{{q.ammo}}/{{q.steel}}/{{q.bauxite}}</p>">
+              <tr v-repeat="q: once_quests" v-class="text-muted: q.state == 3 || q.manualFlag, warning: q.state == 2 && !q.manualFlag" class="tltip" data-toggle="tooltip" data-placement="bottom" title="<p>{{q.detail}}</p> <p>[報酬]{{q.fuel}}/{{q.ammo}}/{{q.steel}}/{{q.bauxite}}</p>">
                 <td>{{q.id}}</td>
                 <td>{{catView(q.category)}}</td>
                 <td>{{q.title}}</td>
