@@ -38,6 +38,7 @@ DELETE        /passwd/post/v1/yome                                          cont
 POST          /passwd/post/v1/set_session                                   controllers.WebPost.setSession
 POST          /passwd/post/v1/set_honor                                     controllers.WebPost.setHonor
 PATCH         /post/v1/honor/invisible                                      controllers.WebPost.honorInvisible
+PATCH         /post/v1/quest/manual_flag                                    controllers.WebPost.questManual
 POST          /post/v1/master/ship                                          controllers.PostMaster.ship
 POST          /post/v1/master/mission                                       controllers.PostMaster.mission
 POST          /post/v1/master/slotitem                                      controllers.PostMaster.slotitem

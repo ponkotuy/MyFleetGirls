@@ -139,7 +139,9 @@ object RestUser extends Controller {
     sqls"mh.member_id = ${memberId}"
       .append(missionId.map(id => sqls" and mh.number = ${id}").getOrElse(sqls""))
 
-  def quest(memberId: Long) = returnJson { db.Quest.findAllBy(sqls"member_id = ${memberId}") }
+  def quest(memberId: Long) = returnJson {
+    db.Quest.findAllBy(sqls"member_id = ${memberId}").sortBy { q => (q.manualFlag, q.state) }
+  }
 
   def snap(memberId: Long, snapId: Long) = returnJson {
     db.DeckSnapshot.find(snapId).filter(_.memberId == memberId).get

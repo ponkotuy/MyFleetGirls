@@ -170,4 +170,17 @@ object WebPost extends Controller {
 
   private def execHonor(memberId: Long, name: String)(f: db.Honor => Result): Result =
     db.Honor.findName(memberId, name).fold(BadRequest(s"Invalid name=${name}"))(f)
+
+  def questManual() = formAsync { implicit req =>
+    def patch(m: PatchManual) = {
+      if(uuidCheck(m.memberId, req.session.get("key"))) {
+        db.Quest.find(m.id, m.memberId).fold(BadRequest(s"Invalid id=${m.id}")) { q =>
+          val manual = m.value.getOrElse(!q.manualFlag)
+          q.copy(manualFlag = manual).save()
+          Res.success
+        }
+      } else Res.authFail
+    }
+    PatchManual.form.bindFromRequest().fold(form => BadRequest(form.errorsAsJson), patch)
+  }
 }
