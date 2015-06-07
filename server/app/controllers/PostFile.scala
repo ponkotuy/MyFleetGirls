@@ -16,7 +16,7 @@ import scala.util.Try
  * Date: 14/03/22.
  */
 object PostFile extends Controller {
-  def ship(shipKey: String) = Action.async(parse.multipartFormData) { request =>
+  def ship(shipKey: String, version: Int) = Action.async(parse.multipartFormData) { request =>
     val form = request.body.asFormUrlEncoded
     authentication(form) { auth =>
       request.body.file("image") match {
@@ -31,7 +31,7 @@ object PostFile extends Controller {
                 Try {
                   SWFTool.extractJPG(swfFile, id) { file =>
                     val image = readAll(new FileInputStream(file))
-                    db.ShipImage.create(ship.id, image, shipKey, auth.id, id)
+                    db.ShipImage.create(ship.id, image, shipKey, auth.id, id, version)
                   }
                 }.toOption
               }.nonEmpty

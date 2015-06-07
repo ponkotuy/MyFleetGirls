@@ -79,7 +79,6 @@ object MFGHttp extends Log {
       case m: MasterPostable => masterPost(m.url, m.data, m.ver)
       case n: NormalPostable => post(n.url, n.data, n.ver)
       case f: FilePostable =>
-        println(f.fileBodyKey, f.ext)
         TempFileTool.save(f.file, f.ext) { file =>
           postFile(f.url, f.fileBodyKey, f.ver)(file)
         }
