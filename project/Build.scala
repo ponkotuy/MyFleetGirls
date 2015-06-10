@@ -9,7 +9,7 @@ import com.typesafe.sbt.web.SbtWeb
 
 object MyFleetGirlsBuild extends Build {
 
-  val ver = "1.3.17"
+  val ver = "1.3.18"
 
   val scalaVer = "2.11.6"
 
