@@ -20,7 +20,7 @@ object ShipMaster extends HonorCategory {
     ships.foreach { ship =>
       lvs(EvolutionBase(ship.shipId)) += ship.lv
     }
-    val result = lvs.toVector.sortBy(-_._2).takeWhile(_._2 >= 200).map(_._1).take(5)
+    val result = lvs.toVector.sortBy(-_._2).takeWhile(_._2 >= 200).map(_._1)
     val withAliases = result ++ result.flatMap(EvolutionBase.Aliases.get)
     val mss = MasterShipBase.findAllBy(sqls.in(MasterShipBase.column.id, withAliases))
     mss.flatMap { ms => toHonor(ms) :: OriginalHonor.get(ms.id).toList }
