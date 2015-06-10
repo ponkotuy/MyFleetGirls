@@ -44,7 +44,7 @@ POST          /post/v1/master/mission                                       cont
 POST          /post/v1/master/slotitem                                      controllers.PostMaster.slotitem
 POST          /post/v1/master/stype                                         controllers.PostMaster.stype
 POST          /post/v2/swf/ship/:shipKey/:version                           controllers.PostFile.ship(shipKey: String, version: Int)
-POST          /post/v1/mp3/kc/:shipKey/:soundId                             controllers.PostFile.sound(shipKey: String, soundId: Int)
+POST          /post/v2/mp3/kc/:shipKey/:soundId/:version                    controllers.PostFile.sound(shipKey: String, soundId: Int, version: Int)
 
 # Rest
 # v1はdeprecatedで、新規実装は全てv2にすること
@@ -99,7 +99,7 @@ GET           /rest/v1/sound/ship/:shipId/:soundId.mp3                      cont
 HEAD          /rest/v1/image/ship/:shipId/:swfId.jpg                        controllers.RestImage.shipHead(shipId: Int, swfId: Int)
 HEAD          /rest/v2/image/ship_obf/:shipKey/:version.jpg                 controllers.RestImage.shipKeyHead(shipKey: String, version: Int)
 HEAD          /rest/v1/sound/ship/:shipId/:soundId.mp3                      controllers.RestSound.shipHead(shipId: Int, soundId: Int)
-HEAD          /rest/v1/sound/ship_obf/:shipKey/:soundId.mp3                 controllers.RestSound.shipKeyHead(shipKey: String, soundId: Int)
+HEAD          /rest/v2/sound/ship_obf/:shipKey/:soundId/:version.mp3        controllers.RestSound.shipKeyHead(shipKey: String, soundId: Int, version: Int)
 GET           /rest/v1/sound/random                                         controllers.RestSound.random()
 
 # View

@@ -44,7 +44,7 @@ object PostFile extends Controller {
     }
   }
 
-  def sound(shipKey: String, soundId: Int) = Action.async(parse.multipartFormData) { request =>
+  def sound(shipKey: String, soundId: Int, version: Int) = Action.async(parse.multipartFormData) { request =>
     val form = request.body.asFormUrlEncoded
     authentication(form) { auth =>
       request.body.file("sound") match {
@@ -53,7 +53,7 @@ object PostFile extends Controller {
             val mp3File = ref.ref.file
             val sound = readAll(new FileInputStream(mp3File))
             try {
-              db.ShipSound.create(ship.id, soundId, sound)
+              db.ShipSound.create(ship.id, soundId, version, sound)
               Ok("Success")
             } catch {
               case e: Throwable => Ok("Already Exists")
