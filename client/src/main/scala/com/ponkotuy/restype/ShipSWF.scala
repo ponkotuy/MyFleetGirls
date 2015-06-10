@@ -18,7 +18,7 @@ case object ShipSWF extends ResType {
 
   override def postables(q: Query): Seq[Result] = {
     q.uri.query.param("VERSION").map { ver =>
-      parseKey(q.toString).filterNot(MFGHttp.existsImage).map { key =>
+      parseKey(q.toString).filterNot { q => MFGHttp.existsImage(q, ver.toInt) }.map { key =>
         val swf = allRead(q.response.getContent)
         FilePostable(s"/swf/ship/$key/$ver", "image", 2, swf, "swf")
       }.toList

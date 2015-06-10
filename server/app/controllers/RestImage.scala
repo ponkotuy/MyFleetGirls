@@ -36,8 +36,9 @@ object RestImage extends Controller {
     }
   }
 
-  def shipKeyHead(shipKey: String) = actionAsync {
-    db.ShipImage.findAllBy(sqls"si.filename = ${shipKey}").headOption.map { record =>
+  def shipKeyHead(shipKey: String, version: Int) = actionAsync {
+    val si = db.ShipImage.si
+    db.ShipImage.findAllBy(sqls.eq(si.filename, shipKey).and.eq(si.version, version)).headOption.map { record =>
       Ok(record.image).as("image/jpeg")
     }.getOrElse(NotFound(s"Not Found Image (key=$shipKey)"))
   }

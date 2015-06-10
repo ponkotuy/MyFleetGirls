@@ -24,8 +24,8 @@ object ShipImage extends SQLSyntaxSupport[ShipImage] {
 
   def apply(si: ResultName[ShipImage])(rs: WrappedResultSet): ShipImage = autoConstruct(rs, si)
 
-  lazy val si = ShipImage.syntax("si")
-  lazy val a = Admiral.syntax("a")
+  val si = ShipImage.syntax("si")
+  val a = Admiral.syntax("a")
 
   override val autoSession = AutoSession
 

@@ -22,8 +22,9 @@ object PostFile extends Controller {
       request.body.file("image") match {
         case Some(ref) =>
           findKey(shipKey) { ship =>
+            val si = db.ShipImage.si
             if(500 < ship.id && ship.id <= 900) { Ok("Unnecessary Enemy") }
-            else if(db.ShipImage.countBy(sqls"si.id = ${ship.id}") > 0) Ok("Already Exists")
+            else if(db.ShipImage.countBy(sqls.eq(si.id, ship.id).and.eq(si.version, version)) > 0) Ok("Already Exists")
             else {
               val swfFile = ref.ref.file
               val contents = SWFTool.contents(swfFile)
