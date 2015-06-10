@@ -1,10 +1,10 @@
 #!/bin/bash
 
-set -u 
+set -u
 
 JAVA_HOME="$HOME/etc/soft/jdk1.8.0_45"
 pid=server/target/universal/stage/RUNNING_PID
-server_opt='-J-Xms1G -J-Xmx2G -J-Xloggc:$myfleet_dir/gc.log -J-XX:+PrintGCDetails -J-XX:+PrintGCDateStamps -J-XX:+HeapDumpOnOutOfMemoryError -Dhttp.port=$port' 
+server_opt='-J-Xms1G -J-Xmx2G -J-Xloggc:$myfleet_dir/gc.log -J-XX:+PrintGCDetails -J-XX:+PrintGCDateStamps -J-XX:+HeapDumpOnOutOfMemoryError -Dhttp.port=$port'
 port1=9003
 port2=9004
 nice='nice -n 19 ionice -c 3'
@@ -47,7 +47,7 @@ if ! cmp -s $pub_jar $orig_jar ; then
     $nice pack200 --unknown-attribute=pass ${pub_jar}.pack.gz $pub_jar 2> /dev/null
 fi
 
-$nice /mnt/backup/service/dump/myfleet/dump.sh
+$nice $HOME/dump.sh
 $nice sbt -java-home $JAVA_HOME stage
 eval server/target/universal/stage/bin/myfleetgirlsserver $server_opt &
 
