@@ -86,7 +86,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
 
   /**
    * MariaDBがアホでcreatedのindexを使ってしまうので、SubQuery化した方がindexを2種類使えて早い事案
-   * @return
+   * それでも遅いので日付条件を絞り込むの推奨
    */
   def findAllByWithCellOrderByCreated(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
       implicit session: DBSession = autoSession): List[BattleResultWithCell] = {

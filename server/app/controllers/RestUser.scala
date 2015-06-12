@@ -85,13 +85,20 @@ object RestUser extends Controller {
     else db.BattleResult.countBy(where)
   }
 
-  private def battleResultWhere(memberId: Long, boss: Boolean, drop: Boolean, rank: String, area: Option[Int], info: Option[Int]) =
-    sqls"member_id = ${memberId}"
-      .append(if(rank.nonEmpty) sqls" and win_rank in (${rank.map(_.toString)})" else sqls"")
-      .append(if(boss) sqls" and boss = true" else sqls"")
-      .append(if(drop) sqls" and get_ship_id is not null" else sqls"")
-      .append(area.map(a => sqls" and br.area_id = ${a}").getOrElse(sqls""))
-      .append(info.map(i => sqls" and br.info_no = ${i}").getOrElse(sqls""))
+  private def battleResultWhere(memberId: Long, boss: Boolean, drop: Boolean, rank: String, area: Option[Int], info: Option[Int]) = {
+    val br = db.BattleResult.br
+    val ci = db.BattleResult.ci
+    val seq: Seq[Option[SQLSyntax]] = Seq(
+      if(rank.nonEmpty) Some(sqls.in(br.winRank, rank.map(_.toString))) else None,
+      if(boss) Some(sqls.eq(ci.boss, true)) else None,
+      if(drop) Some(sqls.isNotNull(br.getShipId)) else None,
+      area.map { a => sqls.eq(br.areaId, a) },
+      info.map { i => sqls.eq(br.infoNo, i) }
+    )
+    sqls.eq(br.memberId, memberId)
+        .and.gt(sqls"br.created", System.currentTimeMillis() - 180.days.toMillis) // 範囲を絞って高速化
+        .and.append(sqls.toAndConditionOpt(seq:_*).getOrElse(sqls"true"))
+  }
 
   def routeLog(memberId: Long, limit: Int, offset: Int, area: Int, info: Int) = returnJson {
     require(limit + offset <= 210, "limit + offset <= 210")
