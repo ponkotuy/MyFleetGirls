@@ -56,10 +56,10 @@ object PostFile extends Controller {
               db.ShipSound.create(ship.id, soundId, version, sound)
               Ok("Success")
             } catch {
-              case e: Throwable => Ok("Already Exists")
+              case e: Throwable => Ok("Already exists")
             }
           }
-        case _ => BadRequest("Need Image")
+        case _ => BadRequest("Need sound")
       }
     }
   }

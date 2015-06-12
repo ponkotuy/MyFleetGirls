@@ -16,7 +16,7 @@ object RestSound extends Controller {
     Future {
       db.ShipSound.findRandomBy(shipId, soundId) match {
         case Some(record) => Ok(record.sound).as("audio/mp3")
-        case _ => NotFound(s"Not Found Image (shipId=$shipId, soundId=$soundId)")
+        case _ => NotFound(s"Not found sound (shipId=$shipId, soundId=$soundId)")
       }
     }
   }
@@ -25,7 +25,7 @@ object RestSound extends Controller {
     Future {
       db.ShipSound.findRandomBy(shipId, soundId) match {
         case Some(record) => Ok(record.sound).as("audio/mp3")
-        case _ => NotFound(s"Not Found Image (shipId=$shipId, soundId=$soundId)")
+        case _ => NotFound(s"Not found sound (shipId=$shipId, soundId=$soundId)")
       }
     }
   }
@@ -34,7 +34,7 @@ object RestSound extends Controller {
     Future {
       db.ShipSound.findKey(shipKey, soundId, version) match {
         case Some(record) => Ok(record.sound).as("audio/mp3")
-        case _ => NotFound(s"Not Found Image (shipKey=$shipKey, soundId=$soundId, version=$version)")
+        case _ => NotFound(s"Not found sound (shipKey=$shipKey, soundId=$soundId, version=$version)")
       }
     }
   }
