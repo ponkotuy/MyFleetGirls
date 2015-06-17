@@ -8,7 +8,7 @@ val scalikeJdbcVer = "2.2.+"
 libraryDependencies ++= Seq(
   "org.scalikejdbc" %% "scalikejdbc" % scalikeJdbcVer,
   "org.scalikejdbc" %% "scalikejdbc-config" % scalikeJdbcVer,
-  "org.scalikejdbc" %% "scalikejdbc-play-plugin" % "2.3.+",
+  "org.scalikejdbc" %% "scalikejdbc-play-initializer" % "2.4.+",
   "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % scalikeJdbcVer,
   "org.json4s" %% "json4s-native" % "3.2.11",
   "com.github.nscala-time" %% "nscala-time" % "2.0.0",
