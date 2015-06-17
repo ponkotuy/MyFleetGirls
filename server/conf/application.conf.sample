@@ -9,7 +9,7 @@ application.secret="2IBWOks;[9]v^cq[cQ]k6qNyHyyT@<Uwt/FnZWHik^ED]9r1mGxH7tj9n^Fg
 
 # The application languages
 # ~~~~~
-application.langs="en"
+play.i18n.langs = ["en"]
 
 # Global object class
 # ~~~~~
@@ -35,9 +35,20 @@ application.langs="en"
 #
 db.default.driver="com.mysql.jdbc.Driver"
 db.default.url="jdbc:mysql://localhost:3306/myfleet"
-db.default.user=
+db.default.username=
 db.default.password=
 db.default.migration.auto=true
+
+# ScalikeJDBC Settings
+scalikejdbc.global.loggingSQLAndTime.enabled=true
+scalikejdbc.global.loggingSQLAndTime.singleLineMode=false
+scalikejdbc.global.loggingSQLAndTime.logLevel=debug
+scalikejdbc.global.loggingSQLAndTime.warningEnabled=true
+scalikejdbc.global.loggingSQLAndTime.warningThresholdMillis=5
+scalikejdbc.global.loggingSQLAndTime.warningLogLevel=info
+
+play.modules.enabled += "scalikejdbc.PlayModule"
+play.modules.disabled += "play.api.db.DBModule"
 
 # Evolutions
 # ~~~~~
