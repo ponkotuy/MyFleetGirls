@@ -48,6 +48,7 @@ scalikejdbc.global.loggingSQLAndTime.warningThresholdMillis=5
 scalikejdbc.global.loggingSQLAndTime.warningLogLevel=info
 
 play.modules.enabled += "scalikejdbc.PlayModule"
+play.modules.enabled += "org.flywaydb.play.PlayModule"
 play.modules.disabled += "play.api.db.DBModule"
 
 # Evolutions
