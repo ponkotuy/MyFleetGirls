@@ -37,6 +37,7 @@ cd $myfleet_dir
 
 # Kill old process
 kill `cat $pid`
+rm $pid
 
 # zipped
 $nice $sbt -java-home $JAVA_HOME assembly
