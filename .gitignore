@@ -25,6 +25,9 @@ server/public/client/MyFleetGirls*
 server/public/client/application.conf.sample
 server/public/client/myfleetgirls.keystore
 server/public/client/update.properties
+server/public/client/README.txt
+server/public/client/update.jar
+server/public/zip/MyFleetGirls.zip.old
 newrelic.yml
 newrelic/
 
