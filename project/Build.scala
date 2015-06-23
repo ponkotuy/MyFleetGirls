@@ -55,7 +55,9 @@ object MyFleetGirlsBuild extends Build {
     updateOptions := updateOptions.value.withCircularDependencyLevel(CircularDependencyLevel.Error),
     updateOptions := updateOptions.value.withCachedResolution(true),
     jarName in assembly := "MyFleetGirls.jar",
-    incOptions := incOptions.value.withNameHashing(true)
+    incOptions := incOptions.value.withNameHashing(true),
+    licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.html")),
+    homepage := Some(url("https://myfleet.moe"))
   )
 
   def proxy = Command.command("proxy") { state =>
