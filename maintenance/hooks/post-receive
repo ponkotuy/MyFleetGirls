@@ -14,7 +14,7 @@ pub_dir=server/public
 pub_client=$pub_dir/client
 pub_zip=$pub_dir/zip
 pub_jar=$pub_client/MyFleetGirls.jar
-pub_files='LICENSE update/{target/update.jar,update.properties,myfleetgirls.keystore} package/resources/*'
+pub_files='LICENSE update/{target/update.jar,update.properties,myfleetgirls.keystore} package/resources/* client/target/license-reports/myfleetgirls-licenses.html'
 sbt=$HOME/etc/soft/bin/sbt
 
 export JAVA_HOME
@@ -41,6 +41,7 @@ rm $pid
 
 # zipped
 $nice $sbt -java-home $JAVA_HOME assembly
+$nice $sbt -java-home $JAVA_HOME dumpLicenseReport
 if ! cmp -s $pub_jar $orig_jar ; then
     mv $pub_zip/MyFleetGirls.zip $pub_zip/MyFleetGirls.zip.old
     mv ${pub_jar}.pack.gz ${pub_jar}.pack.gz.old
