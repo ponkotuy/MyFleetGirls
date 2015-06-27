@@ -51,7 +51,8 @@ object MyFleetGirlsBuild extends Build {
   override lazy val settings = super.settings ++ Seq(
     version := ver,
     scalaVersion := scalaVer,
-    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions"),
+    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions", "-encoding", "UTF-8"),
+    javacOptions ++= Seq("-encoding", "UTF-8"),
     updateOptions := updateOptions.value.withCircularDependencyLevel(CircularDependencyLevel.Error),
     updateOptions := updateOptions.value.withCachedResolution(true),
     jarName in assembly := "MyFleetGirls.jar",
