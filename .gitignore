@@ -41,6 +41,7 @@ project/scalikejdbc.properties
 *~
 *.hprof.txt
 server/public/*.png
+server/lib
 logs
 message
 
