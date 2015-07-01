@@ -105,7 +105,7 @@ object MFGHttp extends Log {
       }
       alertResult(res)
     } catch {
-      case e: Throwable => error(e.getStackTrace.mkString("\n")); 1
+      case e: Exception => error(e.getStackTrace.mkString("\n")); 1
     } finally {
       HttpClientUtils.closeQuietly(res)
     }
@@ -120,7 +120,7 @@ object MFGHttp extends Log {
       res = http.execute(post)
       alertResult(res)
     } catch {
-      case e: Throwable => error(e.getStackTrace.mkString("\n")); 1
+      case e: Exception => error(e.getStackTrace.mkString("\n")); 1
     } finally {
       HttpClientUtils.closeQuietly(res)
     }
@@ -148,7 +148,7 @@ object MFGHttp extends Log {
       res = http.execute(post)
       alertResult(res)
     } catch {
-      case e: Throwable => error((e.getMessage :+ e.getStackTrace).mkString("\n")); 600
+      case e: Exception => error((e.getMessage :+ e.getStackTrace).mkString("\n")); 600
     } finally {
       HttpClientUtils.closeQuietly(res)
     }

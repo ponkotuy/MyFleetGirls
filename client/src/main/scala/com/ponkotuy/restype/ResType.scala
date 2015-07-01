@@ -70,6 +70,7 @@ object ResType extends Log {
     SlotItem,
     MapStart,
     MapNext,
+    MapSWF,
     SortieBattleResult,
     CombinedBattleResult
   )

@@ -4,7 +4,7 @@ import java.io.{ByteArrayOutputStream, FileInputStream, InputStream}
 
 import controllers.Common._
 import models.db
-import models.db.MapImage
+import models.db.{CellPosition, MapImage}
 import play.api.mvc._
 import scalikejdbc._
 import tool.{MapData, SWFContents, SWFTool, SWFType}
@@ -55,8 +55,10 @@ object PostFile extends Controller {
             val swfFile = ref.ref.file
             MapData.fromFile(swfFile) match {
               case Some(mapData) =>
-                MapImage(areaId, infoNo, mapData.bytes, version.toShort).save()
-                mapData.cells.map(_.toCellPosition(areaId, infoNo)).foreach(_.save())
+                MapImage.create(areaId, infoNo, mapData.bytes, version.toShort)
+                mapData.cells.map { cell =>
+                  CellPosition.create(areaId, infoNo, cell.cell, cell.posX, cell.posY)
+                }
                 Ok("Success")
               case None => BadRequest("SWF parse error")
             }

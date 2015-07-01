@@ -19,7 +19,7 @@ object MapSWF extends ResType {
       ver <- q.uri.query.param("version")
       (areaId, infoNo) = parse(q.uri)
       version = ver.filter { c => '0' <= c && c <= '9' }.toInt
-      if MFGHttp.existsMap(areaId, infoNo, version)
+      if !MFGHttp.existsMap(areaId, infoNo, version)
     } yield {
       val swf = ShipSWF.allRead(q.response.getContent)
       FilePostable(s"/swf/map/$areaId/$infoNo/$version", "map", 2, swf, "swf")

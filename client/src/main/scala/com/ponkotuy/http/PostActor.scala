@@ -56,7 +56,11 @@ class ControllerActor extends Actor {
 
   override def receive = {
     case q: Query =>
-      val typ = q.resType.get
-      typ.postables(q).foreach(poster ! _)
+      try {
+        val typ = q.resType.get
+        typ.postables(q).foreach(poster ! _)
+      } catch {
+        case e: Exception => e.printStackTrace()
+      }
   }
 }
