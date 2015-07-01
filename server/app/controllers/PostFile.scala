@@ -4,9 +4,10 @@ import java.io.{ByteArrayOutputStream, FileInputStream, InputStream}
 
 import controllers.Common._
 import models.db
+import models.db.{CellPosition, MapImage}
 import play.api.mvc._
 import scalikejdbc._
-import tool.{SWFContents, SWFTool, SWFType}
+import tool.{MapData, SWFContents, SWFTool, SWFType}
 
 import scala.util.Try
 
@@ -36,10 +37,33 @@ object PostFile extends Controller {
                   }
                 }.toOption
               }.nonEmpty
-              if(isExec) Ok("Success") else BadRequest("Not Found Image")
+              if(isExec) Ok("Success") else BadRequest("Not found image")
             }
           }
-        case None => BadRequest("Need Image")
+        case None => BadRequest("Need image")
+      }
+    }
+  }
+
+  def map(areaId: Int, infoNo: Int, version: Int) = Action.async(parse.multipartFormData) { request =>
+    val form = request.body.asFormUrlEncoded
+    authentication(form) { auth =>
+      request.body.file("map") match {
+        case Some(ref) =>
+          if(db.MapImage.find(areaId, infoNo, version.toShort).isDefined) Ok("Already exists")
+          else {
+            val swfFile = ref.ref.file
+            MapData.fromFile(swfFile) match {
+              case Some(mapData) =>
+                MapImage.create(areaId, infoNo, mapData.bytes, version.toShort)
+                mapData.cells.map { cell =>
+                  CellPosition.create(areaId, infoNo, cell.cell, cell.posX, cell.posY)
+                }
+                Ok("Success")
+              case None => BadRequest("SWF parse error")
+            }
+          }
+        case None => BadRequest("Need swf file")
       }
     }
   }
@@ -56,7 +80,7 @@ object PostFile extends Controller {
               db.ShipSound.create(ship.id, soundId, version, sound)
               Ok("Success")
             } catch {
-              case e: Throwable => Ok("Already exists")
+              case e: Exception => Ok("Already exists")
             }
           }
         case _ => BadRequest("Need sound")

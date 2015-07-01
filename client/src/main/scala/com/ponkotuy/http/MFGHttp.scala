@@ -105,7 +105,7 @@ object MFGHttp extends Log {
       }
       alertResult(res)
     } catch {
-      case e: Throwable => error(e.getStackTrace.mkString("\n")); 1
+      case e: Exception => error(e.getStackTrace.mkString("\n")); 1
     } finally {
       HttpClientUtils.closeQuietly(res)
     }
@@ -120,7 +120,7 @@ object MFGHttp extends Log {
       res = http.execute(post)
       alertResult(res)
     } catch {
-      case e: Throwable => error(e.getStackTrace.mkString("\n")); 1
+      case e: Exception => error(e.getStackTrace.mkString("\n")); 1
     } finally {
       HttpClientUtils.closeQuietly(res)
     }
@@ -148,7 +148,7 @@ object MFGHttp extends Log {
       res = http.execute(post)
       alertResult(res)
     } catch {
-      case e: Throwable => error((e.getMessage :+ e.getStackTrace).mkString("\n")); 600
+      case e: Exception => error((e.getMessage :+ e.getStackTrace).mkString("\n")); 600
     } finally {
       HttpClientUtils.closeQuietly(res)
     }
@@ -168,6 +168,9 @@ object MFGHttp extends Log {
 
   def existsSound(s: SoundUrlId): Boolean =
     head(s"/sound/ship_obf/${s.shipKey}/${s.soundId}/${s.version}.mp3", ver = 2).getStatusLine.getStatusCode == 200
+
+  def existsMap(area: Int, info: Int, version: Int): Boolean =
+    head(s"/map/${area}/${info}${version}.jpg", ver = 2).getStatusLine.getStatusCode == 200
 
   private def head(uStr: String, ver: Int = 1) = {
     val head = new HttpHead(ClientConfig.getUrl(ver) + uStr)
