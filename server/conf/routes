@@ -99,6 +99,7 @@ GET           /rest/v1/image/ship/:shipId/:swfId.jpg                        cont
 GET           /rest/v1/sound/ship/:shipId/:soundId.mp3                      controllers.RestSound.ship(shipId: Int, soundId: Int)
 HEAD          /rest/v1/image/ship/:shipId/:swfId.jpg                        controllers.RestImage.shipHead(shipId: Int, swfId: Int)
 HEAD          /rest/v2/image/ship_obf/:shipKey/:version.jpg                 controllers.RestImage.shipKeyHead(shipKey: String, version: Int)
+HEAD          /rest/v2/image/map/:areaId/:infoNo/:version.jpg               controllers.RestImage.mapHead(areaId: Int, infoNo: Int, version: Int)
 HEAD          /rest/v1/sound/ship/:shipId/:soundId.mp3                      controllers.RestSound.shipHead(shipId: Int, soundId: Int)
 HEAD          /rest/v2/sound/ship_obf/:shipKey/:soundId/:version.mp3        controllers.RestSound.shipKeyHead(shipKey: String, soundId: Int, version: Int)
 GET           /rest/v1/sound/random                                         controllers.RestSound.random()

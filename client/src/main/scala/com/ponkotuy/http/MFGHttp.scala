@@ -169,6 +169,9 @@ object MFGHttp extends Log {
   def existsSound(s: SoundUrlId): Boolean =
     head(s"/sound/ship_obf/${s.shipKey}/${s.soundId}/${s.version}.mp3", ver = 2).getStatusLine.getStatusCode == 200
 
+  def existsMap(area: Int, info: Int, version: Int): Boolean =
+    head(s"/map/${area}/${info}${version}.jpg", ver = 2).getStatusLine.getStatusCode == 200
+
   private def head(uStr: String, ver: Int = 1) = {
     val head = new HttpHead(ClientConfig.getUrl(ver) + uStr)
     var res:CloseableHttpResponse = null
