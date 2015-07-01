@@ -17,7 +17,6 @@ libraryDependencies ++= Seq(
   "com.github.nscala-time" %% "nscala-time" % "2.0.0",
   "mysql" % "mysql-connector-java" % "5.1.+",
   "org.scalatest" %% "scalatest" % "2.2.3" % "test",
-  "c3p0" % "c3p0" % "0.9.1.2",
   "org.apache.abdera" % "abdera-parser" % "1.1.3",
   "net.sf.ehcache" % "ehcache" % "2.9.0",
   "org.flywaydb" %% "flyway-play" % "2.1.0-SNAPSHOT"
