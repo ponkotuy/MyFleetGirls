@@ -54,7 +54,7 @@ case class Cell(cell: Int, posX: Int, posY: Int) {
 }
 
 object Cell {
-  val LineRegex = """line(\d)""".r
+  val LineRegex = """line(\d+)""".r
   def fromTag(tag: DefineSpriteTag): Seq[Cell] = {
     val subtags = tag.getSubTags.asScala
     subtags.collect {
