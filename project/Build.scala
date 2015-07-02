@@ -55,7 +55,8 @@ object MyFleetGirlsBuild extends Build {
     jarName in assembly := "MyFleetGirls.jar",
     incOptions := incOptions.value.withNameHashing(true),
     licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.html")),
-    homepage := Some(url("https://myfleet.moe"))
+    homepage := Some(url("https://myfleet.moe")),
+    fork in Test := true
   )
 
   def proxy = Command.command("proxy") { state =>
@@ -122,7 +123,9 @@ object MyFleetGirlsBuild extends Build {
 
   def downLib = Command.command("downLib") { state =>
     import scala.sys.process._
-    ("""curl https://www.free-decompiler.com/flash/download/ffdec_5.3.0_lib.jar""" #> new File("server/lib/ffdec_5.3.0_lib.jar") !)
+    ("wget https://www.free-decompiler.com/flash/download/ffdec_5.3.0_lib.jar"!)
+    ("mv ffdec_5.3.0_lib.jar server/lib/"!)
+    Thread.sleep(1000L)
     state
   }
 }
