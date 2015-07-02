@@ -2,8 +2,7 @@ package tool
 
 import java.io._
 
-import com.jpexs.decompiler.flash.SWF
-import com.jpexs.decompiler.flash.tags.{DefineBitsJPEG3Tag, DefineSpriteTag, PlaceObject2Tag}
+import com.jpexs.decompiler.flash.tags.{DefineSpriteTag, PlaceObject2Tag}
 import models.db.CellPosition
 
 import scala.collection.JavaConverters._
@@ -13,40 +12,24 @@ case class MapData(bytes: Array[Byte], cells: Seq[Cell])
 
 object MapData {
   def fromFile(file: File): Option[MapData] = {
-    val is = new FileInputStream(file)
-    val swf = new SWF(is, file.getAbsolutePath, "KanColleMap", false)
+    val swf = WrappedSWF.fromFile(file)
     for {
       image <- getImage(swf)
       cells = getCells(swf)
     } yield MapData(image, cells)
   }
 
-  private def getImage(swf: SWF): Option[Array[Byte]] = {
-    val ids = swf.getCharacters.asScala
-    ids.collectFirst {
-      case (i, jpeg: DefineBitsJPEG3Tag) =>
-        val os = new ByteArrayOutputStream()
-        output(jpeg.getImageData, os)
-        os.toByteArray
+  private def getImage(swf: WrappedSWF): Option[Array[Byte]] = {
+    swf.getJPEG3s.headOption.flatMap { case (_, jpeg) =>
+      WrappedSWF.imageToBytes(jpeg)
     }
   }
 
-  private def getCells(swf: SWF): Seq[Cell] = {
-    val ids = swf.getCharacters.asScala
-    ids.collect {
-      case (i, sprite: DefineSpriteTag) =>
-        Cell.fromTag(sprite)
+  private def getCells(swf: WrappedSWF): Seq[Cell] = {
+    swf.getSprites.map { case (i, sprite) =>
+      Cell.fromTag(sprite)
     }.flatMap(identity)(breakOut)
   }
-
-  val BufSize = 1024 * 4
-  def output(is: InputStream, os: OutputStream): Unit = {
-    val buf = new Array[Byte](BufSize)
-    while(is.read(buf) >= 0) {
-      os.write(buf)
-    }
-  }
-
 }
 
 case class Cell(cell: Int, posX: Int, posY: Int) {

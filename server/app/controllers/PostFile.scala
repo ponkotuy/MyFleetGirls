@@ -1,13 +1,13 @@
 package controllers
 
-import java.io.{ByteArrayOutputStream, FileInputStream, InputStream}
+import java.io.FileInputStream
 
 import controllers.Common._
 import models.db
 import models.db.{CellPosition, MapImage}
 import play.api.mvc._
 import scalikejdbc._
-import tool.{MapData, SWFContents, SWFTool, SWFType}
+import tool._
 
 import scala.util.Try
 
@@ -28,13 +28,11 @@ object PostFile extends Controller {
             else if(db.ShipImage.countBy(sqls.eq(si.id, ship.id).and.eq(si.version, version)) > 0) Ok("Already Exists")
             else {
               val swfFile = ref.ref.file
-              val contents = SWFTool.contents(swfFile)
-              val isExec = contents.filter(_.typ == SWFType.Jpeg).flatMap { case SWFContents(id, _) =>
+              val swf = WrappedSWF.fromFile(swfFile)
+              val isExec = swf.getImages.flatMap { case (id, imgTag) =>
                 Try {
-                  SWFTool.extractJPG(swfFile, id) { file =>
-                    val image = readAll(new FileInputStream(file))
-                    db.ShipImage.create(ship.id, image, shipKey, auth.id, id, version)
-                  }
+                  val image = WrappedSWF.imageToBytes(imgTag).get
+                  db.ShipImage.create(ship.id, image, shipKey, auth.id, id, version)
                 }.toOption
               }.nonEmpty
               if(isExec) Ok("Success") else BadRequest("Not found image")
@@ -75,7 +73,7 @@ object PostFile extends Controller {
         case Some(ref) =>
           findKey(shipKey) { ship =>
             val mp3File = ref.ref.file
-            val sound = readAll(new FileInputStream(mp3File))
+            val sound = WrappedSWF.readAll(new FileInputStream(mp3File))
             try {
               db.ShipSound.create(ship.id, soundId, version, sound)
               Ok("Success")
@@ -86,17 +84,6 @@ object PostFile extends Controller {
         case _ => BadRequest("Need sound")
       }
     }
-  }
-
-  private def readAll(is: InputStream): Array[Byte] = {
-    val baos = new ByteArrayOutputStream()
-    val buf = new Array[Byte](1024)
-    var len = is.read(buf)
-    while(len >= 0) {
-      baos.write(buf, 0, len)
-      len = is.read(buf)
-    }
-    baos.toByteArray
   }
 
   private def findKey(key: String)(f: db.MasterShipBase => Result) = {
