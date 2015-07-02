@@ -29,7 +29,7 @@ $ sbt proxy
 
 ** MyFleetGirls Server
    + sbt（sbt-extrasのインストールをお勧め）とMariaDBとswftoolsをインストール
-   + server/lib以下に [[https://www.free-decompiler.com/flash/download/]] からLibraryのjarを入れる
+   + server/lib以下に [[https://www.free-decompiler.com/flash/download/]] からLibraryのjarを入れる(以下のdownLibでも可)
    + MariaDBにmyfleetという名前のdatabaseを作成。utf8を有効化する（いくらかのクエリがutf8です）
    + server/conf/application.confを適宜設定（.sampleをコピーして、DB設定を適宜すればいいでしょう）
    + server/public/message にテキストファイル置かないと弊害があるかも
@@ -42,6 +42,7 @@ $ sbt proxy
    - assembl :: MyFleetGirls ClientのダウンローダとClient本体をone-packageのjarに固める
    - zip :: assemblyののちに、publicにそれらを配置する
    - prof :: profilerを立ち上げる（メンテされてないので動くか不明）
+   - downLib :: 非maven管理下にあるjarをdownloadし適切に配置する
 
 ** 実運用で必要なこと
    - server/public/conf/application.confに必要な設定を書く（.sampleをコピーして書き足すと良い）
@@ -62,3 +63,4 @@ $ sbt proxy
    - library :: serverとclient両方で使う共通コード置き場です。主にclient-server間の通信で使うmodel類が入ってます。
    - update :: clientのダウンローダです。初回ダウンロードと自動アップデートでclientを落としてくるときに使います。容量を節約する為にJavaです。実質Java製wgetです。
    - profiler :: プロファイラです。あんまメンテされてないので動くか分かりません。
+   - tester :: 簡単な疎通チェックをするツールです。
