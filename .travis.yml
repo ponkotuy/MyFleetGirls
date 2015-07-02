@@ -1,7 +1,7 @@
 language: scala
 
 scala:
-  - 2.11.6
+  - 2.11.7
 
 sudo: false
 
@@ -12,6 +12,9 @@ cache:
 
 jdk:
   - oraclejdk8
+
+before_script:
+  - travis_wait sbt downLib
 
 script:
   - travis_wait sbt ++$TRAVIS_SCALA_VERSION test

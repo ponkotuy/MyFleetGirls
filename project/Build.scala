@@ -122,4 +122,9 @@ object MyFleetGirlsBuild extends Build {
     Command.process(s"run https://myfleet.moe", subState)
     state
   }
+
+  def downLib = Command.command("downLib") { state =>
+    p.Process("""curl https://www.free-decompiler.com/flash/download/ffdec_5.3.0_lib.jar > server/lib/ffdec_5.3.0_lib.jar""").run()
+    state
+  }
 }
