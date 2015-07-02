@@ -28,7 +28,7 @@ $ sbt proxy
   とします。sbtが必要です。設定はapplication.confをトップディレクトリに置きます。
 
 ** MyFleetGirls Server
-   + sbt（sbt-extrasのインストールをお勧め）とMariaDBとswftoolsをインストール
+   + sbt（sbt-extrasのインストールをお勧め）とMariaDBをインストール
    + server/lib以下に [[https://www.free-decompiler.com/flash/download/]] からLibraryのjarを入れる(以下のdownLibでも可)
    + MariaDBにmyfleetという名前のdatabaseを作成。utf8を有効化する（いくらかのクエリがutf8です）
    + server/conf/application.confを適宜設定（.sampleをコピーして、DB設定を適宜すればいいでしょう）
