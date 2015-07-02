@@ -1,11 +1,8 @@
-import scala.sys.{process => p}
-import sbt._
-import Keys._
-import sbtassembly.Plugin._
-import AssemblyKeys._
-import sbtbuildinfo.Plugin._
-import play._
 import com.typesafe.sbt.web.SbtWeb
+import sbt.Keys._
+import sbt._
+import play._
+import sbtassembly.Plugin.AssemblyKeys._
 
 object MyFleetGirlsBuild extends Build {
 
@@ -18,7 +15,7 @@ object MyFleetGirlsBuild extends Build {
     .aggregate(server, client, library)
 
   lazy val rootSettings = Defaults.defaultSettings ++ settings ++ Seq(
-    commands ++= Seq(proxy, assembl, run, stage, start, dist, genMapper, prof, runTester, runTester2)
+    commands ++= Seq(proxy, assembl, run, stage, start, dist, genMapper, prof, runTester, runTester2, downLib)
   )
 
   lazy val server = Project(id = "server", base = file("server"))
@@ -58,7 +55,8 @@ object MyFleetGirlsBuild extends Build {
     jarName in assembly := "MyFleetGirls.jar",
     incOptions := incOptions.value.withNameHashing(true),
     licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.html")),
-    homepage := Some(url("https://myfleet.moe"))
+    homepage := Some(url("https://myfleet.moe")),
+    fork in Test := true
   )
 
   def proxy = Command.command("proxy") { state =>
@@ -120,6 +118,14 @@ object MyFleetGirlsBuild extends Build {
   def runTester = Command.command("runTesterEarth") { state =>
     val subState = Command.process("project tester", state)
     Command.process(s"run https://myfleet.moe", subState)
+    state
+  }
+
+  def downLib = Command.command("downLib") { state =>
+    import scala.sys.process._
+    ("wget https://www.free-decompiler.com/flash/download/ffdec_5.3.0_lib.jar"!)
+    ("mv ffdec_5.3.0_lib.jar server/lib/"!)
+    Thread.sleep(1000L)
     state
   }
 }
