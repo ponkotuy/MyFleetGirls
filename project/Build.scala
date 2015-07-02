@@ -14,14 +14,14 @@ object MyFleetGirlsBuild extends Build {
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .aggregate(server, client, library)
 
-  lazy val rootSettings = Defaults.defaultSettings ++ settings ++ Seq(
+  lazy val rootSettings = settings ++ Seq(
     commands ++= Seq(proxy, assembl, run, stage, start, dist, genMapper, prof, runTester, runTester2, downLib)
   )
 
   lazy val server = Project(id = "server", base = file("server"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .dependsOn(library)
-    .enablePlugins(PlayScala).settings(
+    .enablePlugins(sbt.PlayScala).settings(
       scalaVersion := scalaVer
     )
     .enablePlugins(SbtWeb)
@@ -123,8 +123,8 @@ object MyFleetGirlsBuild extends Build {
 
   def downLib = Command.command("downLib") { state =>
     import scala.sys.process._
-    ("wget https://www.free-decompiler.com/flash/download/ffdec_5.3.0_lib.jar"!)
-    ("mv ffdec_5.3.0_lib.jar server/lib/"!)
+    "wget https://www.free-decompiler.com/flash/download/ffdec_5.3.0_lib.jar".!
+    "mv ffdec_5.3.0_lib.jar server/lib/".!
     Thread.sleep(1000L)
     state
   }
