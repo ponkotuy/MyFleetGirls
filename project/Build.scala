@@ -1,11 +1,8 @@
-import scala.sys.{process => p}
-import sbt._
-import Keys._
-import sbtassembly.Plugin._
-import AssemblyKeys._
-import sbtbuildinfo.Plugin._
-import play._
 import com.typesafe.sbt.web.SbtWeb
+import sbt.Keys._
+import sbt._
+import play._
+import sbtassembly.Plugin.AssemblyKeys._
 
 object MyFleetGirlsBuild extends Build {
 
@@ -18,7 +15,7 @@ object MyFleetGirlsBuild extends Build {
     .aggregate(server, client, library)
 
   lazy val rootSettings = Defaults.defaultSettings ++ settings ++ Seq(
-    commands ++= Seq(proxy, assembl, run, stage, start, dist, genMapper, prof, runTester, runTester2)
+    commands ++= Seq(proxy, assembl, run, stage, start, dist, genMapper, prof, runTester, runTester2, downLib)
   )
 
   lazy val server = Project(id = "server", base = file("server"))
@@ -124,7 +121,8 @@ object MyFleetGirlsBuild extends Build {
   }
 
   def downLib = Command.command("downLib") { state =>
-    p.Process("""curl https://www.free-decompiler.com/flash/download/ffdec_5.3.0_lib.jar > server/lib/ffdec_5.3.0_lib.jar""").run()
+    import scala.sys.process._
+    ("""curl https://www.free-decompiler.com/flash/download/ffdec_5.3.0_lib.jar""" #> new File("server/lib/ffdec_5.3.0_lib.jar") !)
     state
   }
 }
