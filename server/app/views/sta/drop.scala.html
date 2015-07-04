@@ -21,6 +21,10 @@
       <p>アルファベットの無い海域は情報提供募集中です。<a target="_blank" href="https://docs.google.com/spreadsheets/d/1iAFrEpw64nc8YnVcyNb9hjG0jb1UMy_29zKhRlKc7Ig/edit?usp=sharing">こちら</a>から情報提供できます</p>
     </div>
 
+    <div>
+      <canvas id="map_image" data-src="@routes.RestImage.map(stage.area, stage.info)" width="768px" height="435px" class="img-rounded"></canvas>
+    </div>
+
     <div class="panel-group" id="accordion">
       @cells.map { cell =>
         <div class="panel panel-default" id="panel@cell.rawPointStr" data-cell="@cell.rawPointStr">

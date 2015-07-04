@@ -9,6 +9,7 @@ $(document).ready ->
   $('.collapse').on 'hide.bs.collapse', ->
     here = location.href.replace(/\#.*$/, '') # hash以下を削除
     history.replaceState(null, null, here)
+  drawMap()
 
 timeout = 0
 
@@ -115,3 +116,11 @@ vueConf = (elem, id, cell) ->
       if @period
         clearTimeout(timeout)
         timeout = setTimeout(@getJSON, 500)
+
+drawMap = ->
+  ctx = $('#map_image')[0].getContext('2d')
+  img = new Image()
+  img.src = $('#map_image').attr('data-src')
+  img.onload = ->
+    console.log(img.width, img.height)
+    ctx.drawImage(img, 0, 0, img.width, img.height)
