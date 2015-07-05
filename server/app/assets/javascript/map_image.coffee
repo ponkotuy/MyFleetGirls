@@ -34,6 +34,7 @@ class MapImage
       @onload()
 
   setImage: () ->
+    @ctx.globalAlpha = 1.0
     @ctx.drawImage(@img, 0, 0, @img.width, @img.height)
 
   setPoint: (x, y) ->
@@ -44,4 +45,4 @@ class MapImage
 
   clear: () -> @setImage()
 
-  onload: () ->
+  onload: () -> @setImage()
