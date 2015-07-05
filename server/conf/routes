@@ -61,6 +61,7 @@ GET           /rest/v1/drop/:rank/:area/:info/:cell                         cont
 GET           /rest/v1/drop_alpha/:rank/:area/:info/:alpha                  controllers.Rest.dropCellAlpha(area: Int, info: Int, alpha: String, rank: String, from: String ?= "", to: String ?= "")
 GET           /rest/v1/route/:area/:info                                    controllers.Rest.route(area: Int, info: Int, from: String ?= "", to ?= "")
 GET           /rest/v1/cell_info                                            controllers.Rest.cellInfo(area: Int ?= -1, info: Int ?= -1)
+GET           /rest/v2/cell/position/:area/:info                            controllers.Rest.cellPosition(area: Int, info: Int)
 GET           /rest/v1/maps                                                 controllers.Rest.maps()
 GET           /rest/v1/drop_from_ship/:shipId                               controllers.Rest.dropFromShip(shipId: Int, from: String ?= "", to: String ?= "")
 GET           /rest/v1/activities                                           controllers.Rest.activities(from: Long ?= 0L, limit: Int ?= 20, offset: Int ?= 0)

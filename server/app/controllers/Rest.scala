@@ -122,6 +122,11 @@ object Rest extends Controller {
     db.CellInfo.findAllBy(where)
   }
 
+  def cellPosition(area: Int, info: Int) = returnJson {
+    val cp = db.CellPosition.cp
+    db.CellPosition.findAllBy(sqls.eq(cp.areaId, area).and.eq(cp.infoNo, info))
+  }
+
   def maps() = returnJson {
     db.MapRoute.findStageUnique()
   }

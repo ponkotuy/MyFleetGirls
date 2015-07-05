@@ -1,15 +1,20 @@
+
 $(document).ready ->
+  seaMap = new SeaMap('map_image')
   $('.panel').each ->
     elem = $(this)
     id = elem.attr('id')
     cell = elem.attr('data-cell')
     vue = new Vue(vueConf(elem, id, cell))
   obj = fromURLParameter(location.hash.replace(/^\#/, ''))
-  $("#collapse#{obj.cell}").collapse()
+  $('.collapse').on 'show.bs.collapse', ->
+    cell = $(@).parent().attr('data-cell').split('-', 3)[2]
+    seaMap.setPoint(parseInt(cell))
   $('.collapse').on 'hide.bs.collapse', ->
     here = location.href.replace(/\#.*$/, '') # hash以下を削除
     history.replaceState(null, null, here)
-  drawMap()
+  seaMap.onload = ->
+    $("#collapse#{obj.cell}").collapse()
 
 timeout = 0
 
@@ -116,11 +121,3 @@ vueConf = (elem, id, cell) ->
       if @period
         clearTimeout(timeout)
         timeout = setTimeout(@getJSON, 500)
-
-drawMap = ->
-  ctx = $('#map_image')[0].getContext('2d')
-  img = new Image()
-  img.src = $('#map_image').attr('data-src')
-  img.onload = ->
-    console.log(img.width, img.height)
-    ctx.drawImage(img, 0, 0, img.width, img.height)

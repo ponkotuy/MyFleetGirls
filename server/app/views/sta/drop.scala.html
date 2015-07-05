@@ -4,10 +4,11 @@
   <title>@stage -艦娘ドロップ一覧-</title>
   <script src="@Js.Vue"></script>
   <script src="@Js.D3"></script>
-  <script src="@Js.Lodash"></script>
+    <script src="@Js.Lodash"></script>
   <script src="@Js.MomentLocales"></script>
   <script src="@Js.Lib("sunburst")"></script>
   <script src="@Js.Common"></script>
+  <script src="@Js.Coffee("map_image")"></script>
   <script src="@Js.Coffee("drop")"></script>
   <link rel="stylesheet" href="@routes.Assets.at("stylesheet/sunburst.css")" />
 } {
@@ -22,7 +23,13 @@
     </div>
 
     <div>
-      <canvas id="map_image" data-src="@routes.RestImage.map(stage.area, stage.info)" width="768px" height="435px" class="img-rounded"></canvas>
+      <canvas
+        id="map_image"
+        data-src="@routes.RestImage.map(stage.area, stage.info)"
+        data-position="@routes.Rest.cellPosition(stage.area, stage.info)"
+        width="768px" height="435px"
+        class="img-rounded" style="font-size: x-large;">
+      </canvas>
     </div>
 
     <div class="panel-group" id="accordion">
