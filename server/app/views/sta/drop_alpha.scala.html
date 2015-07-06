@@ -7,17 +7,31 @@
   <script src="@Js.Lodash"></script>
   <script src="@Js.MomentLocales"></script>
   <script src="@Js.Lib("sunburst")"></script>
+  <script src="@Js.Lodash"></script>
   <script src="@Js.Common"></script>
+  <script src="@Js.Coffee("map_image")"></script>
   <script src="@Js.Coffee("drop")"></script>
   <link rel="stylesheet" href="@routes.Assets.at("stylesheet/sunburst.css")" />
 } {
   @statistics_head("drop") {
+    <input type="hidden" id="stage" data-area="@stage.area" data-info="@stage.info" />
     <div class="page-header">
       <h1>@stage 艦娘ドロップ<small><a href="@routes.ViewSta.drop(stage.area, stage.info)">ID版</a></small></h1>
     </div>
 
     <div>
       <p>ステージのアルファベットは<a target="_blank" href="http://wikiwiki.jp/kancolle/?%BD%D0%B7%E2#maps">艦これWiki出撃一覧</a>のアルファベットと対応しています</p>
+    </div>
+
+    <div>
+      <canvas
+        id="map_image"
+        data-src="@routes.RestImage.map(stage.area, stage.info)"
+        data-position="@routes.Rest.cellPosition(stage.area, stage.info)"
+        data-cellinfo="@routes.Rest.cellInfo(stage.area, stage.info)"
+        width="768px" height="435px"
+        class="img-rounded" style="font-size: x-large;">
+      </canvas>
     </div>
 
     <div class="panel-group" id="accordion">

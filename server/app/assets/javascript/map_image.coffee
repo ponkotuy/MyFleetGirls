@@ -5,20 +5,46 @@ DefaultFont = "#{DefaultSize}px 'sans-serif'"
 class @SeaMap
   constructor: (idTag) ->
     @image = new MapImage(idTag)
+    @image.onclick = @runClick
     @positions = []
-    url = $('#' + idTag).attr('data-position')
-    $.getJSON url, (data) =>
-      data.forEach (d) =>
-        @positions[d.cell] = {x: d.posX, y: d.posY}
-      @image.onload = =>
-        @onload()
+    @cellInfos = {}
+    @toAlpha = []
+    @load(idTag)
+
+  load: (idTag) ->
+    posUrl = $('#' + idTag).attr('data-position')
+    infoUrl = $('#' + idTag).attr('data-cellinfo')
+    @image.onload = =>
+      $.getJSON posUrl, (data) =>
+        data.forEach (d) =>
+          @positions[d.cell] = {x: d.posX, y: d.posY}
+          console.log(d)
+        if infoUrl
+          $.getJSON infoUrl, (data) =>
+            data.forEach (d) =>
+              console.log(d)
+              @cellInfos[d.alphabet] = d.cell
+              @toAlpha[d.cell] = d.alphabet
+            @onload()
+        else
+          @onload()
 
   setPoint: (cell) ->
     @image.clear()
     p = @positions[cell]
+    p ?= @positions[@cellInfos[cell]]
     @image.setPoint(p.x, p.y)
 
+  runClick: (x, y) =>
+    cell = _.findIndex @positions, (pos) ->
+      (pos.x - DefaultSize / 2) < x and x < (pos.x + DefaultSize / 2) and (pos.y - DefaultSize / 2) < y and y < (pos.y + DefaultSize / 2)
+    alpha = @toAlpha[cell]
+    @onclick(alpha)
+
   onload: () ->
+
+  onclick: (alpha) ->
+
 
 class MapImage
   constructor: (idTag) ->
@@ -26,11 +52,19 @@ class MapImage
     @ctx = @tag[0].getContext('2d')
     @loadImage()
     @setImage()
+    that = @
+    @tag.click (event) ->
+      dElm = document.documentElement
+      dBody = document.body
+      nX = dElm.scrollLeft || dBody.scrollLeft
+      nY = dElm.scrollTop || dBody.scrollTop
+      that.onclick(event.clientX - @offsetLeft + nX, event.clientY - @offsetTop + nY)
 
   loadImage: () ->
     @img = new Image()
     @img.src = @tag.attr('data-src')
     @img.onload = =>
+      @setImage()
       @onload()
 
   setImage: () ->
@@ -46,3 +80,5 @@ class MapImage
   clear: () -> @setImage()
 
   onload: () -> @setImage()
+
+  onclick: (x, y) ->
