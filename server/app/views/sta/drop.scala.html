@@ -35,7 +35,7 @@
     <div class="panel-group" id="accordion">
       @cells.map { cell =>
         <div class="panel panel-default" id="panel@cell.rawPointStr" data-cell="@cell.rawPointStr">
-          <div class="panel-heading">
+          <div class="panel-heading" data-cell="@cell.cell">
             <h2 class="panel-title">
               <a data-toggle="collapse" data-parent="#accordion" href="#collapse@cell.rawPointStr">
                 @cell.pointStr @if(cell.alphabet.nonEmpty){(@cell.alphabet)}

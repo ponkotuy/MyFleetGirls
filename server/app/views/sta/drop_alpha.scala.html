@@ -37,7 +37,7 @@
     <div class="panel-group" id="accordion">
       @cells.map { cell =>
         <div class="panel panel-default" id="panel@cell.rawPointAlpha" data-cell="@cell.rawPointAlpha">
-          <div class="panel-heading">
+          <div class="panel-heading" data-cell="@cell.alphabet">
             <h2 class="panel-title">
               <a data-toggle="collapse" data-parent="#accordion" href="#collapse@cell.rawPointAlpha">
                 @cell.pointAlpha

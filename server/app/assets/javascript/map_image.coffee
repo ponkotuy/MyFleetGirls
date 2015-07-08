@@ -18,18 +18,18 @@ class @SeaMap
       $.getJSON posUrl, (data) =>
         data.forEach (d) =>
           @positions[d.cell] = {x: d.posX, y: d.posY}
-          console.log(d)
         if infoUrl
           $.getJSON infoUrl, (data) =>
             data.forEach (d) =>
-              console.log(d)
               @cellInfos[d.alphabet] = d.cell
               @toAlpha[d.cell] = d.alphabet
             @onload()
         else
           @onload()
 
-  setPoint: (cell) ->
+  setPoint: (cell, fixed) ->
+    if fixed
+      @fix = cell
     @image.clear()
     p = @positions[cell]
     p ?= @positions[@cellInfos[cell]]
@@ -41,9 +41,14 @@ class @SeaMap
     alpha = @toAlpha[cell]
     @onclick(alpha)
 
-  onload: () ->
+  onload: ->
 
   onclick: (alpha) ->
+
+  clear: ->
+    @image.clear()
+    if @fix
+      @setPoint(@fix, false)
 
 
 class MapImage
