@@ -6,6 +6,12 @@
 </div>
 
 <div class="modal-body">
+  <canvas id="modal_map_image"
+    data-src="@routes.RestImage.map(stage.area, stage.info)"
+    data-position="@routes.Rest.cellPosition(stage.area, stage.info)"
+    width="768px" height="435px"
+    class="image-rounded">
+  </canvas>
   <table class="table table-condensed table-striped">
     <tbody>
       @depcounts.map { case (xs, count) =>
@@ -19,3 +25,10 @@
     </tbody>
   </table>
 </div>
+
+<script>
+  var seaMap = new SeaMap('modal_map_image');
+  seaMap.onload = function() {
+    seaMap.setLine(@dep.cell, @dest.cell);
+  }
+</script>

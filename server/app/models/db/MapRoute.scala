@@ -6,6 +6,8 @@ import org.json4s._
 import org.json4s.JsonDSL._
 import scalikejdbc._
 
+import scala.collection.breakOut
+
 case class MapRoute(
     id: Long,
     memberId: Long,
@@ -114,9 +116,10 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
       val xs = Ship.findIn(memberId, ids)
       xs.map(x => (x.memberId, x.id) -> x)
     }
-    fleets.map { case (memberId, ids) =>
-      ids.flatMap(id => ships.get((memberId, id))).toVector
-    }.toList
+    fleets.flatMap { case (memberId, ids) =>
+      val opts = ids.map(id => ships.get((memberId, id)))
+      if(opts.forall(_.isDefined)) Some(opts.flatten.toVector) else None
+    }(breakOut)
   }
 
   def findStageUnique()(implicit session: DBSession = autoSession): List[Stage] = {
