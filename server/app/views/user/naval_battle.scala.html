@@ -4,8 +4,10 @@
   <title>海戦履歴 -@{user.admiral.nickname}提督-</title>
   <script src="@Js.MomentLocales"></script>
   <script src="@Js.Vue"></script>
+  <script src="@Js.Lodash"></script>
   <script src="@Js.Common"></script>
   <script src="@Js.Coffee("naval_battle")"></script>
+  <script src="@Js.Coffee("map_image")"></script>
 } {
   @head_content(user) {
     @usertab(user,"naval") {
@@ -81,12 +83,16 @@
         <table class="table table-striped table-condensed">
           <thead>
             <tr>
-              <th><a href="http://wikiwiki.jp/kancolle/?%BD%D0%B7%E2#maps">Stage</a></th><th>Rank</th><th>ドロップ</th><th>日時</th>
+              <th>Stage</th><th>Rank</th><th>ドロップ</th><th>日時</th>
             </tr>
           </thead>
           <tbody>
             <tr v-repeat="drop: data">
-              <td>{{drop.point}}<small v-if="drop.start">Start</small> <small v-if="drop.boss">BOSS</small></td>
+              <td>
+                <a v-attr="href: '/common/seamap/' + drop.areaId + '/' + drop.infoNo + '/' + drop.cell" data-toggle="modal" data-target="#modal">
+                  {{drop.point}}<small v-if="drop.start">Start</small> <small v-if="drop.boss">BOSS</small>
+                </a>
+              </td>
               <td>{{drop.winRank}}</td>
               <td>{{drop.getShipName}}</td>
               <td>{{timeToStr(drop.created)}}</td>
@@ -147,13 +153,17 @@
         <table class="table table-condensed table-striped">
           <thead>
             <tr>
-              <th><a href="http://wikiwiki.jp/kancolle/?%BD%D0%B7%E2#maps">Stage</a></th>
+              <th>Stage</th>
               <th>from</th><th>TO</th><th>日時</th><th>艦隊</th>
             </tr>
           </thead>
           <tbody>
             <tr v-repeat="r: routes">
-              <th>{{r.area}}</th>
+              <th>
+                <a v-attr="href: '/common/seamap_line/' + r.areaId + '/' + r.infoNo + '?dep=' + r.dep + '&dest=' + r.dest" data-toggle="modal" data-target="#modal">
+                  {{r.area}}
+                </a>
+              </th>
               <td v-html="viewCell(r.areaId, r.infoNo, r.dep)"></td>
               <td v-html="viewCell(r.areaId, r.infoNo, r.dest)"></td>
               <td>{{timeToStr(r.created)}}</td>
@@ -180,5 +190,12 @@
         </ul>
       </div>
     }
+
+    <!-- Modal -->
+    <div class="modal fade bs-example-modal-lg" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content"></div>
+      </div>
+    </div>
   }
 }

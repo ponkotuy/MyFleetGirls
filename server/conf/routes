@@ -109,6 +109,8 @@ GET           /rest/v1/sound/random                                         cont
 # View
 GET           /                                                             controllers.View.index
 GET           /passwd/entire/login                                          controllers.View.login(init: String ?= "", back: String ?= "/")
+GET           /common/seamap/:area/:info/:cell                              controllers.View.modalMap(area: Int, info: Int, cell: Int)
+GET           /common/seamap_line/:area/:info                               controllers.View.modalMapLine(area: Int, info: Int, dep: Int, dest: Int)
 GET           /entire/about                                                 controllers.ViewAbout.setup
 GET           /entire/about/change                                          controllers.ViewAbout.changeLog
 GET           /entire/about/faq                                             controllers.ViewAbout.faq
