@@ -22,7 +22,6 @@ $(document).ready ->
   seaMap.onload = ->
     $("#collapse#{obj.cell}").collapse()
   seaMap.onclick = (alpha) ->
-    console.log(alpha)
     $('.collapse').each ->
       $(this).collapse('hide')
     $("#collapse#{area}-#{info}-#{alpha}").collapse('show')
