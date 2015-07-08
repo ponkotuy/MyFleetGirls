@@ -47,6 +47,8 @@
 /rest/v1/sound/ship/188/1.mp3
 /rest/v1/sound/random
 /passwd/entire/login?back=/
+/common/seamap/1/1/1
+/common/seamap_line/1/1?dep=1&dest=2
 /entire/about
 /entire/about/change
 /entire/about/faq
