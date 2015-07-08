@@ -1,14 +1,34 @@
+
 $(document).ready ->
+  area = $('#stage').attr('data-area')
+  info = $('#stage').attr('data-info')
+  seaMap = new SeaMap('map_image')
   $('.panel').each ->
     elem = $(this)
     id = elem.attr('id')
     cell = elem.attr('data-cell')
-    vue = new Vue(vueConf(elem, id, cell))
+    new Vue(vueConf(elem, id, cell))
+  $('.panel-heading').each ->
+    elem = $(this)
+    cell = elem.attr('data-cell')
+    elem.hover setPoint(seaMap, cell), () -> seaMap.clear()
   obj = fromURLParameter(location.hash.replace(/^\#/, ''))
-  $("#collapse#{obj.cell}").collapse()
+  $('.collapse').on 'show.bs.collapse', ->
+    cell = $(@).parent().attr('data-cell').split('-', 3)[2]
+    seaMap.setPoint(cell, true)
   $('.collapse').on 'hide.bs.collapse', ->
     here = location.href.replace(/\#.*$/, '') # hash以下を削除
     history.replaceState(null, null, here)
+  seaMap.onload = ->
+    $("#collapse#{obj.cell}").collapse()
+  seaMap.onclick = (alpha) ->
+    $('.collapse').each ->
+      $(this).collapse('hide')
+    $("#collapse#{area}-#{info}-#{alpha}").collapse('show')
+
+setPoint = (seaMap, cell) ->
+  () ->
+    seaMap.setPoint(cell, false)
 
 timeout = 0
 

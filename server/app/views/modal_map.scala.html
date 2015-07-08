@@ -1,0 +1,22 @@
+@(area: Int, info: Int, cell: Int)
+
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+  <h3 class="modal-title">@area-@info-@cell</h3>
+</div>
+
+<div class="modal-body">
+  <canvas id="modal_map_image"
+    data-src="@routes.RestImage.map(area, info)"
+    data-position="@routes.Rest.cellPosition(area, info)"
+    width="768px" height="435px"
+    class="image-rounded">
+  </canvas>
+</div>
+
+<script>
+  var seaMap = new SeaMap('modal_map_image');
+  seaMap.onload = function() {
+    seaMap.setPoint(@cell)
+  }
+</script>

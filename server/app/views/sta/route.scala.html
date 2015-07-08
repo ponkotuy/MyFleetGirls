@@ -5,6 +5,8 @@
   <script src="@Js.Vue"></script>
   <script src="@Js.Common"></script>
   <script src="@Js.MomentLocales"></script>
+  <script src="@Js.Lodash"></script>
+  <script src="@Js.Coffee("map_image")"></script>
   <script src="@Js.Coffee("route")"></script>
 } {
   @statistics_head("drop") {
@@ -24,7 +26,15 @@
         <input type="text" class="form-control date-picker" v-model="to">
       </form>
 
-      <p>海図との対照表は<a href="http://wikiwiki.jp/kancolle/?%BD%D0%B7%E2#maps">Wiki</a>よりどうぞ</p>
+      <div>
+        <canvas
+          id="map_image"
+          data-src="@routes.RestImage.map(stage.area, stage.info)"
+          data-position="@routes.Rest.cellPosition(stage.area, stage.info)"
+          width="768px" height="435px"
+          class="img-rounded">
+        </canvas>
+      </div>
 
       <table class="table table-hover table-condensed">
         <thead>
@@ -33,7 +43,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-repeat="route: routes" class="clickable" v-on="click: modaling(route)">
+          <tr v-repeat="route: routes" class="clickable" v-on="click: modaling(route), mouseover: setLine(route), mouseout: clearLine()" >
             <td v-html="viewCell(route.dep)"></td>
             <td v-html="viewCell(route.dest)"></td>
             <td>{{route.count}}</td>

@@ -31,7 +31,6 @@ object Js {
   }
 
   // TODO tablesorterがuser/shipでのみ使われている
-  // TODO d3がcshipでのみ使われている
 
   def Assets(path: String) = controllers.routes.Assets.at(path)
   def Coffee(fName: String) = Assets(s"javascript/$fName.js")
