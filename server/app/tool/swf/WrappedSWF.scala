@@ -1,10 +1,10 @@
-package tool
+package tool.swf
 
 import java.io._
 
 import com.jpexs.decompiler.flash.SWF
 import com.jpexs.decompiler.flash.tags.base.ImageTag
-import com.jpexs.decompiler.flash.tags.{DefineBitsTag, DefineBitsJPEG3Tag, DefineSpriteTag}
+import com.jpexs.decompiler.flash.tags.{DefineBitsJPEG3Tag, DefineBitsTag, DefineSpriteTag}
 
 import scala.collection.JavaConverters._
 import scala.collection.breakOut

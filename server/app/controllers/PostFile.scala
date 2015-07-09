@@ -7,7 +7,7 @@ import models.db
 import models.db.{CellPosition, MapImage}
 import play.api.mvc._
 import scalikejdbc._
-import tool._
+import tool.swf.{MapData, WrappedSWF}
 
 import scala.util.Try
 
@@ -54,8 +54,11 @@ object PostFile extends Controller {
             MapData.fromFile(swfFile) match {
               case Some(mapData) =>
                 MapImage.create(areaId, infoNo, mapData.bytes, version.toShort)
-                mapData.cells.map { cell =>
-                  CellPosition.create(areaId, infoNo, cell.cell, cell.posX, cell.posY)
+                val cp = CellPosition.cp
+                if(CellPosition.countBy(sqls.eq(cp.areaId, areaId).and.eq(cp.infoNo, infoNo)) == 0) {
+                  mapData.cells.map { cell =>
+                    CellPosition.create(areaId, infoNo, cell.cell, cell.posX, cell.posY)
+                  }
                 }
                 Ok("Success")
               case None => BadRequest("SWF parse error")

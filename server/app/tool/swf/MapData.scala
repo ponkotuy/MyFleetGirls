@@ -1,4 +1,4 @@
-package tool
+package tool.swf
 
 import java.io._
 
@@ -20,7 +20,9 @@ object MapData {
   }
 
   private def getImage(swf: WrappedSWF): Option[Array[Byte]] = {
-    swf.getJPEG3s.headOption.flatMap { case (_, jpeg) =>
+    swf.getJPEG3s.find { case (_, jpeg) =>
+      !jpeg.getCharacterExportFileName.contains("Enemy")
+    }.flatMap { case (_, jpeg) =>
       WrappedSWF.imageToBytes(jpeg)
     }
   }
