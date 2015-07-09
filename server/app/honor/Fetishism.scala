@@ -2,15 +2,18 @@ package honor
 
 import models.db.Ship
 import ranking.EvolutionBase
+
 import scala.collection.breakOut
 
 object Fetishism extends HonorCategory {
+  import tool.ShipIds._
+
   override def category: Int = 18
 
   override def comment: String = "対象艦娘の合計Lvを一定以上"
 
   val groups = Vector(
-    FetiGroup("メガネフェチ", Set(85, 143, 442, 69, 183, 31, 154, 128, 134), 450)
+    FetiGroup("メガネフェチ", Set(Mochizuki, Chokai, Kirishima, I8, Makigumo, Musashi, Katori, Ooyodo, Roma), 450)
   )
 
   override def approved(memberId: Long): List[String] = {

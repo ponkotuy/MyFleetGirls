@@ -22,6 +22,7 @@ import scala.collection.breakOut
  * Date: 15/04/16.
  */
 case object NotHave extends HonorCategory {
+  import tool.ShipIds._
   override def category: Int = 16
 
   override def comment: String = "持たざるものには分かる"
@@ -34,5 +35,5 @@ case object NotHave extends HonorCategory {
     }
   }
 
-  val Target = Set(184, 131, 143, 153, 161, 171, 140, 138)
+  val Target = Set(Yamato, Noshiro, Sakawa, Musashi, Taiho, AkitsuMaru, Bismarck, Taigei)
 }

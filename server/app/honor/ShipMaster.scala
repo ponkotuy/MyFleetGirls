@@ -12,6 +12,7 @@ import scala.collection.mutable
  * Date: 15/03/17.
  */
 object ShipMaster extends HonorCategory {
+  import tool.ShipIds._
   override def category = 1
 
   override def approved(memberId: Long): List[String] = {
@@ -29,14 +30,14 @@ object ShipMaster extends HonorCategory {
   private def toHonor(ms: MasterShipBase): String = s"${ms.name}提督"
 
   val OriginalHonor = Map(
-    71 -> "我輩は利根提督である",
-    45 -> "夕立提督っぽい",
-    35 -> "ハラショー",
-    56 -> "アイドル提督",
-    51 -> "俺の名は天龍提督",
-    54 -> "夜戦提督",
-    125 -> "お嬢様提督",
-    15 -> "クソ提督"
+    Tone -> "我輩は利根提督である",
+    Yudachi -> "夕立提督っぽい",
+    Hibiki -> "ハラショー",
+    Naka -> "アイドル提督",
+    Tenryu -> "俺の名は天龍提督",
+    Sendai -> "夜戦提督",
+    Kumano -> "お嬢様提督",
+    Akebono -> "クソ提督"
   )
 
   override val comment: String = "ある艦娘（改造後含む）の合計Lvが200以上。特定艦娘固有称号含む"
