@@ -35,5 +35,8 @@ case object NotHave extends HonorCategory {
     }
   }
 
-  val Target = Set(Yamato, Noshiro, Sakawa, Musashi, Taiho, AkitsuMaru, Bismarck, Taigei)
+  val Target = Set(
+    Yamato, Noshiro, Sakawa, Musashi, Taiho, AkitsuMaru, Bismarck, Taigei,
+    Harusame, Katori, Unryu, I401, Mikuma, Hatsukaze, Yahagi, Hayashimo, Kiyoshimo, Asashimo, Nowaki, Asagumo, Ooyodo, Tanikaze
+  )
 }
