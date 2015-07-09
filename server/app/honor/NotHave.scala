@@ -1,6 +1,6 @@
 package honor
 
-import models.db.{MasterShipBase, ShipBook}
+import models.db.MasterShipBase
 import ranking.EvolutionBase
 import scalikejdbc._
 
@@ -27,8 +27,8 @@ case object NotHave extends HonorCategory {
 
   override def comment: String = "持たざるものには分かる"
 
-  override def approved(memberId: Long): List[String] = {
-    val shipIds = ShipBook.findAllBy(sqls.eq(ShipBook.sb.memberId, memberId)).map(_.id)
+  override def approved(memberId: Long, db: HonorCache): List[String] = {
+    val shipIds = db.shipBook.map(_.id)
     val haves: Set[Int] = shipIds.map(EvolutionBase(_))(breakOut)
     MasterShipBase.findAllBy(sqls.in(MasterShipBase.ms.id, (Target -- haves).toSeq)).map { ship =>
       s"${ship.name}出ない"

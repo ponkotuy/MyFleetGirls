@@ -1,6 +1,5 @@
 package honor
 
-import models.db.Ship
 import ranking.EvolutionBase
 
 import scala.collection.breakOut
@@ -16,8 +15,8 @@ object Fetishism extends HonorCategory {
     FetiGroup("メガネフェチ", Set(Mochizuki, Chokai, Kirishima, I8, Makigumo, Musashi, Katori, Ooyodo, Roma), 450)
   )
 
-  override def approved(memberId: Long): List[String] = {
-    val ships = Ship.findAllByUserWithName(memberId)
+  override def approved(memberId: Long, db: HonorCache): List[String] = {
+    val ships = db.shipWithName
     val lvs = ships.map { ship =>
       EvolutionBase(ship.shipId) -> ship.lv
     }

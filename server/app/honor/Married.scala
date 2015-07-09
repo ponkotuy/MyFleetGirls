@@ -1,6 +1,6 @@
 package honor
 
-import models.db.{MasterShipBase, Ship}
+import models.db.MasterShipBase
 import ranking.EvolutionBase
 import scalikejdbc._
 
@@ -12,8 +12,8 @@ import scalikejdbc._
 object Married extends HonorCategory {
   override def category: Int = 10
 
-  override def approved(memberId: Long): List[String] = {
-    val marrieds = Ship.findAllBy(sqls.eq(Ship.column.memberId, memberId).and.ge(Ship.column.lv, 100)).map(_.shipId)
+  override def approved(memberId: Long, db: HonorCache): List[String] = {
+    val marrieds = db.shipWithName.filter(_.lv >= 100).map(_.shipId)
     val married = marrieds.size
     val marriedDist = marrieds.map(EvolutionBase(_)).distinct
     val marriedOne = {

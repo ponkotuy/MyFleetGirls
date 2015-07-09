@@ -1,6 +1,6 @@
 package honor
 
-import models.db.{MasterShipBase, Ship}
+import models.db.MasterShipBase
 import ranking.EvolutionBase
 import scalikejdbc._
 
@@ -15,8 +15,8 @@ object ShipMaster extends HonorCategory {
   import tool.ShipIds._
   override def category = 1
 
-  override def approved(memberId: Long): List[String] = {
-    val ships = Ship.findAllByUser(memberId)
+  override def approved(memberId: Long, db: HonorCache): List[String] = {
+    val ships = db.shipWithName
     val lvs = mutable.Map[Int, Int]().withDefaultValue(0)
     ships.foreach { ship =>
       lvs(EvolutionBase(ship.shipId)) += ship.lv

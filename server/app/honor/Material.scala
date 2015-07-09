@@ -12,8 +12,8 @@ object Material extends HonorCategory {
 
   override def comment: String = "資源を一定以上(以下)にする"
 
-  override def approved(memberId: Long): List[String] = {
-    db.Material.findByUser(memberId).map { material =>
+  override def approved(memberId: Long, db: HonorCache): List[String] = {
+    db.material.map { material =>
       conditions.filter(_.cond(material)).map(_.name)
     }.getOrElse(Nil)
   }
