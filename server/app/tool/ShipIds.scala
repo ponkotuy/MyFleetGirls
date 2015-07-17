@@ -11,6 +11,7 @@ object ShipIds {
   val Chokai = 69
   val Tone = 71
   val Kirishima = 85
+  val Sazanami = 94
   val Mikuma = 120
   val Kumano = 125
   val I8 = 128
