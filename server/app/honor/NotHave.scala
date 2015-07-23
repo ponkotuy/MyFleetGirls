@@ -22,7 +22,7 @@ import scala.collection.breakOut
  * Date: 15/04/16.
  */
 case object NotHave extends HonorCategory {
-  import tool.ShipIds._
+  import com.ponkotuy.value.ShipIds._
   override def category: Int = 16
 
   override def comment: String = "持たざるものには分かる"

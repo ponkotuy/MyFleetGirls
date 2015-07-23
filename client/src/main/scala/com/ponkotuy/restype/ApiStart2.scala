@@ -17,14 +17,15 @@ import scala.util.matching.Regex
 case object ApiStart2 extends ResType {
   import ResType._
 
-  override val regexp: Regex = s"\\A/$Api/api_start2\\z".r
+  override val regexp: Regex = s"\\A$Api/api_start2\\z".r
 
-  override def postables(q: Query): Seq[HttpPostable] = {
-    (masterShip(q.obj) ::
-        masterMission(q.obj) ::
-        masterSlotitem(q.obj) ::
-        masterSType(q.obj) :: Nil).flatten
-  }
+  override def postables(q: Query): Seq[HttpPostable] = postablesFromJValue(q.obj)
+
+  private[restype] def postablesFromJValue(obj: JValue) =
+    (masterShip(obj) ::
+        masterMission(obj) ::
+        masterSlotitem(obj) ::
+        masterSType(obj) :: Nil).flatten
 
   private def masterShip(obj: JValue): Option[HttpPostable] = {
     val masterGraph = MasterShipGraph.fromJson(obj \ "api_mst_shipgraph")

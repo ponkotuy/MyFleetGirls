@@ -2,6 +2,7 @@ package controllers
 
 import java.io.FileInputStream
 
+import com.ponkotuy.value.ShipIds
 import controllers.Common._
 import models.db
 import models.db.{CellPosition, MapImage}
@@ -24,7 +25,7 @@ object PostFile extends Controller {
         case Some(ref) =>
           findKey(shipKey) { ship =>
             val si = db.ShipImage.si
-            if(500 < ship.id && ship.id <= 900) { Ok("Unnecessary Enemy") }
+            if(ShipIds.isEnemy(ship.id)) { Ok("Unnecessary Enemy") }
             else if(db.ShipImage.countBy(sqls.eq(si.id, ship.id).and.eq(si.version, version)) > 0) Ok("Already Exists")
             else {
               val swfFile = ref.ref.file

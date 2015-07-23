@@ -1,5 +1,6 @@
 package com.ponkotuy.data.master
 
+import com.ponkotuy.value.ShipIds
 import org.json4s._
 
 /**
@@ -14,12 +15,15 @@ object MasterShip {
 
   def fromJson(json: JValue, filenames: Int => String): List[MasterShip] = {
     val JArray(xs) = json
-    xs.map { x =>
-      val base = MasterShipBase.fromJson(x, filenames)
-      val specs = MasterShipSpecs.fromJson(x)
-      val after = MasterShipAfter.fromJson(x)
-      val other = MasterShipOther.fromJson(x)
-      MasterShip(base, specs, after, other)
+    xs.flatMap { x =>
+      for {
+        base <- MasterShipBase.fromJson(x, filenames)
+      } yield {
+        val specs = MasterShipSpecs.fromJson(x)
+        val after = MasterShipAfter.fromJson(x)
+        val other = MasterShipOther.fromJson(x)
+        MasterShip(base, specs, after, other)
+      }
     }
   }
 
@@ -47,13 +51,16 @@ case class MasterShipBase(
 
 object MasterShipBase {
   import MasterShip._
-  def fromJson(x: JValue, filenames: Int => String): MasterShipBase = {
+  def fromJson(x: JValue, filenames: Int => String): Option[MasterShipBase] = {
     val id = toInt(x \ "api_id")
-    val sortno = toInt(x \ "api_sortno")
-    val JString(name) = x \ "api_name"
-    val JString(yomi) = x \ "api_yomi"
-    val stype = toInt(x \ "api_stype")
-    MasterShipBase(id, sortno, name, yomi, stype, filenames(id))
+    if(ShipIds.isEnemy(id)) None
+    else {
+      val sortno = toInt(x \ "api_sortno")
+      val JString(name) = x \ "api_name"
+      val JString(yomi) = x \ "api_yomi"
+      val stype = toInt(x \ "api_stype")
+      Some(MasterShipBase(id, sortno, name, yomi, stype, filenames(id)))
+    }
   }
 }
 

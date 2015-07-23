@@ -5,7 +5,7 @@ import ranking.EvolutionBase
 import scala.collection.breakOut
 
 object Fetishism extends HonorCategory {
-  import tool.ShipIds._
+  import com.ponkotuy.value.ShipIds._
 
   override def category: Int = 18
 

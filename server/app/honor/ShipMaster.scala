@@ -12,7 +12,7 @@ import scala.collection.mutable
  * Date: 15/03/17.
  */
 object ShipMaster extends HonorCategory {
-  import tool.ShipIds._
+  import com.ponkotuy.value.ShipIds._
   override def category = 1
 
   override def approved(memberId: Long, db: HonorCache): List[String] = {

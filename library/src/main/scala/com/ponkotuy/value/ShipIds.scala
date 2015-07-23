@@ -1,5 +1,10 @@
-package tool
+package com.ponkotuy.value
 
+/**
+ *
+ * @author ponkotuy
+ * Date: 15/07/24.
+ */
 object ShipIds {
   val Akebono = 15
   val Mochizuki = 31
@@ -38,4 +43,6 @@ object ShipIds {
   val Nowaki = 415
   val Asashimo = 425
   val Roma = 442
+
+  def isEnemy(id: Int): Boolean = 500 < id && id <= 900
 }
