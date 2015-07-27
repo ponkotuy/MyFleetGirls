@@ -18,7 +18,7 @@ object RareShipRanking extends Ranking {
   override def rankingQuery(limit: Int): Seq[RankingElement] = {
     val sb = ShipBook.sb
     val admirals = activeAdmiral()
-    val books = ShipBook.findAllBy(sqls.in(sb.memberId, admirals))
+    val books = ShipBook.findAllBy(sqls.in(sb.memberId, admirals).and.lt(sb.indexNo, 100000))
     val counts = books.groupBy(_.id).filterKeys(EvolutionBase.isBase).mapValues(_.size)
     val max = counts.map(_._2).max
     val notHaveCounts = counts.mapValues { count => (max - count).toLong }.toVector
