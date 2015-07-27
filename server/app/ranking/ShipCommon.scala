@@ -21,7 +21,7 @@ object ShipCommon {
     val masters: Map[Int, MasterShipBase] = MasterShipBase.findAll().map { ship => ship.id -> ship }(collection.breakOut)
     val withMasters = result.flatMap { case (id, count) => masters.get(id).map(_ -> count) }
     withMasters.map { case (master, count) =>
-      val url = routes.ViewSta.shipBook(master.id).toString()
+      val url = routes.ViewSta.shipBook(master.id).toString
       RankingElement(master.name, <span>{f"$count%,d"}</span>, url, count)
     }
   }
