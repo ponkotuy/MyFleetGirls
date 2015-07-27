@@ -23,13 +23,13 @@ case object ShipBookRanking extends Ranking {
 
   override def rankingQuery(limit: Int): List[RankingElement] = {
     findAllOrderByShipBookCount(limit, agoMillis(30.days)).map { case (admiral, count) =>
-      val url = routes.UserView.book(admiral.id).toString()
+      val url = routes.UserView.book(admiral.id).toString
       RankingElement(admiral.nickname, <span>{count}</span>, url, count)
     }
   }
 
   private def findAllOrderByShipBookCount(limit: Int = 10, from: Long = 0L)(
-    implicit session: DBSession = ShipBook.autoSession): List[(Admiral, Long)] = {
+      implicit session: DBSession = ShipBook.autoSession): List[(Admiral, Long)] = {
     val normal = shipBookCountBy(from=from)
     val damaged = shipBookCountBy(sqls"sb.is_dameged = true", from)
     val dCounts: Map[Long, Long] = damaged.map { case (admin, cnt) => admin.id -> cnt }.toMap.withDefaultValue(0L)
