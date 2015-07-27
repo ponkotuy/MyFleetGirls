@@ -28,8 +28,7 @@ case class MapStart(
   def summary: String = Pretty(
     Map(
       ("Map", s"$mapAreaId-$mapInfoNo-$no"),
-      ("Next", next),
-      ("EnemyID", enemyId.getOrElse("会敵せず"))
+      ("Next", next)
     )
   )
 }
