@@ -1,8 +1,5 @@
 package honor
 
-import models.db.MapInfo
-import scalikejdbc._
-
 /**
  *
  * @author ponkotuy
@@ -11,8 +8,8 @@ import scalikejdbc._
 object AllClear extends HonorCategory {
   override def category: Int = 4
 
-  override def approved(memberId: Long): List[String] = {
-    val info = MapInfo.findAllBy(sqls.eq(MapInfo.column.memberId, memberId))
+  override def approved(memberId: Long, db: HonorCache): List[String] = {
+    val info = db.mapInfo
     if(info.forall(_.cleared) && info.nonEmpty) "全クリア" :: Nil else Nil
   }
 

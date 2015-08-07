@@ -6,13 +6,7 @@ $(document).ready ->
     sortDesc: 'icon-chevron-down glyphicon glyphicon-chevron-down'
 
   # Restore URL Parameter
-  param = fromURLParameter(location.hash.replace(/^\#/, ''))
-  param.lv = if param.lv? then decodeURIComponent(param.lv) else ""
-  if param.modal?
-    if param.fleet?
-      $('#modal').modal({remote: "fleet/#{param.id}"})
-    else
-      $('#modal').modal({remote: "aship/#{param.id}"})
+  param = restoreURLParam()
 
   $('#ship_table').tablesorter(
     sortList: [[3, 1], [4, 1]]
@@ -47,6 +41,7 @@ $(document).ready ->
       id = parseInt($(this).attr('data-id'))
       location.hash = toURLParameter({modal: true, id: id, fleet: true})
     loadFavCounter()
+    drawExpGraph()
 
   $('#modal').on 'hidden.bs.modal', ->
     url = location.href.split('#')[0]
@@ -71,3 +66,38 @@ jqplotOpt =
       max: 120
       showTicks: false
       showTickMarks: false
+
+restoreURLParam = ->
+  param = fromURLParameter(location.hash.replace(/^\#/, ''))
+  param.lv = if param.lv? then decodeURIComponent(param.lv) else ""
+  if param.modal?
+    if param.fleet?
+      $('#modal').modal({remote: "fleet/#{param.id}"})
+    else
+      $('#modal').modal({remote: "aship/#{param.id}"})
+  param
+
+fixWidth = ->
+  width = $('div.modal-body').width()
+  $('.width-adj').width(width)
+
+drawExpGraph = ->
+  userid = $('#userid').val()
+  shipid = $('#shipid').val()
+  fixWidth()
+  $.getJSON "/rest/v2/user/#{userid}/ship/#{shipid}/exp", (data) ->
+    if data.length > 2
+      raw = trans(data)
+      graph = new Graph('exp')
+      graph.overviewPlot(raw)
+      graph.wholePlot(raw)
+    else
+      noDataGraph($('#exp'))
+
+trans = (data) -> [
+  data: data.map (x) -> [x['created'], x['exp']]
+  label: '経験値'
+]
+
+noDataGraph = (node) ->
+  node.replaceWith('<p>グラフ生成に必要なデータが充分にありません</p>')

@@ -1,12 +1,14 @@
 package controllers
 
-import java.io.{ByteArrayOutputStream, FileInputStream, InputStream}
+import java.io.FileInputStream
 
+import com.ponkotuy.value.ShipIds
 import controllers.Common._
 import models.db
+import models.db.{CellPosition, MapImage}
 import play.api.mvc._
 import scalikejdbc._
-import tool.{SWFContents, SWFTool, SWFType}
+import tool.swf.{MapData, WrappedSWF}
 
 import scala.util.Try
 
@@ -16,62 +18,76 @@ import scala.util.Try
  * Date: 14/03/22.
  */
 object PostFile extends Controller {
-  def ship(shipKey: String) = Action.async(parse.multipartFormData) { request =>
+  def ship(shipKey: String, version: Int) = Action.async(parse.multipartFormData) { request =>
     val form = request.body.asFormUrlEncoded
     authentication(form) { auth =>
       request.body.file("image") match {
         case Some(ref) =>
           findKey(shipKey) { ship =>
-            if(500 < ship.id && ship.id <= 900) { Ok("Unnecessary Enemy") }
-            else if(db.ShipImage.countBy(sqls"si.id = ${ship.id}") > 0) Ok("Already Exists")
+            val si = db.ShipImage.si
+            if(ShipIds.isEnemy(ship.id)) { Ok("Unnecessary Enemy") }
+            else if(db.ShipImage.countBy(sqls.eq(si.id, ship.id).and.eq(si.version, version)) > 0) Ok("Already Exists")
             else {
               val swfFile = ref.ref.file
-              val contents = SWFTool.contents(swfFile)
-              val isExec = contents.filter(_.typ == SWFType.Jpeg).flatMap { case SWFContents(id, _) =>
+              val swf = WrappedSWF.fromFile(swfFile)
+              val isExec = swf.getImages.flatMap { case (id, imgTag) =>
                 Try {
-                  SWFTool.extractJPG(swfFile, id) { file =>
-                    val image = readAll(new FileInputStream(file))
-                    db.ShipImage.create(ship.id, image, shipKey, auth.id, id)
-                  }
+                  val image = WrappedSWF.imageToBytes(imgTag).get
+                  db.ShipImage.create(ship.id, image, shipKey, auth.id, id, version)
                 }.toOption
               }.nonEmpty
-              if(isExec) Ok("Success") else BadRequest("Not Found Image")
+              if(isExec) Ok("Success") else BadRequest("Not found image")
             }
           }
-        case None => BadRequest("Need Image")
+        case None => BadRequest("Need image")
       }
     }
   }
 
-  def sound(shipKey: String, soundId: Int) = Action.async(parse.multipartFormData) { request =>
+  def map(areaId: Int, infoNo: Int, version: Int) = Action.async(parse.multipartFormData) { request =>
+    val form = request.body.asFormUrlEncoded
+    authentication(form) { auth =>
+      request.body.file("map") match {
+        case Some(ref) =>
+          if(db.MapImage.find(areaId, infoNo, version.toShort).isDefined) Ok("Already exists")
+          else {
+            val swfFile = ref.ref.file
+            MapData.fromFile(swfFile) match {
+              case Some(mapData) =>
+                MapImage.create(areaId, infoNo, mapData.bytes, version.toShort)
+                val cp = CellPosition.cp
+                if(CellPosition.countBy(sqls.eq(cp.areaId, areaId).and.eq(cp.infoNo, infoNo)) == 0) {
+                  mapData.cells.map { cell =>
+                    CellPosition.create(areaId, infoNo, cell.cell, cell.posX, cell.posY)
+                  }
+                }
+                Ok("Success")
+              case None => BadRequest("SWF parse error")
+            }
+          }
+        case None => BadRequest("Need swf file")
+      }
+    }
+  }
+
+  def sound(shipKey: String, soundId: Int, version: Int) = Action.async(parse.multipartFormData) { request =>
     val form = request.body.asFormUrlEncoded
     authentication(form) { auth =>
       request.body.file("sound") match {
         case Some(ref) =>
           findKey(shipKey) { ship =>
             val mp3File = ref.ref.file
-            val sound = readAll(new FileInputStream(mp3File))
+            val sound = WrappedSWF.readAll(new FileInputStream(mp3File))
             try {
-              db.ShipSound.create(ship.id, soundId, sound)
+              db.ShipSound.create(ship.id, soundId, version, sound)
               Ok("Success")
             } catch {
-              case e: Throwable => Ok("Already Exists")
+              case e: Exception => Ok("Already exists")
             }
           }
-        case _ => BadRequest("Need Image")
+        case _ => BadRequest("Need sound")
       }
     }
-  }
-
-  private def readAll(is: InputStream): Array[Byte] = {
-    val baos = new ByteArrayOutputStream()
-    val buf = new Array[Byte](1024)
-    var len = is.read(buf)
-    while(len >= 0) {
-      baos.write(buf, 0, len)
-      len = is.read(buf)
-    }
-    baos.toByteArray
   }
 
   private def findKey(key: String)(f: db.MasterShipBase => Result) = {

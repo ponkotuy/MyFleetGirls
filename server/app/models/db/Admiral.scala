@@ -41,6 +41,11 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
       .limit(limit).offset(offset)
   }.map(Admiral(a)).list().apply()
 
+  def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[Admiral] =
+    withSQL {
+      select.from(Admiral as a).where(where)
+    }.map(Admiral(a)).list().apply()
+
   def findNewestWithLv(limit: Int = Int.MaxValue, offset: Int = 0)(implicit session: DBSession = Admiral.autoSession): List[AdmiralWithLv] = withSQL {
     select.from(Admiral as a)
       .innerJoin(Basic as b).on(a.id, b.memberId)

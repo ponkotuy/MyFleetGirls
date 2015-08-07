@@ -40,6 +40,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
   def apply(br: ResultName[BattleResult])(rs: WrappedResultSet): BattleResult = autoConstruct(rs, br)
 
   val br = BattleResult.syntax("br")
+  val br2 = SubQuery.syntax("br2", br.resultName)
   val ci = CellInfo.syntax("ci")
   val ms = MasterShipBase.syntax("ms")
   val a = Admiral.syntax("a")
@@ -85,7 +86,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
 
   /**
    * MariaDBがアホでcreatedのindexを使ってしまうので、SubQuery化した方がindexを2種類使えて早い事案
-   * @return
+   * それでも遅いので日付条件を絞り込むの推奨
    */
   def findAllByWithCellOrderByCreated(where: SQLSyntax, limit: Int = Int.MaxValue, offset: Int = 0)(
       implicit session: DBSession = autoSession): List[BattleResultWithCell] = {
@@ -189,13 +190,21 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
 
   def countAllGroupByCells(where: SQLSyntax = sqls"1")(implicit session: DBSession = autoSession): List[(CellWithRank, Long)] = {
     withSQL {
-      select(br.areaId, br.infoNo, br.cell, br.winRank, ci.alphabet, sqls"count(1) as cnt").from(BattleResult as br)
-        .leftJoin(CellInfo as ci).on(sqls.eq(br.areaId, ci.areaId).and.eq(br.infoNo, ci.infoNo).and.eq(br.cell, ci.cell))
-        .where.append(sqls"${where}")
-        .groupBy(br.areaId, br.infoNo, br.cell, br.winRank)
-        .orderBy(br.areaId, br.infoNo, br.cell, br.winRank)
+      select(br2(br).areaId, br2(br).infoNo, br2(br).cell, br2(br).winRank, ci.alphabet, sqls"br2.cnt")
+          .from(
+            select(br.result.areaId, br.result.infoNo, br.result.cell, br.result.winRank, sqls"count(1) as cnt")
+                .from(BattleResult as br).where.append(where)
+                .groupBy(br.areaId, br.infoNo, br.cell, br.winRank) as br2
+          )
+          .leftJoin(CellInfo as ci).on(sqls.eq(br2(br).areaId, ci.areaId).and.eq(br2(br).infoNo, ci.infoNo).and.eq(br2(br).cell, ci.cell))
+          .orderBy(br2(br).areaId, br2(br).infoNo, br2(br).cell, br2(br).winRank)
     }.map { rs =>
-      CellWithRank(br, ci)(rs) -> rs.long("cnt")
+      val areaId = rs.int(br2(br).areaId)
+      val infoNo = rs.int(br2(br).infoNo)
+      val cell = rs.int(br2(br).cell)
+      val rank = rs.string(br2(br).winRank)
+      val alpha = rs.stringOpt(ci.alphabet)
+      CellWithRank(areaId, infoNo, cell, rank, alpha) -> rs.long("cnt")
     }.list().apply()
   }
 

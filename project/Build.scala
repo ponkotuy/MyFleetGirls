@@ -1,30 +1,27 @@
-import scala.sys.{process => p}
-import sbt._
-import Keys._
-import sbtassembly.Plugin._
-import AssemblyKeys._
-import sbtbuildinfo.Plugin._
-import play._
 import com.typesafe.sbt.web.SbtWeb
+import sbt.Keys._
+import sbt._
+import play._
+import sbtassembly.Plugin.AssemblyKeys._
 
 object MyFleetGirlsBuild extends Build {
 
-  val ver = "1.3.12"
+  val ver = "1.4.2"
 
-  val scalaVer = "2.11.6"
+  val scalaVer = "2.11.7"
 
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .aggregate(server, client, library)
 
-  lazy val rootSettings = Defaults.defaultSettings ++ settings ++ Seq(
-    commands ++= Seq(proxy, assembl, run, stage, start, dist, zip, genMapper, prof, runTester, runTester2)
+  lazy val rootSettings = settings ++ Seq(
+    commands ++= Seq(proxy, assembl, run, stage, start, dist, genMapper, prof, runTester, runTester2, downLib)
   )
 
   lazy val server = Project(id = "server", base = file("server"))
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .dependsOn(library)
-    .enablePlugins(PlayScala).settings(
+    .enablePlugins(sbt.PlayScala).settings(
       scalaVersion := scalaVer
     )
     .enablePlugins(SbtWeb)
@@ -51,11 +48,15 @@ object MyFleetGirlsBuild extends Build {
   override lazy val settings = super.settings ++ Seq(
     version := ver,
     scalaVersion := scalaVer,
-    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions"),
+    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions", "-encoding", "UTF-8"),
+    javacOptions ++= Seq("-encoding", "UTF-8"),
     updateOptions := updateOptions.value.withCircularDependencyLevel(CircularDependencyLevel.Error),
     updateOptions := updateOptions.value.withCachedResolution(true),
     jarName in assembly := "MyFleetGirls.jar",
-    incOptions := incOptions.value.withNameHashing(true)
+    incOptions := incOptions.value.withNameHashing(true),
+    licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.html")),
+    homepage := Some(url("https://myfleet.moe")),
+    fork in Test := true
   )
 
   def proxy = Command.command("proxy") { state =>
@@ -102,22 +103,6 @@ object MyFleetGirlsBuild extends Build {
     state
   }
 
-  def zip = Command.command("zip") { state =>
-    def hash(file: String): Option[String] = {
-      (p.Process(s"md5sum ${file}").!!).split(' ').headOption
-    }
-    Command.process("assembly", state)
-    p.Process("""rm server/public/zip/MyFleetGirls.zip""").run()
-    p.Process("""rm server/public/client/MyFleetGirls.jar.pack.gz""").run()
-    p.Process("""zip -j server/public/zip/MyFleetGirls.zip update/target/update.jar LICENSE update/update.properties update/myfleetgirls.keystore package/resources/application.conf.sample package/resources/MyFleetGirls.bat package/resources/MyFleetGirls.sh package/resources/MyFleetGirls.command package/resources/IE_PROXY.REG""").run()
-    if(hash("server/public/client/MyFleetGirls.jar") != hash("client/target/scala-2.11/MyFleetGirls.jar"))
-      p.Process("""cp client/target/scala-2.11/MyFleetGirls.jar server/public/client/""").run()
-    p.Process("""cp LICENSE MyFleetGirls.bat MyFleetGirls.sh MyFleetGirls.command update/update.properties update/myfleetgirls.keystore package/resources/application.conf.sample package/resources/IE_PROXY.REG server/public/client/""").run()
-    p.Process(Seq("sh", "-c", "pack200 --unknown-attribute=pass server/public/client/MyFleetGirls.jar.pack.gz server/public/client/MyFleetGirls.jar 2> /dev/null")).run()
-    Thread.sleep(20000L)
-    state
-  }
-
   def prof = Command.command("prof") { state =>
     val subState = Command.process("project  profiler", state)
     Command.process("run", subState)
@@ -133,6 +118,14 @@ object MyFleetGirlsBuild extends Build {
   def runTester = Command.command("runTesterEarth") { state =>
     val subState = Command.process("project tester", state)
     Command.process(s"run https://myfleet.moe", subState)
+    state
+  }
+
+  def downLib = Command.command("downLib") { state =>
+    import scala.sys.process._
+    "wget https://www.free-decompiler.com/flash/download/ffdec_5.3.0_lib.jar".!
+    "mv ffdec_5.3.0_lib.jar server/lib/".!
+    Thread.sleep(1000L)
     state
   }
 }

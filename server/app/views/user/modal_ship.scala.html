@@ -1,9 +1,21 @@
 @(ship: ShipParameter, user: User, isSnap: Boolean)
 
 <!-- Require jqPlot -->
+<input type="hidden" id="shipid" value="@ship.id" />
 
 <script src="@Js.Coffee("bar")"></script>
 <script src="@Js.Coffee("modal_ship")"></script>
+
+<style>
+  div.chart {
+    height: 400px;
+  }
+
+  div.overview {
+    height: 160px;
+  }
+</style>
+
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 
@@ -37,7 +49,7 @@
       </td>
       <td>
         <div>
-          <img src="@routes.RestImage.ship(ship.shipId, 5)" alt="@ship.name" class="img-rounded" />
+          <img src="@routes.RestImage.ship(ship.shipId, if(ship.isDamaged) 7 else 5)" alt="@ship.name" class="img-rounded" />
           @if(ship.airSuperiority > 0) { <p style="margin: 5px;"><small>制空値</small>@ship.airSuperiority</p> }
           <ul>
             @ship.slotNames.map { slot =>
@@ -72,6 +84,11 @@
       </tr>
     </tbody>
   </table>
+
+  <div id="exp">
+    <div id="exp_graph" class="chart width-adj"></div>
+    <div id="exp_overview" class="overview width-adj"></div>
+  </div>
 </div>
 
 <div class="modal-footer">

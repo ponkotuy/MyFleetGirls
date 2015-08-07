@@ -14,27 +14,27 @@ object RestSound extends Controller {
   import Common._
   def ship(shipId: Int, soundId: Int) = Action.async {
     Future {
-      db.ShipSound.find(shipId, soundId) match {
+      db.ShipSound.findRandomBy(shipId, soundId) match {
         case Some(record) => Ok(record.sound).as("audio/mp3")
-        case _ => NotFound(s"Not Found Image (shipId=$shipId, soundId=$soundId)")
+        case _ => NotFound(s"Not found sound (shipId=$shipId, soundId=$soundId)")
       }
     }
   }
 
   def shipHead(shipId: Int, soundId: Int) = Action.async {
     Future {
-      db.ShipSound.find(shipId, soundId) match {
+      db.ShipSound.findRandomBy(shipId, soundId) match {
         case Some(record) => Ok(record.sound).as("audio/mp3")
-        case _ => NotFound(s"Not Found Image (shipId=$shipId, soundId=$soundId)")
+        case _ => NotFound(s"Not found sound (shipId=$shipId, soundId=$soundId)")
       }
     }
   }
 
-  def shipKeyHead(shipKey: String, soundId: Int) = Action.async {
+  def shipKeyHead(shipKey: String, soundId: Int, version: Int) = Action.async {
     Future {
-      db.ShipSound.findKey(shipKey, soundId) match {
+      db.ShipSound.findKey(shipKey, soundId, version) match {
         case Some(record) => Ok(record.sound).as("audio/mp3")
-        case _ => NotFound(s"Not Found Image (shipKey=$shipKey, soundId=$soundId)")
+        case _ => NotFound(s"Not found sound (shipKey=$shipKey, soundId=$soundId, version=$version)")
       }
     }
   }

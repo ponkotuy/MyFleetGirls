@@ -1,6 +1,5 @@
 package honor
 
-import models.db.Ship
 import tool.STypeExp
 
 /**
@@ -11,8 +10,8 @@ import tool.STypeExp
 object ShipTypeBias extends HonorCategory {
   override def category: Int = 8
 
-  override def approved(memberId: Long): List[String] = {
-    val ships = Ship.findAllByUserWithName(memberId)
+  override def approved(memberId: Long, db: HonorCache): List[String] = {
+    val ships = db.shipWithName
     val result = STypeExp.fromShips(ships).maxBy(_.exp)
     s"${result.name}提督" :: OriginalHonors.get(result.name).toList
   }

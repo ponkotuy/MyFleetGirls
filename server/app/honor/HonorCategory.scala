@@ -10,12 +10,12 @@ import collection.breakOut
  */
 trait HonorCategory {
   def category: Int
-  def approved(memberId: Long): List[String]
+  def approved(memberId: Long, db: HonorCache): List[String]
   def comment: String
 }
 
 object Honors {
-  val values: Vector[HonorCategory] = Vector(ShipMaster, Yome, RankingTop, AllClear, ShipMaxLv, FleetAdmiral, Practice, ShipTypeBias, InitShip, Married, ManyShip, Rookie, FleetGroup, Lucky, SpecialDay, NotHave)
+  val values: Vector[HonorCategory] = Vector(ShipMaster, Yome, RankingTop, AllClear, ShipMaxLv, FleetAdmiral, Practice, ShipTypeBias, InitShip, Married, ManyShip, Rookie, FleetGroup, Lucky, SpecialDay, NotHave, HasUsers, Fetishism, Material)
 
   def fromUser(memberId: Long, set: Boolean = false) = {
     val where = sqls.toAndConditionOpt(
@@ -26,11 +26,12 @@ object Honors {
   }
 
   def create(memberId: Long): Unit = {
-    val after: Map[Int, Seq[String]] = values.map(h => h.category -> h.approved(memberId))(breakOut)
+    val cache = new HonorCache(memberId)
+    val after: Map[Int, Seq[String]] = values.par.map(h => h.category -> h.approved(memberId, cache))(breakOut)
     val before: Set[String] = fromUser(memberId, false).map(_.name)(breakOut)
     after.foreach { case (cat, xs) =>
       xs.foreach { x =>
-        if(!before.contains(x)) Honor.create(memberId, cat, x, false)
+        if(!before.contains(x)) Honor.create(memberId, cat, x, false, false)
       }
     }
   }

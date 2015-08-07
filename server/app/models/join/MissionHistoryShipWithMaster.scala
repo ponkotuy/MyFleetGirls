@@ -5,7 +5,8 @@ import org.json4s._
 import org.json4s.JsonDSL._
 
 /**
- * Created by yosuke on 15/01/17.
+ * @author ponkotuy
+ * Date: 15/01/17.
  */
 case class MissionHistoryShipWithMaster(ship: MissionHistoryShip, master: MasterShipBase, stype: MasterStype) {
   def name = master.name
@@ -14,6 +15,7 @@ case class MissionHistoryShipWithMaster(ship: MissionHistoryShip, master: Master
 
   def toJson: JObject = {
     ("id" -> ship.id) ~
+      ("shipId" -> ship.shipId) ~
       ("name" -> name) ~
       ("lv" -> lv.toInt) ~
       ("stype" -> stype.name)

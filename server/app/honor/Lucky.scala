@@ -1,6 +1,6 @@
 package honor
 
-import models.db.{MasterShipBase, Ship}
+import models.db.MasterShipBase
 import ranking.EvolutionBase
 import scalikejdbc._
 
@@ -12,8 +12,8 @@ import scalikejdbc._
 object Lucky extends HonorCategory {
   override def category: Int = 14
 
-  override def approved(memberId: Long): List[String] = {
-    val luckyMax = Ship.findAllWithSpec(sqls.eq(Ship.s.memberId, memberId).and.eq(Ship.mss.luckyMax, Ship.s.lucky))
+  override def approved(memberId: Long, db: HonorCache): List[String] = {
+    val luckyMax = db.luckyMaxShip
     val luckies = luckyMax.map { s => EvolutionBase(s.shipId) }
     val withAlias = luckies ++ luckies.flatMap(EvolutionBase.Aliases.get)
     val names = MasterShipBase.findAllBy(sqls.in(MasterShipBase.ms.id, withAlias))

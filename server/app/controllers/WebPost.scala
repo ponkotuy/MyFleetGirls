@@ -5,7 +5,9 @@ import java.util.UUID
 import controllers.form.SetSnapshotOrder
 import models.db
 import models.req._
+import play.api.i18n.Messages.Implicits.applicationMessages
 import play.api.mvc._
+import play.api.Play.current
 import scalikejdbc._
 import tool.Authentication
 
@@ -28,12 +30,10 @@ object WebPost extends Controller {
               val ships = db.DeckShip.findAllByDeck(snap.userId, snap.deckport)
               db.DeckShipSnapshot.bulkInsert(ships.map(_.ship), deckSnap.id)
               db.SnapshotText.create(deckSnap)
-              Ok("Success")
+              Res.success
             case None => BadRequest("Invalid deckport")
           }
-        } else {
-          Unauthorized("Authentication failure")
-        }
+        } else Res.authFail
       case None => BadRequest("Invalid data")
     }
   }
@@ -45,12 +45,10 @@ object WebPost extends Controller {
           db.DeckSnapshot.find(snap.snapId) match {
             case Some(deck) =>
               deck.destroy()
-              Ok("Success")
+              Res.success
             case None => BadRequest("Invalid snapId")
           }
-        } else {
-          Unauthorized("Authorication failure")
-        }
+        } else Res.authFail
       case None => BadRequest("Invalid data")
     }
   }
@@ -59,16 +57,16 @@ object WebPost extends Controller {
     UpdateSnapshot.fromReq(request.body).map { update =>
       if(uuidCheck(update.userId, request.session.get("key"))) {
         db.DeckSnapshot.find(update.snapId).map { snap =>
-          db.DeckSnapshot(snap.id, snap.memberId, snap.name, update.title, update.comment, snap.created, 0).save()
+          db.DeckSnapshot(snap.id, snap.memberId, snap.name, update.title, update.comment, snap.created, snap.sortOrder).save()
           Ok("Success")
         }.getOrElse(BadRequest("Invalid snapId"))
-      } else { Unauthorized("Authentication failure") }
+      } else Res.authFail
     }.getOrElse(BadRequest("Invalid data"))
   }
 
   def setOrder() = formAsync { implicit req =>
     def f(order: SetSnapshotOrder) = {
-      if(!uuidCheck(order.memberId, req.session.get("key"))) Unauthorized("Authorication failure")
+      if(!uuidCheck(order.memberId, req.session.get("key"))) Res.authFail
       else {
         val ordered = db.DeckSnapshot.findAllOrder(order.memberId)
         val idx = ordered.indexWhere(_.id == order.snapId)
@@ -79,13 +77,13 @@ object WebPost extends Controller {
             ordered.lift(idx + 1).fold(BadRequest("Not found destination")) { dest =>
               snap.copy(sortOrder = snap.sortOrder + 1).save()
               dest.copy(sortOrder = dest.sortOrder - 1).save()
-              Ok("Success")
+              Res.success
             }
           } else {
             ordered.lift(idx - 1).fold(BadRequest("Not found destination")) { dest =>
               snap.copy(sortOrder = snap.sortOrder - 1).save()
               dest.copy(sortOrder = dest.sortOrder + 1).save()
-              Ok("Success")
+              Res.success
             }
           }
         }
@@ -106,10 +104,8 @@ object WebPost extends Controller {
           } else {
             db.YomeShip(set.userId, yomes.size.toShort, set.shipId).save()
           }
-          Ok("Success")
-        } else {
-          Unauthorized("Authentication failure")
-        }
+          Res.success
+        } else Res.authFail
       case None =>
         BadRequest("Invalid data")
     }
@@ -118,11 +114,9 @@ object WebPost extends Controller {
   def deleteYome() = formAsync { request =>
     Settings.fromReq(request.body).map { case Settings(memberId, shipId) =>
       if(uuidCheck(memberId, request.session.get("key"))) {
-        if(destroyYome(memberId, shipId)) Ok("Success")
+        if(destroyYome(memberId, shipId)) Res.success
         else BadRequest("Not found ship")
-      } else {
-        Unauthorized("Authentication failure")
-      }
+      } else Res.authFail
     }.getOrElse(BadRequest("Invalid data"))
   }
 
@@ -147,24 +141,48 @@ object WebPost extends Controller {
           uuid
         }
         Ok("Success").withSession("key" -> uuid.toString, "memberId" -> auth.userId.toString)
-      } else {
-        Unauthorized("Authentication failure")
-      }
+      } else Res.authFail
     }.getOrElse { BadRequest("Invalid data") }
   }
 
   def setHonor() = formAsync { implicit req =>
     def set(setHonor: SetHonor) = {
       if(uuidCheck(setHonor.memberId, req.session.get("key"))) {
-        db.Honor.updateUnset(setHonor.memberId)
-        db.Honor.findName(setHonor.memberId, setHonor.name).fold(NotFound(s"Not found name=${setHonor.name}")) { honor =>
+        execHonor(setHonor.memberId, setHonor.name) { honor =>
+          db.Honor.updateUnset(setHonor.memberId)
           honor.copy(setBadge = true).save()
-          Ok("Success")
+          Res.success
         }
-      } else {
-        Unauthorized("Authorication failure")
-      }
+      } else Res.authFail
     }
-    SetHonor.form.bindFromRequest().fold(form => BadRequest(form.errorsAsJson), set)
+    SetHonor.form.bindFromRequest().fold(form => BadRequest(form.errorsAsJson(applicationMessages)), set)
+  }
+
+  def honorInvisible() = formAsync { implicit req =>
+    def patch(patchInvisible: PatchInvisible) = {
+      if(uuidCheck(patchInvisible.memberId, req.session.get("key"))) {
+        execHonor(patchInvisible.memberId, patchInvisible.name) { honor =>
+          patchInvisible.value.fold(honor.copy(invisible = !honor.invisible)){ v => honor.copy(invisible = v) }.save()
+          Res.success
+        }
+      } else Res.authFail
+    }
+    PatchInvisible.form.bindFromRequest().fold(form => BadRequest(form.errorsAsJson), patch)
+  }
+
+  private def execHonor(memberId: Long, name: String)(f: db.Honor => Result): Result =
+    db.Honor.findName(memberId, name).fold(BadRequest(s"Invalid name=${name}"))(f)
+
+  def questManual() = formAsync { implicit req =>
+    def patch(m: PatchManual) = {
+      if(uuidCheck(m.memberId, req.session.get("key"))) {
+        db.Quest.find(m.id, m.memberId).fold(BadRequest(s"Invalid id=${m.id}")) { q =>
+          val manual = m.value.getOrElse(!q.manualFlag)
+          q.copy(manualFlag = manual).save()
+          Res.success
+        }
+      } else Res.authFail
+    }
+    PatchManual.form.bindFromRequest().fold(form => BadRequest(form.errorsAsJson), patch)
   }
 }

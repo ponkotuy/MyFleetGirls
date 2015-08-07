@@ -14,7 +14,7 @@ import com.ponkotuy.proxy.FinagleProxy
 object Main extends App {
   try {
     message()
-    new FinagleProxy(ClientConfig.proxyPort, new KCIntercepter).start()
+    new FinagleProxy(ClientConfig.proxyHost, ClientConfig.proxyPort, new KCIntercepter).start()
   } catch {
     case e: ExceptionInInitializerError =>
       e.printStackTrace()

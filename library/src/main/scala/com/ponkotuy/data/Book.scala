@@ -58,7 +58,7 @@ object Book {
   }
 
   private def checkType(json: JObject): BookType = {
-    if(json.values.keySet.exists(_ == "api_sinfo")) BookType.Ship
+    if(json.values.keySet.contains("api_sinfo")) BookType.Ship
     else BookType.Item
   }
 }

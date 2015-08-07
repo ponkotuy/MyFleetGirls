@@ -27,6 +27,7 @@ object ClientConfig {
   def postUrl(ver: Int = 1) = post + s"/post/v${ver}"
   def getUrl(ver: Int = 1) = config.getString("url.post") + s"/rest/v${ver}"
   def proxyPort = config.getInt("proxy.port")
+  def proxyHost = Try { config.getString("proxy.host") }.getOrElse("localhost")
   lazy val clientProxyHost: Option[HttpHost] = {
     for {
       proxy <- Try { config.getConfig("url.proxy") }.toOption

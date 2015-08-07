@@ -22,7 +22,8 @@ object RankingType {
       CachedRanking(ShipBookRanking),
       CachedRanking(MarriedRanking),
       CachedRanking(SumShipExpRanking),
-      CachedRanking(ItemBookRanking)
+      CachedRanking(ItemBookRanking),
+      CachedRanking(RemodelRanking)
     )
   }
 
@@ -31,7 +32,8 @@ object RankingType {
       CachedRanking(ExpByShipRanking),
       CachedRanking(YomeByShipRanking),
       CachedRanking(MarriedByShipRanking),
-      CachedRanking(FirstShipRate)
+      CachedRanking(FirstShipRate),
+      CachedRanking(RareShipRanking)
     )
   }
 

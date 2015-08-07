@@ -14,4 +14,4 @@ generator.packageName=models.db
 generator.lineBreak=LF
 generator.template=queryDsl
 generator.encoding=UTF-8
-generator.autoContruct=true
+generator.autoConstruct=true

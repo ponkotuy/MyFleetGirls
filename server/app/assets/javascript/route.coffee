@@ -1,3 +1,4 @@
+
 $(document).ready () ->
   vue = new Vue(vueConf('#route_table'))
 
@@ -29,6 +30,8 @@ vueConf = (id) ->
     modal: false
     dep: 0
     dest: 0
+    seaMap: new SeaMap('map_image')
+
 
   methods:
     getJSON: () ->
@@ -91,6 +94,10 @@ vueConf = (id) ->
       if @period
         clearTimeout(timeout)
         timeout = setTimeout(@getJSON, 500)
+    setLine: (route) ->
+      @seaMap.setLine(route.dep, route.dest)
+    clearLine: ->
+      @seaMap.clear()
 
   created: ->
     @loadAttr(id)

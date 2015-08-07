@@ -5,11 +5,11 @@
 # ~~~~~
 # The secret key is used to secure cryptographics functions.
 # If you deploy your application to several instances be sure to use the same key!
-application.secret="2IBWOks;[9]v^cq[cQ]k6qNyHyyT@<Uwt/FnZWHik^ED]9r1mGxH7tj9n^Fgji<P"
+play.crypto.secret="2IBWOks;[9]v^cq[cQ]k6qNyHyyT@<Uwt/FnZWHik^ED]9r1mGxH7tj9n^Fgji<P"
 
 # The application languages
 # ~~~~~
-application.langs="en"
+play.i18n.langs = ["en"]
 
 # Global object class
 # ~~~~~
@@ -35,9 +35,13 @@ application.langs="en"
 #
 db.default.driver="com.mysql.jdbc.Driver"
 db.default.url="jdbc:mysql://localhost:3306/myfleet"
-db.default.user=
+db.default.username=
 db.default.password=
 db.default.migration.auto=true
+
+play.modules.enabled += "scalikejdbc.PlayModule"
+play.modules.enabled += "org.flywaydb.play.PlayModule"
+play.modules.disabled += "play.api.db.DBModule"
 
 # Evolutions
 # ~~~~~
@@ -50,17 +54,8 @@ evolutionplugin=disabled
 # You can also configure logback (http://logback.qos.ch/),
 # by providing an application-logger.xml file in the conf directory.
 
-# Root logger:
-logger.root=INFO
-
-# Logger used by the framework:
-logger.play=INFO
-
-# Logger provided to your application:
-logger.application=DEBUG
-
 # Parser Max Length
-parsers.text.maxLength=1024K
+play.http.parser.maxMemoryBuffer=1024K
 
 # Common Key for Atom ID
 # uniqueな任意の文字列を入れてください。自分の管理下にあるドメイン名か乱数で生成した文字列をお勧めします

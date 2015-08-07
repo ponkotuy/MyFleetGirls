@@ -13,23 +13,25 @@ import util.scalikejdbc.BulkInsert._
  * @param typ: 1Once 2Daily 3Weekly 4, 5限定Daily 6Monthly
  * @param state: 1未選択 2選択済み 3達成
  * @param progressFlag: 1 50%以上達成 2 80%以上達成
+ * @param manualFlag: trueで手動で達成にした
  * @param created: 生成日時
  */
 case class Quest(
-  memberId: Long,
-  id: Int,
-  category: Int,
-  typ: Int,
-  state: Int,
-  title: String,
-  detail: String,
-  fuel: Int,
-  ammo: Int,
-  steel: Int,
-  bauxite: Int,
-  bonus: Boolean,
-  progressFlag: Int,
-  created: Long) {
+    memberId: Long,
+    id: Int,
+    category: Int,
+    typ: Int,
+    state: Int,
+    title: String,
+    detail: String,
+    fuel: Int,
+    ammo: Int,
+    steel: Int,
+    bauxite: Int,
+    bonus: Boolean,
+    progressFlag: Int,
+    manualFlag: Boolean,
+    created: Long) {
 
   def save()(implicit session: DBSession = Quest.autoSession): Quest = Quest.save(this)(session)
 
@@ -42,7 +44,7 @@ object Quest extends SQLSyntaxSupport[Quest] {
 
   override val tableName = "quest"
 
-  override val columns = Seq("member_id", "id", "category", "typ", "state", "title", "detail", "fuel", "ammo", "steel", "bauxite", "bonus", "progress_flag", "created")
+  override val columns = Seq("member_id", "id", "category", "typ", "state", "title", "detail", "fuel", "ammo", "steel", "bauxite", "bonus", "progress_flag", "manual_flag", "created")
 
   def apply(q: SyntaxProvider[Quest])(rs: WrappedResultSet): Quest = apply(q.resultName)(rs)
   def apply(q: ResultName[Quest])(rs: WrappedResultSet): Quest = autoConstruct(rs, q)
@@ -78,20 +80,21 @@ object Quest extends SQLSyntaxSupport[Quest] {
   }
 
   def createOrig(
-    memberId: Long,
-    id: Int,
-    category: Int,
-    typ: Int,
-    state: Int,
-    title: String,
-    detail: String,
-    fuel: Int,
-    ammo: Int,
-    steel: Int,
-    bauxite: Int,
-    bonus: Boolean,
-    progressFlag: Int,
-    created: Long)(implicit session: DBSession = autoSession): Quest = {
+      memberId: Long,
+      id: Int,
+      category: Int,
+      typ: Int,
+      state: Int,
+      title: String,
+      detail: String,
+      fuel: Int,
+      ammo: Int,
+      steel: Int,
+      bauxite: Int,
+      bonus: Boolean,
+      progressFlag: Int,
+      manualFlag: Boolean,
+      created: Long)(implicit session: DBSession = autoSession): Unit = {
     withSQL {
       insert.into(Quest).columns(
         column.memberId,
@@ -107,6 +110,7 @@ object Quest extends SQLSyntaxSupport[Quest] {
         column.bauxite,
         column.bonus,
         column.progressFlag,
+        column.manualFlag,
         column.created
       ).values(
           memberId,
@@ -122,25 +126,10 @@ object Quest extends SQLSyntaxSupport[Quest] {
           bauxite,
           bonus,
           progressFlag,
+          manualFlag,
           created
         )
     }.update().apply()
-
-    Quest(
-      memberId = memberId,
-      id = id,
-      category = category,
-      typ = typ,
-      state = state,
-      title = title,
-      detail = detail,
-      fuel = fuel,
-      ammo = ammo,
-      steel = steel,
-      bauxite = bauxite,
-      bonus = bonus,
-      progressFlag = progressFlag,
-      created = created)
   }
 
   def bulkInsert(xs: Seq[data.Quest], memberId: Long)(implicit session: DBSession = autoSession): Unit = {
@@ -151,12 +140,12 @@ object Quest extends SQLSyntaxSupport[Quest] {
           column.memberId, column.id,
           column.category, column.typ, column.state, column.title, column.detail,
           column.fuel, column.ammo, column.steel, column.bauxite,
-          column.bonus, column.progressFlag, column.created
+          column.bonus, column.progressFlag, column.manualFlag, column.created
         ).multiValues(
           Seq.fill(xs.size)(memberId), xs.map(_.no),
           xs.map(_.category), xs.map(_.typ), xs.map(_.state), xs.map(_.title), xs.map(_.detail),
           xs.map(_.material.fuel), xs.map(_.material.ammo), xs.map(_.material.steel), xs.map(_.material.bauxite),
-          xs.map(_.bonus), xs.map(_.progressFlag), Seq.fill(xs.size)(current)
+          xs.map(_.bonus), xs.map(_.progressFlag), Seq.fill(xs.size)(false), Seq.fill(xs.size)(current)
         )
     }
   }
@@ -171,7 +160,7 @@ object Quest extends SQLSyntaxSupport[Quest] {
       ).map(x => sqls"$x")
       sqls"(${sqls.csv(xs:_*)})"
     }
-    sql"replace quest values ${sqls.csv(params:_*)}".execute().apply()
+    sql"replace into quest (member_id, id, category, typ, state, title, detail, fuel, ammo, steel, bauxite, bonus, progress_flag, created) values ${sqls.csv(params:_*)}".execute().apply()
   }
 
   def save(entity: Quest)(implicit session: DBSession = autoSession): Quest = {
@@ -190,6 +179,7 @@ object Quest extends SQLSyntaxSupport[Quest] {
         column.bauxite -> entity.bauxite,
         column.bonus -> entity.bonus,
         column.progressFlag -> entity.progressFlag,
+        column.manualFlag -> entity.manualFlag,
         column.created -> entity.created
       ).where.eq(column.id, entity.id).and.eq(column.memberId, entity.memberId)
     }.update().apply()

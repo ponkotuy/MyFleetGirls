@@ -1,11 +1,11 @@
 package honor
 
-import models.db
-import models.db.{MasterShipBase, Ship}
+import models.db.MasterShipBase
 import ranking.EvolutionBase
 import scalikejdbc._
 
 import scala.collection.breakOut
+import scala.util.Try
 
 /**
  *
@@ -15,13 +15,13 @@ import scala.collection.breakOut
 object Yome extends HonorCategory {
   override def category: Int = 2
 
-  override def approved(memberId: Long): List[String] = {
-    val yomes: Set[Int] = db.YomeShip.findAllByWithName(sqls.eq(db.YomeShip.ys.memberId, memberId))
+  override def approved(memberId: Long, db: HonorCache): List[String] = {
+    val yomes: Set[Int] = db.yomeShip
         .map { s => EvolutionBase(s.shipId) }(breakOut)
-    val married: Set[Int] = Ship.findAllByUser(memberId)
+    val married: Set[Int] = db.shipWithName
         .filter(100 <= _.lv)
         .map { s => EvolutionBase(s.shipId) }(breakOut)
-    val maxLv = Ship.findByUserMaxLvWithName(memberId).map(s => EvolutionBase(s.shipId))
+    val maxLv = Try(db.shipWithName.maxBy(_.lv)).map(s => EvolutionBase(s.shipId)).toOption
     val ids = yomes & (married ++ maxLv)
     val withAlias: Seq[Int] = ids.toSeq ++ ids.flatMap(EvolutionBase.Aliases.get)(breakOut)
     val result = MasterShipBase.findAllBy(sqls.in(MasterShipBase.column.id, withAlias))

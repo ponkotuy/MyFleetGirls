@@ -13,7 +13,7 @@ import scala.collection.breakOut
 object RankingTop extends HonorCategory {
   override def category: Int = 3
 
-  override def approved(memberId: Long): List[String] = {
+  override def approved(memberId: Long, db: HonorCache): List[String] = {
     val rankings: Map[Ranking, Seq[RankingElement]] =
       RankingType.Admiral.rankings.map(it => it -> it.rankingQuery(20))(breakOut)
     val admiralName = Admiral.find(memberId).map(_.nickname)

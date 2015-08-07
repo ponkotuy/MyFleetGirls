@@ -129,5 +129,3 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
     }
   }
 }
-
-

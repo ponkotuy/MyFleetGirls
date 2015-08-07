@@ -1,4 +1,7 @@
 $(document).ready ->
+  $('#modal').on 'hidden.bs.modal', ->
+    $(this).removeData('bs.modal')
+
   userid = $('#userid').val()
   hashes =
     try

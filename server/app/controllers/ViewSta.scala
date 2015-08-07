@@ -111,8 +111,9 @@ object ViewSta extends Controller {
 
   private def fleetCounts(fleets: Seq[Seq[ShipWithName]]): Seq[(Seq[String], Int)] = {
     fleets.map { xs => xs.map(_.stype.name).sorted }
-      .groupBy(identity).mapValues(_.size)
-      .toList.sortBy(_._2).reverse.take(30)
+        .groupBy(identity).mapValues(_.size)
+        .filterKeys(_.nonEmpty)
+        .toList.sortBy(_._2).reverse.take(30)
   }
 
   def ranking() = actionAsync(Redirect(routes.ViewSta.rankingWithType("Admiral")))
@@ -171,7 +172,8 @@ object ViewSta extends Controller {
   }
 
   def honor() = actionAsync {
-    val honors = db.Honor.findAllByWithAdmiral(sqls.eq(db.Honor.h.setBadge, true))
+    val h = db.Honor.h
+    val honors = db.Honor.findAllByWithAdmiral(sqls.eq(h.setBadge, true).and.eq(h.invisible, false))
     val withRates = HonorWithRate.fromWithAdmiral(honors).sortBy(-_.rate)
     Ok(views.html.sta.honor(withRates))
   }

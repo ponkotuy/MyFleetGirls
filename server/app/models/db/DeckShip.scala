@@ -34,6 +34,10 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
     }.map(DeckShip(ds)).single().apply()
   }
 
+  def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[DeckShip] = withSQL {
+    select.from(DeckShip as ds).where(where)
+  }.map(DeckShip(ds)).list().apply()
+
   def findAllByUserWithName(memberId: Long)(implicit session: DBSession = autoSession): List[DeckShipWithName] = {
     withSQL {
       select(ds.deckId, ds.num, ds.memberId, ds.shipId, s.lv, s.cond, ms.name)

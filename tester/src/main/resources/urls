@@ -43,9 +43,12 @@
 /rest/v2/user/10007732/book/ships
 /rest/v2/user/10007732/honors
 /rest/v1/image/ship/188/5.jpg
+/rest/v2/image/map/1/1.jpg
 /rest/v1/sound/ship/188/1.mp3
 /rest/v1/sound/random
 /passwd/entire/login?back=/
+/common/seamap/1/1/1
+/common/seamap_line/1/1?dep=1&dest=2
 /entire/about
 /entire/about/change
 /entire/about/faq
@@ -96,3 +99,8 @@
 /user/10007732/honor
 /assets/zip/MyFleetGirls.zip
 /assets/client/MyFleetGirls.jar
+/assets/client/MyFleetGirls.jar.pack
+/assets/message
+/assets/proxy.pac
+/assets/MFGsTitle.png
+/assets/feed-icon-28x28.png
