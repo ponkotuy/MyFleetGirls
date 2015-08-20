@@ -19,7 +19,7 @@ import scala.collection.mutable
   * @param inter: com.ponkotuy.intercept.Intercepter
   */
 class FinagleProxy(host: String, port: Int, inter: Intercepter) {
-  val clients: mutable.Map[InetSocketAddress, Service[HttpRequest, HttpResponse]] = mutable.Map()
+  val clients: mutable.Map[String, Service[HttpRequest, HttpResponse]] = mutable.Map()
   val httpProxy = ClientConfig.upstreamProxyHost
 
   val service = new Service[HttpRequest, HttpResponse] {
@@ -27,11 +27,11 @@ class FinagleProxy(host: String, port: Int, inter: Intercepter) {
       val uri = Uri.parse(req.getUri)
       val res = httpProxy match {
         case Some(host) => {
-          client(new InetSocketAddress(host.getHostName,host.getPort)).apply(req)
+          client(host.toHostString).apply(req)
         }
         case _ => {
           req.setUri(uri.path + uri.queryString)
-          client(new InetSocketAddress(uri.host.get ,80)).apply(req)
+          client(uri.host.get+ ":80").apply(req)
         }
       }
       res.foreach(rs => inter.input(req, rs, uri))
@@ -48,13 +48,13 @@ class FinagleProxy(host: String, port: Int, inter: Intercepter) {
       sys.exit(1)
   }
 
-  private def client(socket: InetSocketAddress) = {
-    clients.getOrElseUpdate(socket, {
+  private def client(host: String) = {
+    clients.getOrElseUpdate(host, {
       val builder = ClientBuilder()
         .codec(http.Http().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
         .timeout(30.seconds)
         .tcpConnectTimeout(30.seconds)
-        .hosts(socket)
+        .hosts(host)
         .hostConnectionLimit(4)
       ClientConfig.upstreamProxyHost.foreach( host => builder.httpProxy(new InetSocketAddress(host.getHostName,host.getPort)))
       builder.build()
