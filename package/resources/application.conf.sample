@@ -25,7 +25,7 @@ proxy {
 
 # 艦これサーバーに接続するときに使用する上位プロキシを指定します
 upstream_proxy {
-    # host: localhost
+    # host: "localhost"
     # port: 8888
 }
 
