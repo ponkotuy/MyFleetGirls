@@ -1,7 +1,7 @@
 package ranking
 
 import models.db.MasterShipAfter
-import util.ehcache.TimeToLiveCache
+import util.PeriodicalCache
 
 import scala.concurrent.duration._
 
@@ -19,35 +19,15 @@ object EvolutionBase {
     }
   }
 
+  def isBase(shipId: Int): Boolean = Afters.get(shipId).isEmpty
+
   // 大鯨→龍鳳、U-511→呂500など名称変更が入る艦娘のid mapping
   val Aliases = Map(431 -> 436, 184 -> 185, 35 -> 147, 441 -> 446)
 
-  /* TODO: EHCacheの厳密なsizeを求めるのは非常に重く、EHCacheを使うべきでない */
-  object Afters extends TimeToLiveCache[Int, Int] {
-    var size = Int.MaxValue
-    val SizeCheckLock: AnyRef = new AnyRef
-    val SetAllLock: AnyRef = new AnyRef
-
-    val cacheName = "evolutionBase"
-    val liveSeconds = 60.minutes.toSeconds
-    val maxEntries = 10000
-
-    private def replace(): Unit = SetAllLock.synchronized {
-      removeAll()
-      val all = MasterShipAfter.findAll()
+  private[this] def createCache() =
+    MasterShipAfter.findAll()
         .filterNot(_.aftershipid == 0)
         .map { ship => ship.aftershipid -> ship.id }.toMap
-      putAll(all)
-      size = getSize
-    }
 
-    override def get(sid: Int): Option[Int] = {
-      SizeCheckLock.synchronized {
-        if(getStrictSize < size) replace()
-      }
-      super.get(sid)
-    }
-
-    override protected def default(k: Int): Option[Int] = None
-  }
+  val Afters = new PeriodicalCache(60.minutes, createCache)
 }
