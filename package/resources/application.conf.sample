@@ -23,6 +23,12 @@ proxy {
     host: "localhost"
 }
 
+# 艦これサーバーに接続するときに使用する上位プロキシを指定します
+upstream_proxy {
+    # host: "localhost"
+    # port: 8888
+}
+
 auth {
     # MyFleetGirls サーバーとの通信にパスワードを設定します
     # 一度設定すると以降殆どの通信、及び Web でのログインに必要となります

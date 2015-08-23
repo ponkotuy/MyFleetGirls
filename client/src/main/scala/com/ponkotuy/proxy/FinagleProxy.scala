@@ -1,7 +1,9 @@
 package com.ponkotuy.proxy
 
+import java.net.InetSocketAddress
 import com.netaporter.uri.Uri
 import com.ponkotuy.intercept.Intercepter
+import com.ponkotuy.config.ClientConfig
 import com.twitter.conversions.storage._
 import com.twitter.conversions.time._
 import com.twitter.finagle.builder.ClientBuilder
@@ -18,12 +20,20 @@ import scala.collection.mutable
   */
 class FinagleProxy(host: String, port: Int, inter: Intercepter) {
   val clients: mutable.Map[String, Service[HttpRequest, HttpResponse]] = mutable.Map()
+  val httpProxy = ClientConfig.upstreamProxyHost
 
   val service = new Service[HttpRequest, HttpResponse] {
     def apply(req: HttpRequest): Future[HttpResponse] = {
       val uri = Uri.parse(req.getUri)
-      req.setUri(uri.path + uri.queryString)
-      val res = client(uri.host.get + ":80").apply(req)
+      val res = httpProxy match {
+        case Some(host) => {
+          client(host.toHostString).apply(req)
+        }
+        case _ => {
+          req.setUri(uri.path + uri.queryString)
+          client(uri.host.get+ ":80").apply(req)
+        }
+      }
       res.foreach(rs => inter.input(req, rs, uri))
       res
     }
@@ -40,12 +50,14 @@ class FinagleProxy(host: String, port: Int, inter: Intercepter) {
 
   private def client(host: String) = {
     clients.getOrElseUpdate(host, {
-      ClientBuilder()
+      val builder = ClientBuilder()
         .codec(http.Http().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
         .timeout(30.seconds)
         .tcpConnectTimeout(30.seconds)
         .hosts(host)
-        .hostConnectionLimit(4).build()
+        .hostConnectionLimit(4)
+      ClientConfig.upstreamProxyHost.foreach( host => builder.httpProxy(new InetSocketAddress(host.getHostName,host.getPort)))
+      builder.build()
     })
   }
 
