@@ -20,11 +20,10 @@ object MapData {
   }
 
   private def getImage(swf: WrappedSWF): Option[Array[Byte]] = {
-    swf.getJPEG3s.find { case (_, jpeg) =>
-      !jpeg.getCharacterExportFileName.contains("Enemy")
-    }.flatMap { case (_, jpeg) =>
-      WrappedSWF.imageToBytes(jpeg)
+    val (_, jpeg) = swf.getJPEG3s.maxBy { case (_, jpg) =>
+      jpg.getRect.getWidth
     }
+    WrappedSWF.imageToBytes(jpeg)
   }
 
   private def getCells(swf: WrappedSWF): Seq[Cell] = {
