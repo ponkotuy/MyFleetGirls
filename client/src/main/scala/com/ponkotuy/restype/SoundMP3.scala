@@ -27,11 +27,13 @@ case object SoundMP3 extends ResType {
 case class SoundUrlId(shipKey: String, soundId: Int, version: Int)
 
 object SoundUrlId {
-  val pattern = """.*/kcs/sound/kc([a-z]+)/(\d+).mp3\?version\=(\d+)""".r
+  val Pattern = """.*/kcs/sound/kc([a-z]+)/(\d+).mp3\?version\=(\d+)""".r
+  val NoVerPattern = """.*/kcs/sound/kc([a-z]+)/(\d+).mp3""".r
 
   def parseURL(url: String): Option[SoundUrlId] = {
     url match {
-      case pattern(ship, sound, version) => Try { SoundUrlId(ship, sound.toInt, version.toInt) }.toOption
+      case Pattern(ship, sound, version) => Try { SoundUrlId(ship, sound.toInt, version.toInt) }.toOption
+      case NoVerPattern(ship, sound) => Try { SoundUrlId(ship, sound.toInt, 0) }.toOption
       case _ => println(s"fail parseURL: ${url}"); None
     }
   }
