@@ -1,5 +1,6 @@
 package ranking
 
+import com.ponkotuy.value.ShipIds
 import models.db.MasterShipAfter
 import util.PeriodicalCache
 
@@ -12,6 +13,8 @@ import scala.concurrent.duration._
  * Date: 15/01/10.
  */
 object EvolutionBase {
+  import ShipIds._
+
   def apply(shipId: Int): Int = {
     Afters.get(shipId) match {
       case Some(afterId) => apply(afterId)
@@ -22,7 +25,7 @@ object EvolutionBase {
   def isBase(shipId: Int): Boolean = Afters.get(shipId).isEmpty
 
   // 大鯨→龍鳳、U-511→呂500など名称変更が入る艦娘のid mapping
-  val Aliases = Map(431 -> 436, 184 -> 185, 35 -> 147, 441 -> 446)
+  val Aliases = Map(Taigei -> Ryuho, Hibiki -> Vernyj, U511 -> Ro500, Littorio -> Italia)
 
   private[this] def createCache() =
     MasterShipAfter.findAll()

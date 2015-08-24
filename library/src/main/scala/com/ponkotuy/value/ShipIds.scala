@@ -26,6 +26,7 @@ object ShipIds {
   val Yahagi = 139
   val Sakawa = 140
   val Musashi = 143
+  val Vernyj = 147 // べーるぬい
   val Taiho = 153
   val Katori = 154
   val I401 = 155
@@ -34,6 +35,7 @@ object ShipIds {
   val Bismarck = 171
   val Ooyodo = 183
   val Taigei = 184
+  val Ryuho = 185
   val Hatsukaze = 190
   val Unryu = 404
   val Harusame = 405
@@ -42,7 +44,11 @@ object ShipIds {
   val Asagumo = 413
   val Nowaki = 415
   val Asashimo = 425
+  val U511 = 431
+  val Ro500 = 436
+  val Littorio = 441
   val Roma = 442
+  val Italia = 446
 
   def isEnemy(id: Int): Boolean = 500 < id && id <= 900
 }
