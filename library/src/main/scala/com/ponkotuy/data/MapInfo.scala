@@ -47,13 +47,15 @@ case class RawEventMap(api_now_maphp: Option[Int], api_max_maphp: Option[Int], a
   }
 }
 
-sealed abstract class MapRank(val v: Int)
+sealed abstract class MapRank(val v: Int, val str: String)
 
 object MapRank {
-  object Hei extends MapRank(1)
-  object Otsu extends MapRank(2)
-  object Ko extends MapRank(3)
+  object Hei extends MapRank(1, "hei")
+  object Otsu extends MapRank(2, "otsu")
+  object Ko extends MapRank(3, "ko")
 
   val values = Vector(Hei, Otsu, Ko)
   def fromInt(v: Int): Option[MapRank] = values.find(_.v == v)
+  def fromString(str: String): Set[MapRank] =
+    values.filter { rank => str.contains(rank.str) }.toSet
 }

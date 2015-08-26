@@ -45,27 +45,45 @@
               </a>
             </h2>
           </div>
-          <div id="collapse@cell.rawPointAlpha" class="panel-collapse collapse" data-url="@routes.Rest.dropCellAlpha(cell.areaId, cell.infoNo, cell.alphabet, "(rank)", "(from)", "(to)")">
+          <div id="collapse@cell.rawPointAlpha" class="panel-collapse collapse" data-url="@routes.Rest.dropCellAlpha(cell.areaId, cell.infoNo, cell.alphabet, "(rank)", "(from)", "(to)", "(mapRank)")">
             <form class="form-inline">
               <div class="panel-body">
-                <label class="checkbox-inline">
-                  <input type="checkbox" v-model="dropOnly" />ドロップありのみ
-                </label>
-                <label class="checkbox-inline">
-                  <input type="checkbox" v-model="rank_s" />S勝利
-                </label>
-                <label class="checkbox-inline">
-                  <input type="checkbox" v-model="rank_a" />A勝利
-                </label>
-                <label class="checkbox-inline">
-                  <input type="checkbox" v-model="rank_b" />B勝利
-                </label>
-                <label class="checkbox-inline">
-                  <input type="checkbox" v-model="period" />期間
-                </label>
-                <input type="text" class="datepicker form-control" v-model="from" />
-                〜
-                <input type="text" class="datepicker form-control" v-model="to" />
+                <div>
+                  <label class="checkbox-inline">
+                    <input type="checkbox" v-model="rank_s" />S勝利
+                  </label>
+                  <label class="checkbox-inline">
+                    <input type="checkbox" v-model="rank_a" />A勝利
+                  </label>
+                  <label class="checkbox-inline">
+                    <input type="checkbox" v-model="rank_b" />B勝利
+                  </label>
+                </div>
+                <div>
+                  <label class="checkbox-inline">
+                    <input type="checkbox" v-model="map_rank_all"><strong>全て</strong>
+                  </label>
+                  <label class="checkbox-inline">
+                    <input type="checkbox" v-model="map_rank_ko" v-attr="disabled: map_rank_all ? 'disabled' : null">甲
+                  </label>
+                  <label class="checkbox-inline">
+                    <input type="checkbox" v-model="map_rank_otsu" v-attr="disabled: map_rank_all ? 'disabled' : null">乙
+                  </label>
+                  <label class="checkbox-inline">
+                    <input type="checkbox" v-model="map_rank_hei" v-attr="disabled: map_rank_all ? 'disabled' : null">丙
+                  </label>
+                </div>
+                <div>
+                  <label class="checkbox-inline">
+                    <input type="checkbox" v-model="dropOnly" />ドロップありのみ
+                  </label>
+                  <label class="checkbox-inline">
+                    <input type="checkbox" v-model="period" />期間
+                  </label>
+                  <input type="text" class="datepicker form-control" v-model="from" />
+                  〜
+                  <input type="text" class="datepicker form-control" v-model="to" />
+                </div>
                 <div style="width:900px;height:600px;margin:auto;" id="sunburst@cell.rawPointAlpha" class="sunburst"></div>
               </div>
             </form>
