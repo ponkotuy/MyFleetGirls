@@ -1,6 +1,7 @@
 package controllers
 
 import com.github.nscala_time.time.Imports._
+import com.ponkotuy.data.MapRank
 import com.ponkotuy.tool.Checksum
 import models.db
 import models.join.{MasterRemodelJson, ItemMat, ShipDrop, ShipWithFav}
@@ -11,7 +12,7 @@ import org.json4s._
 import play.api.mvc.Controller
 import scalikejdbc._
 
-import scala.collection.mutable
+import scala.collection.{mutable, breakOut}
 
 /**
  *
@@ -85,16 +86,16 @@ object Rest extends Controller {
     }
   }
 
-  def dropCell(area: Int, info: Int, cell: Int, rank: String, from: String, to: String) = returnJson {
+  def dropCell(area: Int, info: Int, cell: Int, rank: String, from: String, to: String, mapRank: String) = returnJson {
     val fromTo = Period.fromStr(from ,to).where(sqls"br.created")
-    val drops = db.BattleResult.countCellsGroupByDrop(area, info, cell, rank, fromTo)
+    val drops = db.BattleResult.countCellsGroupByDrop(area, info, cell, rank, fromTo.and(mapRankWhere(mapRank)))
     val sum = drops.map(_._2).sum.toDouble
     drops.map(dropToJson(sum))
   }
 
-  def dropCellAlpha(area: Int, info: Int, alpha: String, rank: String, from: String, to: String) = returnJson {
+  def dropCellAlpha(area: Int, info: Int, alpha: String, rank: String, from: String, to: String, mapRank: String) = returnJson {
     val fromTo = Period.fromStr(from, to).where(sqls"br.created")
-    val drops = db.BattleResult.countCellsAlphaGroupByDrop(area, info, alpha, rank, fromTo)
+    val drops = db.BattleResult.countCellsAlphaGroupByDrop(area, info, alpha, rank, fromTo.and(mapRankWhere(mapRank)))
     val sum = drops.map(_._2).sum.toDouble
     drops.map(dropToJson(sum))
   }
@@ -105,6 +106,12 @@ object Rest extends Controller {
       ("count" -> count) ~
       ("sum" -> sum) ~
       ("rate" -> f"${count / sum * 100}%.1f%%")
+  }
+
+  private def mapRankWhere(mapRank: String): Option[SQLSyntax] = {
+    val br = db.BattleResult.br
+    val mapRanks = MapRank.fromString(mapRank)
+    if(mapRanks.isEmpty) None else Some(sqls.in(br.mapRank, mapRanks.map(_.v)(breakOut)))
   }
 
   def route(area: Int, info: Int, from: String, to: String) = returnJson {

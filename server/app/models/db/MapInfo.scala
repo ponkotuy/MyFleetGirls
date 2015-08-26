@@ -1,16 +1,21 @@
 package models.db
 
+import com.ponkotuy.data.{Hp, MapRank}
 import models.join.Stage
-import scalikejdbc._
 import scalikejdbc._
 import com.ponkotuy.data
 import util.scalikejdbc.BulkInsert._
 
 case class MapInfo(
-  memberId: Long,
-  id: Int,
-  cleared: Boolean,
-  exbossFlag: Boolean) {
+    memberId: Long,
+    id: Int,
+    cleared: Boolean,
+    exbossFlag: Boolean,
+    defeatCount: Option[Int],
+    nowHp: Option[Int],
+    maxHp: Option[Int],
+    state: Option[Int],
+    rank: Option[MapRank]) {
 
   def save()(implicit session: DBSession = MapInfo.autoSession): MapInfo = MapInfo.save(this)(session)
 
@@ -30,9 +35,19 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
 
   override val tableName = "map_info"
 
-  override val columns = Seq("member_id", "id", "cleared", "exboss_flag")
+  override val columns = Seq("member_id", "id", "cleared", "exboss_flag", "defeat_count", "now_hp", "max_hp", "state", "rank")
 
-  def apply(mi: ResultName[MapInfo])(rs: WrappedResultSet): MapInfo = autoConstruct(rs, mi)
+  def apply(mi: ResultName[MapInfo])(rs: WrappedResultSet): MapInfo = new MapInfo(
+    memberId = rs.get(mi.memberId),
+    id = rs.get(mi.id),
+    cleared = rs.get(mi.cleared),
+    exbossFlag = rs.get(mi.exbossFlag),
+    defeatCount = rs.get(mi.defeatCount),
+    nowHp = rs.get(mi.nowHp),
+    maxHp = rs.get(mi.maxHp),
+    state = rs.get(mi.state),
+    rank = rs.get[Option[Int]](mi.rank).flatMap(MapRank.fromInt)
+  )
 
   lazy val mi = MapInfo.syntax("mi")
 
@@ -65,38 +80,66 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
   }
 
   def create(
-    memberId: Long,
-    id: Int,
-    cleared: Boolean,
-    exbossFlag: Boolean)(implicit session: DBSession = autoSession): MapInfo = {
+      memberId: Long,
+      id: Int,
+      cleared: Boolean,
+      exbossFlag: Boolean,
+      defeatCount: Option[Int],
+      nowHp: Option[Int],
+      maxHp: Option[Int],
+      state: Option[Int],
+      rank: Option[MapRank])(implicit session: DBSession = autoSession): Unit = {
     withSQL {
       insert.into(MapInfo).columns(
         column.memberId,
         column.id,
         column.cleared,
-        column.exbossFlag
+        column.exbossFlag,
+        column.defeatCount,
+        column.nowHp,
+        column.maxHp,
+        column.state,
+        column.rank
       ).values(
           memberId,
           id,
           cleared,
-          exbossFlag
+          exbossFlag,
+          defeatCount,
+          nowHp,
+          maxHp,
+          state,
+          rank.map(_.v)
         )
     }.update().apply()
-
-    MapInfo(
-      memberId = memberId,
-      id = id,
-      cleared = cleared,
-      exbossFlag = exbossFlag)
   }
 
-  def bulkInsert(xs: Seq[data.MapInfo], memberId: Long)(implicit session: DBSession = autoSession): Seq[MapInfo] = {
+  def bulkInsert(xs: Seq[data.MapInfo], memberId: Long)(implicit session: DBSession = autoSession): Unit = {
+    val es = xs.map(_.eventMap)
+    val hps: Seq[Option[Hp]] = es.map(_.flatMap(_.hp))
     applyUpdate {
       insert.into(MapInfo)
-        .columns(column.memberId, column.id, column.cleared, column.exbossFlag)
-        .multiValues(Seq.fill(xs.size)(memberId), xs.map(_.id), xs.map(_.cleared), xs.map(_.exbossFlag))
+        .columns(
+            column.memberId,
+            column.id,
+            column.cleared,
+            column.exbossFlag,
+            column.defeatCount,
+            column.nowHp,
+            column.maxHp,
+            column.state,
+            column.rank)
+        .multiValues(
+            Seq.fill(xs.size)(memberId),
+            xs.map(_.id),
+            xs.map(_.cleared),
+            xs.map(_.exbossFlag),
+            xs.map(_.defeatedCount),
+            hps.map(_.map(_.now)),
+            hps.map(_.map(_.max)),
+            es.map(_.map(_.state)),
+            es.map(_.flatMap(_.rank).map(_.v)))
     }
-    xs.map { x => MapInfo(memberId, x.id, x.cleared, x.exbossFlag) }
   }
 
   def save(entity: MapInfo)(implicit session: DBSession = autoSession): MapInfo = {
@@ -105,7 +148,12 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
         column.memberId -> entity.memberId,
         column.id -> entity.id,
         column.cleared -> entity.cleared,
-        column.exbossFlag -> entity.exbossFlag
+        column.exbossFlag -> entity.exbossFlag,
+        column.defeatCount -> entity.defeatCount,
+        column.nowHp -> entity.nowHp,
+        column.maxHp -> entity.maxHp,
+        column.state -> entity.state,
+        column.rank -> entity.rank.map(_.v)
       ).where.eq(column.id, entity.id).and.eq(column.memberId, entity.memberId)
     }.update().apply()
     entity

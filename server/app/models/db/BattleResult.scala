@@ -1,5 +1,6 @@
 package models.db
 
+import com.ponkotuy.data.MapRank
 import models.join._
 
 import scala.util.Try
@@ -8,21 +9,22 @@ import sqls.distinct
 import com.ponkotuy.data
 
 case class BattleResult(
-  id: Long,
-  memberId: Long,
-  areaId: Int,
-  infoNo: Int,
-  cell: Int,
-  enemies: String,
-  winRank: String,
-  questName: String,
-  questLevel: Int,
-  enemyDeck: String,
-  firstClear: Boolean,
-  getShipId: Option[Int] = None,
-  getShipType: Option[String] = None,
-  getShipName: Option[String] = None,
-  created: Long) {
+    id: Long,
+    memberId: Long,
+    areaId: Int,
+    infoNo: Int,
+    cell: Int,
+    enemies: String,
+    winRank: String,
+    questName: String,
+    questLevel: Int,
+    enemyDeck: String,
+    firstClear: Boolean,
+    getShipId: Option[Int] = None,
+    getShipType: Option[String] = None,
+    getShipName: Option[String] = None,
+    mapRank: Option[MapRank] = None,
+    created: Long) {
 
   def save()(implicit session: DBSession = BattleResult.autoSession): BattleResult = BattleResult.save(this)(session)
 
@@ -35,9 +37,27 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
 
   override val tableName = "battle_result"
 
-  override val columns = Seq("id", "member_id", "area_id", "info_no", "cell", "enemies", "win_rank", "quest_name", "quest_level", "enemy_deck", "first_clear", "get_ship_id", "get_ship_type", "get_ship_name", "created")
+  override val columns = Seq("id", "member_id", "area_id", "info_no", "cell", "enemies", "win_rank", "quest_name",
+    "quest_level", "enemy_deck", "first_clear", "get_ship_id", "get_ship_type", "get_ship_name", "map_rank", "created")
 
-  def apply(br: ResultName[BattleResult])(rs: WrappedResultSet): BattleResult = autoConstruct(rs, br)
+  def apply(br: ResultName[BattleResult])(rs: WrappedResultSet): BattleResult = new BattleResult(
+    id = rs.get(br.id),
+    memberId = rs.get(br.memberId),
+    areaId = rs.get(br.areaId),
+    infoNo = rs.get(br.infoNo),
+    cell = rs.get(br.cell),
+    enemies = rs.get(br.enemies),
+    winRank = rs.get(br.winRank),
+    questName = rs.get(br.questName),
+    questLevel = rs.get(br.questLevel),
+    enemyDeck = rs.get(br.enemyDeck),
+    firstClear = rs.get(br.firstClear),
+    getShipId = rs.get(br.getShipId),
+    getShipType = rs.get(br.getShipType),
+    getShipName = rs.get(br.getShipName),
+    mapRank = rs.get[Option[Int]](br.mapRank).flatMap(MapRank.fromInt),
+    created = rs.get(br.created)
+  )
 
   val br = BattleResult.syntax("br")
   val br2 = SubQuery.syntax("br2", br.resultName)
@@ -236,30 +256,44 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
   }
 
   def create(result: data.BattleResult, map: data.MapStart, memberId: Long)(
-      implicit session: DBSession = autoSession): BattleResult = {
+      implicit session: DBSession = autoSession): Unit = {
     val created = System.currentTimeMillis()
+    val mapinfo = MapInfo.find(map.mapAreaId*10 + map.mapInfoNo, memberId)
     createOrig(
-      memberId, map.mapAreaId, map.mapInfoNo, map.no,
-      result.enemies.mkString(","), result.winRank, result.questName, result.questLevel, result.enemyDeck,
-      result.firstClear, result.getShip.map(_.id), result.getShip.map(_.stype), result.getShip.map(_.name), created)
+      memberId,
+      map.mapAreaId,
+      map.mapInfoNo,
+      map.no,
+      result.enemies.mkString(","),
+      result.winRank,
+      result.questName,
+      result.questLevel,
+      result.enemyDeck,
+      result.firstClear,
+      result.getShip.map(_.id),
+      result.getShip.map(_.stype),
+      result.getShip.map(_.name),
+      mapinfo.flatMap(_.rank),
+      created)
   }
 
   def createOrig(
-    memberId: Long,
-    areaId: Int,
-    infoNo: Int,
-    cell: Int,
-    enemies: String,
-    winRank: String,
-    questName: String,
-    questLevel: Int,
-    enemyDeck: String,
-    firstClear: Boolean,
-    getShipId: Option[Int] = None,
-    getShipType: Option[String] = None,
-    getShipName: Option[String] = None,
-    created: Long)(implicit session: DBSession = autoSession): BattleResult = {
-    val generatedKey = withSQL {
+      memberId: Long,
+      areaId: Int,
+      infoNo: Int,
+      cell: Int,
+      enemies: String,
+      winRank: String,
+      questName: String,
+      questLevel: Int,
+      enemyDeck: String,
+      firstClear: Boolean,
+      getShipId: Option[Int] = None,
+      getShipType: Option[String] = None,
+      getShipName: Option[String] = None,
+      mapRank: Option[MapRank] = None,
+      created: Long)(implicit session: DBSession = autoSession): Unit = {
+    withSQL {
       insert.into(BattleResult).columns(
         column.memberId,
         column.areaId,
@@ -274,6 +308,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
         column.getShipId,
         column.getShipType,
         column.getShipName,
+        column.mapRank,
         column.created
       ).values(
           memberId,
@@ -289,26 +324,10 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
           getShipId,
           getShipType,
           getShipName,
+          mapRank.map(_.v),
           created
         )
     }.updateAndReturnGeneratedKey().apply()
-
-    BattleResult(
-      id = generatedKey,
-      memberId = memberId,
-      areaId = areaId,
-      infoNo = infoNo,
-      cell = cell,
-      enemies = enemies,
-      winRank = winRank,
-      questName = questName,
-      questLevel = questLevel,
-      enemyDeck = enemyDeck,
-      firstClear = firstClear,
-      getShipId = getShipId,
-      getShipType = getShipType,
-      getShipName = getShipName,
-      created = created)
   }
 
   def save(entity: BattleResult)(implicit session: DBSession = autoSession): BattleResult = {
@@ -328,6 +347,7 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
         column.getShipId -> entity.getShipId,
         column.getShipType -> entity.getShipType,
         column.getShipName -> entity.getShipName,
+        column.mapRank -> entity.mapRank.map(_.v),
         column.created -> entity.created
       ).where.eq(column.id, entity.id)
     }.update().apply()
