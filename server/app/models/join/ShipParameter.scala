@@ -41,6 +41,7 @@ trait ShipParameter extends GraphData {
   def stAbbName = stAbbNames(stName)
 
   def isDamaged = nowhp <= (maxhp / 2)
+  def damage: Option[Damage] = Damage.fromHp(nowhp, maxhp)
 
   lazy val slot: Seq[SlotItemWithMaster] = SlotItem.findIn(ship.slot, memberId)
   lazy val slotMaster: Seq[MasterSlotItem] = {
@@ -124,4 +125,18 @@ object ShipParameter {
     if(rate > 0.5) Yellow.blend(Blue, (rate - 0.5) * 2.0)
     else Red.blend(Yellow, rate * 2.0)
   }
+}
+
+sealed abstract class Damage(val name: String)
+
+object Damage {
+  case object Minor extends Damage("minor")
+  case object Half extends Damage("half")
+  case object Major extends Damage("major")
+
+  def fromHp(now: Int, max: Int): Option[Damage] =
+    if(now <= max / 4) Some(Major)
+    else if(now <= max / 2) Some(Half)
+    else if(now <= max / 4 * 3) Some(Minor)
+    else None
 }
