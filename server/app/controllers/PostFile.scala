@@ -93,7 +93,7 @@ object PostFile extends Controller {
   private def findKey(key: String)(f: db.MasterShipBase => Result) = {
     db.MasterShipBase.findByFilename(key) match {
       case Some(ship) => f(ship)
-      case None => BadRequest("Wrong Filename or Not Found Master Data")
+      case None => Ok("Is enemy, wrong filename or Not found master data")
     }
   }
 }
