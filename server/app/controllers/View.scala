@@ -1,12 +1,11 @@
 package controllers
 
 import build.BuildInfo
-import play.api.mvc._
 import models.db
+import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
-import scala.io.Source
 
 /**
  *

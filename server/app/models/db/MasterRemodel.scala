@@ -85,12 +85,13 @@ object MasterRemodel extends SQLSyntaxSupport[MasterRemodel] {
     }.map(_.long(1)).single().apply().get
   }
 
-  def createFromData(x: data.master.MasterRemodel, memberId: Long)(implicit session: DBSession = autoSession): Unit = {
-    for {
+  /** @return 処理しなかったときはfalseが返る */
+  def createFromData(x: data.master.MasterRemodel, memberId: Long)(implicit session: DBSession = autoSession): Boolean = {
+    val isExec = for {
       item <- SlotItem.find(x.origSlotId, memberId)
       secondShip <- Ship.find(memberId, x.secondShipId)
     } yield {
-      val orig = find(item.slotitemId, item.level, x.secondShipId)
+      val orig = find(item.slotitemId, item.level, secondShip.shipId)
       // 間違えてLevelが低い状態でmasterを登録した可能性があるので、元のデータを消しておく
       val isDestroy = orig.filter(_.sumKit > x.sumKit).map(_.destroy()).isDefined
       if(orig.isEmpty || isDestroy) {
@@ -106,8 +107,10 @@ object MasterRemodel extends SQLSyntaxSupport[MasterRemodel] {
           x.slotitemNum,
           x.changeFlag
         )
-      }
+        true
+      } else false
     }
+    isExec.getOrElse(false)
   }
 
   def create(
