@@ -9,12 +9,28 @@
     </encoder>
   </appender>
 
-  <logger name="play" level="WARN" />
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${application.home}/logs/application.log</file>
+    <encoder>
+      <pattern>%date [%level] from %logger in %thread - %message%n%xException</pattern>
+    </encoder>
+  </appender>
 
+
+  <appender name="ASYNCFILE" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="FILE" />
+  </appender>
+
+  <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="STDOUT" />
+  </appender>
+
+  <logger name="play" level="WARN" />
   <logger name="scalikejdbc" level="WARN" />
 
   <!-- By default, the level of the root level is set to DEBUG -->
   <root level="INFO">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="ASYNCFILE" />
+    <appender-ref ref="ASYNCSTDOUT" />
   </root>
 </configuration>
