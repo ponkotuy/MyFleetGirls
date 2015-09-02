@@ -5,13 +5,19 @@ import models.join.{SlotItemWithMaster, ShipWithName, ItemWithShip}
 import scalikejdbc._
 import util.scalikejdbc.BulkInsert._
 
+/**
+ *
+ * @param alv 艦載機熟練度
+ * @param created 残念だったな、初期から実装してなかった所為で永遠にnullableだ、HAHAHA!
+ */
 case class SlotItem(
     memberId: Long,
     id: Int,
     slotitemId: Int,
     locked: Boolean,
     level: Int,
-    created: Option[Long] // 残念だったな、初期から実装してなかった所為で永遠にnullableだ、HAHAHA!
+    alv: Option[Int],
+    created: Option[Long]
 ) {
 
   def save()(implicit session: DBSession = SlotItem.autoSession): SlotItem = SlotItem.save(this)(session)
@@ -26,7 +32,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
 
   override val tableName = "slot_item"
 
-  override val columns = Seq("member_id", "id", "slotitem_id", "locked", "level", "created")
+  override val columns = Seq("member_id", "id", "slotitem_id", "locked", "level", "alv", "created")
 
   def apply(si: SyntaxProvider[SlotItem])(rs: WrappedResultSet): SlotItem = SlotItem(si.resultName)(rs)
   def apply(si: ResultName[SlotItem])(rs: WrappedResultSet): SlotItem = autoConstruct(rs, si)
@@ -143,6 +149,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
       slotitemId: Int,
       locked: Boolean = false,
       level: Int = 0,
+      alv: Option[Int] = None,
       created: Long = System.currentTimeMillis())(implicit session: DBSession = autoSession): Unit = {
     withSQL {
       insert.into(SlotItem).columns(
@@ -151,6 +158,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
         column.slotitemId,
         column.locked,
         column.level,
+        column.alv,
         column.created
       ).values(
           memberId,
@@ -158,6 +166,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
           slotitemId,
           locked,
           level,
+          alv,
           created
         )
     }.update().apply()
@@ -167,9 +176,14 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
     val now = System.currentTimeMillis()
     applyUpdate {
       insert.into(SlotItem)
-          .columns(column.memberId, column.id, column.slotitemId, column.locked, column.level, column.created)
+          .columns(column.memberId, column.id, column.slotitemId, column.locked, column.level, column.alv, column.created)
           .multiValues(
-            Seq.fill(xs.size)(memberId), xs.map(_.id), xs.map(_.slotitemId), xs.map(_.locked), xs.map(_.level),
+            Seq.fill(xs.size)(memberId),
+            xs.map(_.id),
+            xs.map(_.slotitemId),
+            xs.map(_.locked),
+            xs.map(_.level),
+            xs.map(_.alv),
             Seq.fill(xs.size)(now)
           )
     }
@@ -183,6 +197,7 @@ object SlotItem extends SQLSyntaxSupport[SlotItem] {
         column.slotitemId -> entity.slotitemId,
         column.locked -> entity.locked,
         column.level -> entity.level,
+        column.alv -> entity.alv,
         column.created -> entity.created
       ).where.eq(column.id, entity.id).and.eq(column.memberId, entity.memberId)
     }.update().apply()

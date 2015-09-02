@@ -159,7 +159,9 @@ object Post extends Controller {
       afterSlot <- request.afterSlot
       item <- db.SlotItem.find(request.slotId, auth.id)
     } {
-      db.SlotItem(auth.id, item.id, item.slotitemId, item.locked, afterSlot.level, Some(System.currentTimeMillis())).save()
+      db.SlotItem(
+        auth.id, item.id, item.slotitemId, item.locked, afterSlot.level, item.alv, Some(System.currentTimeMillis())
+      ).save()
     }
     Res.success
   }
