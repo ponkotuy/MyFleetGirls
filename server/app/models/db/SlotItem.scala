@@ -7,7 +7,7 @@ import util.scalikejdbc.BulkInsert._
 
 /**
  *
- * @param alv 艦載機熟練度
+ * @param alv 艦載機熟練度 1-7
  * @param created 残念だったな、初期から実装してなかった所為で永遠にnullableだ、HAHAHA!
  */
 case class SlotItem(

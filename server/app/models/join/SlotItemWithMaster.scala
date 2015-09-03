@@ -12,6 +12,7 @@ case class SlotItemWithMaster(item: SlotItem, master: MasterSlotItem) {
   def name = master.name
   def category = master.category
   def iconType = master.iconType
+  def alv = item.alv
 
   def colorClass: String = {
     import tool.EquipIconType._
@@ -27,5 +28,10 @@ case class SlotItemWithMaster(item: SlotItem, master: MasterSlotItem) {
     }
   }.getOrElse("")
 
-  def nameWithLevel = master.name + item.withLevel
+  /** withLevelと言っているがついでに熟練度もオマケしちゃうぞ */
+  def nameWithLevel = master.name + item.withLevel + alvStr.getOrElse("")
+
+  def alvStr: Option[String] = alv.map { alv => s"(${alv})" }
+
+  def airSuperiority: Int = alv.map { alv => (alv - 1) * 25 / 6 }.getOrElse(0)
 }
