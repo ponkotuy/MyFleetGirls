@@ -144,6 +144,6 @@ object Damage {
   def fromHp(now: Int, max: Int): Option[Damage] =
     if(now <= max / 4) Some(Major)
     else if(now <= max / 2) Some(Half)
-    else if(now <= max / 4 * 3) Some(Minor)
+    else if(now <= max * 3 / 4) Some(Minor)
     else None
 }
