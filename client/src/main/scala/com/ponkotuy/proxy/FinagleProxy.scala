@@ -6,7 +6,7 @@ import com.ponkotuy.intercept.Intercepter
 import com.ponkotuy.config.ClientConfig
 import com.twitter.conversions.storage._
 import com.twitter.conversions.time._
-import com.twitter.finagle.builder.ClientBuilder
+import com.twitter.finagle.builder.{ClientBuilder, ServerBuilder}
 import com.twitter.finagle.{ChannelException, Http, Service, http}
 import com.twitter.util.{Await, Future}
 import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
@@ -40,7 +40,11 @@ class FinagleProxy(host: String, port: Int, inter: Intercepter) {
   }
 
   val server = try {
-    Http.serve(s"$host:$port", service)
+    ServerBuilder()
+      .codec(http.Http().compressionLevel(0))
+      .bindTo(new InetSocketAddress(host,port))
+      .name("MyfleetGirlsProxy")
+      .build(service)
   } catch {
     case e: ChannelException =>
       e.printStackTrace()
