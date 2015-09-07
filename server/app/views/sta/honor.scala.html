@@ -18,11 +18,11 @@
           </thead>
           <tbody>
             @honors.map { honor =>
-                <tr data-toggle="modal" data-target="#modal@honor.hashCode()">
-                  <td>@honor.name</td>
-                  <td>@{f"${honor.rate * 100}%3.1f"}%</td>
-                  <td>@honor.admirals.size</td>
-                </tr>
+              <tr data-toggle="modal" data-target="#modal@honor.hashCode()" class="clickable">
+                <td>@honor.name</td>
+                <td>@{f"${honor.rate * 100}%3.1f"}%</td>
+                <td>@honor.admirals.size</td>
+              </tr>
 
               <div class="modal fade" id="modal@honor.hashCode()" aria-hidden="true">
                 <div class="modal-dialog">
