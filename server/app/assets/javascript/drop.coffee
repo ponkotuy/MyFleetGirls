@@ -139,9 +139,8 @@ vueConf = (elem, id, cell) ->
     map_rank_otsu: -> @getJSON()
     map_rank_hei: -> @getJSON()
     drops: (drops) ->
-      if drops.length > 0
-        $("#panel#{cell}")[0].scrollIntoView(true)
-        @draw()
+      $("#panel#{cell}")[0].scrollIntoView(true)
+      @draw()
     period: -> @getJSON()
     from: ->
       if @period
