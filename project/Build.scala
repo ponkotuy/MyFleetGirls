@@ -6,7 +6,7 @@ import sbtassembly.Plugin.AssemblyKeys._
 
 object MyFleetGirlsBuild extends Build {
 
-  val ver = "1.4.7"
+  val ver = "1.4.8"
 
   val scalaVer = "2.11.7"
 
