@@ -13,7 +13,8 @@ class PeriodicalCache[K, V](interval: Duration, default: () => Map[K, V]) {
   private[this] var time = System.currentTimeMillis()
   val millis = interval.toMillis
 
-  private def check(): Unit = synchronized {
+  /* 本来はsynchronizedが必要なのだが、デッドロックするので外す。原因が分かったら戻したい */
+  private def check(): Unit = {
     val now = System.currentTimeMillis()
     if(time + millis < now) {
       cache = default()
