@@ -51,18 +51,16 @@ class FinagleProxy(host: String, port: Int, inter: Intercepter) {
   }
 
   private def client(host: String) = {
-    clients.getOrElseUpdate(host, buildClient())
-  }
-
-  private def buildClient(): Service[HttpRequest, HttpResponse] = {
-    val builder = ClientBuilder()
-        .codec(http.Http().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
-        .timeout(30.seconds)
-        .tcpConnectTimeout(30.seconds)
-        .hosts(host)
-        .hostConnectionLimit(4)
-    ClientConfig.upstreamProxyHost.foreach( host => builder.httpProxy(new InetSocketAddress(host.getHostName,host.getPort)))
-    builder.build()
+    clients.getOrElseUpdate(host, {
+      val builder = ClientBuilder()
+          .codec(http.Http().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
+          .timeout(30.seconds)
+          .tcpConnectTimeout(30.seconds)
+          .hosts(host)
+          .hostConnectionLimit(4)
+      ClientConfig.upstreamProxyHost.foreach(host => builder.httpProxy(new InetSocketAddress(host.getHostName, host.getPort)))
+      builder.build()
+    })
   }
 
   def start(): Unit = {
