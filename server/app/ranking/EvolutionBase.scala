@@ -27,10 +27,14 @@ object EvolutionBase {
   // 大鯨→龍鳳、U-511→呂500など名称変更が入る艦娘のid mapping
   val Aliases = Map(Taigei -> Ryuho, Hibiki -> Vernyj, U511 -> Ro500, Littorio -> Italia)
 
-  private[this] def createCache() =
+  // 艦これの仕様に循環で進化する艦娘が導入された。このとき、進化元は2つあることがある
+  // そこで一旦groupByでそのリストを生成し、小さいidを正しい、循環しない進化元であると仮定する
+  private[this] def createCache(): Map[Int, Int] =
     MasterShipAfter.findAll()
         .filterNot(_.aftershipid == 0)
-        .map { ship => ship.aftershipid -> ship.id }.toMap
+        .map { ship => ship.aftershipid -> ship.id }
+        .groupBy(_._1)
+        .mapValues { xs => xs.map(_._2).min }
 
   val Afters = new PeriodicalCache(60.minutes, createCache)
 }
