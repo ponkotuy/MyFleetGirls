@@ -7,7 +7,6 @@ import scala.collection.breakOut
 import scala.concurrent.duration._
 
 case class ShipHistory(
-  id: Long,
   shipId: Int,
   memberId: Long,
   lv: Short,
@@ -34,7 +33,7 @@ object ShipHistory extends SQLSyntaxSupport[ShipHistory] {
 
   override val tableName = "ship_history"
 
-  override val columns = Seq("id", "ship_id", "member_id", "lv", "exp", "created")
+  override val columns = Seq("ship_id", "member_id", "lv", "exp", "created")
 
   def apply(sh: SyntaxProvider[ShipHistory])(rs: WrappedResultSet): ShipHistory = autoConstruct(rs, sh)
   def apply(sh: ResultName[ShipHistory])(rs: WrappedResultSet): ShipHistory = autoConstruct(rs, sh)
@@ -44,9 +43,12 @@ object ShipHistory extends SQLSyntaxSupport[ShipHistory] {
 
   override val autoSession = AutoSession
 
-  def find(id: Long)(implicit session: DBSession = autoSession): Option[ShipHistory] = {
+  def find(memberId: Long, shipId: Int, created: Long)(implicit session: DBSession = autoSession): Option[ShipHistory] = {
     withSQL {
-      select.from(ShipHistory as sh).where.eq(sh.id, id)
+      select.from(ShipHistory as sh)
+          .where.eq(sh.memberId, memberId)
+            .and.eq(sh.shipId, shipId)
+            .and.eq(sh.created, created)
     }.map(ShipHistory(sh.resultName)).single().apply()
   }
 
@@ -92,34 +94,24 @@ object ShipHistory extends SQLSyntaxSupport[ShipHistory] {
   }
 
   def create(
-    shipId: Int,
-    memberId: Long,
-    lv: Short,
-    exp: Int,
-    created: Long)(implicit session: DBSession = autoSession): ShipHistory = {
-    val generatedKey = withSQL {
-      insert.into(ShipHistory).columns(
-        column.shipId,
-        column.memberId,
-        column.lv,
-        column.exp,
-        column.created
-      ).values(
-        shipId,
-        memberId,
-        lv,
-        exp,
-        created
-      )
-    }.updateAndReturnGeneratedKey().apply()
-
-    ShipHistory(
-      id = generatedKey,
-      shipId = shipId,
-      memberId = memberId,
-      lv = lv,
-      exp = exp,
-      created = created)
+      shipId: Int,
+      memberId: Long,
+      lv: Short,
+      exp: Int,
+      created: Long)(implicit session: DBSession = autoSession): Unit = applyUpdate {
+    insert.into(ShipHistory).columns(
+      column.shipId,
+      column.memberId,
+      column.lv,
+      column.exp,
+      column.created
+    ).values(
+      shipId,
+      memberId,
+      lv,
+      exp,
+      created
+    )
   }
 
   def bulkInsert(ships: Seq[data.Ship], memberId: Long)(implicit session: DBSession = autoSession): Unit = {
@@ -147,23 +139,26 @@ object ShipHistory extends SQLSyntaxSupport[ShipHistory] {
   }
 
   def save(entity: ShipHistory)(implicit session: DBSession = autoSession): ShipHistory = {
-    withSQL {
+    applyUpdate {
       update(ShipHistory).set(
-        column.id -> entity.id,
         column.shipId -> entity.shipId,
         column.memberId -> entity.memberId,
         column.lv -> entity.lv,
         column.exp -> entity.exp,
         column.created -> entity.created
-      ).where.eq(column.id, entity.id)
-    }.update().apply()
+      ).where.eq(column.memberId, entity.memberId)
+        .and.eq(column.shipId, entity.shipId)
+        .and.eq(column.created, entity.created)
+    }
     entity
   }
 
-  def destroy(entity: ShipHistory)(implicit session: DBSession = autoSession): Unit = {
-    withSQL {
-      delete.from(ShipHistory).where.eq(column.id, entity.id)
-    }.update().apply()
-  }
+  def destroy(entity: ShipHistory)(implicit session: DBSession = autoSession): Unit =
+    applyUpdate {
+      delete.from(ShipHistory)
+          .where.eq(column.memberId, entity.memberId)
+            .and.eq(column.shipId, entity.shipId)
+            .and.eq(column.created, entity.created)
+    }
 
 }
