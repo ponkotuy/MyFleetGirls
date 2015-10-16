@@ -122,10 +122,12 @@ object MyFleetGirlsBuild extends Build {
   }
 
   def downLib = Command.command("downLib") { state =>
-    import scala.sys.process._
-    "wget https://www.free-decompiler.com/flash/download/ffdec_5.3.0_lib.jar".!
-    "mv ffdec_5.3.0_lib.jar server/lib/".!
-    Thread.sleep(1000L)
+    IO.withTemporaryFile("ffdec-", ".tmp") { tmp =>
+      val dlUrl = url("https://www.free-decompiler.com/flash/download/ffdec_5.3.0_lib.jar")
+      state.log.info(s"downloading $dlUrl ...")
+      IO.download(dlUrl, tmp)
+      IO.move(tmp, file("server") / "lib" / "ffdec_5.3.0_lib.jar")
+    }
     state
   }
 }
