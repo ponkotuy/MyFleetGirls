@@ -52,15 +52,19 @@ trait ShipParameter extends GraphData {
 
   /** 制空値計算。大きく分けて艦載機性能とスロットに依る部分と、練度に依る部分に分かれる */
   lazy val airSuperiority: Int = {
-    val fromAlvs = for {
-      x <- slot
-      alv <- x.alv
-    } yield (alv - 1) * 25 / 6
-    slotMaster.zip(spec.maxeq)
-        .filter(_._1.category.exists(EquipType.CarrierBased.contains))
-        .map { case (fighter, slotCount) =>
-      Math.floor(fighter.antiair * math.sqrt(slotCount)).toInt
-    }.sum + fromAlvs.sum
+    import EquipType._
+    (slot, slotMaster, spec.maxeq).zipped.collect {
+      case (s, sm, slotCount) if sm.category.exists(CarrierBased.contains) =>
+        val fromAlv = for {
+          a <- s.alv
+          b <- sm.category.collect {
+            case Fighter => 25
+            case Bomber | TorpedoBomber => 3
+            case SeaBasedBomber => 9
+          }
+        } yield (a - 1) * b / 6
+        Math.floor(sm.antiair * math.sqrt(slotCount)).toInt + fromAlv.getOrElse(0)
+    }.sum
   }
 
   def slotNames: Seq[String] = slot.map(_.nameWithLevel)
