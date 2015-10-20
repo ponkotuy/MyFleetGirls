@@ -16,12 +16,15 @@ abstract class Book {
 object Book {
   implicit val formats = DefaultFormats
   def fromJson(json: JValue): List[Book] = {
-    val JArray(xs) = json \ "api_list"
-    checkType(xs.head.asInstanceOf[JObject]) match {
-      case BookType.Ship =>
-        xs.flatMap(parseShipBook)
-      case BookType.Item =>
-        xs.map(parseItemBook)
+    json \ "api_list" match {
+      case JArray(xs@(head: JObject) :: _) =>
+        checkType(head) match {
+          case BookType.Ship =>
+            xs.flatMap(parseShipBook)
+          case BookType.Item =>
+            xs.map(parseItemBook)
+        }
+      case _ => Nil
     }
   }
 
