@@ -16,11 +16,7 @@ import scala.util.Try
 object ClientConfig {
   lazy val config = {
     val file = new File("application.conf")
-    if(file.exists()) {
-      ConfigFactory.parseFile(file)
-    } else {
-      ConfigFactory.parseFile(new File("application.conf.sample"))
-    }
+    ConfigFactory.parseFile(file).withFallback(ConfigFactory.defaultReference())
   }
 
   lazy val post = config.getString("url.post")
