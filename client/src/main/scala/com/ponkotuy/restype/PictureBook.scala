@@ -16,14 +16,13 @@ case object PictureBook extends ResType {
   override def regexp: Regex = s"\\A$GetMember/picture_book\\z".r
 
   override def postables(q: Query): Seq[Result] = {
-    val books = Book.fromJson(q.obj)
-    if(books.isEmpty) Nil
-    else {
-      val result = books.head match {
-        case _: ShipBook => NormalPostable("/book/ship", write(books))
-        case _: ItemBook => NormalPostable("/book/item", write(books))
-      }
-      result :: Nil
+    Book.fromJson(q.obj) match {
+      case books@(_: ShipBook) :: _ =>
+        NormalPostable("/book/ship", write(books)) :: Nil
+      case books@(_: ItemBook) :: _ =>
+        NormalPostable("/book/item", write(books)) :: Nil
+      case _ =>
+        Nil
     }
   }
 }
