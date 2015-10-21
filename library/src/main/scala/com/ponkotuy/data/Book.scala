@@ -33,7 +33,7 @@ object Book {
     val JString(name) = json \ "api_name"
     val JArray(statess) = json \ "api_state"
     val indexNo = (json \ "api_index_no").extract[Int]
-    (0 until statess.size).flatMap { i =>
+    statess.indices.flatMap { i =>
       val states = statess(i)
       val JArray(st) = states
       val exist = st(0).extract[Int] != 0
