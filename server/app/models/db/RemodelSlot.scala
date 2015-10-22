@@ -8,19 +8,20 @@ import util.scalikejdbc.BulkInsert._
 import scala.util.Try
 
 case class RemodelSlot(
-  id: Int,
-  slotId: Int,
-  memberId: Long,
-  secondShip: Option[Int],
-  fuel: Int,
-  ammo: Int,
-  steel: Int,
-  bauxite: Int,
-  develop: Int,
-  revamping: Int,
-  reqSlotId: Int,
-  slotNum: Int,
-  created: Long) {
+    _id: Long,
+    id: Int,
+    slotId: Int,
+    memberId: Long,
+    secondShip: Option[Int],
+    fuel: Int,
+    ammo: Int,
+    steel: Int,
+    bauxite: Int,
+    develop: Int,
+    revamping: Int,
+    reqSlotId: Int,
+    slotNum: Int,
+    created: Long) {
 
   def save()(implicit session: DBSession = RemodelSlot.autoSession): RemodelSlot = RemodelSlot.save(this)(session)
 
@@ -33,7 +34,7 @@ object RemodelSlot extends SQLSyntaxSupport[RemodelSlot] {
 
   override val tableName = "remodel_slot"
 
-  override val columns = Seq("id", "slot_id", "member_id", "second_ship", "fuel", "ammo", "steel", "bauxite", "develop", "revamping", "req_slot_id", "slot_num", "created")
+  override val columns = Seq("_id", "id", "slot_id", "member_id", "second_ship", "fuel", "ammo", "steel", "bauxite", "develop", "revamping", "req_slot_id", "slot_num", "created")
 
   def apply(r: SyntaxProvider[RemodelSlot])(rs: WrappedResultSet): RemodelSlot = apply(r.resultName)(rs)
   def apply(r: ResultName[RemodelSlot])(rs: WrappedResultSet): RemodelSlot = autoConstruct(rs, r)
@@ -195,7 +196,7 @@ object RemodelSlot extends SQLSyntaxSupport[RemodelSlot] {
 
   def destroy(entity: RemodelSlot)(implicit session: DBSession = autoSession): Unit = {
     withSQL {
-      delete.from(RemodelSlot).where.eq(column.id, entity.id).and.eq(column.slotId, entity.slotId).and.eq(column.memberId, entity.memberId).and.eq(column.fuel, entity.fuel).and.eq(column.ammo, entity.ammo).and.eq(column.steel, entity.steel).and.eq(column.bauxite, entity.bauxite).and.eq(column.develop, entity.develop).and.eq(column.revamping, entity.revamping).and.eq(column.reqSlotId, entity.reqSlotId).and.eq(column.slotNum, entity.slotNum).and.eq(column.created, entity.created)
+      delete.from(RemodelSlot).where.eq(column._id, entity._id)
     }.update().apply()
   }
 
