@@ -46,7 +46,7 @@ object MFGHttp extends Log {
       .setUserAgent(userAgent)
       .setDefaultRequestConfig(config)
       .setSSLSocketFactory(new SSLConnectionSocketFactory(sslContext))
-      .setSslcontext(sslContext)
+      .setSSLContext(sslContext)
       .setConnectionTimeToLive(5 * 60 , TimeUnit.SECONDS)
       .setMaxConnPerRoute(1)
       .setRetryHandler(new RetryWithWait(10, 10000L))

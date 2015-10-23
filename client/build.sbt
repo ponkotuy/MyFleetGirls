@@ -10,11 +10,10 @@ scalaVersion := "2.11.7"
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.3.0",
   "com.twitter" %% "finagle-http" % "6.30.0",
-  "com.netaporter" %% "scala-uri" % "0.4.7",
-  "org.json4s" %% "json4s-native" % "3.2.11",
-  "org.apache.httpcomponents" % "httpclient" % "4.5",
-  "org.apache.httpcomponents" % "httpmime" % "4.5",
-  "com.typesafe.akka" %% "akka-actor" % "2.3.11",
+  "com.netaporter" %% "scala-uri" % "0.4.10",
+  "org.apache.httpcomponents" % "httpclient" % "4.5.1",
+  "org.apache.httpcomponents" % "httpmime" % "4.5.1",
+  "com.typesafe.akka" %% "akka-actor" % "2.4.0",
   "org.scalatest" %% "scalatest" % "2.2.5" % "test"
 )
 
