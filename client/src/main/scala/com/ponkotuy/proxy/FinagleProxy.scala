@@ -52,14 +52,12 @@ class FinagleProxy(host: String, port: Int, inter: Intercepter) {
 
   private def client(host: String) = {
     clients.getOrElseUpdate(host, {
-      val builder = ClientBuilder()
+      ClientBuilder()
           .codec(http.Http().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
           .timeout(30.seconds)
           .tcpConnectTimeout(30.seconds)
           .hosts(host)
-          .hostConnectionLimit(4)
-      ClientConfig.upstreamProxyHost.foreach(host => builder.httpProxy(new InetSocketAddress(host.getHostName, host.getPort)))
-      builder.build()
+          .hostConnectionLimit(4).build()
     })
   }
 
