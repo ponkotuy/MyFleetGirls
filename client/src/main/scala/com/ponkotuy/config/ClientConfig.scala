@@ -1,6 +1,9 @@
 package com.ponkotuy.config
 
-import java.io.File
+import java.io.{BufferedReader, File, InputStreamReader}
+import java.nio.charset.{Charset, StandardCharsets}
+import java.nio.file.{Files, Path}
+import java.util.stream.Collectors
 
 import com.ponkotuy.data.MyFleetAuth
 import com.typesafe.config.ConfigFactory
@@ -16,7 +19,19 @@ import scala.util.Try
 object ClientConfig {
   lazy val config = {
     val file = new File("application.conf")
+    if (!file.exists()) {
+      createDefaultAppConfig(file.toPath)
+    }
     ConfigFactory.parseFile(file).withFallback(ConfigFactory.defaultReference())
+  }
+
+  private def createDefaultAppConfig(path: Path): Unit = {
+    val default = getClass.getResourceAsStream("/reference.conf")
+    val reader = new BufferedReader(new InputStreamReader(default, StandardCharsets.UTF_8))
+    try
+      Files.write(path, reader.lines().collect(Collectors.toList()), Charset.defaultCharset())
+    finally
+      reader.close()
   }
 
   lazy val post = config.getString("url.post")
