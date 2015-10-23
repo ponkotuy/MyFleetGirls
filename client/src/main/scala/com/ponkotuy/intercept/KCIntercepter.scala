@@ -1,12 +1,12 @@
 package com.ponkotuy.intercept
 
-import akka.actor.{Props, ActorSystem}
+import akka.actor.{ActorSystem, Props}
 import com.netaporter.uri.Uri
 import com.ponkotuy.http.ControllerActor
 import com.ponkotuy.parser.Query
 import com.ponkotuy.util.Log
 import com.ponkotuy.value.KCServer
-import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
+import com.twitter.finagle.http.{Request, Response}
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
@@ -20,7 +20,7 @@ class KCIntercepter extends Intercepter with Log {
   val system = ActorSystem()
   val controller = system.actorOf(Props[ControllerActor], "controller")
 
-  override def input(req: HttpRequest, res: HttpResponse, uri: Uri): Unit = {
+  override def input(req: Request, res: Response, uri: Uri): Unit = {
     Future {
       if(!valid(req)) return
       try {
@@ -32,8 +32,8 @@ class KCIntercepter extends Intercepter with Log {
     }
   }
 
-  private def valid(req: HttpRequest): Boolean = {
-    val uri = Uri.parse(req.getUri)
+  private def valid(req: Request): Boolean = {
+    val uri = Uri.parse(req.uri)
     uri.host.map(KCServer.ips.contains).getOrElse(true)
   }
 }
