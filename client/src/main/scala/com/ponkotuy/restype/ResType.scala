@@ -9,8 +9,6 @@ import scala.util.matching.Regex
 
 /**
  *
- * 2014-04-23にAPI変更で知れず廃止されたAPIもあるものと思われる
- *
  * @author ponkotuy
  * Date: 14/02/19.
  */

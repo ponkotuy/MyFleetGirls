@@ -180,7 +180,11 @@ object Post extends Controller {
   }
 
   private def insertRanking(auth: db.Admiral, rank: Ranking)(implicit session: DBSession = AutoSession) = {
-    db.Ranking.create(auth.id, rank.no, rank.rate, System.currentTimeMillis())
-    Res.success
+    if(rank.memberId == auth.id) {
+      db.Ranking.create(auth.id, rank.no, rank.rate, System.currentTimeMillis())
+      Res.success
+    } else {
+      BadRequest("member_id mismatch")
+    }
   }
 }

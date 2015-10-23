@@ -76,7 +76,7 @@ object Basic {
         deckCount = api_count_deck,
         kdockCount = api_count_kdock,
         ndockCount = api_count_ndock,
-        largeDock = api_large_dock.forall(_ != 0))
+        largeDock = !api_large_dock.contains(0))
     }
   }
 }

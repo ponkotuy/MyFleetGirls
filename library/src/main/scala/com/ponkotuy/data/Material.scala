@@ -29,7 +29,7 @@ case class Material(fuel: Int, ammo: Int, steel: Int, bauxite: Int,
 
 object Material {
   def fromJson(obj: JValue): Material = {
-    implicit def jint2int(jint: JValue) = jint.asInstanceOf[JInt].values.toInt
+    implicit def jint2int(jint: JValue): Int = jint.asInstanceOf[JInt].values.toInt
     val JArray(xs) = obj \ "api_value"
     Material(xs(0), xs(1), xs(2), xs(3), xs(4), xs(5), xs(6), xs(7))
   }
