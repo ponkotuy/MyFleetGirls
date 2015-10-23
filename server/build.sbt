@@ -5,9 +5,6 @@ scalaVersion := "2.11.7"
 
 val scalikeJdbcVer = "2.2.9"
 
-resolvers +=
-"Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
-
 libraryDependencies ++= Seq(
   "org.scalikejdbc" %% "scalikejdbc" % scalikeJdbcVer,
   "org.scalikejdbc" %% "scalikejdbc-config" % scalikeJdbcVer,
@@ -26,10 +23,6 @@ pipelineStages := Seq(gzip)
 includeFilter in (Assets, LessKeys.less) := "*.less"
 
 LessKeys.compress := true
-
-buildInfoSettings
-
-sourceGenerators in Compile <+= buildInfo
 
 buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
 

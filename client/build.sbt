@@ -1,4 +1,3 @@
-import AssemblyKeys._
 import com.typesafe.sbt.license.{LicenseInfo, DepModuleInfo}
 
 // put this at the top of the file
@@ -19,13 +18,7 @@ libraryDependencies ++= Seq(
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions")
 
-assemblySettings
-
 mainClass in assembly := Some("com.ponkotuy.run.Main")
-
-buildInfoSettings
-
-sourceGenerators in Compile <+= buildInfo
 
 buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
 
