@@ -10,7 +10,6 @@ import com.twitter.conversions.time._
 import com.twitter.finagle.builder.{ClientBuilder, ServerBuilder}
 import com.twitter.finagle.{ChannelException, Service, http}
 import com.twitter.util.{Await, Future}
-import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse}
 
 import scala.collection.mutable
 
@@ -20,16 +19,16 @@ import scala.collection.mutable
   * @param inter: com.ponkotuy.intercept.Intercepter
   */
 class FinagleProxy(host: String, port: Int, inter: Intercepter) {
-  val clients: mutable.Map[String, Service[HttpRequest, HttpResponse]] = mutable.Map()
+  val clients: mutable.Map[String, Service[http.Request, http.Response]] = mutable.Map()
   val httpProxy = ClientConfig.upstreamProxyHost
 
-  val service = new Service[HttpRequest, HttpResponse] {
-    def apply(req: HttpRequest): Future[HttpResponse] = {
-      val uri = Uri.parse(req.getUri)
+  val service = new Service[http.Request, http.Response] {
+    def apply(req: http.Request): Future[http.Response] = {
+      val uri = Uri.parse(req.uri)
       val res = httpProxy match {
         case Some(httpHost) => client(httpHost.toHostString).apply(req)
         case None =>
-          req.setUri(uri.path + uri.queryString)
+          req.uri = uri.path + uri.queryString
           client(uri.host.get+ ":80").apply(req)
       }
       res.foreach(rs => inter.input(req, rs, uri))
@@ -39,7 +38,7 @@ class FinagleProxy(host: String, port: Int, inter: Intercepter) {
 
   val server = try {
     ServerBuilder()
-      .codec(http.Http().compressionLevel(0))
+      .codec(http.Http.get().compressionLevel(0))
       .bindTo(new InetSocketAddress(host,port))
       .name("MyfleetGirlsProxy")
       .build(service)
@@ -53,7 +52,7 @@ class FinagleProxy(host: String, port: Int, inter: Intercepter) {
   private def client(host: String) = {
     clients.getOrElseUpdate(host, {
       ClientBuilder()
-          .codec(http.Http().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
+          .codec(http.Http.get().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
           .timeout(30.seconds)
           .tcpConnectTimeout(30.seconds)
           .hosts(host)

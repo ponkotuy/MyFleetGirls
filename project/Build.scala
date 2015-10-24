@@ -2,7 +2,8 @@ import com.typesafe.sbt.web.SbtWeb
 import sbt.Keys._
 import sbt._
 import play._
-import sbtassembly.Plugin.AssemblyKeys._
+import sbtassembly.AssemblyPlugin.autoImport._
+import sbtbuildinfo.BuildInfoPlugin
 
 object MyFleetGirlsBuild extends Build {
 
@@ -11,39 +12,40 @@ object MyFleetGirlsBuild extends Build {
   val scalaVer = "2.11.7"
 
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
-    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
+    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)
     .aggregate(server, client, library)
 
   lazy val rootSettings = settings ++ Seq(
     commands ++= Seq(proxy, assembl, run, stage, start, dist, genMapper, prof, runTester, runTester2, downLib)
   )
 
-  lazy val server = Project(id = "server", base = file("server"))
-    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
+  lazy val server = project
+    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)
     .dependsOn(library)
     .enablePlugins(sbt.PlayScala).settings(
       scalaVersion := scalaVer
     )
-    .enablePlugins(SbtWeb)
+    .enablePlugins(SbtWeb, BuildInfoPlugin)
 
-  lazy val client = Project(id = "client", base = file("client"))
-    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
+  lazy val client = project
+    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)
     .settings(scalaVersion := scalaVer)
     .dependsOn(library)
+    .enablePlugins(BuildInfoPlugin)
 
-  lazy val library = Project(id = "library", base = file("library"))
-    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
+  lazy val library = project
+    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)
     .settings(scalaVersion := scalaVer)
 
-  lazy val update = Project(id = "update", base = file("update"))
-    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
-    .settings(jarName in assembly := "update.jar")
+  lazy val update = project
+    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)
+    .settings(assemblyJarName in assembly := "update.jar")
 
-  lazy val profiler = Project(id = "profiler", base = file("profiler"))
-    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
+  lazy val profiler = project
+    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)
     .dependsOn(server)
 
-  lazy val tester = Project(id = "tester", base = file("tester"))
+  lazy val tester = project
 
   override lazy val settings = super.settings ++ Seq(
     version := ver,
@@ -52,7 +54,7 @@ object MyFleetGirlsBuild extends Build {
     javacOptions ++= Seq("-encoding", "UTF-8"),
     updateOptions := updateOptions.value.withCircularDependencyLevel(CircularDependencyLevel.Error),
     updateOptions := updateOptions.value.withCachedResolution(true),
-    jarName in assembly := "MyFleetGirls.jar",
+    assemblyJarName in assembly := "MyFleetGirls.jar",
     incOptions := incOptions.value.withNameHashing(true),
     licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.html")),
     homepage := Some(url("https://myfleet.moe")),
