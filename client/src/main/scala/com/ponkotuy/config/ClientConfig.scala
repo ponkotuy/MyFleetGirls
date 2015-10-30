@@ -6,7 +6,7 @@ import java.nio.file.{Files, Path}
 import java.util.stream.Collectors
 
 import com.ponkotuy.data.MyFleetAuth
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{Config, ConfigFactory, ConfigParseOptions}
 import org.apache.http.HttpHost
 
 import scala.util.Try
@@ -22,11 +22,16 @@ object ClientConfig {
     if (!file.exists()) {
       createDefaultAppConfig(file.toPath)
     }
-    ConfigFactory.parseFile(file).withFallback(ConfigFactory.defaultReference())
+    ConfigFactory.parseFile(file).withFallback(defaultConfig)
   }
 
+  private val defaultResource = "myfleetgirls-default.conf"
+
+  private def defaultConfig: Config =
+    ConfigFactory.parseResources(defaultResource, ConfigParseOptions.defaults().setAllowMissing(false))
+
   private def createDefaultAppConfig(path: Path): Unit = {
-    val default = getClass.getResourceAsStream("/reference.conf")
+    val default = getClass.getResourceAsStream(s"/$defaultResource")
     val reader = new BufferedReader(new InputStreamReader(default, StandardCharsets.UTF_8))
     try
       Files.write(path, reader.lines().collect(Collectors.toList()), Charset.defaultCharset())
