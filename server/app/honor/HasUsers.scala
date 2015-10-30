@@ -9,5 +9,5 @@ object HasUsers extends HonorCategory {
 
   override def comment: String = "提督人数突破記念"
 
-  override def approved(memberId: Long, db: HonorCache): List[String] = List("提督500人突破")
+  override def approved(memberId: Long, db: HonorCache): List[String] = List("提督500人突破", "提督1000人突破")
 }
