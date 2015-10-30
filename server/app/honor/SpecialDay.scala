@@ -22,6 +22,7 @@ object SpecialDay extends HonorCategory {
     MonthDay(4, 1) -> "エイプリルフール",
     MonthDay(7, 7) -> "七夕",
     MonthDay(8, 15) -> "終戦記念日",
+    MonthDay(10, 31) -> "ハロウィン",
     MonthDay(12, 25) -> "クリスマス"
   )
 
