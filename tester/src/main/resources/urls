@@ -1,4 +1,5 @@
 /
+/rest/v1/search_user?q=
 /rest/v1/search_user?q=ぽんこつ
 /rest/v1/search_base_user?base=10&q=ぽん
 /rest/v1/search_master?q=利根
