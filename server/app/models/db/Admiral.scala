@@ -2,6 +2,9 @@ package models.db
 
 import scalikejdbc._
 import com.ponkotuy.data
+import util.{PeriodicalValue, PeriodicalCache}
+import scala.concurrent.duration._
+import scala.util.Random
 
 /**
  *
@@ -22,6 +25,8 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
   val x = SubQuery.syntax("x", b.resultName)
   val us = UserSettings.syntax("us")
 
+  val Admirals = new PeriodicalValue[List[Long]](3.hours, () => findAllIds()(autoSession))
+
   def find(id: Long)(implicit session: DBSession = Admiral.autoSession): Option[Admiral] = {
     withSQL {
       select.from(Admiral as a).where.eq(a.id, id)
@@ -41,28 +46,34 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
       .limit(limit).offset(offset)
   }.map(Admiral(a)).list().apply()
 
+  def findAllIds(where: SQLSyntax = sqls"true")(implicit session: DBSession = autoSession): List[Long] = withSQL {
+    select(a.id).from(Admiral as a).where(where)
+  }.map(_.long(1)).list().apply()
+
   def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[Admiral] =
     withSQL {
       select.from(Admiral as a).where(where)
     }.map(Admiral(a)).list().apply()
 
-  def findNewestWithLv(limit: Int = Int.MaxValue, offset: Int = 0)(implicit session: DBSession = Admiral.autoSession): List[AdmiralWithLv] = withSQL {
-    select.from(Admiral as a)
-      .innerJoin(Basic as b).on(a.id, b.memberId)
-      .where(newestBasic)
-      .orderBy(a.created).desc
-      .limit(limit).offset(offset)
-  }.map(AdmiralWithLv(a, b)).list().apply()
+  def findNewestWithLv(limit: Int = Int.MaxValue, offset: Int = 0)(implicit session: DBSession = Admiral.autoSession): List[AdmiralWithLv] =
+    findAllByWithLv(limit = limit, offset = offset, orders = List(a.created.desc))
 
   def findAllByLike(q: String, limit: Int = Int.MaxValue, offset: Int = 0)(
-      implicit session:DBSession = Admiral.autoSession): List[AdmiralWithLv] = withSQL {
-    select.from(Admiral as a)
-      .innerJoin(Basic as b).on(a.id, b.memberId)
-      .where.like(a.nickname, q)
-        .and.append(newestBasic)
-      .orderBy(b.experience).desc
-      .limit(limit).offset(offset)
-  }.map(AdmiralWithLv(a, b)).list().apply()
+      implicit session:DBSession = Admiral.autoSession): List[AdmiralWithLv] =
+    findAllByWithLv(sqls.like(a.nickname, q), orders = List(b.experience.desc), limit = limit, offset = offset)
+
+  def findAllByWithLv(
+      where: SQLSyntax = sqls"true",
+      orders: Seq[SQLSyntax] = Nil,
+      limit: Int = Int.MaxValue,
+      offset: Int = 0)(implicit session: DBSession = autoSession): List[AdmiralWithLv] =
+    withSQL {
+      select.from(Admiral as a)
+          .innerJoin(Basic as b).on(a.id, b.memberId)
+          .where(where).and.append(newestBasic)
+          .orderBy(orders:_*)
+          .limit(limit).offset(offset)
+    }.map(AdmiralWithLv(a, b)).list().apply()
 
   def findAllByServer(serverId: Int, where: SQLSyntax = sqls"true", limit: Int = Int.MaxValue, offset: Int = 0)(
       implicit session: DBSession = autoSession): List[AdmiralWithLv] =
@@ -77,24 +88,20 @@ object Admiral extends SQLSyntaxSupport[Admiral] {
     }.map(AdmiralWithLv(a, b)).list().apply()
 
   def findAllLvTop(limit: Int = Int.MaxValue, offset: Int = 0)(
-      implicit session: DBSession = Admiral.autoSession): List[AdmiralWithLv] = withSQL {
-    select.from(Admiral as a)
-      .innerJoin(Basic as b).on(a.id, b.memberId)
-      .where(newestBasic)
-      .orderBy(b.experience).desc
-      .limit(limit).offset(offset)
-  }.map(AdmiralWithLv(a, b)).list().apply()
+      implicit session: DBSession = Admiral.autoSession): List[AdmiralWithLv] =
+    findAllByWithLv(orders = List(b.experience.desc), limit = limit, offset = offset)
 
   def findAllIn(ids: Seq[Long])(implicit session: DBSession = autoSession): List[Admiral] = withSQL {
     select.from(Admiral as a).where.in(a.id, ids)
   }.map(Admiral(a)(_)).list().apply()
 
-  def findAllInWithLv(ids: Seq[Long])(implicit session: DBSession = autoSession): List[AdmiralWithLv] = withSQL {
-    select.from(Admiral as a)
-      .innerJoin(Basic as b).on(a.id, b.memberId)
-      .where(newestBasic)
-      .and.in(a.id, ids)
-  }.map(AdmiralWithLv(a, b)).list().apply()
+  def findAllInWithLv(ids: Seq[Long])(implicit session: DBSession = autoSession): List[AdmiralWithLv] =
+    findAllByWithLv(sqls.in(a.id, ids))
+
+  def findAllRandomWithLv(limit: Int = 20)(implicit session: DBSession = autoSession): List[AdmiralWithLv] = {
+    val ids = Random.shuffle(Admirals()).take(limit)
+    findAllInWithLv(ids)
+  }
 
   def countAll()(implicit session: DBSession = autoSession): Long = withSQL {
     select(sqls"count(1)").from(Admiral as a)

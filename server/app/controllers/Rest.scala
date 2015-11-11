@@ -22,7 +22,14 @@ import scala.collection.{mutable, breakOut}
 object Rest extends Controller {
   import controllers.Common._
 
-  def searchUser(q: String) = returnJson(db.Admiral.findAllByLike(s"%$q%", limit = 20))
+  def searchUser(q: String) = {
+    if(q.isEmpty) {
+      val b = db.Admiral.b
+      returnJson(db.Admiral.findAllRandomWithLv(limit = 20))
+    } else {
+      returnJson(db.Admiral.findAllByLike(s"%$q%", limit = 20))
+    }
+  }
 
   def searchBaseUser(serverId: Int) = returnJson(db.Admiral.findAllByServer(serverId, limit = 20))
 
