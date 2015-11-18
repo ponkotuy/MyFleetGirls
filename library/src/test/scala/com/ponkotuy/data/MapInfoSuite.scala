@@ -40,7 +40,7 @@ class MapInfoSuite extends FunSuite {
       MapInfo(54, true, false, None, None),
       MapInfo(55, false, true, Some(0), None),
       MapInfo(61, false, false, None, None),
-      MapInfo(311, false, false, None, Some(EventMap(Some(Hp(9999, 9999)), 1, None)))
+      MapInfo(311, false, false, None, Some(EventMap(Some(Hp(9999, 9999)), 1, Some(0))))
     )
     assert(mapInfo === expected)
   }

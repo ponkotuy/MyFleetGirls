@@ -182,12 +182,15 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
 sealed abstract class MapRank(val v: Int, val str: String)
 
 object MapRank {
+  object NoChoice extends MapRank(0, "")
   object Hei extends MapRank(1, "hei")
   object Otsu extends MapRank(2, "otsu")
   object Ko extends MapRank(3, "ko")
 
-  val values = Vector(Hei, Otsu, Ko)
+  val values = Vector(NoChoice, Hei, Otsu, Ko)
+  val enables = Vector(Hei, Otsu, Ko)
+
   def fromInt(v: Int): Option[MapRank] = values.find(_.v == v)
   def fromString(str: String): Set[MapRank] =
-    values.filter { rank => str.contains(rank.str) }.toSet
+    enables.filter { rank => str.contains(rank.str) }.toSet
 }
