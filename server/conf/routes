@@ -20,6 +20,7 @@ POST          /post/v1/deckport                                             cont
 POST          /post/v1/book/ship                                            controllers.Post.shipBook
 POST          /post/v1/book/item                                            controllers.Post.itemBook
 POST          /post/v1/mapinfo                                              controllers.Post.mapInfo
+POST          /post/v2/event_map_rank                                       controllers.Post.eventMapRank
 POST          /post/v1/slotitem                                             controllers.Post.slotItem
 POST          /post/v1/battle_result                                        controllers.Post.battleResult
 POST          /post/v1/map_start                                            controllers.Post.mapStart

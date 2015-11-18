@@ -1,6 +1,5 @@
 package models.db
 
-import com.ponkotuy.data.MapRank
 import models.join._
 
 import scala.util.Try

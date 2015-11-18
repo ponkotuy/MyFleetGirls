@@ -55,6 +55,7 @@ object ResType extends Log {
     GetShip,
     CreateItem,
     MapInfo,
+    SelectEventmapRank,
     QuestList,
     RemodelSlot,
     RemodelSlotlist,

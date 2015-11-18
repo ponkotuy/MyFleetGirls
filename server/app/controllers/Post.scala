@@ -121,6 +121,10 @@ object Post extends Controller {
     Res.success
   }
 
+  def eventMapRank = authAndParse[EventMapRank] { case (auth, rank) =>
+    if(db.MapInfo.updateRank(rank, auth.id)) Res.success else NotFound(s"Not found map_info.")
+  }
+
   def slotItem = authAndParse[List[SlotItem]] { case (auth, items) =>
     db.SlotItem.deleteAllByUser(auth.id)
     db.SlotItem.bulkInsert(items, auth.id)

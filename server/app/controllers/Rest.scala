@@ -1,9 +1,9 @@
 package controllers
 
 import com.github.nscala_time.time.Imports._
-import com.ponkotuy.data.MapRank
 import com.ponkotuy.tool.Checksum
 import models.db
+import models.db.MapRank
 import models.join.{MasterRemodelJson, ItemMat, ShipDrop, ShipWithFav}
 import models.query.Period
 import models.response.DropRate

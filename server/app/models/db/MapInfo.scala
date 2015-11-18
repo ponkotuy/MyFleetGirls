@@ -1,6 +1,6 @@
 package models.db
 
-import com.ponkotuy.data.{Hp, MapRank}
+import com.ponkotuy.data.{EventMapRank, Hp}
 import models.join.Stage
 import scalikejdbc._
 import com.ponkotuy.data
@@ -138,8 +138,16 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
             hps.map(_.map(_.now)),
             hps.map(_.map(_.max)),
             es.map(_.map(_.state)),
-            es.map(_.flatMap(_.rank).map(_.v)))
+            es.map(_.flatMap(_.rank)))
     }
+  }
+
+  def updateRank(rank: EventMapRank, memberId: Long)(implicit session: DBSession = autoSession): Boolean = {
+    applyUpdate {
+      update(MapInfo)
+          .set(column.rank -> rank.rank)
+          .where.eq(column.memberId, memberId).and.eq(column.id, rank.mapAreaId * 10 + rank.mapNo)
+    } > 0
   }
 
   def save(entity: MapInfo)(implicit session: DBSession = autoSession): MapInfo = {
@@ -169,4 +177,17 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
     delete.from(MapInfo).where.eq(MapInfo.column.memberId, memberId)
   }
 
+}
+
+sealed abstract class MapRank(val v: Int, val str: String)
+
+object MapRank {
+  object Hei extends MapRank(1, "hei")
+  object Otsu extends MapRank(2, "otsu")
+  object Ko extends MapRank(3, "ko")
+
+  val values = Vector(Hei, Otsu, Ko)
+  def fromInt(v: Int): Option[MapRank] = values.find(_.v == v)
+  def fromString(str: String): Set[MapRank] =
+    values.filter { rank => str.contains(rank.str) }.toSet
 }
