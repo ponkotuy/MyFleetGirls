@@ -8,6 +8,7 @@ import com.ponkotuy.intercept.Intercepter
 import com.twitter.conversions.storage._
 import com.twitter.conversions.time._
 import com.twitter.finagle.builder.{ClientBuilder, ServerBuilder}
+import com.twitter.finagle.service.RetryPolicy
 import com.twitter.finagle.{ChannelException, Service, http}
 import com.twitter.util.{Await, Future}
 
@@ -53,10 +54,11 @@ class FinagleProxy(host: String, port: Int, inter: Intercepter) {
     clients.getOrElseUpdate(host, {
       ClientBuilder()
           .codec(http.Http.get().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
-          .timeout(30.seconds)
+          .retryPolicy(RetryPolicy.tries(10))
           .tcpConnectTimeout(30.seconds)
           .hosts(host)
-          .hostConnectionLimit(4).build()
+          .hostConnectionLimit(4)
+          .build()
     })
   }
 
