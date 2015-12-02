@@ -50,14 +50,13 @@ class FinagleProxy(host: String, port: Int, inter: Intercepter) {
   }
 
   private def client(host: String) = {
-    clients.getOrElseUpdate(host, {
-      ClientBuilder()
-          .codec(http.Http.get().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
-          .tcpConnectTimeout(30.seconds)
-          .hosts(host)
-          .hostConnectionLimit(4)
-          .build()
-    })
+    clients.getOrElseUpdate(host, ClientBuilder()
+        .codec(http.Http.get().maxRequestSize(128.megabytes).maxResponseSize(128.megabytes))
+        .tcpConnectTimeout(30.seconds)
+        .hosts(host)
+        .hostConnectionLimit(4)
+        .build()
+    )
   }
 
   def start(): Unit = {
