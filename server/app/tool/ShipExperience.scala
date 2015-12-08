@@ -32,7 +32,8 @@ object ShipExperience {
     else if(lv <= 131) 35000 + (lv - 121)*4000
     else if(lv <= 140) 75000 + (lv - 131)*5000
     else if(lv <= 145) 120000 + (lv - 140)*7000
-    else 155000 + (lv - 145)*8000
+    else if(lv <= 150) 155000 + (lv - 145)*8000
+    else 195000 + (lv - 150)*9000
   }
 
   val _sum: Stream[(Int, Int)] = (1, 0) #:: _sum.map { case (lv, exp) => (lv + 1, exp + diff(lv + 1)) }

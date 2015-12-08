@@ -27,4 +27,8 @@ class ShipExperienceSuite extends FunSuite {
     assert(ShipExperience.diff(150) === 195000)
     assert(ShipExperience.sum(150) === 4360000)
   }
+  test("Lv152 Experience") {
+    assert(ShipExperience.diff(152) === 213000)
+    assert(ShipExperience.sum(152) === 4777000)
+  }
 }
