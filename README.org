@@ -7,7 +7,7 @@
 #+LANGUAGE: ja
 
 * MyFleetGirls
-  [[file:https://travis-ci.org/ponkotuy/MyFleetGirls.svg]]
+  [[https://travis-ci.org/ponkotuy/MyFleetGirls][file:https://travis-ci.org/ponkotuy/MyFleetGirls.svg?branch=master]]
 
   艦これのデータをProxy経由で取得し、サーバに送って、
 
