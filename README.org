@@ -7,7 +7,7 @@
 #+LANGUAGE: ja
 
 * MyFleetGirls
-  [[file:https://travis-ci.org/ponkotuy/MyFleetGirls.svg]]
+  [[https://travis-ci.org/ponkotuy/MyFleetGirls][file:https://travis-ci.org/ponkotuy/MyFleetGirls.svg?branch=master]]
 
   艦これのデータをProxy経由で取得し、サーバに送って、
 
@@ -59,7 +59,7 @@ $ sbt proxy
    以下サブプロジェクト一覧です。
 
    - server :: 提督から艦これデータを受け取り、表示する部分を担当するサブプロジェクトです。Scala2.11 + Playframeworkに加えて、DBアクセスでScalikeJDBCを使っています。Serializeはjson4sで行います。DBはMariaDBです。（MySQLなら動くかも）
-   - client :: 艦これの通信を傍受し、serverに送信するまでを担当するサブプロジェクトです。FinagleがProxy機能を持ち、json4sでserializeしたデータをserverに送信します。現状Finagleの都合でScala2.10です。
+   - client :: 艦これの通信を傍受し、serverに送信するまでを担当するサブプロジェクトです。FinagleがProxy機能を持ち、json4sでserializeしたデータをserverに送信します。
    - library :: serverとclient両方で使う共通コード置き場です。主にclient-server間の通信で使うmodel類が入ってます。
    - update :: clientのダウンローダです。初回ダウンロードと自動アップデートでclientを落としてくるときに使います。容量を節約する為にJavaです。実質Java製wgetです。
    - profiler :: プロファイラです。あんまメンテされてないので動くか分かりません。
