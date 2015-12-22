@@ -33,7 +33,7 @@ object CellInfo extends SQLSyntaxSupport[CellInfo] {
   def apply(ci: SyntaxProvider[CellInfo])(rs: WrappedResultSet): CellInfo = apply(ci.resultName)(rs)
   def apply(ci: ResultName[CellInfo])(rs: WrappedResultSet): CellInfo = autoConstruct(rs, ci)
 
-  lazy val ci = CellInfo.syntax("ci")
+  val ci = CellInfo.syntax("ci")
 
   override val autoSession = AutoSession
 

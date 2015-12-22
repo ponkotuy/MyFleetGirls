@@ -25,7 +25,9 @@ case class Basic(
     stWin: Int, stLose: Int, msCount: Int, msSuccess: Int, ptWin: Int, ptLose: Int, medals: Int,
     created: Long,
     comment: String, deckCount: Int, kdockCount: Int, ndockCount: Int, largeDock: Boolean) {
-  def save()(implicit session: DBSession = Basic.autoSession): Basic = Basic.save(this)
+  import Basic._
+
+  def save()(implicit session: DBSession = autoSession): Basic = Basic.save(this)
 
   /**
    * 新規挿入の判断等に使う差分情報
@@ -51,7 +53,7 @@ case class Basic(
     ).max
   }
 
-  def destroy()(implicit session: DBSession = Basic.autoSession): Unit = Basic.destroy(id)
+  def destroy()(implicit session: DBSession = autoSession): Unit = Basic.destroy(id)
 }
 
 object Basic extends SQLSyntaxSupport[Basic] {
@@ -60,7 +62,7 @@ object Basic extends SQLSyntaxSupport[Basic] {
   def apply(b: SyntaxProvider[Basic])(rs: WrappedResultSet): Basic = apply(b.resultName)(rs)
   def apply(b: ResultName[Basic])(rs: WrappedResultSet): Basic = autoConstruct(rs, b)
 
-  def save(b: Basic)(implicit session: DBSession = Basic.autoSession): Basic = {
+  def save(b: Basic)(implicit session: DBSession = autoSession): Basic = {
     withSQL {
       update(Basic).set(
         column.memberId -> b.memberId,
@@ -78,7 +80,7 @@ object Basic extends SQLSyntaxSupport[Basic] {
     b
   }
 
-  def create(b: data.Basic, memberId: Long)(implicit session: DBSession = Basic.autoSession): Long = {
+  def create(b: data.Basic, memberId: Long)(implicit session: DBSession = autoSession): Long = {
     val created = System.currentTimeMillis()
     withSQL {
       insert.into(Basic).namedValues(
@@ -99,7 +101,7 @@ object Basic extends SQLSyntaxSupport[Basic] {
 
   /** 特定ユーザの最新1件を取得
    */
-  def findByUser(memberId: Long)(implicit session: DBSession = Basic.autoSession): Option[Basic] = withSQL {
+  def findByUser(memberId: Long)(implicit session: DBSession = autoSession): Option[Basic] = withSQL {
     select.from(Basic as b)
       .where.eq(b.memberId, memberId)
       .orderBy(b.created).desc
@@ -107,11 +109,19 @@ object Basic extends SQLSyntaxSupport[Basic] {
   }.map(Basic(b)).headOption().apply()
 
   def findAllByUser(memberId: Long, from: Long = 0, to: Long = Long.MaxValue)(
-      implicit session: DBSession = Basic.autoSession): List[Basic] = withSQL {
+      implicit session: DBSession = autoSession): List[Basic] = withSQL {
     select.from(Basic as b)
       .where.eq(b.memberId, memberId).and.between(b.created, from , to)
       .orderBy(b.created).desc
   }.map(Basic(b)).list().apply()
+
+  /** 経験値を取得 */
+  def findExpBy(where: SQLSyntax, orders: SQLSyntax*)(implicit session: DBSession = autoSession): Option[Int] = withSQL {
+    select(b.experience).from(Basic as b)
+        .where(where)
+        .orderBy(orders:_*)
+        .limit(1)
+  }.map(_.int(1)).single().apply()
 
   def destroy(id: Long)(implicit session: DBSession = autoSession): Unit = applyUpdate {
     delete.from(Basic).where.eq(column.id, id)
