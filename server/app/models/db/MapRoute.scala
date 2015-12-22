@@ -111,7 +111,7 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
 
   private def findFleet(routes: Seq[MapRoute]): List[Vector[ShipWithName]] = {
     val fleets = routes.map(r => r.memberId -> r.fleet)
-    val userShips = fleets.groupBy(_._1).mapValues(_.map(_._2).flatten)
+    val userShips = fleets.groupBy(_._1).mapValues(_.flatMap(_._2))
     val ships = userShips.flatMap { case (memberId, ids) =>
       val xs = Ship.findIn(memberId, ids)
       xs.map(x => (x.memberId, x.id) -> x)
