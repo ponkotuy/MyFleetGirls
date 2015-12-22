@@ -8,5 +8,8 @@ play:
     - ~/.ivy2:/root/.ivy2
     - ~/.sbt:/root/.sbt
 db:
-  image: dockerfile/mariadb
-  command: bash -c 'echo "mysqld_safe &" > /tmp/config && echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config && echo "mysql -e \"CREATE DATABASE IF NOT EXISTS myfleet;\"" >> /tmp/config && bash /tmp/config && rm -f /tmp/config && killall mysqld && sleep 5 && mysqld_safe --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci'
+  image: mariadb:10
+  environment:
+    MYSQL_DATABASE: myfleet
+    MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+  command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
