@@ -1,6 +1,6 @@
 package tool
 
-import models.db.{MapRoute, CellInfo, BattleResult, Basic}
+import models.db._
 import com.github.nscala_time.time.Imports._
 import models.join.Stage
 import scalikejdbc._
@@ -27,7 +27,7 @@ object BattleScore {
   def calcFromMemberId(memberId: Long): BattleScore = {
     val exp = fromExp(memberId)
     val now = DateTime.now()
-    val eo = calcEo(memberId, new Interval(monthHead(now), now))
+    val eo = calcNowEo(memberId)
     val lastEo = calcEo(memberId, new Interval(monthHead(now - 1.month), monthHead(now))) / 35
     BattleScore(exp.monthly, exp.yearly, eo, lastEo)
   }
@@ -46,6 +46,12 @@ object BattleScore {
     }
   }
 
+  private def calcNowEo(memberId: Long): Int = {
+    StageInfo.values.map { info =>
+      if(isClearFromMapInfo(memberId, info.stage)) info.score else 0
+    }.sum
+  }
+
   private def calcEo(memberId: Long, interval: Interval): Int = {
     StageInfo.values.map { info =>
       val count = if(info.boss) {
@@ -56,6 +62,9 @@ object BattleScore {
       if (info.clear <= count) info.score else 0
     }.sum
   }
+
+  private def isClearFromMapInfo(memberId: Long, stage: Stage): Boolean =
+    MapInfo.find(stage, memberId).exists(_.cleared)
 
   private def clearCountFromBattle(memberId: Long, stage: Stage, interval: Interval): Long = {
     val br = BattleResult.br
