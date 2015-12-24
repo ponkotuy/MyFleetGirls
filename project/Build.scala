@@ -124,11 +124,17 @@ object MyFleetGirlsBuild extends Build {
   }
 
   def downLib = Command.command("downLib") { state =>
-    IO.withTemporaryFile("ffdec-", ".tmp") { tmp =>
-      val dlUrl = url("https://www.free-decompiler.com/flash/download/ffdec_5.3.0_lib.jar")
-      state.log.info(s"downloading $dlUrl ...")
-      IO.download(dlUrl, tmp)
-      IO.move(tmp, file("server") / "lib" / "ffdec_5.3.0_lib.jar")
+    val libName = "ffdec_5.3.0_lib.jar"
+    val libFile = file("server") / "lib" / libName
+    if (libFile.exists) {
+      state.log.info(s"$libName has already been downloaded")
+    } else {
+      IO.withTemporaryFile("ffdec-", ".tmp") { tmp =>
+        val dlUrl = url(s"https://www.free-decompiler.com/flash/download/$libName")
+        state.log.info(s"downloading $dlUrl ...")
+        IO.download(dlUrl, tmp)
+        IO.move(tmp, libFile)
+      }
     }
     state
   }
