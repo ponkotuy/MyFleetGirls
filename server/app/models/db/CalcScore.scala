@@ -1,0 +1,152 @@
+package models.db
+
+import scalikejdbc._
+
+case class CalcScore(
+  memberId: Long,
+  monthlyExp: Int,
+  yearlyExp: Int,
+  eo: Int,
+  lastEo: Int,
+  yyyymmddhh: Int,
+  created: Long) {
+
+  def save()(implicit session: DBSession = CalcScore.autoSession): CalcScore = CalcScore.save(this)(session)
+
+  def destroy()(implicit session: DBSession = CalcScore.autoSession): Unit = CalcScore.destroy(this)(session)
+
+}
+
+
+object CalcScore extends SQLSyntaxSupport[CalcScore] {
+
+  override val tableName = "calc_score"
+
+  override val columns = Seq("member_id", "monthly_exp", "yearly_exp", "eo", "last_eo", "yyyymmddhh", "created")
+
+  def apply(cs: SyntaxProvider[CalcScore])(rs: WrappedResultSet): CalcScore = autoConstruct(rs, cs)
+  def apply(cs: ResultName[CalcScore])(rs: WrappedResultSet): CalcScore = autoConstruct(rs, cs)
+
+  val cs = CalcScore.syntax("cs")
+
+  override val autoSession = AutoSession
+
+  def find(memberId: Long, yyyymmddhh: Int)(implicit session: DBSession = autoSession): Option[CalcScore] = {
+    withSQL {
+      select.from(CalcScore as cs).where.eq(cs.memberId, memberId).and.eq(cs.yyyymmddhh, yyyymmddhh)
+    }.map(CalcScore(cs.resultName)).single.apply()
+  }
+
+  def findAll()(implicit session: DBSession = autoSession): List[CalcScore] = {
+    withSQL(select.from(CalcScore as cs)).map(CalcScore(cs.resultName)).list.apply()
+  }
+
+  def countAll()(implicit session: DBSession = autoSession): Long = {
+    withSQL(select(sqls.count).from(CalcScore as cs)).map(rs => rs.long(1)).single.apply().get
+  }
+
+  def findBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Option[CalcScore] = {
+    withSQL {
+      select.from(CalcScore as cs).where.append(where)
+    }.map(CalcScore(cs.resultName)).single.apply()
+  }
+
+  def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[CalcScore] = {
+    withSQL {
+      select.from(CalcScore as cs).where.append(where)
+    }.map(CalcScore(cs.resultName)).list.apply()
+  }
+
+  def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
+    withSQL {
+      select(sqls.count).from(CalcScore as cs).where.append(where)
+    }.map(_.long(1)).single.apply().get
+  }
+
+  def create(
+    memberId: Long,
+    monthlyExp: Int,
+    yearlyExp: Int,
+    eo: Int,
+    lastEo: Int,
+    yyyymmddhh: Int,
+    created: Long)(implicit session: DBSession = autoSession): CalcScore = {
+    withSQL {
+      insert.into(CalcScore).columns(
+        column.memberId,
+        column.monthlyExp,
+        column.yearlyExp,
+        column.eo,
+        column.lastEo,
+        column.yyyymmddhh,
+        column.created
+      ).values(
+        memberId,
+        monthlyExp,
+        yearlyExp,
+        eo,
+        lastEo,
+        yyyymmddhh,
+        created
+      )
+    }.update.apply()
+
+    CalcScore(
+      memberId = memberId,
+      monthlyExp = monthlyExp,
+      yearlyExp = yearlyExp,
+      eo = eo,
+      lastEo = lastEo,
+      yyyymmddhh = yyyymmddhh,
+      created = created)
+  }
+
+  def batchInsert(entities: Seq[CalcScore])(implicit session: DBSession = autoSession): Seq[Int] = {
+    val params: Seq[Seq[(Symbol, Any)]] = entities.map(entity => 
+      Seq(
+        'memberId -> entity.memberId,
+        'monthlyExp -> entity.monthlyExp,
+        'yearlyExp -> entity.yearlyExp,
+        'eo -> entity.eo,
+        'lastEo -> entity.lastEo,
+        'yyyymmddhh -> entity.yyyymmddhh,
+        'created -> entity.created))
+        SQL("""insert into calc_score(
+        member_id,
+        monthly_exp,
+        yearly_exp,
+        eo,
+        last_eo,
+        yyyymmddhh,
+        created
+      ) values (
+        {memberId},
+        {monthlyExp},
+        {yearlyExp},
+        {eo},
+        {lastEo},
+        {yyyymmddhh},
+        {created}
+      )""").batchByName(params: _*).apply()
+    }
+
+  def save(entity: CalcScore)(implicit session: DBSession = autoSession): CalcScore = {
+    withSQL {
+      update(CalcScore).set(
+        column.memberId -> entity.memberId,
+        column.monthlyExp -> entity.monthlyExp,
+        column.yearlyExp -> entity.yearlyExp,
+        column.eo -> entity.eo,
+        column.lastEo -> entity.lastEo,
+        column.yyyymmddhh -> entity.yyyymmddhh,
+        column.created -> entity.created
+      ).where.eq(column.memberId, entity.memberId).and.eq(column.yyyymmddhh, entity.yyyymmddhh)
+    }.update.apply()
+    entity
+  }
+
+  def destroy(entity: CalcScore)(implicit session: DBSession = autoSession): Unit = {
+    withSQL { delete.from(CalcScore).where.eq(column.memberId, entity.memberId).and.eq(column.yyyymmddhh, entity.yyyymmddhh) }.update.apply()
+  }
+
+}

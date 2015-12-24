@@ -59,7 +59,7 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
     }.map(MapInfo(mi.resultName)).single().apply()
   }
 
-  def find(stage: Stage, memberId: Long)(implicit session: DBSession = autoSession): Option[MapInfo] =
+  def findStage(stage: Stage, memberId: Long)(implicit session: DBSession = autoSession): Option[MapInfo] =
     find(stage.area * 10 + stage.info, memberId)
 
   def findAll()(implicit session: DBSession = autoSession): List[MapInfo] = {

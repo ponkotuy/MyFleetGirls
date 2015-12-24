@@ -1,7 +1,7 @@
 package tool
 
-import models.db._
 import com.github.nscala_time.time.Imports._
+import models.db._
 import models.join.Stage
 import scalikejdbc._
 
@@ -10,11 +10,15 @@ import scalikejdbc._
   * @author ponkotuy
   */
 case class BattleScore(monthlyExp: Int, yearlyExp: Int, eo: Int, lastEo: Int) {
+
   def pp: String = {
     s"${sum}(${toString})"
   }
 
   def sum: Int = monthlyExp + yearlyExp + eo + lastEo
+
+  def toCalcScore(memberId: Long, yyyymmddhh: Int, created: Long) =
+    CalcScore(memberId, monthlyExp, yearlyExp, eo, lastEo, yyyymmddhh, created)
 }
 
 object BattleScore {
@@ -64,7 +68,7 @@ object BattleScore {
   }
 
   private def isClearFromMapInfo(memberId: Long, stage: Stage): Boolean =
-    MapInfo.find(stage, memberId).exists(_.cleared)
+    MapInfo.findStage(stage, memberId).exists(_.cleared)
 
   private def clearCountFromBattle(memberId: Long, stage: Stage, interval: Interval): Long = {
     val br = BattleResult.br

@@ -31,8 +31,11 @@ object Global extends WithFilters(Cors) with GlobalSettings{
     cron ! CronSchedule(Cron(0, 5, 1, aster, aster), _ => deleteMonthlyQuest())
     cron ! CronSchedule(Cron(17, 3, aster, aster, aster), _ => cutMaterialRecord())
     cron ! CronSchedule(Cron(23, 3, aster, aster, aster), _ => cutBasicRecord())
+    cron ! CronSchedule(Cron(0, 2, aster, aster, aster), insertCalcScore)
+    cron ! CronSchedule(Cron(0, 14, aster, aster, aster), insertCalcScore)
+    // 月末にだけやりたいのでとりあえず起動して内部でチェック
+    cron ! CronSchedule(Cron(0, 22, aster, aster, aster), insertCalcScoreMonthly)
     Akka.system().scheduler.schedule(0.seconds, 45.seconds, cron, "minutes")
-    printBattleScore()
   }
 
   private def deleteDailyQuest(): Unit = {
@@ -82,14 +85,19 @@ object Global extends WithFilters(Cors) with GlobalSettings{
     }
   }
 
-  private def printBattleScore(): Unit = {
-    val start = StaticDateTime.now().minusHours(12)
-    val r = Ranking.r
-    Ranking.findAllBy(sqls.gt(r.created, start.getMillis)).groupBy(_.memberId).foreach { case (memberId, rankings) =>
-      val r = rankings.sortBy(-_.created).head
+  private def insertCalcScore(cron: Cron): Unit = {
+    val now = StaticDateTime.now()
+    val scores = Admiral.findAllIds().map { memberId =>
       val score = BattleScore.calcFromMemberId(memberId)
-      println(s"memberId: ${memberId}, real: ${r.rate}, expect: ${score.sum}, content: ${score}")
+      val yyyymmddhh = now.getYear * 1000000 + now.getMonthOfYear * 10000 + cron.day * 100 + cron.hour
+      score.toCalcScore(memberId, yyyymmddhh, now.getMillis)
     }
+    CalcScore.batchInsert(scores)
+  }
+
+  private def insertCalcScoreMonthly(cron: Cron): Unit = {
+    val year = StaticDateTime.now().getYear
+    if(cron.isEndOfMonth(year)) insertCalcScore(cron)
   }
 }
 

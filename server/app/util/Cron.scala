@@ -19,6 +19,11 @@ case class Cron(minutes: Int, hour: Int, day: Int, month: Int, dayOfWeek: Int) {
       (x.month == aster || month == x.month) &&
       (x.dayOfWeek == aster || dayOfWeek == x.dayOfWeek)
   }
+
+  def isEndOfMonth(year: Int): Boolean = {
+    if(isAster(month) || isAster(day)) return false
+    (new DateTime(year, month, day, 0, 0, 0) + 1.day).getMonthOfYear != month
+  }
 }
 
 object Cron {
@@ -40,6 +45,7 @@ object Cron {
   }
 
   def now: Cron = fromDateTime(DateTime.now)
+  def isAster(v: Int): Boolean = v < 0
 }
 
 case class CronSchedule(cron: Cron, f: Cron => Unit) {
