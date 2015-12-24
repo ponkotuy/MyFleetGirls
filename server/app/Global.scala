@@ -88,7 +88,7 @@ object Global extends WithFilters(Cors) with GlobalSettings{
     Ranking.findAllBy(sqls.gt(r.created, start.getMillis)).groupBy(_.memberId).foreach { case (memberId, rankings) =>
       val r = rankings.sortBy(-_.created).head
       val score = BattleScore.calcFromMemberId(memberId)
-      println(s"memberId: ${memberId}, real: ${r.rate}, expect: ${score}")
+      println(s"memberId: ${memberId}, real: ${r.rate}, expect: ${score.sum}, content: ${score}")
     }
   }
 }

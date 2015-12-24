@@ -28,7 +28,7 @@ object BattleScore {
     val exp = fromExp(memberId)
     val now = DateTime.now()
     val eo = calcEo(memberId, new Interval(monthHead(now), now))
-    val lastEo = calcEo(memberId, new Interval(monthHead(now - 1.month), monthHead(now)))
+    val lastEo = calcEo(memberId, new Interval(monthHead(now - 1.month), monthHead(now))) / 35
     BattleScore(exp.monthly, exp.yearly, eo, lastEo)
   }
 
@@ -39,9 +39,9 @@ object BattleScore {
       val lastMonthExp =
         Basic.findExpBy(sqls.eq(b.memberId, memberId).and.lt(b.created, monthHead(now).getMillis), b.created.desc).getOrElse(nowExp)
       val lastYearExp =
-        Basic.findExpBy(sqls.eq(b.memberId, memberId).and.lt(b.created, yearHead(now).getMillis), b.created.desc).getOrElse(nowExp)
+        Basic.findExpBy(sqls.eq(b.memberId, memberId).and.lt(b.created, yearHead(now).getMillis), b.created.desc).getOrElse(lastMonthExp)
       val monthly = (nowExp - lastMonthExp) * 7 / 10000
-      val yearly = lastMonthExp - lastYearExp / 50000
+      val yearly = (lastMonthExp - lastYearExp) / 50000
       FromExp(monthly, yearly)
     }
   }
@@ -56,7 +56,7 @@ object BattleScore {
   private def clearCount(memberId: Long, stage: Stage, interval: Interval): Long = {
     val ci = CellInfo.ci
     val cell = CellInfo.findAllBy(sqls.eq(ci.areaId, stage.area).and.eq(ci.infoNo, stage.info))
-    val bosses = cell.filter(_.boss)
+    val bosses = cell.filter(_.boss).map(_.cell)
     val br = BattleResult.br
     BattleResult.countBy(
       sqls.eq(br.memberId, memberId)
