@@ -9,6 +9,8 @@ play:
     - ~/.sbt:/root/.sbt
 db:
   image: mariadb:10
+  ports:
+    - "3306:3306"
   environment:
     MYSQL_DATABASE: myfleet
     MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
