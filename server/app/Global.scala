@@ -1,6 +1,6 @@
 
 import akka.actor.Props
-import com.github.nscala_time.time.StaticDateTimeZone
+import com.github.nscala_time.time.{StaticDateTime, StaticDateTimeZone}
 import models.db._
 import org.joda.time.{DateTimeConstants, LocalDate}
 import play.api._
@@ -8,9 +8,9 @@ import play.api.libs.concurrent.Execution.Implicits._
 import play.api.mvc._
 import play.libs.Akka
 import scalikejdbc._
+import tool.BattleScore
 import util.{Cron, CronSchedule, CronScheduler}
 
-import scala.collection.breakOut
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
@@ -31,7 +31,10 @@ object Global extends WithFilters(Cors) with GlobalSettings{
     cron ! CronSchedule(Cron(0, 5, 1, aster, aster), _ => deleteMonthlyQuest())
     cron ! CronSchedule(Cron(17, 3, aster, aster, aster), _ => cutMaterialRecord())
     cron ! CronSchedule(Cron(23, 3, aster, aster, aster), _ => cutBasicRecord())
-    cron ! CronSchedule(Cron(41, 3, aster, aster, aster), _ => addSnapIndex()) // TODO 1回実行するだけで良いので消す
+    cron ! CronSchedule(Cron(0, 2, aster, aster, aster), insertCalcScore)
+    cron ! CronSchedule(Cron(0, 14, aster, aster, aster), insertCalcScore)
+    // 月末にだけやりたいのでとりあえず起動して内部でチェック
+    cron ! CronSchedule(Cron(0, 22, aster, aster, aster), insertCalcScoreMonthly)
     Akka.system().scheduler.schedule(0.seconds, 45.seconds, cron, "minutes")
   }
 
@@ -82,11 +85,19 @@ object Global extends WithFilters(Cors) with GlobalSettings{
     }
   }
 
-  private def addSnapIndex(): Unit = {
-    Logger.info("Add Snapshot Fulltext Index")
-    val snapIds = DeckSnapshot.findAll()
-    val indexIds: Set[Long] = SnapshotText.findAll().map(_.id)(breakOut)
-    snapIds.filterNot { s => indexIds.contains(s.id) }.foreach(SnapshotText.create)
+  private def insertCalcScore(cron: Cron): Unit = {
+    val now = StaticDateTime.now()
+    val scores = Admiral.findAllIds().map { memberId =>
+      val score = BattleScore.calcFromMemberId(memberId)
+      val yyyymmddhh = now.getYear * 1000000 + now.getMonthOfYear * 10000 + cron.day * 100 + cron.hour
+      score.toCalcScore(memberId, yyyymmddhh, now.getMillis)
+    }
+    CalcScore.batchInsert(scores)
+  }
+
+  private def insertCalcScoreMonthly(cron: Cron): Unit = {
+    val year = StaticDateTime.now().getYear
+    if(cron.isEndOfMonth(year)) insertCalcScore(cron)
   }
 }
 

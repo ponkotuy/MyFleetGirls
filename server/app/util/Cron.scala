@@ -1,5 +1,7 @@
 package util
 
+import play.api.Logger
+
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor.Actor
@@ -18,6 +20,11 @@ case class Cron(minutes: Int, hour: Int, day: Int, month: Int, dayOfWeek: Int) {
       (x.day == aster || day == x.day) &&
       (x.month == aster || month == x.month) &&
       (x.dayOfWeek == aster || dayOfWeek == x.dayOfWeek)
+  }
+
+  def isEndOfMonth(year: Int): Boolean = {
+    if(isAster(month) || isAster(day)) return false
+    (new DateTime(year, month, day, 0, 0, 0) + 1.day).getMonthOfYear != month
   }
 }
 
@@ -40,6 +47,7 @@ object Cron {
   }
 
   def now: Cron = fromDateTime(DateTime.now)
+  def isAster(v: Int): Boolean = v < 0
 }
 
 case class CronSchedule(cron: Cron, f: Cron => Unit) {
@@ -68,6 +76,6 @@ class CronScheduler extends Actor {
         }
         lastExec = minutes
       }
-    case x => println("Not Received: " + x)
+    case x => Logger.warn("Not Received: " + x)
   }
 }
