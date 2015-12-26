@@ -20,10 +20,13 @@ object RareShipRanking extends Ranking {
     val admirals = activeAdmiral()
     val books = ShipBook.findAllBy(sqls.in(sb.memberId, admirals).and.lt(sb.indexNo, 100000))
     val counts = books.groupBy(_.id).filterKeys(EvolutionBase.isBase).mapValues(_.size)
-    val max = counts.map(_._2).max
-    val notHaveCounts = counts.mapValues { count => (max - count).toLong }.toVector
+    if (counts.isEmpty) Nil
+    else {
+      val max = counts.values.max
+      val notHaveCounts = counts.mapValues { count => (max - count).toLong }.toVector
         .sortBy(-_._2).take(limit)
-    ShipCommon.toRankingElement(notHaveCounts)
+      ShipCommon.toRankingElement(notHaveCounts)
+    }
   }
 
   // 注釈。同じコメントは1つに纏められます
