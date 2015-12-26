@@ -1,5 +1,7 @@
 package util
 
+import play.api.Logger
+
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor.Actor
@@ -74,6 +76,6 @@ class CronScheduler extends Actor {
         }
         lastExec = minutes
       }
-    case x => println("Not Received: " + x)
+    case x => Logger.warn("Not Received: " + x)
   }
 }
