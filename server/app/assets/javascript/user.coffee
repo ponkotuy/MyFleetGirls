@@ -1,18 +1,10 @@
-
 # Require graph.coffee
 
 $(document).ready ->
   userid = $('#userid').val()
   fixWidth()
-  graphOpts.forEach (obj) ->
-    $.getJSON obj.url(userid), (data) ->
-      if data.length > 2
-        raw = obj.trans(data)
-        obj.graph = new Graph(obj.name)
-        obj.graph.overviewPlot(raw)
-        obj.graph.wholePlot(raw)
-      else
-        noDataGraph($('#' + obj.name))
+  graphExps(userid)
+  graphScore(userid)
 
   $('button.delete-yome').each ->
     $(@).click ->
@@ -21,6 +13,28 @@ $(document).ready ->
       $.ajax('/passwd/post/v1/yome', {type: 'DELETE', data: data})
         .success ->
           location.reload(true)
+
+graphExps = (userid) ->
+  name = 'admiral_exp'
+  $.getJSON "/rest/v1/#{userid}/basics", (data) ->
+    if data.length > 2
+      raw = transExps(data)
+      graph = new Graph(name)
+      graph.overviewPlot(raw)
+      graph.wholePlot(raw)
+    else
+      noDataGraph($('#' + name))
+
+graphScore = (userid) ->
+  name = 'admiral_score'
+  $.getJSON "/rest/v2/user/#{userid}/scores", (data) ->
+    if data.length > 2
+      raw = transRates(data)
+      graph = new Graph(name)
+      graph.overviewPlot(raw)
+      graph.wholePlot(raw)
+    else
+      noDataGraph($('#' + name))
 
 transExps = (data) -> [
   data: data.map (x) -> [x['created'], x['experience']]
@@ -44,16 +58,3 @@ noDataGraph = (node) ->
   $.post('/passwd/post/v1/settings', {userId: userId, shipId: shipId})
     .success -> location.href = "/user/#{userId}/top"
     .error (e) -> console.error(e)
-
-graphOpts = [
-  {
-    url: (userid) -> "/rest/v1/#{userid}/basics"
-    trans: transExps
-    name: 'admiral_exp'
-  },
-  {
-    url: (userid) -> "/rest/v2/user/#{userid}/scores"
-    trans: transRates
-    name: 'admiral_score'
-  }
-]
