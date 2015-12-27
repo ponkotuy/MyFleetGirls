@@ -9,7 +9,7 @@ import play.api.mvc._
 import play.libs.Akka
 import scalikejdbc._
 import tool.BattleScore
-import util.{Cron, CronSchedule, CronScheduler}
+import util.{Cron, CronSchedule, CronScheduler, Ymdh}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -89,7 +89,7 @@ object Global extends WithFilters(Cors) with GlobalSettings{
     val now = StaticDateTime.now()
     val scores = Admiral.findAllIds().map { memberId =>
       val score = BattleScore.calcFromMemberId(memberId)
-      val yyyymmddhh = now.getYear * 1000000 + now.getMonthOfYear * 10000 + cron.day * 100 + cron.hour
+      val yyyymmddhh = Ymdh(now.getYear, now.getMonthOfYear, cron.day, cron.minutes).toInt
       score.toCalcScore(memberId, yyyymmddhh, now.getMillis)
     }
     CalcScore.batchInsert(scores)

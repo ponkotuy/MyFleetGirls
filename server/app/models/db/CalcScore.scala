@@ -1,6 +1,9 @@
 package models.db
 
+import models.response.ScoreWithSum
 import scalikejdbc._
+import com.github.nscala_time.time.Imports._
+import util.Ymdh
 
 case class CalcScore(
   memberId: Long,
@@ -15,6 +18,13 @@ case class CalcScore(
 
   def destroy()(implicit session: DBSession = CalcScore.autoSession): Unit = CalcScore.destroy(this)(session)
 
+  def sum: Int = monthlyExp + yearlyExp + eo + lastEo
+
+  def withSum: ScoreWithSum = ScoreWithSum(memberId, sum, monthlyExp, yearlyExp, eo, lastEo, yyyymmddhh, created)
+
+  def ymdh: Ymdh = Ymdh.fromInt(yyyymmddhh)
+
+  def prettyDate: String = s"${ymdh.month}月${ymdh.day}日${ymdh.hour}時"
 }
 
 
@@ -102,7 +112,7 @@ object CalcScore extends SQLSyntaxSupport[CalcScore] {
   }
 
   def batchInsert(entities: Seq[CalcScore])(implicit session: DBSession = autoSession): Seq[Int] = {
-    val params: Seq[Seq[(Symbol, Any)]] = entities.map(entity => 
+    val params: Seq[Seq[(Symbol, Any)]] = entities.map(entity =>
       Seq(
         'memberId -> entity.memberId,
         'monthlyExp -> entity.monthlyExp,
@@ -148,5 +158,7 @@ object CalcScore extends SQLSyntaxSupport[CalcScore] {
   def destroy(entity: CalcScore)(implicit session: DBSession = autoSession): Unit = {
     withSQL { delete.from(CalcScore).where.eq(column.memberId, entity.memberId).and.eq(column.yyyymmddhh, entity.yyyymmddhh) }.update.apply()
   }
+
+  val zero = CalcScore(0L, 0, 0, 0, 0, 0, 0L)
 
 }

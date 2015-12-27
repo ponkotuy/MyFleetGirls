@@ -2,13 +2,15 @@ package controllers
 
 import com.github.nscala_time.time.Imports._
 import honor.Honors
-import models.db.AGOProgress
+import models.db.{CalcScore, AGOProgress}
+import models.req.{ScoreDays, MaterialDays}
 import org.json4s.native.Serialization.write
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits._
 import scalikejdbc._
 import models.db
-import tool.{BestShipExp, HistgramShipLv, MaterialDays, STypeExp}
+import tool.{BestShipExp, HistgramShipLv, STypeExp}
+import util.Ymdh
 
 import scala.concurrent.Future
 
@@ -44,7 +46,15 @@ object UserView extends Controller {
       .filterNot(b => yomeIds.contains(b.id))
     val flagship = db.DeckShip.findFlagshipByUserWishShipName(memberId)
       .filterNot(f => (yomeIds ++ best.map(_.id)).contains(f.id))
-    Ok(views.html.user.user(user, yomes, best, flagship))
+    val cs = db.CalcScore.cs
+    val scores = db.CalcScore.findAllBy(
+      sqls.eq(cs.memberId, memberId)
+          .and.gt(cs.yyyymmddhh, Ymdh.currentMonth().toInt)
+    ).sortBy(_.yyyymmddhh)
+    val scoreDays = (CalcScore.zero :: scores).reverseIterator.sliding(2).map { case Seq(now, prev) =>
+      ScoreDays.fromScores(now, prev)
+    }.toList
+    Ok(views.html.user.user(user, yomes, best, flagship, scoreDays))
   }
 
   def favorite(memberId: Long) = userView(memberId) { user =>

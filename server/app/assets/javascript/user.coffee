@@ -28,22 +28,23 @@ graphExps = (userid) ->
 graphScore = (userid) ->
   name = 'admiral_score'
   $.getJSON "/rest/v2/user/#{userid}/scores", (data) ->
-    if data.length > 2
-      raw = transRates(data)
-      graph = new Graph(name)
-      graph.overviewPlot(raw)
-      graph.wholePlot(raw)
-    else
-      noDataGraph($('#' + name))
+    $.getJSON "/rest/v2/user/#{userid}/calc_scores", (calc) ->
+      if data.length > 2 or calc.length > 2
+        raw = transRates(data, calc)
+        graph = new Graph(name)
+        graph.overviewPlot(raw)
+        graph.wholePlot(raw)
+      else
+        noDataGraph($('#' + name))
 
 transExps = (data) -> [
   data: data.map (x) -> [x['created'], x['experience']]
   label: '提督経験値'
 ]
 
-transRates = (data) -> [
-  data: data.map (x) -> [x['created'], x['rate']]
-  label: '戦果'
+transRates = (data, calc) -> [
+  { data: (data.map (x) -> [x['created'], x['rate']]), label: '戦果' },
+  { data: (calc.map (x) -> [x['created'], x['score']]), label: '推定値' }
 ]
 
 fixWidth = ->

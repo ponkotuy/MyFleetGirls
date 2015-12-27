@@ -1,4 +1,12 @@
-@(user: User, yomes: List[ShipWithName], best: Option[ShipWithName], flagship: Option[ShipWithName])
+@import models.req.ScoreDays
+@(
+    user: User,
+    yomes: Seq[ShipWithName],
+    best: Option[ShipWithName],
+    flagship: Option[ShipWithName],
+    scores: Seq[ScoreDays]
+)
+
 @import models.join.ShipWithName
 
 @main {
@@ -16,6 +24,9 @@
 
     div.overview {
       height: 200px;
+    }
+    td.strong {
+      font-weight: bold;
     }
   </style>
 } {
@@ -112,6 +123,32 @@
         <div id="admiral_score_graph" class="chart width-adj"></div>
         <div id="admiral_score_overview" class="overview width-adj"></div>
       </div>
+
+      <h3>戦果変動</h3>
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th>日時</th>
+            <th><strong>戦果</strong></th>
+            <th>当月経験値</th>
+            <th>当年経験値</th>
+            <th>当月Extra</th>
+            <th>前月Extra</th>
+          </tr>
+        </thead>
+        <tbody>
+          @scores.map { x =>
+          <tr>
+            <td>@x.date</td>
+            @x.score.cell("strong")
+            @x.monthlyExp.cell()
+            <td>@x.yearlyExp</td>
+            @x.eo.cell()
+            <td>@x.lastEo</td>
+          </tr>
+          }
+        </tbody>
+      </table>
     }
   }
 }

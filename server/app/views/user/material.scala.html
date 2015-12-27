@@ -1,4 +1,5 @@
-@(user: User, days: Seq[tool.MaterialDays])
+@import models.req.MaterialDays
+@(user: User, days: Seq[MaterialDays])
 
 @main {
   <title>@{user.admiral.nickname}提督 -資源-</title>
@@ -53,14 +54,14 @@
             @days.map { x =>
               <tr>
                 <td>@x.prettyDay</td>
-                @x.fuel.cell
-                @x.ammo.cell
-                @x.steel.cell
-                @x.bauxite.cell
-                @x.instant.cell
-                @x.bucket.cell
-                @x.develop.cell
-                @x.revamping.cell
+                @x.fuel.cell()
+                @x.ammo.cell()
+                @x.steel.cell()
+                @x.bauxite.cell()
+                @x.instant.cell()
+                @x.bucket.cell()
+                @x.develop.cell()
+                @x.revamping.cell()
               </tr>
             }
           </tbody>

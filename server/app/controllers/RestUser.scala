@@ -27,6 +27,9 @@ object RestUser extends Controller {
 
   def scores(memberId: Long) = returnJson(db.Ranking.findAllBy(sqls.eq(db.Ranking.r.memberId, memberId)))
 
+  def calcScores(memberId: Long) =
+    returnJson(db.CalcScore.findAllBy(sqls.eq(db.CalcScore.cs.memberId, memberId)).map(_.withSum))
+
   def shipExp(memberId: Long, shipId: Int) = returnJson {
     val sh = db.ShipHistory.sh
     db.ShipHistory.findAllBy(sqls.eq(sh.memberId, memberId).and.eq(sh.shipId, shipId))
