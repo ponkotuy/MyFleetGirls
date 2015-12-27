@@ -47,5 +47,4 @@ case object ShipBookRanking extends Ranking {
         .groupBy(sb.memberId)
     }.map { rs => Admiral(a)(rs) -> rs.long("cnt") }.list().apply()
   }
-
 }
