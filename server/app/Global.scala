@@ -89,7 +89,7 @@ object Global extends WithFilters(Cors) with GlobalSettings{
     val now = StaticDateTime.now()
     val scores = Admiral.findAllIds().map { memberId =>
       val score = BattleScore.calcFromMemberId(memberId)
-      val yyyymmddhh = Ymdh(now.getYear, now.getMonthOfYear, cron.day, cron.minutes).toInt
+      val yyyymmddhh = Ymdh(now.getYear, now.getMonthOfYear, cron.day, cron.hour).toInt
       score.toCalcScore(memberId, yyyymmddhh, now.getMillis)
     }
     CalcScore.batchInsert(scores)
