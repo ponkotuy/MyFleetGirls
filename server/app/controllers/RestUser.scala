@@ -11,6 +11,7 @@ import org.json4s.JsonDSL._
 import org.json4s._
 import play.api.mvc.Controller
 import scalikejdbc._
+import tool.BattleScore
 
 import scala.concurrent.duration._
 import scala.collection.breakOut
@@ -27,8 +28,11 @@ object RestUser extends Controller {
 
   def scores(memberId: Long) = returnJson(db.Ranking.findAllBy(sqls.eq(db.Ranking.r.memberId, memberId)))
 
-  def calcScores(memberId: Long) =
-    returnJson(db.CalcScore.findAllBy(sqls.eq(db.CalcScore.cs.memberId, memberId)).map(_.withSum))
+  def calcScores(memberId: Long) = {
+    val fromDb = db.CalcScore.findAllBy(sqls.eq(db.CalcScore.cs.memberId, memberId)).map(_.withSum)
+    val now = BattleScore.calcFromMemberId(memberId).toCalcScore(memberId, 0, System.currentTimeMillis()).withSum
+    returnJson(now :: fromDb)
+  }
 
   def shipExp(memberId: Long, shipId: Int) = returnJson {
     val sh = db.ShipHistory.sh

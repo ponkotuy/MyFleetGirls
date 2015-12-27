@@ -24,7 +24,7 @@ case class CalcScore(
 
   def ymdh: Ymdh = Ymdh.fromInt(yyyymmddhh)
 
-  def prettyDate: String = s"${ymdh.month}月${ymdh.day}日${ymdh.hour}時"
+  def prettyDate: String = if(0 < yyyymmddhh) s"${ymdh.month}月${ymdh.day}日${ymdh.hour}時" else "最新"
 }
 
 

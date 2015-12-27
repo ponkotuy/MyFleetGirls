@@ -9,7 +9,7 @@ import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits._
 import scalikejdbc._
 import models.db
-import tool.{BestShipExp, HistgramShipLv, STypeExp}
+import tool.{BattleScore, BestShipExp, HistgramShipLv, STypeExp}
 import util.Ymdh
 
 import scala.concurrent.Future
@@ -51,7 +51,8 @@ object UserView extends Controller {
       sqls.eq(cs.memberId, memberId)
           .and.gt(cs.yyyymmddhh, Ymdh.currentMonth().toInt)
     ).sortBy(_.yyyymmddhh)
-    val scoreDays = (CalcScore.zero :: scores).reverseIterator.sliding(2).map { case Seq(now, prev) =>
+    val nowScore = BattleScore.calcFromMemberId(memberId).toCalcScore(memberId, 0, System.currentTimeMillis())
+    val scoreDays = (CalcScore.zero :: scores ++ List(nowScore)).reverseIterator.sliding(2).map { case Seq(now, prev) =>
       ScoreDays.fromScores(now, prev)
     }.toList
     Ok(views.html.user.user(user, yomes, best, flagship, scoreDays))
