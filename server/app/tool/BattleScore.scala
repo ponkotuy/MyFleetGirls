@@ -41,9 +41,9 @@ object BattleScore {
     val now = DateTime.now()
     Basic.findByUser(memberId).map(_.experience).fold(FromExp.empty) { nowExp =>
       val lastMonthExp =
-        Basic.findExpBy(sqls.eq(b.memberId, memberId).and.lt(b.created, monthHead(now).getMillis), b.created.desc).getOrElse(nowExp)
+        Basic.findExpBy(sqls.eq(b.memberId, memberId).and.gt(b.created, monthHead(now).getMillis), b.created).getOrElse(nowExp)
       val lastYearExp =
-        Basic.findExpBy(sqls.eq(b.memberId, memberId).and.lt(b.created, yearHead(now).getMillis), b.created.desc).getOrElse(lastMonthExp)
+        Basic.findExpBy(sqls.eq(b.memberId, memberId).and.gt(b.created, yearHead(now).getMillis), b.created).getOrElse(lastMonthExp)
       val monthly = (nowExp - lastMonthExp) * 7 / 10000
       val yearly = (lastMonthExp - lastYearExp) / 50000
       FromExp(monthly, yearly)
