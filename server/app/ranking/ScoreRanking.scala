@@ -9,8 +9,9 @@ import util.Ymdh
 
 object ScoreRanking extends Ranking {
   import Ranking._
+  import DateTime._
 
-  override val title: String = "戦果"
+  override val title: String = "当月戦果"
   override val comment: Seq[String] = Nil
   override val divClass: String = colmd3
 
@@ -32,14 +33,14 @@ object ScoreRanking extends Ranking {
   }
 
   private def scoresFromCalc(): Map[Long, Int] = {
-    val scores = CalcScore.findAllBy(sqls.gt(cs.yyyymmddhh, Ymdh.currentMonth()))
+    val scores = CalcScore.findAllBy(sqls.gt(cs.yyyymmddhh, Ymdh.monthHead(now())))
     scores.groupBy(_.memberId).mapValues(_.map(_.sum).max)
   }
 
   private def scoresFromObserved(): Map[Long, Int] = {
-    val scores = dbRanking.findAllBy(sqls.gt(r.created, currentMonth().getMillis))
+    val scores = dbRanking.findAllBy(sqls.gt(r.created, monthHead(now()).getMillis))
     scores.groupBy(_.memberId).mapValues(_.map(_.rate).max)
   }
 
-  private def currentMonth(): DateTime = DateTime.now().withDayOfMonth(1).withTime(0, 0, 0, 0)
+  private[ranking] def monthHead(date: DateTime): DateTime = date.withDayOfMonth(1).withTime(0, 0, 0, 0)
 }

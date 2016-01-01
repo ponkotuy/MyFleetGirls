@@ -21,6 +21,7 @@ import scala.concurrent.Future
  */
 object UserView extends Controller {
   import controllers.Common._
+  import DateTime.now
 
   def name(user: String) = Action.async {
     Future {
@@ -49,7 +50,7 @@ object UserView extends Controller {
     val cs = db.CalcScore.cs
     val scores = db.CalcScore.findAllBy(
       sqls.eq(cs.memberId, memberId)
-          .and.gt(cs.yyyymmddhh, Ymdh.currentMonth().toInt)
+          .and.gt(cs.yyyymmddhh, Ymdh.monthHead(now()).toInt)
     ).sortBy(_.yyyymmddhh)
     val nowScore = BattleScore.calcFromMemberId(memberId).toCalcScore(memberId, 0, System.currentTimeMillis())
     val scoreDays = (CalcScore.zero :: scores ++ List(nowScore)).reverseIterator.sliding(2).map { case Seq(now, prev) =>

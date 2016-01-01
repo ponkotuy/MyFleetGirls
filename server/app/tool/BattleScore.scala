@@ -6,7 +6,7 @@ import models.join.Stage
 import scalikejdbc._
 
 /**
-  * Date:12/23/15.
+  * Date: 2015/12/23
   * @author ponkotuy
   */
 case class BattleScore(monthlyExp: Int, yearlyExp: Int, eo: Int, lastEo: Int) {
@@ -32,7 +32,7 @@ object BattleScore {
     val exp = fromExp(memberId)
     val now = DateTime.now()
     val eo = calcNowEo(memberId)
-    val lastEo = calcEo(memberId, new Interval(monthHead(now - 1.month), monthHead(now))) / 35
+    val lastEo = if(now.getMonthOfYear == 1) 0 else calcEo(memberId, new Interval(monthHead(now - 1.month), monthHead(now))) / 35
     BattleScore(exp.monthly, exp.yearly, eo, lastEo)
   }
 
