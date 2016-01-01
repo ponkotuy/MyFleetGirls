@@ -29,6 +29,7 @@ case object NotHave extends HonorCategory {
 
   override def approved(memberId: Long, db: HonorCache): List[String] = {
     val shipIds = db.shipBook.map(_.id)
+    if(shipIds.isEmpty) return Nil // 図鑑見てない人は除外
     val haves: Set[Int] = shipIds.map(EvolutionBase(_))(breakOut)
     MasterShipBase.findAllBy(sqls.in(MasterShipBase.ms.id, (Target -- haves).toSeq)).map { ship =>
       s"${ship.name}出ない"
