@@ -15,9 +15,8 @@ case class MapInfo(
     nowHp: Option[Int],
     maxHp: Option[Int],
     state: Option[Int],
-    rank: Option[MapRank]) {
-
-  def save()(implicit session: DBSession = MapInfo.autoSession): MapInfo = MapInfo.save(this)(session)
+    rank: Option[MapRank],
+    created: Long) {
 
   def destroy()(implicit session: DBSession = MapInfo.autoSession): Unit = MapInfo.destroy(this)(session)
 
@@ -35,7 +34,7 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
 
   override val tableName = "map_info"
 
-  override val columns = Seq("member_id", "id", "cleared", "exboss_flag", "defeat_count", "now_hp", "max_hp", "state", "rank")
+  override val columns = Seq("member_id", "id", "cleared", "exboss_flag", "defeat_count", "now_hp", "max_hp", "state", "rank", "created")
 
   def apply(mi: ResultName[MapInfo])(rs: WrappedResultSet): MapInfo = new MapInfo(
     memberId = rs.get(mi.memberId),
@@ -46,7 +45,8 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
     nowHp = rs.get(mi.nowHp),
     maxHp = rs.get(mi.maxHp),
     state = rs.get(mi.state),
-    rank = rs.get[Option[Int]](mi.rank).flatMap(MapRank.fromInt)
+    rank = rs.get[Option[Int]](mi.rank).flatMap(MapRank.fromInt),
+    created = rs.get(mi.created)
   )
 
   lazy val mi = MapInfo.syntax("mi")
@@ -91,7 +91,8 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
       nowHp: Option[Int],
       maxHp: Option[Int],
       state: Option[Int],
-      rank: Option[MapRank])(implicit session: DBSession = autoSession): Unit = {
+      rank: Option[MapRank],
+      created: Long)(implicit session: DBSession = autoSession): Unit = {
     withSQL {
       insert.into(MapInfo).columns(
         column.memberId,
@@ -102,7 +103,8 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
         column.nowHp,
         column.maxHp,
         column.state,
-        column.rank
+        column.rank,
+        column.created
       ).values(
           memberId,
           id,
@@ -112,7 +114,8 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
           nowHp,
           maxHp,
           state,
-          rank.map(_.v)
+          rank.map(_.v),
+          created
         )
     }.update().apply()
   }
@@ -120,6 +123,7 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
   def bulkInsert(xs: Seq[data.MapInfo], memberId: Long)(implicit session: DBSession = autoSession): Unit = {
     val es = xs.map(_.eventMap)
     val hps: Seq[Option[Hp]] = es.map(_.flatMap(_.hp))
+    val now = System.currentTimeMillis()
     applyUpdate {
       insert.into(MapInfo)
         .columns(
@@ -131,7 +135,8 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
             column.nowHp,
             column.maxHp,
             column.state,
-            column.rank)
+            column.rank,
+            column.created)
         .multiValues(
             Seq.fill(xs.size)(memberId),
             xs.map(_.id),
@@ -141,7 +146,8 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
             hps.map(_.map(_.now)),
             hps.map(_.map(_.max)),
             es.map(_.map(_.state)),
-            es.map(_.flatMap(_.rank)))
+            es.map(_.flatMap(_.rank)),
+            Seq.fill(xs.size)(now))
     }
   }
 
@@ -151,23 +157,6 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
           .set(column.rank -> rank.rank)
           .where.eq(column.memberId, memberId).and.eq(column.id, rank.mapAreaId * 10 + rank.mapNo)
     } > 0
-  }
-
-  def save(entity: MapInfo)(implicit session: DBSession = autoSession): MapInfo = {
-    withSQL {
-      update(MapInfo).set(
-        column.memberId -> entity.memberId,
-        column.id -> entity.id,
-        column.cleared -> entity.cleared,
-        column.exbossFlag -> entity.exbossFlag,
-        column.defeatCount -> entity.defeatCount,
-        column.nowHp -> entity.nowHp,
-        column.maxHp -> entity.maxHp,
-        column.state -> entity.state,
-        column.rank -> entity.rank.map(_.v)
-      ).where.eq(column.id, entity.id).and.eq(column.memberId, entity.memberId)
-    }.update().apply()
-    entity
   }
 
   def destroy(entity: MapInfo)(implicit session: DBSession = autoSession): Unit = {
