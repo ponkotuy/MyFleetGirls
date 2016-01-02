@@ -22,7 +22,7 @@ object ScoreRankingCommon {
   }
 
   def scoresFromObserved(interval: Interval): Map[Long, Int] = {
-    val fixed = interval.withStart(interval.start + 1.day) // 取得結果が先月分なので1日様子を見る
+    val fixed = interval.withStart(interval.start + 3.hours) // 取得結果が3時間先月分なので3時間様子を見る
     val scores = dbRanking.findAllBy(interval2MillisSyntax(r.created, fixed))
     scores.groupBy(_.memberId).mapValues(_.map(_.rate).max)
   }
