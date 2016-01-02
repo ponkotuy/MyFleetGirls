@@ -31,8 +31,10 @@ object BattleScore {
   def calcFromMemberId(memberId: Long): BattleScore = {
     val exp = fromExp(memberId)
     val now = DateTime.now()
-    val eo = calcNowEo(memberId)
-    val lastEo = if(now.getMonthOfYear == 1) 0 else calcEo(memberId, new Interval(monthHead(now - 1.month), monthHead(now))) / 35
+    val mHead = monthHead(now)
+    val eo = calcNowEo(memberId, new Interval(mHead, now))
+    val lastEo = if(now.getMonthOfYear == 1) 0 else calcEo(memberId, new Interval(monthHead(now - 1.month), mHead)) / 35
+    println(exp.monthly, exp.yearly, eo, lastEo)
     BattleScore(exp.monthly, exp.yearly, eo, lastEo)
   }
 
@@ -50,9 +52,11 @@ object BattleScore {
     }
   }
 
-  private def calcNowEo(memberId: Long): Int = {
+  private def calcNowEo(memberId: Long, interval: Interval): Int = {
     StageInfo.values.map { info =>
-      if(isClearFromMapInfo(memberId, info.stage)) info.score else 0
+      val isClear = isClearFromMapInfo(memberId, info.stage, interval.end)
+          .getOrElse(info.clear <= clearCountFromBattle(memberId, info.stage, interval))
+      if(isClear) info.score else 0
     }.sum
   }
 
@@ -67,8 +71,11 @@ object BattleScore {
     }.sum
   }
 
-  private def isClearFromMapInfo(memberId: Long, stage: Stage): Boolean =
-    MapInfo.findStage(stage, memberId).exists(_.cleared)
+  /**
+    * mapInfoの情報が古いときはNoneを返す
+    */
+  private def isClearFromMapInfo(memberId: Long, stage: Stage, from: DateTime): Option[Boolean] =
+    MapInfo.findStage(stage, memberId).find(monthHead(from).getMillis <= _.created).map(_.cleared)
 
   private def clearCountFromBattle(memberId: Long, stage: Stage, interval: Interval): Long = {
     val br = BattleResult.br
@@ -122,11 +129,11 @@ case class StageInfo(stage: Stage, score: Int, clear: Int, boss: Boolean)
 
 object StageInfo {
   val values = Vector(
-    StageInfo(Stage(1, 5), 75, 4, true),
-    StageInfo(Stage(1, 6), 75, 7, false),
-    StageInfo(Stage(2, 5), 100, 4, true),
-    StageInfo(Stage(3, 5), 150, 4, true),
-    StageInfo(Stage(4, 5), 180, 5, true),
-    StageInfo(Stage(5, 5), 200, 5, true)
+    StageInfo(Stage(1, 5), 75, 4, boss = true),
+    StageInfo(Stage(1, 6), 75, 7, boss = false),
+    StageInfo(Stage(2, 5), 100, 4, boss = true),
+    StageInfo(Stage(3, 5), 150, 4, boss = true),
+    StageInfo(Stage(4, 5), 180, 5, boss = true),
+    StageInfo(Stage(5, 5), 200, 5, boss = true)
   )
 }

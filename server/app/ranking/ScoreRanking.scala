@@ -33,7 +33,7 @@ object ScoreRanking extends Ranking {
   }
 
   private def scoresFromCalc(): Map[Long, Int] = {
-    val scores = CalcScore.findAllBy(sqls.gt(cs.yyyymmddhh, Ymdh.monthHead(now())))
+    val scores = CalcScore.findAllBy(sqls.gt(cs.yyyymmddhh, Ymdh.monthHead(now()).toInt))
     scores.groupBy(_.memberId).mapValues(_.map(_.sum).max)
   }
 
