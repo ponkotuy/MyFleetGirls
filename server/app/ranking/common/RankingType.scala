@@ -24,7 +24,8 @@ object RankingType {
       CachedRanking(SumShipExpRanking),
       CachedRanking(ItemBookRanking),
       CachedRanking(RemodelRanking),
-      CachedRanking(ScoreRanking)
+      CachedRanking(ScoreRanking),
+      CachedRanking(LastScoreRanking)
     )
   }
 

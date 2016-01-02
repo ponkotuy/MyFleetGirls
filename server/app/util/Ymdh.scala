@@ -13,7 +13,5 @@ object Ymdh {
   def fromInt(i: Int): Ymdh =
     new Ymdh(i / 1000000, i % 1000000 / 10000, i % 10000 / 100, i % 100)
 
-  def monthHead(date: DateTime): Ymdh = {
-    Ymdh(date.getYear, date.getMonthOfYear, 1, 0)
-  }
+  def monthHead(date: DateTime): Ymdh = Ymdh(date.getYear, date.getMonthOfYear, 1, 0)
 }

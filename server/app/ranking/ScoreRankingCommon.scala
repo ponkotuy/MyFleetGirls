@@ -1,0 +1,40 @@
+package ranking
+
+import models.db.{CalcScore, Ranking => dbRanking}
+import util.Ymdh
+import org.joda.time.Interval
+import scalikejdbc._
+import com.github.nscala_time.time.Imports._
+
+
+
+/**
+  * Date: 2016/01/02
+  * @author ponkotuy
+  */
+object ScoreRankingCommon {
+  val cs = CalcScore.cs
+  val r = dbRanking.r
+
+  def scoresFromCalc(interval: Interval): Map[Long, Int] = {
+    val scores = CalcScore.findAllBy(interval2YmdhSyntax(cs.yyyymmddhh, interval))
+    scores.groupBy(_.memberId).mapValues(_.map(_.sum).max)
+  }
+
+  def scoresFromObserved(interval: Interval): Map[Long, Int] = {
+    val fixed = interval.withStart(interval.start + 1.day) // 取得結果が先月分なので1日様子を見る
+    val scores = dbRanking.findAllBy(interval2MillisSyntax(r.created, fixed))
+    scores.groupBy(_.memberId).mapValues(_.map(_.rate).max)
+  }
+
+  private def interval2YmdhSyntax(column: SQLSyntax, interval: Interval): SQLSyntax = {
+    sqls.ge(column, Ymdh.fromDate(interval.start).toInt)
+        .and.le(column, Ymdh.fromDate(interval.end).toInt)
+  }
+  private def interval2MillisSyntax(column: SQLSyntax, interval: Interval): SQLSyntax =
+    sqls.ge(column, interval.startMillis).and.le(column, interval.endMillis)
+
+  private[ranking] def monthHead(date: DateTime): DateTime = date.withDayOfMonth(1).withTime(0, 0, 0, 0)
+  private[ranking] def monthLast(date: DateTime): DateTime =
+    ((date + 1.month).withDayOfMonth(1) - 1.day).withTime(0, 0, 0, 0)
+}

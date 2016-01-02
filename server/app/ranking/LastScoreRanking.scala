@@ -1,23 +1,25 @@
 package ranking
 
 import controllers.routes
-import models.db.{Ranking => dbRanking, Admiral, CalcScore}
-import ranking.common.{Ranking, RankingElement}
-import scalikejdbc._
+import models.db.Admiral
+import ranking.ScoreRankingCommon._
+import ranking.common.{RankingElement, Ranking}
 import com.github.nscala_time.time.Imports._
-import util.Ymdh
 
-object ScoreRanking extends Ranking {
+/**
+  * Date: 2016/01/02
+  * @author ponkotuy
+  */
+object LastScoreRanking extends Ranking {
   import Ranking._
-  import DateTime. now
-  import ScoreRankingCommon._
+  import DateTime.now
 
-  override val title: String = "当月戦果"
+  override val title: String = "先月戦果"
   override val comment: Seq[String] = Nil
   override val divClass: String = colmd3
 
   override def rankingQuery(limit: Int): Seq[RankingElement] = {
-    val interval = new Interval(monthHead(now()), now())
+    val interval = new Interval(monthHead(now() - 1.month), monthLast(now() - 1.month))
     val calc = scoresFromCalc(interval)
     val observed = scoresFromObserved(interval)
     val merged = (calc.keySet ++ observed.keySet).map { memberId =>
