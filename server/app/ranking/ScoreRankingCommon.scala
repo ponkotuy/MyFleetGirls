@@ -18,13 +18,13 @@ object ScoreRankingCommon {
 
   def scoresFromCalc(interval: Interval): Map[Long, Int] = {
     val scores = CalcScore.findAllBy(interval2YmdhSyntax(cs.yyyymmddhh, interval))
-    scores.groupBy(_.memberId).mapValues(_.map(_.sum).max)
+    scores.groupBy(_.memberId).mapValues(_.maxBy(_.created).sum)
   }
 
   def scoresFromObserved(interval: Interval): Map[Long, Int] = {
     val fixed = interval.withStart(interval.start + 3.hours) // 取得結果が3時間先月分なので3時間様子を見る
     val scores = dbRanking.findAllBy(interval2MillisSyntax(r.created, fixed))
-    scores.groupBy(_.memberId).mapValues(_.map(_.rate).max)
+    scores.groupBy(_.memberId).mapValues(_.maxBy(_.created).rate)
   }
 
   private def interval2YmdhSyntax(column: SQLSyntax, interval: Interval): SQLSyntax = {
