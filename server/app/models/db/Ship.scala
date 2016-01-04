@@ -13,7 +13,7 @@ import scalikejdbc.interpolation.SQLSyntax._
  */
 case class Ship(
     id: Int, shipId: Int, memberId: Long,
-    lv: Short, exp: Int, nowhp: Short, slot: List[Int], fuel: Int, bull: Int, dockTime: Long, cond: Int,
+    lv: Short, exp: Int, nowhp: Short, slot: Seq[Int], fuel: Int, bull: Int, dockTime: Long, cond: Int,
     karyoku: Int, raisou: Int, taiku: Int, soukou: Int, kaihi: Int, taisen: Int, sakuteki: Int, lucky: Int, locked: Boolean,
     created: Long, maxhp: Int)
 

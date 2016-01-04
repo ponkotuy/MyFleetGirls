@@ -5,9 +5,9 @@ import java.util.UUID
 import controllers.form.SetSnapshotOrder
 import models.db
 import models.req._
+import play.api.Play.current
 import play.api.i18n.Messages.Implicits.applicationMessages
 import play.api.mvc._
-import play.api.Play.current
 import scalikejdbc._
 import tool.Authentication
 
@@ -28,7 +28,14 @@ object WebPost extends Controller {
               val current = System.currentTimeMillis()
               val deckSnap = db.DeckSnapshot.create(snap.userId, deck.name, snap.title, snap.comment, current)
               val ships = db.DeckShip.findAllByDeck(snap.userId, snap.deckport)
-              db.DeckShipSnapshot.bulkInsert(ships.map(_.ship), deckSnap.id)
+              ships.zipWithIndex.map { case (ship, idx) =>
+                val shipSnap = db.DeckShipSnapshot.createFromShip(ship.ship, deckSnap.id, (idx + 1).toShort)
+                val now = System.currentTimeMillis()
+                val items = ship.slot.zipWithIndex.map { case (item, i) =>
+                  item.itemSnapshot(shipSnap.id, i + 1, now)
+                }
+                db.ItemSnapshot.batchInsert(items)
+              }
               db.SnapshotText.create(deckSnap)
               Res.success
             case None => BadRequest("Invalid deckport")
@@ -44,6 +51,14 @@ object WebPost extends Controller {
         if(uuidCheck(snap.userId, request.session.get("key"))) {
           db.DeckSnapshot.find(snap.snapId) match {
             case Some(deck) =>
+              db.SnapshotText.find(deck.id).foreach(_.destroy())
+              val dss = db.DeckShipSnapshot.column
+              val ships = db.DeckShipSnapshot.findAllBy(sqls.eq(dss.deckId, deck.id))
+              val is = db.ItemSnapshot.column
+              ships.foreach { ship =>
+                db.ItemSnapshot.destroyBy(sqls.eq(is.shipSnapshotId, ship.id))
+              }
+              db.DeckShipSnapshot.destroyBy(sqls.eq(dss.deckId, deck.id))
               deck.destroy()
               Res.success
             case None => BadRequest("Invalid snapId")

@@ -10,11 +10,11 @@ case class ShipSnapshotWithName(ship: Ship, master: MasterShipBase, stype: Maste
     extends ShipParameter {
   def deckId = rest.deckId
   def num = rest.num
-  override lazy val slotMaster: List[MasterSlotItem] = {
+  override lazy val slotMaster: Seq[MasterSlotItem] = {
     val master = MasterSlotItem.findAll().map(ms => ms.id -> ms).toMap
-    ship.slot.map(master.apply)
+    ship.slot.flatMap(master.get)
   }
-  override lazy val slotNames: List[String] = slotMaster.map(_.name)
+  override lazy val slotNames: Seq[String] = slotMaster.map(_.name)
 }
 
 case class ShipSnapshotRest(deckId: Long, num: Int)

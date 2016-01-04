@@ -17,7 +17,7 @@ case class DeckShipSnapshot(
     lv: Short,
     exp: Int,
     nowhp: Short,
-    slot: List[Int],
+    slot: Seq[Int],
     fuel: Int,
     bull: Int,
     dockTime: Long,
@@ -91,6 +91,12 @@ object DeckShipSnapshot extends SQLSyntaxSupport[DeckShipSnapshot] {
     }.map(DeckShipSnapshot(dss.resultName)).single().apply()
   }
 
+  def findByDeck(deckId: Long, num: Short)(implicit session: DBSession = autoSession): Option[DeckShipSnapshot] = {
+    withSQL {
+      select.from(DeckShipSnapshot as dss).where.eq(dss.deckId, deckId).and.eq(dss.num, num)
+    }.map(DeckShipSnapshot(dss.resultName)).single().apply()
+  }
+
   def findWithName(id: Long)(implicit session: DBSession = autoSession): Option[ShipSnapshotWithName] = {
     withSQL {
       select.from(DeckShipSnapshot as dss)
@@ -146,7 +152,7 @@ object DeckShipSnapshot extends SQLSyntaxSupport[DeckShipSnapshot] {
     lv: Short,
     exp: Int,
     nowhp: Short,
-    slot: List[Int],
+    slot: Seq[Int],
     fuel: Int,
     bull: Int,
     dockTime: Long,
@@ -241,6 +247,35 @@ object DeckShipSnapshot extends SQLSyntaxSupport[DeckShipSnapshot] {
       maxhp = maxhp)
   }
 
+  def createFromShip(ship: Ship, deckId: Long, num: Short)(implicit session: DBSession = autoSession): DeckShipSnapshot = {
+    val slotItem = SlotItem.findIn(ship.slot, ship.memberId)
+    create(
+      memberId = ship.memberId,
+      deckId = deckId,
+      num = num,
+      shipId = ship.shipId,
+      lv = ship.lv,
+      exp = ship.exp,
+      nowhp = ship.nowhp,
+      slot = slotItem.map(_.slotitemId),
+      fuel = ship.fuel,
+      bull = ship.bull,
+      dockTime = ship.dockTime,
+      cond = ship.cond.toShort,
+      karyoku = ship.karyoku.toShort,
+      raisou = ship.raisou.toShort,
+      taiku = ship.taiku.toShort,
+      soukou = ship.soukou.toShort,
+      kaihi = ship.kaihi.toShort,
+      taisen = ship.taisen.toShort,
+      sakuteki = ship.sakuteki.toShort,
+      lucky = ship.lucky.toShort,
+      locked = ship.locked,
+      created = System.currentTimeMillis(),
+      maxhp = ship.maxhp.toShort
+    )
+  }
+
   def bulkInsert(ss: Seq[Ship], deckId: Long)(implicit session: DBSession = autoSession): Unit = {
     require(ss.nonEmpty)
     val created = System.currentTimeMillis()
@@ -305,6 +340,12 @@ object DeckShipSnapshot extends SQLSyntaxSupport[DeckShipSnapshot] {
   def destroy(entity: DeckShipSnapshot)(implicit session: DBSession = autoSession): Unit = {
     withSQL {
       delete.from(DeckShipSnapshot).where.eq(column.id, entity.id)
+    }.update().apply()
+  }
+
+  def destroyBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Unit = {
+    withSQL {
+      delete.from(DeckShipSnapshot).where(where)
     }.update().apply()
   }
 

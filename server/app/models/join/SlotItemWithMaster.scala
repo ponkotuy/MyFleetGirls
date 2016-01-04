@@ -8,10 +8,12 @@ import models.db._
  * Date: 14/10/22.
  */
 case class SlotItemWithMaster(item: SlotItem, master: MasterSlotItem) {
+  def memberId = item.memberId
   def slotitemId = master.id
   def name = master.name
   def category = master.category
   def iconType = master.iconType
+  def level = item.level
   def alv = item.alv
 
   def colorClass: String = {
@@ -34,4 +36,15 @@ case class SlotItemWithMaster(item: SlotItem, master: MasterSlotItem) {
   def alvStr: Option[String] = alv.map { alv => s"(${alv})" }
 
   def airSuperiority: Int = alv.map { alv => (alv - 1) * 25 / 6 }.getOrElse(0)
+
+  def itemSnapshot(shipSnapshotId: Long, position: Int, now: Long) = new ItemSnapshot(
+    id = 0L,
+    memberId = memberId,
+    shipSnapshotId = shipSnapshotId,
+    position = position,
+    slotitemId = slotitemId,
+    level = level,
+    alv = alv,
+    created = now
+  )
 }
