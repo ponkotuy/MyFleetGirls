@@ -1,6 +1,6 @@
 package models.db
 
-import models.join.{DeckSnapshotWithAdmiral, DeckSnapshotWithShip}
+import models.join.{ShipSnapshotWithItem, ShipSnapshotWithName, DeckSnapshotWithAdmiral, DeckSnapshotWithShip}
 import scalikejdbc._
 
 case class DeckSnapshot(
@@ -44,8 +44,14 @@ object DeckSnapshot extends SQLSyntaxSupport[DeckSnapshot] {
     val deck = find(id)
     deck.map { d =>
       val ships = DeckShipSnapshot.findAllByWithName(sqls"deck_id = ${d.id}")
-      DeckSnapshotWithShip(d, ships)
+      DeckSnapshotWithShip(d, ships.map(withItems))
     }
+  }
+
+  def withItems(ship: ShipSnapshotWithName)(implicit session: DBSession = autoSession): ShipSnapshotWithItem = {
+    val is = ItemSnapshot.is
+    val items = ItemSnapshot.findAllBy(sqls.eq(is.shipSnapshotId, ship.rest.id))
+    ship.withItem(items)
   }
 
   def findAll()(implicit session: DBSession = autoSession): List[DeckSnapshot] = {
@@ -71,7 +77,7 @@ object DeckSnapshot extends SQLSyntaxSupport[DeckSnapshot] {
       val ships = DeckShipSnapshot.findAllByWithName(sqls"deck_id in (${ids})")
       decks.map { deck =>
         val deckShip = ships.filter(_.deckId == deck.id).sortBy(_.num)
-        DeckSnapshotWithShip(deck, deckShip)
+        DeckSnapshotWithShip(deck, deckShip.map(withItems))
       }
     }
   }
@@ -91,7 +97,7 @@ object DeckSnapshot extends SQLSyntaxSupport[DeckSnapshot] {
       val ships = DeckShipSnapshot.findAllByWithName(sqls"deck_id in (${ids})")
       deckWithAdmiral.map { case (admiral, deck) =>
         val deckShip = ships.filter(_.deckId == deck.id).sortBy(_.num)
-        DeckSnapshotWithAdmiral(deck, deckShip, admiral)
+        DeckSnapshotWithAdmiral(deck, deckShip.map(withItems), admiral)
       }
     } else {
       Nil

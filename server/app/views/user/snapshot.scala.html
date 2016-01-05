@@ -72,8 +72,8 @@
                   <td class="nowrap"><a data-toggle="modal" href="@routes.UserView.snapAship(user.admiral.id, ship.id)" class="modal_link" data-target="#modal">@ship.name</a></td>
                   <td style="@if(ship.expRate > 0){background-color:#D9EDF7;display:block;width:@{(ship.expRate*100).toInt}%}">@ship.lv</td>
                   <td style="padding:0px;"><div style="background-color:@ship.hpRGB.toString;width:@{(ship.hpRate*100).toInt}%;padding:5px;">@ship.nowhp/@ship.maxhp</div></td>
-                  @ship.slotMaster.map { slot => <td>@slot.name</td> }
-                  @{(0 until (4 - ship.slotMaster.size)).map { _ => <td></td> }}
+                  @ship.slotNames.map { slot => <td>@slot</td> }
+                  @{(0 until (4 - ship.slotNames.size)).map { _ => <td></td> }}
                 </tr>
               }
             </tbody>

@@ -28,7 +28,7 @@ object ItemSnapshot extends SQLSyntaxSupport[ItemSnapshot] {
   def apply(is: SyntaxProvider[ItemSnapshot])(rs: WrappedResultSet): ItemSnapshot = autoConstruct(rs, is)
   def apply(is: ResultName[ItemSnapshot])(rs: WrappedResultSet): ItemSnapshot = autoConstruct(rs, is)
 
-  val is = ItemSnapshot.syntax("is")
+  val is = ItemSnapshot.syntax("isnp")
 
   override val autoSession = AutoSession
 
