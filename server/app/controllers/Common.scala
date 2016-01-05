@@ -174,22 +174,40 @@ object Common extends Controller {
 
   val NGStage = Set((1, 1), (2, 2), (2, 3))
   def readActivities(from: Long, limit: Int, offset: Int, memberId: Long = 0L): List[Activity] = {
-    def f = whereMember(_: SQLSyntax, memberId)
-    val started = db.MapRoute.findWithUserBy(sqls"mr.created > ${from} ${f(sqls"mr.member_id")}", limit*8, offset)
-      .filter(_.start.exists(_.start))
-      .filterNot { it => NGStage.contains((it.areaId, it.infoNo)) }
-    val rares = db.MasterShipOther.findAllBy(sqls"mso.backs >= 5").map(_.id).toSet
-    val drops = db.BattleResult.findWithUserBy(sqls"br.created > ${from} and br.get_ship_id is not null ${f(sqls"br.member_id")}", limit*8, offset)
-      .filter(_.getShipId.exists(rares.contains))
-    val rareItems = db.MasterSlotItem.findAllBy(sqls"msi.rare >= 1").map(_.id).toSet
-    val createItems = db.CreateItem.findWithUserBy(sqls"ci.created > ${from} ${f(sqls"ci.member_id")}", limit, offset)
-      .filter { it => rareItems.contains(it.itemId) }
-    val createShips = db.CreateShip.findWithUserBy(sqls"cs.created > ${from} ${f(sqls"cs.member_id")}", limit, offset)
-      .filter { it => rares.contains(it.shipId) }
+    val mr = db.MapRoute.mr
+    val started = db.MapRoute.findWithUserBy(sqls.gt(mr.created, from).and(condMember(mr.memberId, memberId)), limit*8, offset)
+        .filter(_.start.exists(_.start))
+        .filterNot { it => NGStage.contains((it.areaId, it.infoNo)) }
+    val mso = db.MasterShipOther.mso
+    val rares = db.MasterShipOther.findAllBy(sqls.ge(mso.backs, 6)).map(_.id).toSet
+    val drops = readRareDrops(from, memberId, rares, limit, offset)
+    val createItems = readRareCreateItems(from, memberId, limit, offset)
+    val createShips = readRareCreateShip(from, memberId, rares, limit, offset)
     (started ++ drops ++ createItems ++ createShips).sortBy(-_.created).take(limit)
   }
 
-  private def whereMember(col: SQLSyntax, memberId: Long) = if(memberId == 0L) sqls"" else sqls"and ${col} = ${memberId}"
+  private def readRareDrops(from: Long, memberId: Long, rares: Set[Int], limit: Int, offset: Int) = {
+    val br = db.BattleResult.br
+    val where = sqls.gt(br.created, from).and.isNotNull(br.getShipId).and(condMember(br.memberId, memberId))
+    db.BattleResult.findWithUserBy(where, limit*8, offset)
+        .filter(_.getShipId.exists(rares.contains))
+  }
 
+  private def readRareCreateItems(from: Long, memberId: Long, limit: Int, offset: Int) = {
+    val msi = db.MasterSlotItem.msi
+    val rareItems = db.MasterSlotItem.findAllBy(sqls.ge(msi.rare, 2)).map(_.id).toSet
+    val ci = db.CreateItem.ci
+    db.CreateItem.findWithUserBy(sqls.gt(ci.created, from).and(condMember(ci.memberId, memberId)), limit, offset)
+        .filter { it => rareItems.contains(it.itemId) }
+  }
+
+  private def readRareCreateShip(from: Long, memberId: Long, rares: Set[Int], limit: Int, offset: Int) = {
+    val cs = db.CreateShip.cs
+    db.CreateShip.findWithUserBy(sqls.gt(cs.created, from).and(condMember(cs.memberId, memberId)), limit, offset)
+        .filter { it => rares.contains(it.shipId) }
+  }
+
+  private def condMember(column: SQLSyntax, memberId: Long): Option[SQLSyntax] =
+    if(memberId == 0L) None else Some(sqls.eq(column, memberId))
 
 }
