@@ -16,7 +16,7 @@ object DeckPort extends SQLSyntaxSupport[DeckPort] {
   def apply(x: SyntaxProvider[DeckPort])(rs: WrappedResultSet): DeckPort = apply(x.resultName)(rs)
   def apply(x: ResultName[DeckPort])(rs: WrappedResultSet): DeckPort = autoConstruct(rs, x)
 
-  lazy val dp = DeckPort.syntax("dp")
+  val dp = DeckPort.syntax("dp")
 
   def find(memberId: Long, deckId: Int)(implicit session: DBSession = autoSession): Option[DeckPort] = {
     withSQL {
@@ -25,9 +25,12 @@ object DeckPort extends SQLSyntaxSupport[DeckPort] {
     }.map(DeckPort(dp)).single().apply()
   }
 
-  def findAllByUser(memberId: Long)(implicit session: DBSession = autoSession): List[DeckPort] = withSQL {
-    select.from(DeckPort as dp).where.eq(dp.memberId, memberId)
+  def findAllBy(where: SQLSyntax)(implicit session: DBSession = autoSession): List[DeckPort] = withSQL {
+    select.from(DeckPort as dp).where(where)
   }.map(DeckPort(dp)).list().apply()
+
+  def findAllByUser(memberId: Long)(implicit session: DBSession = autoSession): List[DeckPort] =
+    findAllBy(sqls.eq(dp.memberId, memberId))
 
   def create(dp: data.DeckPort, memberId: Long)(
       implicit session: DBSession = DeckPort.autoSession): Unit = {

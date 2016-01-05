@@ -4,6 +4,7 @@ import java.util.UUID
 
 import controllers.form.SetSnapshotOrder
 import models.db
+import models.join.ShipWithName
 import models.req._
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits.applicationMessages
@@ -23,27 +24,45 @@ object WebPost extends Controller {
     RegisterSnapshot.fromReq(request.body) match {
       case Some(snap) =>
         if(uuidCheck(snap.userId, request.session.get("key"))) {
-          db.DeckPort.find(snap.userId, snap.deckport) match {
-            case Some(deck) =>
-              val current = System.currentTimeMillis()
-              val deckSnap = db.DeckSnapshot.create(snap.userId, deck.name, snap.title, snap.comment, current)
-              val ships = db.DeckShip.findAllByDeck(snap.userId, snap.deckport)
-              ships.zipWithIndex.map { case (ship, idx) =>
-                val shipSnap = db.DeckShipSnapshot.createFromShip(ship.ship, deckSnap.id, (idx + 1).toShort)
-                val now = System.currentTimeMillis()
-                val items = ship.slot.zipWithIndex.map { case (item, i) =>
-                  item.itemSnapshot(shipSnap.id, i + 1, now)
-                }
-                db.ItemSnapshot.batchInsert(items)
-              }
-              db.SnapshotText.create(deckSnap)
-              Res.success
-            case None => BadRequest("Invalid deckport")
-          }
+          if(snap.deckport < 10) registerDefaultSnap(snap) else registerCombinedSnap(snap)
         } else Res.authFail
       case None => BadRequest("Invalid data")
     }
   }
+
+  private def registerDefaultSnap(snap: RegisterSnapshot) = {
+    db.DeckPort.find(snap.userId, snap.deckport) match {
+      case Some(deck) =>
+        val current = System.currentTimeMillis()
+        val deckSnap = db.DeckSnapshot.create(snap.userId, deck.name, snap.title, snap.comment, current)
+        val ships = db.DeckShip.findAllByDeck(snap.userId, snap.deckport)
+        registerSnapCommon(deckSnap, ships)
+      case None => BadRequest("Invalid deckport")
+    }
+  }
+
+  private def registerCombinedSnap(snap: RegisterSnapshot) = {
+    val deckIds = Seq(snap.deckport / 10, snap.deckport % 10)
+    val dp = db.DeckPort.dp
+    val ports = db.DeckPort.findAllBy(sqls.eq(dp.memberId, snap.userId).and.in(dp.id, deckIds))
+    val deckSnap = db.DeckSnapshot.create(snap.userId, ports.head.name, snap.title, snap.comment, System.currentTimeMillis())
+    val ships = deckIds.flatMap { deckId => db.DeckShip.findAllByDeck(snap.userId, deckId) }
+    registerSnapCommon(deckSnap, ships)
+  }
+
+  private def registerSnapCommon(deck: db.DeckSnapshot, ships: Seq[ShipWithName]) = {
+    ships.zipWithIndex.map { case (ship, idx) =>
+      val shipSnap = db.DeckShipSnapshot.createFromShip(ship.ship, deck.id, (idx + 1).toShort)
+      val now = System.currentTimeMillis()
+      val items = ship.slot.zipWithIndex.map { case (item, i) =>
+        item.itemSnapshot(shipSnap.id, i + 1, now)
+      }
+      db.ItemSnapshot.batchInsert(items)
+    }
+    db.SnapshotText.create(deck)
+    Res.success
+  }
+
 
   def deleteSnap() = formAsync { request =>
     DeleteSnapshot.fromReq(request.body) match {

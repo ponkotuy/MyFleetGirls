@@ -2,7 +2,8 @@ package controllers
 
 import com.github.nscala_time.time.Imports._
 import honor.Honors
-import models.db.{CalcScore, AGOProgress}
+import models.db.{DeckPort, CalcScore, AGOProgress}
+import models.join.User
 import models.req.{ScoreDays, MaterialDays}
 import org.json4s.native.Serialization.write
 import play.api.mvc._
@@ -78,13 +79,32 @@ object UserView extends Controller {
   }
 
   def registerSnap(memberId: Long, deckId: Int) = userView(memberId) { user =>
-    val ships = db.DeckShip.findAllByDeck(memberId, deckId)
+    if(!user.isMine) {
+      Redirect(routes.View.login(user.admiral.id.toString, routes.UserView.registerSnap(memberId, deckId).url))
+    } else {
+      if (deckId < 10) registerDefaultSnap(user, deckId) else registerCombinedSnap(user, deckId)
+    }
+  }
+
+  private def registerDefaultSnap(user: User, deckId: Int) = {
+    val memberId = user.admiral.id
     db.DeckPort.find(memberId, deckId) match {
       case Some(deck) =>
-        if(user.isMine) Ok(views.html.user.register_snap(user, ships, deck))
-        else Redirect(routes.View.login(user.admiral.id.toString, routes.UserView.registerSnap(memberId, deckId).url))
+        val ships = db.DeckShip.findAllByDeck(memberId, deckId)
+        Ok(views.html.user.register_snap(user, ships, deck))
       case None => BadRequest(s"Not found deck. memberId = ${memberId}, deckId = ${deckId}")
     }
+  }
+
+  private def registerCombinedSnap(user: User, deckId: Int) = {
+    val memberId = user.admiral.id
+    val decks = Seq(deckId / 10, deckId % 10)
+    val dp = db.DeckPort.dp
+    val deckPorts = db.DeckPort.findAllBy(sqls.eq(dp.memberId, memberId).and.in(dp.id, decks))
+    val ds = db.DeckShip.ds
+    val ships = deckPorts.flatMap { port => db.DeckShip.findAllByDeck(memberId, port.id) }
+    val dummyDeck = DeckPort(deckId, memberId, deckPorts.head.name, deckPorts.head.created)
+    Ok(views.html.user.register_snap(user, ships, dummyDeck))
   }
 
   def deleteSnap(snapId: Long) = actionAsync { request =>

@@ -104,6 +104,7 @@ object ItemSnapshot extends SQLSyntaxSupport[ItemSnapshot] {
   }
 
   def batchInsert(entities: Seq[ItemSnapshot])(implicit session: DBSession = autoSession): Seq[Int] = {
+    if(entities.isEmpty) return Nil
     val params: Seq[Seq[(Symbol, Any)]] = entities.map(entity =>
       Seq(
         'memberId -> entity.memberId,
