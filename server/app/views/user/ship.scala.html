@@ -43,7 +43,7 @@
             <ol>
               @decks.filter(_.deckId == deckport.id).map { ship =>
                 <li style="background-color: @ship.rgb.toString">
-                  <a data-toggle="modal" href="aship/@ship.shipId" class="modal_link" data-target="#modal">@ship.name</a>
+                  <a data-toggle="modal" href="aship/@ship.id" class="modal_link" data-target="#modal">@ship.name</a>
                   <small>Lv@ship.lv</small>
                   @ship.antiAirCutinOpt.map { cutin => <span class="label label-default">対空@cutin</span> }
                 </li>
