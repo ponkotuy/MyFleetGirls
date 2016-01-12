@@ -96,7 +96,7 @@ trait ShipParameter extends GraphData with AntiAirCutin {
   def expRate: Double = (exp - ShipExperience.sum(lv)).toDouble/ShipExperience.diff(lv + 1)
   /** LvMAX(100 or 150)までに必要な経験値の取得率 */
   def entireExpRate: Double =
-    if(lv > 99) exp.toDouble/ShipExperience.sum(150) else exp.toDouble/ShipExperience.sum(100)
+    if(lv > 99) exp.toDouble/ShipExperience.sum(155) else exp.toDouble/ShipExperience.sum(100)
 }
 
 object ShipParameter {
