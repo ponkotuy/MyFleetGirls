@@ -1,6 +1,4 @@
 @(user: User, ships: Seq[ShipWithName], decks: Seq[DeckShipWithName], deckports: Seq[DeckPort])
-@import models.join.DeckShipWithName
-@import views.html.user.{head_content, usertab}
 
 @main {
   <title>艦娘 -@{user.admiral.nickname}提督-</title>
@@ -47,6 +45,7 @@
                 <li style="background-color: @ship.rgb.toString">
                   <a data-toggle="modal" href="aship/@ship.shipId" class="modal_link" data-target="#modal">@ship.name</a>
                   <small>Lv@ship.lv</small>
+                  @ship.antiAirCutinOpt.map { cutin => <span class="label label-default">対空@cutin</span> }
                 </li>
               }
             </ol>

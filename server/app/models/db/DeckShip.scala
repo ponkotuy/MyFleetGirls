@@ -39,13 +39,20 @@ object DeckShip extends SQLSyntaxSupport[DeckShip] {
   }.map(DeckShip(ds)).list().apply()
 
   def findAllByUserWithName(memberId: Long)(implicit session: DBSession = autoSession): List[DeckShipWithName] = {
+    val ssi = ShipSlotItem.ssi
+    val slots = ShipSlotItem.findAllBy(sqls.eq(ssi.memberId, memberId))
     withSQL {
-      select(ds.deckId, ds.num, ds.memberId, ds.shipId, s.lv, s.cond, ms.name)
-        .from(DeckShip as ds)
-        .innerJoin(Ship as s).on(sqls"${ds.shipId} = ${s.id} and ${ds.memberId} = ${s.memberId}")
-        .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
-        .where.eq(ds.memberId, memberId).orderBy(ds.deckId, ds.num)
-    }.map(DeckShipWithName(ds, s, ms)).list().apply()
+      select.from(DeckShip as ds)
+          .innerJoin(Ship as s).on(sqls"${ds.shipId} = ${s.id} and ${ds.memberId} = ${s.memberId}")
+          .innerJoin(MasterShipBase as ms).on(s.shipId, ms.id)
+          .innerJoin(MasterStype as mst).on(ms.stype, mst.id)
+          .innerJoin(MasterShipSpecs as mss).on(s.shipId, mss.id)
+          .where.eq(ds.memberId, memberId).orderBy(ds.deckId, ds.num)
+    }.map { rs =>
+      val id = rs.int(s.resultName.id)
+      val slot = slots.filter(_.shipId == id).map(_.slotitemId)
+      DeckShipWithName(Ship(s, slot)(rs), MasterShipBase(ms)(rs), MasterStype(mst)(rs), MasterShipSpecs(mss)(rs), DeckShip(ds)(rs))
+    }.list().apply()
   }
 
   def findAllByDeck(memberId: Long, deckId: Int)(implicit session: DBSession = autoSession): List[ShipWithName] = {

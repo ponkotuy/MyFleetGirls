@@ -1,12 +1,12 @@
 package models.join
 
 import models.db._
-import tool.{EquipType, ShipExperience}
+import tool.{AntiAirCutin, EquipType, ShipExperience}
 
 /**
  * Date: 14/06/16.
  */
-trait ShipParameter extends GraphData {
+trait ShipParameter extends GraphData with AntiAirCutin {
   import models.join.ShipParameter._
 
   def ship: Ship

@@ -43,12 +43,20 @@ object EquipType {
   case object Flare extends EquipType(33)
   case object Command extends EquipType(34)
   case object Pilot extends EquipType(35)
+  case object AntiAirSystem extends EquipType(36)
+  case object AntiSurface extends EquipType(37)
+  case object Crew extends EquipType(39)
+  case object SonarL extends EquipType(40)
+  case object SeaplaneL extends EquipType(41)
+  case object SearchlightL extends EquipType(42)
+  case object Meal extends EquipType(43)
+  case object Supply extends EquipType(44)
 
   val values = Array(MainGunS, MainGunM, MainGunL, SubGun, Torpedo, Fighter, Bomber, TorpedoBomber, Scout,
     ScoutSeaplane, SeaBasedBomber, RadarS, RadarL, Sonar, DepthBomb, Armor, EngineChamber, AntiAirBullet,
     AntiShipBullet, ProximityFuze, AntiAirGun, MidgetSubmarine, DamageControl, LandingCraft, Autogiro,
     MaritimePartrolAircraft, ArmorM, ArmorL, Searchlight, SimplifiedPackage, RepairFacility, ShortTorpedo, Flare,
-    Command, Pilot)
+    Command, Pilot, AntiAirSystem, AntiSurface, Crew, SonarL, SeaplaneL, SearchlightL, Meal, Supply)
   def fromInt(v: Int): Option[EquipType] = values.find(_.v == v)
 
   val Scouts: Array[EquipType] = Array(Scout, ScoutSeaplane)
