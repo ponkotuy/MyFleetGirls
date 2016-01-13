@@ -8,6 +8,12 @@
   <script src="@Js.Common"></script>
   <script src="@Js.Vue"></script>
   <script src="@Js.Coffee("snapshot")"></script>
+  <style>
+    .fleetinfo {
+      float: right;
+      margin-bottom: -6px;
+    }
+  </style>
 } {
   @statistics_head("search_snap") {
     <div class="page-header">
@@ -66,6 +72,10 @@
 
         <div class="panel-body">
           @x.comments.map { it => @it <br> }
+          <p class="fleetinfo">
+            <small>制空値</small> @{x.ships.map(_.airSuperiority).sum}
+            <small>索敵値</small> @{tool.Calc.spotter(x.ships)}
+          </p>
         </div>
         <table class="table table-striped">
           <thead>
@@ -84,7 +94,10 @@
             @x.ships.map { ship =>
               <tr>
                 <td>@ship.stAbbName</td>
-                <td class="nowrap"><a data-toggle="modal" href="@routes.UserView.snapAship(x.memberId, ship.id)" class="modal_link" data-target="#modal">@ship.name</a></td>
+                <td class="nowrap">
+                  <a data-toggle="modal" href="@routes.UserView.snapAship(x.memberId, ship.id)" class="modal_link" data-target="#modal">@ship.name</a>
+                  @ship.antiAirCutinOpt.map { cutin => <span class="label label-default">対空@cutin</span> }
+                </td>
                 <td style="@if(ship.expRate > 0){background-color:#D9EDF7;display:block;width:@{(ship.expRate*100).toInt}%}">@ship.lv</td>
                 <td style="padding:0px;"><div style="background-color:@ship.hpRGB.toString;width:@{(ship.hpRate*100).toInt}%;padding:5px;">@ship.nowhp/@ship.maxhp</div></td>
                 @ship.slotNames.map { slot => <td>@slot</td> }
