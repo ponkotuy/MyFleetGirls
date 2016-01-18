@@ -1,4 +1,4 @@
-@(ship: ShipParameter, user: User, isSnap: Boolean)
+@(ship: ShipParameter with tool.AirSuperiority, user: User, isSnap: Boolean)
 
 <!-- Require jqPlot -->
 <input type="hidden" id="shipid" value="@ship.id" />

@@ -1,7 +1,7 @@
 package models.join
 
 import models.db._
-import tool.{AntiAirCutin, EquipType, ShipExperience}
+import tool.{AntiAirCutin, ShipExperience}
 
 /**
  * Date: 14/06/16.
@@ -43,31 +43,8 @@ trait ShipParameter extends GraphData with AntiAirCutin {
   def isDamaged = nowhp <= (maxhp / 2)
   def damage: Option[Damage] = Damage.fromHp(nowhp, maxhp)
 
-  lazy val slot: Seq[SlotItemWithMaster] = SlotItem.findIn(ship.slot, memberId)
-  lazy val slotMaster: Seq[MasterSlotItem] = {
-    val ids = slot.map(_.slotitemId)
-    val map = MasterSlotItem.findIn(ids).map(it => it.id -> it).toMap
-    ids.flatMap(map.get)
-  }
-
-  /** 制空値計算。大きく分けて艦載機性能とスロットに依る部分と、練度に依る部分に分かれる */
-  lazy val airSuperiority: Int = {
-    import EquipType._
-    (slot, slotMaster, spec.maxeq).zipped.collect {
-      case (s, sm, slotCount) if sm.category.exists(CarrierBased.contains) =>
-        val fromAlv = for {
-          a <- s.alv
-          b <- sm.category.collect {
-            case Fighter => 25
-            case Bomber | TorpedoBomber => 3
-            case SeaBasedBomber => 9
-          }
-        } yield (a - 1) * b / 6
-        Math.floor(sm.antiair * math.sqrt(slotCount)).toInt + fromAlv.getOrElse(0)
-    }.sum
-  }
-
-  def slotNames: Seq[String] = slot.map(_.nameWithLevel)
+  def slotMaster: Seq[MasterSlotItem]
+  def slotNames: Seq[String]
 
   def hpRate: Double = nowhp / maxhp.toDouble
 

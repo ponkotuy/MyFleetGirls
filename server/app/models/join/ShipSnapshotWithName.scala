@@ -2,6 +2,7 @@ package models.join
 
 import models.db._
 import scalikejdbc._
+import tool.AirSuperiorityWithoutSlot
 
 /**
  * Date: 14/06/16.
@@ -43,7 +44,7 @@ case class ShipSnapshotWithItem(
   }
 }
 
-trait ShipSnapshotParameter extends ShipParameter {
+trait ShipSnapshotParameter extends ShipParameter with AirSuperiorityWithoutSlot {
   def rest: ShipSnapshotRest
 
   def deckId = rest.deckId
