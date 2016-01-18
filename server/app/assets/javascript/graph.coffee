@@ -31,8 +31,6 @@ class @Graph
   mainPlot: (raw, active, min, max = moment().valueOf()) ->
     min_ = min ?= 0
     data = ((r.data.filter (x) -> min_ < x[0] and x[0] < max) for r in raw)
-#    rangeExps = rangeData.map (x) -> x[1]
-#    option.yaxis = {min: _.min(rangeExps)}
     if min?
       first = _.min(data[0].map (x) -> x[0])
       min = Math.max(min, first)
