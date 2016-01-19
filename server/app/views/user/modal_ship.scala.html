@@ -85,10 +85,12 @@
     </tbody>
   </table>
 
-  <div id="exp">
-    <div id="exp_graph" class="chart width-adj"></div>
-    <div id="exp_overview" class="overview width-adj"></div>
-  </div>
+  @if(!isSnap) {
+    <div id="exp">
+      <div id="exp_graph" class="chart width-adj"></div>
+      <div id="exp_overview" class="overview width-adj"></div>
+    </div>
+  }
 </div>
 
 <div class="modal-footer">
