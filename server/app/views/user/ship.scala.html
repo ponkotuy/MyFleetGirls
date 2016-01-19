@@ -30,13 +30,13 @@
               <small>制空値</small>
               @{
                 decks.filter(_.deckId == deckport.id)
-                  .flatMap { it => ships.find(_.id == it.shipId) }
+                  .flatMap { it => ships.find(_.id == it.id) }
                   .map(_.airSuperiority).sum
               }
               <small>索敵値</small>
               @{
                 val deckShips = decks.filter(_.deckId == deckport.id)
-                  .flatMap { it => ships.find(_.id == it.shipId) }
+                  .flatMap { it => ships.find(_.id == it.id) }
                 tool.Calc.spotter(deckShips)
               }
             </p>
