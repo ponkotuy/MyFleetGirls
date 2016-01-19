@@ -31,7 +31,7 @@ case class ShipSnapshotWithItem(
     spec: MasterShipSpecs,
     rest: ShipSnapshotRest,
     items: Seq[ItemSnapshot]
-) extends ShipSnapshotParameter {
+) extends ShipSnapshotParameter with AirSuperiorityWithoutSlot {
   override def slotNames: Seq[String] = {
     if(items.isEmpty) super.slotNames
     else {
@@ -42,9 +42,13 @@ case class ShipSnapshotWithItem(
       }
     }
   }
+
+  override def slotAlvs: Seq[Int] =
+    if(items.isEmpty) Seq.fill(slotMaster.size)(1)
+    else items.map(_.alv.getOrElse(1))
 }
 
-trait ShipSnapshotParameter extends ShipParameter with AirSuperiorityWithoutSlot {
+trait ShipSnapshotParameter extends ShipParameter {
   def rest: ShipSnapshotRest
 
   def deckId = rest.deckId
