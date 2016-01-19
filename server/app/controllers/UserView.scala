@@ -2,7 +2,7 @@ package controllers
 
 import com.github.nscala_time.time.Imports._
 import honor.Honors
-import models.db.{DeckPort, CalcScore, AGOProgress}
+import models.db.{ItemSnapshot, DeckPort, CalcScore, AGOProgress}
 import models.join.User
 import models.req.{ScoreDays, MaterialDays}
 import org.json4s.native.Serialization.write
@@ -178,7 +178,11 @@ object UserView extends Controller {
 
   def snapAship(memberId: Long, shipId: Int) = userView(memberId) { user =>
     db.DeckShipSnapshot.findWithName(shipId) match {
-      case Some(ship) => Ok(views.html.user.modal_ship(ship, user, true))
+      case Some(ship) =>
+        val is = ItemSnapshot.is
+        val items = db.ItemSnapshot.findAllBy(sqls.eq(is.memberId, memberId).and.eq(is.shipSnapshotId, ship.rest.id))
+            .sortBy(_.position)
+        Ok(views.html.user.modal_ship(ship.withItem(items), user, true))
       case _ => NotFound("艦娘が見つかりませんでした")
     }
   }
