@@ -16,6 +16,7 @@ trait AntiAirCutin {
     mayaMk2Cutin
         .orElse(akidukiType)
         .orElse(isuzuMk2Cutin)
+        .orElse(kasumiCutin)
         .orElse(battleshipCutin)
         .orElse(commonCutin)
 
@@ -47,6 +48,13 @@ trait AntiAirCutin {
     if(!Battleship.contains(stName)) return None
     if(hasMainGun && hasAntiAirBullet && hasSystem) {
       Some(if(hasAntiAirRadar) 6 else 4)
+    } else None
+  }
+
+  private def kasumiCutin: Option[Int] = {
+    if(shipId != KasumiMk2Otsu) return None
+    if(countGun > 0 && countCaliber > 0) {
+      Some(if(hasAntiAirRadar) 4 else 2)
     } else None
   }
 
