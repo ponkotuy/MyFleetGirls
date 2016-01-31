@@ -10,9 +10,9 @@ trait AntiAirCutin {
   def stName: String
   def slotMaster: Seq[MasterSlotItem]
 
-  lazy val antiAirCutin: Int = antiAirCutinOpt.getOrElse(0)
+  def antiAirCutin: Int = antiAirCutinOpt.getOrElse(0)
 
-  def antiAirCutinOpt: Option[Int] =
+  lazy val antiAirCutinOpt: Option[Int] =
     mayaMk2Cutin
         .orElse(akidukiType)
         .orElse(isuzuMk2Cutin)
