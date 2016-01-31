@@ -45,7 +45,7 @@ case class MasterRemodelJson(
 
 object MasterRemodelJson {
   def fromWithName(xs: Iterable[MasterRemodelWithName]): Vector[MasterRemodelJson] = {
-    xs.groupBy { x => (x.master.slotitemId, x.master.slotitemLevel) }.values.flatMap { ys =>
+    val result: Vector[MasterRemodelJson] = xs.groupBy { x => (x.master.slotitemId, x.master.slotitemLevel) }.values.flatMap { ys =>
       val groups = ys.groupBy(_.to.map(_.after.id)).values
       groups.map { zs =>
         val seconds = if(groups.size <= 1) "全て" else zs.map(_.secondShip.name).mkString(", ")
@@ -53,5 +53,6 @@ object MasterRemodelJson {
         MasterRemodelJson(z.master, z.slotitem, z.use, z.to, seconds)
       }
     }(breakOut)
+    result.sortBy(_.master.slotitemLevel)
   }
 }
