@@ -6,7 +6,6 @@ import models.db.{Admiral, Ranking => dbRanking}
 import ranking.common.{Ranking, RankingElement}
 
 object ScoreRanking extends Ranking {
-  import DateTime.now
   import Ranking._
   import ScoreRankingCommon._
   import util.MFGDateUtil._
@@ -16,7 +15,7 @@ object ScoreRanking extends Ranking {
   override val divClass: String = colmd3
 
   override def rankingQuery(limit: Int): Seq[RankingElement] = {
-    val interval = new Interval(monthHead(now()), now())
+    val interval = new Interval(monthHead(DateTime.now(Tokyo)), DateTime.now(Tokyo))
     val calc = scoresFromCalc(interval)
     val observed = scoresFromObserved(interval)
     val merged = (calc.keySet ++ observed.keySet).map { memberId =>

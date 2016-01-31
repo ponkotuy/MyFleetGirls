@@ -31,7 +31,7 @@ object BattleScore {
 
   def calcFromMemberId(memberId: Long): BattleScore = {
     val exp = fromExp(memberId)
-    val now = DateTime.now()
+    val now = DateTime.now(Tokyo)
     val mHead = monthHead(now)
     val eo = calcNowEo(memberId, new Interval(mHead, now))
     val lastEo = if(now.getMonthOfYear == 1) 0 else calcEo(memberId, new Interval(monthHead(now - 1.month), mHead)) / 35
@@ -40,7 +40,7 @@ object BattleScore {
 
   private def fromExp(memberId: Long): FromExp = {
     val b = Basic.b
-    val now = DateTime.now()
+    val now = DateTime.now(Tokyo)
     Basic.findByUser(memberId).map(_.experience).fold(FromExp.empty) { nowExp =>
       val lastMonthExp =
         Basic.findExpBy(sqls.eq(b.memberId, memberId).and.gt(b.created, monthHead(now).getMillis), b.created).getOrElse(nowExp)

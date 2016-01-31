@@ -11,6 +11,7 @@ import scala.util.Try
  */
 case class Period(from: Option[LocalDate], to: Option[LocalDate], default: Boolean) {
   import Period._
+  import util.MFGDateUtil._
 
   def where(target: SQLSyntax): SQLSyntax = whereOpt(target).getOrElse(sqls"true")
   def whereOpt(target: SQLSyntax): Option[SQLSyntax] = {
@@ -20,7 +21,7 @@ case class Period(from: Option[LocalDate], to: Option[LocalDate], default: Boole
   }
 
   def fromStr = from.getOrElse(DefaultStart).toString(ISODateTimeFormat.date())
-  def toStr = to.getOrElse(LocalDate.now()).toString(ISODateTimeFormat.date())
+  def toStr = to.getOrElse(LocalDate.now(Tokyo)).toString(ISODateTimeFormat.date())
 }
 
 object Period {

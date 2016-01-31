@@ -8,10 +8,11 @@ import com.github.nscala_time.time.Imports._
  * Date: 15/04/01.
  */
 object SpecialDay extends HonorCategory {
+  import util.MFGDateUtil._
   override def category: Int = 15
 
   override def approved(memberId: Long, db: HonorCache): List[String] = {
-    val now = DateTime.now(DateTimeZone.forOffsetHours(9))
+    val now = DateTime.now(Tokyo)
     val monthDay = MonthDay.fromJoda(now)
     Honors.get(monthDay).toList
   }

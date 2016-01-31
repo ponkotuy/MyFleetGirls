@@ -22,7 +22,7 @@ import scala.concurrent.Future
  */
 object UserView extends Controller {
   import controllers.Common._
-  import DateTime.now
+  import util.MFGDateUtil._
 
   def name(user: String) = Action.async {
     Future {
@@ -51,7 +51,7 @@ object UserView extends Controller {
     val cs = db.CalcScore.cs
     val scores = db.CalcScore.findAllBy(
       sqls.eq(cs.memberId, memberId)
-          .and.gt(cs.yyyymmddhh, Ymdh.monthHead(now()).toInt)
+          .and.gt(cs.yyyymmddhh, Ymdh.monthHead(DateTime.now(Tokyo)).toInt)
     ).sortBy(_.yyyymmddhh)
     val nowScore = BattleScore.calcFromMemberId(memberId).toCalcScore(memberId, 0, System.currentTimeMillis())
     val scoreDays = (CalcScore.zero :: scores ++ List(nowScore)).reverseIterator.sliding(2).map { case Seq(now, prev) =>
@@ -122,9 +122,9 @@ object UserView extends Controller {
   }
 
   def material(memberId: Long) = userView(memberId) { user =>
-    val day20ago = DateTime.now - 20.days
+    val day20ago = DateTime.now(Tokyo) - 20.days
     val materials = db.Material.findAllByUser(memberId, from = day20ago.getMillis)
-    val days = materials.groupBy(m => (new DateTime(m.created) - 5.hours).toLocalDate)
+    val days = materials.groupBy(m => (new DateTime(m.created, Tokyo) - 5.hours).toLocalDate)
       .mapValues(_.maxBy(_.created))
       .toSeq.sortBy(_._1).reverse
     val materialDays = days.sliding(2).flatMap {

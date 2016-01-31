@@ -13,14 +13,16 @@ import scala.collection.breakOut
  */
 object RemodelRanking extends Ranking {
   import Ranking._
+  import util.MFGDateUtil._
+
   // Titleとして使用
   override def title: String = "装備改修"
 
   // Rankingを生成するのに使用
   override def rankingQuery(limit: Int): Seq[RankingElement] = {
-    val ago30 = (DateTime.now - 7.days).getMillis
+    val ago7 = (DateTime.now(Tokyo) - 7.days).getMillis
     val si = SlotItem.si
-    val remodelCounts: Map[Long, Int] = SlotItem.findAllBy(sqls.gt(si.created, ago30)).groupBy(_.memberId).mapValues { items =>
+    val remodelCounts: Map[Long, Int] = SlotItem.findAllBy(sqls.gt(si.created, ago7)).groupBy(_.memberId).mapValues { items =>
       items.map(_.level).sum
     }
     val admiralIds: Vector[Long] = remodelCounts.toVector.sortBy(-_._2).map(_._1).take(limit)
@@ -37,7 +39,7 @@ object RemodelRanking extends Ranking {
   }
 
   // 注釈。同じコメントは1つに纏められます
-  override def comment: Seq[String] = List(comment30days, "装備改修は+の合計です")
+  override def comment: Seq[String] = List(comment7days, "装備改修は+の合計です")
 
   // Ranking一覧で、Ranking毎のdivのclass設定に使用
   override def divClass: String = colmd3

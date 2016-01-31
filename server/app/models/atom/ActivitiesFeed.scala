@@ -4,7 +4,7 @@ import controllers.routes
 import models.join.Activity
 import org.joda.time.DateTime
 import tool.Settings
-import util.abdera.{Summary, Entriable, Feedable}
+import util.abdera.{Entriable, Feedable, Summary}
 
 /**
  *
@@ -23,7 +23,7 @@ case class ActivitiesFeed(xs: List[Activity]) extends Feedable {
 }
 
 object ActivitiesFeed {
-  def url: String = routes.ViewSta.activities().toString()
+  def url: String = routes.ViewSta.activities().toString
 }
 
 case class ActivityEntry(x: Activity) extends Entriable {

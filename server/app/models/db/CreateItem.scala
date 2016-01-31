@@ -28,6 +28,7 @@ case class CreateItem(
 
 
 object CreateItem extends SQLSyntaxSupport[CreateItem] {
+  import util.MFGDateUtil._
 
   override val tableName = "create_item"
 
@@ -129,7 +130,7 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
 
   def materialCount(where: Option[SQLSyntax] = None)(implicit session: DBSession = autoSession): List[(ItemMat, Long)] = {
     if(where.isEmpty) {
-      val now = DateTime.now
+      val now = DateTime.now(Tokyo)
       if(cacheDate + CachePeriod < now) {
         materialCountCache = materialCountFromDB(where)
         cacheDate = now

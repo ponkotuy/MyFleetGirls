@@ -11,6 +11,8 @@ import scalikejdbc._
  */
 object RareShipRanking extends Ranking {
   import Ranking._
+  import util.MFGDateUtil._
+
   // Titleとして使用
   override def title: String = "レア艦"
 
@@ -37,7 +39,7 @@ object RareShipRanking extends Ranking {
 
   private def activeAdmiral()(implicit session: DBSession= ShipBook.autoSession): List[Long] = {
     val sb = ShipBook.sb
-    val ago30 = (DateTime.now - 30.days).getMillis
+    val ago30 = (DateTime.now(Tokyo) - 30.days).getMillis
     withSQL {
       select(sqls.distinct(sb.memberId)).from(ShipBook as sb).where.gt(sb.updated, ago30)
     }.map(_.long(1)).list().apply()

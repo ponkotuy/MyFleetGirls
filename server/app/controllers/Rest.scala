@@ -161,10 +161,12 @@ object Rest extends Controller {
   }
 
   def remodelLogSummary(slotId: Int) = returnJson {
-    val aWeekAgo = DateTime.now - 7.weeks
-    val where = sqls"slot_id = ${slotId}".and.append(sqls"created > ${aWeekAgo.getMillis}")
+    import util.MFGDateUtil._
+    val aWeekAgo = DateTime.now(Tokyo) - 1.week
+    val r = db.RemodelSlot.r
+    val where = sqls.eq(r.slotId, slotId).and.gt(r.created, aWeekAgo.getMillis)
     val logs = db.RemodelSlot.findAllWithSecondShipBy(where, 1000)
-    val dates = logs.map(_.remodel.created).map(time => new DateTime(time, DateTimeZone.forID("Asia/Tokyo")))
+    val dates = logs.map(_.remodel.created).map(time => new DateTime(time, Tokyo))
     val dayOfWeekSummary = dates.map(_.getDayOfWeek).sorted.map(_.toString).distinct
     val secondShipCount = logs.map(_.ship).groupBy(_.map(_.name)).mapValues(_.size)
     val secondShipSummary = secondShipCount.toList.sortBy(-_._2).map(_._1)

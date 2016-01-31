@@ -13,14 +13,13 @@ import com.github.nscala_time.time.Imports._
 object LastScoreRanking extends Ranking {
   import Ranking._
   import util.MFGDateUtil._
-  import DateTime.now
 
   override val title: String = "先月戦果"
   override val comment: Seq[String] = Nil
   override val divClass: String = colmd3
 
   override def rankingQuery(limit: Int): Seq[RankingElement] = {
-    val interval = new Interval(monthHead(now() - 1.month), monthLast(now() - 1.month))
+    val interval = new Interval(monthHead(DateTime.now(Tokyo) - 1.month), monthLast(DateTime.now(Tokyo) - 1.month))
     val calc = scoresFromCalc(interval)
     val observed = scoresFromObserved(interval)
     val merged = (calc.keySet ++ observed.keySet).map { memberId =>
