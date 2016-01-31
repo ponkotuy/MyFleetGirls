@@ -1,6 +1,6 @@
 
 import akka.actor.Props
-import com.github.nscala_time.time.{StaticDateTime, StaticDateTimeZone}
+import com.github.nscala_time.time.StaticDateTime
 import models.db._
 import org.joda.time.{DateTimeConstants, LocalDate}
 import play.api._
@@ -21,8 +21,7 @@ import scala.concurrent.duration._
  */
 object Global extends WithFilters(Cors) with GlobalSettings{
   import util.Cron._
-
-  val Japan = StaticDateTimeZone.forOffsetHours(9)
+  import util.MFGDateUtil._
 
   override def onStart(app: Application): Unit = {
     val cron = Akka.system().actorOf(Props[CronScheduler], "cron")
@@ -61,7 +60,7 @@ object Global extends WithFilters(Cors) with GlobalSettings{
       val monthAgo = System.currentTimeMillis() - 30.days.toMillis
       val materials = Material.findAllByUser(user.id, to = monthAgo)
       val days = materials.groupBy { mat =>
-        new LocalDate(mat.created, Japan)
+        new LocalDate(mat.created, Tokyo)
       }.values
       days.foreach { daily =>
         val rest = Set(daily.minBy(_.steel).id, daily.maxBy(_.steel).id)
@@ -76,7 +75,7 @@ object Global extends WithFilters(Cors) with GlobalSettings{
       val monthAgo = System.currentTimeMillis() - 30.days.toMillis
       val basics = Basic.findAllByUser(user.id, to = monthAgo)
       val days = basics.groupBy { b =>
-        new LocalDate(b.created, Japan)
+        new LocalDate(b.created, Tokyo)
       }.values
       days.foreach { daily =>
         val rest = Set(daily.minBy(_.experience).id, daily.maxBy(_.experience).id)

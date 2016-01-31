@@ -12,6 +12,7 @@ import com.github.nscala_time.time.Imports._
   */
 object LastScoreRanking extends Ranking {
   import Ranking._
+  import util.MFGDateUtil._
   import DateTime.now
 
   override val title: String = "先月戦果"

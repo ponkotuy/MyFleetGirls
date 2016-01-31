@@ -22,6 +22,7 @@ case class BattleScore(monthlyExp: Int, yearlyExp: Int, eo: Int, lastEo: Int) {
 }
 
 object BattleScore {
+  import util.MFGDateUtil._
   case class FromExp(monthly: Int, yearly: Int)
 
   object FromExp {
@@ -107,32 +108,9 @@ object BattleScore {
     cell.filter(_.boss).map(_.cell)
   }
 
-  private def monthHead(now: DateTime): DateTime =
-    new LocalDate(now.getYear, now.getMonthOfYear, 1).toDateTime(LocalTime.MIDNIGHT)
-  private def yearHead(now: DateTime): DateTime =
-    new LocalDate(now.getYear, 1, 1).toDateTime(LocalTime.MIDNIGHT)
-
   /**
     * BIGINTカラムの範囲指定を生成
     */
   private def intervalToSQLSyntax(column: SQLSyntax, interval: Interval): SQLSyntax =
     sqls.gt(column, interval.startMillis).and.lt(column, interval.endMillis)
-}
-
-/**
-  * @param score Clear score
-  * @param clear Required clear count
-  * @param boss Is exists boss
-  */
-case class StageInfo(stage: Stage, score: Int, clear: Int, boss: Boolean)
-
-object StageInfo {
-  val values = Vector(
-    StageInfo(Stage(1, 5), 75, 4, boss = true),
-    StageInfo(Stage(1, 6), 75, 7, boss = false),
-    StageInfo(Stage(2, 5), 100, 4, boss = true),
-    StageInfo(Stage(3, 5), 150, 4, boss = true),
-    StageInfo(Stage(4, 5), 180, 5, boss = true),
-    StageInfo(Stage(5, 5), 200, 5, boss = true)
-  )
 }

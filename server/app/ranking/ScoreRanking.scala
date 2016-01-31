@@ -1,16 +1,15 @@
 package ranking
 
-import controllers.routes
-import models.db.{Ranking => dbRanking, Admiral, CalcScore}
-import ranking.common.{Ranking, RankingElement}
-import scalikejdbc._
 import com.github.nscala_time.time.Imports._
-import util.Ymdh
+import controllers.routes
+import models.db.{Admiral, Ranking => dbRanking}
+import ranking.common.{Ranking, RankingElement}
 
 object ScoreRanking extends Ranking {
+  import DateTime.now
   import Ranking._
-  import DateTime. now
   import ScoreRankingCommon._
+  import util.MFGDateUtil._
 
   override val title: String = "当月戦果"
   override val comment: Seq[String] = Nil

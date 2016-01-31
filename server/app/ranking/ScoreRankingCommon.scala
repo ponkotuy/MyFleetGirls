@@ -34,7 +34,4 @@ object ScoreRankingCommon {
   private def interval2MillisSyntax(column: SQLSyntax, interval: Interval): SQLSyntax =
     sqls.ge(column, interval.startMillis).and.le(column, interval.endMillis)
 
-  private[ranking] def monthHead(date: DateTime): DateTime = date.withDayOfMonth(1).withTime(0, 0, 0, 0)
-  private[ranking] def monthLast(date: DateTime): DateTime =
-    ((date + 1.month).withDayOfMonth(1) - 1.day).withTime(0, 0, 0, 0)
 }
