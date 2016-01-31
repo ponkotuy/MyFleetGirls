@@ -15,6 +15,7 @@ import com.github.nscala_time.time.Imports._
 object ScoreRankingCommon {
   val cs = CalcScore.cs
   val r = dbRanking.r
+  val ObservedDelay = 3.hours
 
   def scoresFromCalc(interval: Interval): Map[Long, Int] = {
     val scores = CalcScore.findAllBy(interval2YmdhSyntax(cs.yyyymmddhh, interval))
@@ -22,7 +23,8 @@ object ScoreRankingCommon {
   }
 
   def scoresFromObserved(interval: Interval): Map[Long, Int] = {
-    val fixed = interval.withStart(interval.start + 3.hours) // 取得結果が3時間先月分なので3時間様子を見る
+    if(interval.duration < ObservedDelay) return Map() // まだ先月分しか表示されてない筈なので空を返す
+    val fixed = interval.withStart(interval.start + ObservedDelay) // 取得結果が3時間先月分なので3時間様子を見る
     val scores = dbRanking.findAllBy(interval2MillisSyntax(r.created, fixed))
     scores.groupBy(_.memberId).mapValues(_.maxBy(_.created).rate)
   }
