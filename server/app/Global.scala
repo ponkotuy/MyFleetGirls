@@ -36,7 +36,7 @@ object Global extends WithFilters(Cors) with GlobalSettings {
     cron ! CronSchedule(Cron(23, 3, aster, aster, aster), _ => cutBasicRecord())
     cron ! CronSchedule(Cron(0, 2, aster, aster, aster), insertCalcScore)
     cron ! CronSchedule(Cron(0, 14, aster, aster, aster), insertCalcScore)
-    cron ! CronSchedule(Cron(59, aster, aster, aster, aster), _ => insertRanking(Ymdh.now(Tokyo)))
+    cron ! CronSchedule(Cron(0, aster, aster, aster, aster), _ => insertRanking(Ymdh.now(Tokyo)))
     // 月末にだけやりたいのでとりあえず起動して内部でチェック
     cron ! CronSchedule(Cron(0, 22, aster, aster, aster), insertCalcScoreMonthly)
     Akka.system().scheduler.schedule(0.seconds, 45.seconds, cron, "minutes")
