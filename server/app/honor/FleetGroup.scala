@@ -1,7 +1,7 @@
 package honor
 
 import models.join.FleetGroupWithShip
-import ranking.EvolutionBase
+import ranking.common.EvolutionBase
 import collection.breakOut
 
 /**

@@ -10,6 +10,7 @@ object ScoreRanking extends Ranking {
   import ScoreRankingCommon._
   import util.MFGDateUtil._
 
+  override val id = 9
   override val title: String = "当月戦果"
   override val comment: Seq[String] = Nil
   override val divClass: String = colmd3
@@ -24,7 +25,7 @@ object ScoreRanking extends Ranking {
     merged.flatMap { case (memberId, score) =>
       Admiral.find(memberId).map { admiral =>
         val url = routes.UserView.user(memberId).toString
-        RankingElement(admiral.nickname, <span>{score}</span>, url, score)
+        RankingElement(admiral.id, admiral.nickname, Score(score), url, score)
       }
     }.take(limit)
   }

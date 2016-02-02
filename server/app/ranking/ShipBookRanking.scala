@@ -17,6 +17,7 @@ case object ShipBookRanking extends Ranking {
   def a = Admiral.a
   lazy val sb = ShipBook.syntax("sb")
 
+  override val id = 4
   override val title: String = "艦娘図鑑登録"
   override val comment: List[String] = List(comment30days, "図鑑登録は中破絵をカウントに含めています")
   override val divClass: String = colmd3
@@ -24,7 +25,7 @@ case object ShipBookRanking extends Ranking {
   override def rankingQuery(limit: Int): List[RankingElement] = {
     findAllOrderByShipBookCount(limit, agoMillis(30.days)).map { case (admiral, count) =>
       val url = routes.UserView.book(admiral.id).toString
-      RankingElement(admiral.nickname, <span>{count}</span>, url, count)
+      RankingElement(admiral.id, admiral.nickname, Count(count), url, count)
     }
   }
 

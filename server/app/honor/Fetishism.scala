@@ -1,6 +1,6 @@
 package honor
 
-import ranking.EvolutionBase
+import ranking.common.EvolutionBase
 
 import scala.collection.breakOut
 

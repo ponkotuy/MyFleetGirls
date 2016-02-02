@@ -3,10 +3,14 @@ import akka.actor.Props
 import com.github.nscala_time.time.StaticDateTime
 import models.db._
 import org.joda.time.{DateTimeConstants, LocalDate}
+import org.json4s.NoTypeHints
+import org.json4s.native.Serialization
+import org.json4s.native.Serialization.write
 import play.api._
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.mvc._
 import play.libs.Akka
+import ranking.common.RankingType
 import scalikejdbc._
 import tool.BattleScore
 import util.{Cron, CronSchedule, CronScheduler, Ymdh}
@@ -19,7 +23,7 @@ import scala.concurrent.duration._
  * @author ponkotuy
  * Date: 14/05/12.
  */
-object Global extends WithFilters(Cors) with GlobalSettings{
+object Global extends WithFilters(Cors) with GlobalSettings {
   import util.Cron._
   import util.MFGDateUtil._
 
@@ -32,9 +36,20 @@ object Global extends WithFilters(Cors) with GlobalSettings{
     cron ! CronSchedule(Cron(23, 3, aster, aster, aster), _ => cutBasicRecord())
     cron ! CronSchedule(Cron(0, 2, aster, aster, aster), insertCalcScore)
     cron ! CronSchedule(Cron(0, 14, aster, aster, aster), insertCalcScore)
+    cron ! CronSchedule(Cron(59, aster, aster, aster, aster), _ => insertRanking(Ymdh.now(Tokyo)))
     // 月末にだけやりたいのでとりあえず起動して内部でチェック
     cron ! CronSchedule(Cron(0, 22, aster, aster, aster), insertCalcScoreMonthly)
     Akka.system().scheduler.schedule(0.seconds, 45.seconds, cron, "minutes")
+  }
+
+  override def beforeStart(app: Application): Unit = {
+    initRanking()
+  }
+
+  private def initRanking(): Unit = {
+    val now = Ymdh.now(Tokyo)
+    val mr = MyfleetRanking.mr
+    if(MyfleetRanking.countBy(sqls.eq(mr.yyyymmddhh, now.toInt)) == 0L) insertRanking(now)
   }
 
   private def deleteDailyQuest(): Unit = {
@@ -92,6 +107,20 @@ object Global extends WithFilters(Cors) with GlobalSettings{
       score.toCalcScore(memberId, yyyymmddhh, now.getMillis)
     }
     CalcScore.batchInsert(scores)
+  }
+
+  private def insertRanking(now: Ymdh): Unit = {
+    implicit val formats = Serialization.formats(NoTypeHints)
+    Logger.info("Insert MyfleetRanking")
+    RankingType.values.foreach { rType =>
+      rType.rankings.foreach { rank =>
+        val result = rank.rankingQuery(200)
+        val rankings = result.zipWithIndex.map { case (r, idx) =>
+          MyfleetRanking(0L, rank.id, idx + 1, now.toInt, r.targetId, r.name, write(r.data), r.url, r.num, System.currentTimeMillis())
+        }
+        if(rankings.nonEmpty) MyfleetRanking.batchInsert(rankings)
+      }
+    }
   }
 
   private def insertCalcScoreMonthly(cron: Cron): Unit = {

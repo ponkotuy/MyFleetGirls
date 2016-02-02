@@ -15,6 +15,7 @@ case object ExpByShipRanking extends Ranking {
   lazy val s = Ship.syntax("s")
   lazy val ms = MasterShipBase.syntax("ms")
 
+  override val id = 101
   override val title: String = "合計経験値"
   override val comment: List[String] = List("進化前で集計しています")
   override val divClass: String = colmd3

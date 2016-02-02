@@ -1,15 +1,17 @@
 package ranking.common
 
-import models.join.ShipWithName
+import models.join.ShipParameter
 
 import scala.concurrent.duration.Duration
-import scala.xml.Elem
 
 /**
  * @author ponkotuy
  * Date: 15/01/29.
  */
 trait Ranking {
+  // DBにおいてidとして使う
+  def id: Int
+
   // Titleとして使用
   def title: String
 
@@ -34,5 +36,8 @@ object Ranking {
   def fromString(str: String): Option[Ranking] = values.find(_.toString == str)
 
   def agoMillis(d: Duration): Long = System.currentTimeMillis() - d.toMillis
-  def toElem(ship: ShipWithName): Elem = <span>{ship.name}<small>{"Lv" + ship.lv}</small></span>
+  def toData(ship: ShipParameter): ShipMini =
+    ShipMini(ship.master.id, ship.ship.id, ship.name, ship.lv)
 }
+
+case class ShipMini(masterId: Int, id: Int, name: String, lv: Short) extends RankingData

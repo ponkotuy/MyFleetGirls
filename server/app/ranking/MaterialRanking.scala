@@ -17,16 +17,15 @@ case object MaterialRanking extends Ranking {
   def a = Admiral.a
   lazy val m = Material.syntax("m")
 
+  override val id = 1
   override val title: String = "資源保有量"
-
   override val divClass: String = collg3
-
   override val comment: List[String] = List(comment7days)
 
   override def rankingQuery(limit: Int): List[RankingElement] = {
     findAllOrderByMaterial(limit, agoMillis(7.days)).map { case (admiral, count) =>
-      val url = routes.UserView.material(admiral.id).toString()
-      RankingElement(admiral.nickname, <span>{f"$count%,d"}</span>, url, count)
+      val url = routes.UserView.material(admiral.id).toString
+      RankingElement(admiral.id, admiral.nickname, Count(count), url, count)
     }
   }
 

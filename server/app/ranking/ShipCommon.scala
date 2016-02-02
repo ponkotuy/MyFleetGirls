@@ -1,7 +1,7 @@
 package ranking
 
 import models.db.MasterShipBase
-import ranking.common.RankingElement
+import ranking.common.{RankingData, EvolutionBase, RankingElement}
 import controllers.routes
 import scala.collection.mutable
 
@@ -14,6 +14,7 @@ object ShipCommon {
   /**
    *
    * 艦娘一覧のRankingElementを生成
+ *
    * @param xs: (艦娘ID, count)
    */
   def toRankingElement(xs: Seq[(Int, Long)]): Seq[RankingElement] = {
@@ -22,7 +23,7 @@ object ShipCommon {
     val withMasters = result.flatMap { case (id, count) => masters.get(id).map(_ -> count) }
     withMasters.map { case (master, count) =>
       val url = routes.ViewSta.shipBook(master.id).toString
-      RankingElement(master.name, <span>{f"$count%,d"}</span>, url, count)
+      RankingElement(master.id, master.name, Count(count), url, count)
     }
   }
 
@@ -35,3 +36,5 @@ object ShipCommon {
     map.toSeq
   }
 }
+
+case class Count(count: Long) extends RankingData

@@ -16,26 +16,26 @@ sealed abstract class RankingType {
 object RankingType {
   case object Admiral extends RankingType {
     override val rankings: Array[Ranking] = Array(
-      CachedRanking(MaterialRanking),
-      CachedRanking(FirstShipRanking),
-      CachedRanking(LuckRanking),
-      CachedRanking(ShipBookRanking),
-      CachedRanking(MarriedRanking),
-      CachedRanking(SumShipExpRanking),
-      CachedRanking(ItemBookRanking),
-      CachedRanking(RemodelRanking),
-      CachedRanking(ScoreRanking),
-      CachedRanking(LastScoreRanking)
+      MaterialRanking,
+      FirstShipRanking,
+      LuckRanking,
+      ShipBookRanking,
+      MarriedRanking,
+      SumShipExpRanking,
+      ItemBookRanking,
+      RemodelRanking,
+      ScoreRanking,
+      LastScoreRanking
     )
   }
 
   case object Ship extends RankingType {
     override val rankings: Array[Ranking] = Array(
-      CachedRanking(ExpByShipRanking),
-      CachedRanking(YomeByShipRanking),
-      CachedRanking(MarriedByShipRanking),
-      CachedRanking(FirstShipRate),
-      CachedRanking(RareShipRanking)
+      ExpByShipRanking,
+      YomeByShipRanking,
+      MarriedByShipRanking,
+      FirstShipRate,
+      RareShipRanking
     )
   }
 

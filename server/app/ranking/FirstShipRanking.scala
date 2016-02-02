@@ -22,14 +22,15 @@ case object FirstShipRanking extends Ranking {
   val mst = MasterStype.syntax("mst")
   val mss = MasterShipSpecs.syntax("mss")
 
+  override val id = 2
   override val title: String = "初期艦Lv"
   override val divClass: String = collg3
   override val comment: List[String] = List(comment7days)
 
   override def rankingQuery(limit: Int): List[RankingElement] = {
     findAllByOrderByExp(sqls"s.id = 1", limit, agoMillis(7.days)).map { case (admiral, ship) =>
-      val url = routes.UserView.top(admiral.id).toString()
-      RankingElement(admiral.nickname, toElem(ship), url, ship.exp)
+      val url = routes.UserView.top(admiral.id).toString
+      RankingElement(admiral.id, admiral.nickname, toData(ship), url, ship.exp)
     }
   }
 

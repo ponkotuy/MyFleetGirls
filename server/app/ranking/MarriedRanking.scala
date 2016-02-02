@@ -14,14 +14,15 @@ import scala.concurrent.duration._
 case object MarriedRanking extends Ranking {
   import Ranking._
 
+  override val id = 5
   override val title: String = "図鑑ケッコン数"
   override val comment: List[String] = List(comment30days)
   override val divClass: String = colmd3
 
   override def rankingQuery(limit: Int): List[RankingElement] = {
     findAllOrderByMarriedCount(limit, agoMillis(7.days)).map { case (admiral, count) =>
-      val url = routes.UserView.book(admiral.id).toString()
-      RankingElement(admiral.nickname, <span>{count}</span>, url, count)
+      val url = routes.UserView.book(admiral.id).toString
+      RankingElement(admiral.id, admiral.nickname, Count(count), url, count)
     }
   }
 

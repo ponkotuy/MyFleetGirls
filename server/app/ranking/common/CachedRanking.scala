@@ -5,6 +5,7 @@ package ranking.common
  * Date: 15/01/29.
  */
 case class CachedRanking(ranking: Ranking) extends Ranking {
+  override def id = ranking.id
   override def title = ranking.title
   override def comment = ranking.comment
   override def divClass = ranking.divClass

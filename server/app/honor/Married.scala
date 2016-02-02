@@ -1,7 +1,7 @@
 package honor
 
 import models.db.MasterShipBase
-import ranking.EvolutionBase
+import ranking.common.EvolutionBase
 import scalikejdbc._
 
 /**

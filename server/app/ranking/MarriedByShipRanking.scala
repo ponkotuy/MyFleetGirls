@@ -11,14 +11,11 @@ import scalikejdbc._
  */
 case object MarriedByShipRanking extends Ranking {
   import ranking.common.Ranking._
-  // Titleとして使用
-  override def title: String = "ケッコン数"
 
-  // 注釈。同じコメントは1つに纏められます
-  override def comment: Seq[String] = List("進化前で集計しています")
-
-  // Ranking一覧で、Ranking毎のdivのclass設定に使用
-  override def divClass: String = colmd3
+  override val id = 103
+  override val title: String = "ケッコン数"
+  override val comment: Seq[String] = List("進化前で集計しています")
+  override val divClass: String = colmd3
 
   // Rankingを生成するのに使用
   override def rankingQuery(limit: Int): Seq[RankingElement] = {

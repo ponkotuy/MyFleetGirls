@@ -1,7 +1,7 @@
 package ranking
 
 import models.db.{Admiral, Ship}
-import ranking.common.{RankingElement, Ranking}
+import ranking.common.{RankingData, ShipMini, RankingElement, Ranking}
 import scalikejdbc._
 import controllers.routes
 import scala.concurrent.duration._
@@ -12,6 +12,7 @@ import scala.concurrent.duration._
 case object LuckRanking extends Ranking {
   import Ranking._
 
+  override val id = 3
   override val title: String = "運改修度"
   override val comment: List[String] = List(comment7days)
   override val divClass: String = collg3
@@ -23,11 +24,14 @@ case object LuckRanking extends Ranking {
       admiral <- Admiral.find(ship.memberId)
     } yield {
       RankingElement(
+        admiral.id,
         admiral.nickname,
-        <span>+{ship.upLucky} <small>{ship.name}{ship.spec.luckyMin}→{ship.lucky}</small></span>,
+        LuckData(toData(ship), ship.spec.luckyMin, ship.lucky),
         routes.UserView.user(admiral.id).url,
         ship.upLucky
       )
     }
   }
 }
+
+case class LuckData(ship: ShipMini, luckMin: Int, luck: Int) extends RankingData
