@@ -17,10 +17,11 @@ case object FirstShipRanking extends Ranking {
 
   def a = Admiral.a
 
-  val s = Ship.syntax("s")
-  val ms = MasterShipBase.syntax("ms")
-  val mst = MasterStype.syntax("mst")
-  val mss = MasterShipSpecs.syntax("mss")
+  // 以下はDBをinitializeしないといけないのでlazyにしておく(さもないとtestでこける)
+  lazy val s = Ship.syntax("s")
+  lazy val ms = MasterShipBase.syntax("ms")
+  lazy val mst = MasterStype.syntax("mst")
+  lazy val mss = MasterShipSpecs.syntax("mss")
 
   override val id = 2
   override val title: String = "初期艦Lv"
