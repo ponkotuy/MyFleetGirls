@@ -119,10 +119,11 @@ object ViewSta extends Controller {
 
   def ranking() = actionAsync(Redirect(routes.ViewSta.rankingWithType("Admiral")))
 
-  def rankingWithType(typ: String) = actionAsync {
+  def rankingWithType(typ: String, yyyymmddhh: Int) = actionAsync {
     import util.MFGDateUtil._
+    val ymdh = if(yyyymmddhh < 0) Ymdh.now(Tokyo) else Ymdh.fromInt(yyyymmddhh)
     RankingType.fromStr(typ).map { ranking =>
-      Ok(views.html.sta.ranking(ranking, Ymdh.now(Tokyo)))
+      Ok(views.html.sta.ranking(ranking, ymdh))
     }.getOrElse(NotFound("Not found page type"))
   }
 

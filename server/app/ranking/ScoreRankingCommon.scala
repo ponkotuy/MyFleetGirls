@@ -30,8 +30,8 @@ object ScoreRankingCommon {
   }
 
   private def interval2YmdhSyntax(column: SQLSyntax, interval: Interval): SQLSyntax = {
-    sqls.ge(column, Ymdh.fromDate(interval.start).toInt)
-        .and.le(column, Ymdh.fromDate(interval.end).toInt)
+    sqls.ge(column, Ymdh.fromDateTime(interval.start).toInt)
+        .and.le(column, Ymdh.fromDateTime(interval.end).toInt)
   }
   private def interval2MillisSyntax(column: SQLSyntax, interval: Interval): SQLSyntax =
     sqls.ge(column, interval.startMillis).and.le(column, interval.endMillis)
