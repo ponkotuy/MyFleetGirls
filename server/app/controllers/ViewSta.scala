@@ -9,6 +9,7 @@ import org.json4s.native.Serialization.write
 import play.api.mvc._
 import ranking.common.{RankingType, Ranking}
 import scalikejdbc._
+import util.Ymdh
 
 import scala.util.Try
 
@@ -68,7 +69,7 @@ object ViewSta extends Controller {
     val sum = counts.map(_._2).sum.toDouble
     val withRate = counts.map { case (item, count) => (item.name, count, count/sum) }
     val countJsonRaw = counts.map { case (item, count) =>
-      val url = routes.ViewSta.fromShip().toString() + s"#query=${item.name}"
+      val url = routes.ViewSta.fromShip().toString + s"#query=${item.name}"
       Map("label" -> item.name, "data" -> count, "url" -> url)
     }
     Ok(views.html.sta.citem(citem, write(countJsonRaw), withRate, citems))
@@ -119,8 +120,9 @@ object ViewSta extends Controller {
   def ranking() = actionAsync(Redirect(routes.ViewSta.rankingWithType("Admiral")))
 
   def rankingWithType(typ: String) = actionAsync {
+    import util.MFGDateUtil._
     RankingType.fromStr(typ).map { ranking =>
-      Ok(views.html.sta.ranking(ranking))
+      Ok(views.html.sta.ranking(ranking, Ymdh.now(Tokyo)))
     }.getOrElse(NotFound("Not found page type"))
   }
 

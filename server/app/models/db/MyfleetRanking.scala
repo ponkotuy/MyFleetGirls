@@ -1,6 +1,9 @@
 package models.db
 
+import ranking.common.RankingElement
 import scalikejdbc._
+import org.json4s._
+import org.json4s.native.JsonMethods._
 
 case class MyfleetRanking(
   id: Long,
@@ -18,6 +21,15 @@ case class MyfleetRanking(
 
   def destroy()(implicit session: DBSession = MyfleetRanking.autoSession): Unit = MyfleetRanking.destroy(this)(session)
 
+  def toRankingElement: Option[RankingElement] = {
+    for {
+      rank <- ranking.common.Ranking.fromId(rankingId)
+      parsed <- parseOpt(data)
+      decoded <- rank.decodeData(parsed)
+    } yield {
+      RankingElement(targetId, targetName, decoded, url, num)
+    }
+  }
 }
 
 
@@ -114,7 +126,7 @@ object MyfleetRanking extends SQLSyntaxSupport[MyfleetRanking] {
   }
 
   def batchInsert(entities: Seq[MyfleetRanking])(implicit session: DBSession = autoSession): Seq[Int] = {
-    val params: Seq[Seq[(Symbol, Any)]] = entities.map(entity => 
+    val params: Seq[Seq[(Symbol, Any)]] = entities.map(entity =>
       Seq(
         'rankingId -> entity.rankingId,
         'rank -> entity.rank,
