@@ -1,9 +1,12 @@
 package ranking
 
-import models.db.{Admiral, Ship}
-import ranking.common.{RankingData, ShipMini, RankingElement, Ranking}
-import scalikejdbc._
 import controllers.routes
+import models.db.{Admiral, Ship}
+import org.json4s._
+import ranking.common.{Ranking, RankingData, RankingElement}
+import ranking.data.{ShipMini, LuckData}
+import scalikejdbc._
+
 import scala.concurrent.duration._
 
 /**
@@ -26,12 +29,12 @@ case object LuckRanking extends Ranking {
       RankingElement(
         admiral.id,
         admiral.nickname,
-        LuckData(toData(ship), ship.spec.luckyMin, ship.lucky),
+        LuckData(ShipMini.toData(ship), ship.spec.luckyMin, ship.lucky),
         routes.UserView.user(admiral.id).url,
         ship.upLucky
       )
     }
   }
-}
 
-case class LuckData(ship: ShipMini, luckMin: Int, luck: Int) extends RankingData
+  override def decodeData(v: JValue): Option[RankingData] = LuckData.decode(v)
+}

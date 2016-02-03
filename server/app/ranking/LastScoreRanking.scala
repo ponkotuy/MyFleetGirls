@@ -1,10 +1,12 @@
 package ranking
 
+import com.github.nscala_time.time.Imports._
 import controllers.routes
 import models.db.Admiral
+import org.json4s._
 import ranking.ScoreRankingCommon._
-import ranking.common.{RankingData, RankingElement, Ranking}
-import com.github.nscala_time.time.Imports._
+import ranking.common.{Ranking, RankingData, RankingElement}
+import ranking.data.Score
 
 /**
   * Date: 2016/01/02
@@ -34,6 +36,7 @@ object LastScoreRanking extends Ranking {
       }
     }.take(limit)
   }
-}
 
-case class Score(score: Int) extends RankingData
+  // JSONになったRankingDataをdeserializeする
+  override def decodeData(v: JValue): Option[RankingData] = Score.decode(v)
+}

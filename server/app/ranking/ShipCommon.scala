@@ -1,8 +1,10 @@
 package ranking
 
-import models.db.MasterShipBase
-import ranking.common.{RankingData, EvolutionBase, RankingElement}
 import controllers.routes
+import models.db.MasterShipBase
+import ranking.common.{EvolutionBase, RankingElement}
+import ranking.data.Count
+
 import scala.collection.mutable
 
 /**
@@ -37,4 +39,3 @@ object ShipCommon {
   }
 }
 
-case class Count(count: Long) extends RankingData

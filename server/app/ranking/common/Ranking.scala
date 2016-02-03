@@ -1,6 +1,6 @@
 package ranking.common
 
-import models.join.ShipParameter
+import org.json4s.JValue
 
 import scala.concurrent.duration.Duration
 
@@ -23,6 +23,9 @@ trait Ranking {
 
   // Rankingを生成するのに使用
   def rankingQuery(limit: Int): Seq[RankingElement]
+
+  // JSONになったRankingDataをdeserializeする
+  def decodeData(v: JValue): Option[RankingData]
 }
 
 object Ranking {
@@ -36,8 +39,4 @@ object Ranking {
   def fromString(str: String): Option[Ranking] = values.find(_.toString == str)
 
   def agoMillis(d: Duration): Long = System.currentTimeMillis() - d.toMillis
-  def toData(ship: ShipParameter): ShipMini =
-    ShipMini(ship.master.id, ship.ship.id, ship.name, ship.lv)
 }
-
-case class ShipMini(masterId: Int, id: Int, name: String, lv: Short) extends RankingData

@@ -2,7 +2,9 @@ package ranking
 
 import controllers.routes
 import models.db
-import ranking.common.{EvolutionBase, Ranking, RankingData, RankingElement}
+import org.json4s._
+import ranking.common._
+import ranking.data.CountWithSum
 import scalikejdbc._
 
 /**
@@ -31,6 +33,6 @@ case object FirstShipRate extends Ranking {
       RankingElement(master.id, master.name, CountWithSum(count, sum), url, count)
     }
   }
-}
 
-case class CountWithSum(count: Long, sum: Long) extends RankingData
+  override def decodeData(v: JValue): Option[RankingData] = CountWithSum.decode(v)
+}

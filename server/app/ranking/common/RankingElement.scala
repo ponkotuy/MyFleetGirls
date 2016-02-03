@@ -1,5 +1,7 @@
 package ranking.common
 
+import scala.xml.Elem
+
 /**
  *
  * @author ponkotuy
@@ -18,4 +20,6 @@ object RankingElement {
 }
 
 // JSONにSerializeできる必要がある
-trait RankingData
+trait RankingData {
+  def toElem: Elem
+}

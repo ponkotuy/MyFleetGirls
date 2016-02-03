@@ -2,7 +2,9 @@ package ranking
 
 import controllers.routes
 import models.db.{Admiral, Material}
-import ranking.common.{RankingElement, Ranking}
+import org.json4s.JValue
+import ranking.common.{RankingData, RankingElement, Ranking}
+import ranking.data.Count
 import scalikejdbc._
 import scala.concurrent.duration._
 
@@ -43,4 +45,7 @@ case object MaterialRanking extends Ranking {
       Admiral(a)(rs) -> (mat.fuel + mat.ammo + mat.steel + mat.bauxite)
     }.list().apply()
   }
+
+  // JSONになったRankingDataをdeserializeする
+  override def decodeData(v: JValue): Option[RankingData] = Count.decode(v)
 }

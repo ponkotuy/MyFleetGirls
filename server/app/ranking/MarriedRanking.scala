@@ -1,7 +1,9 @@
 package ranking
 
 import controllers.routes
-import ranking.common.{RankingElement, Ranking}
+import org.json4s.JValue
+import ranking.common.{RankingData, RankingElement, Ranking}
+import ranking.data.Count
 import scalikejdbc._
 import models.db._
 import scala.concurrent.duration._
@@ -30,4 +32,6 @@ case object MarriedRanking extends Ranking {
       implicit session: DBSession = ShipBook.autoSession): List[(Admiral, Long)] = {
     ShipBookRanking.shipBookCountBy(sqls"sb.is_married = true", from).sortBy(_._2).reverse.take(limit)
   }
+
+  override def decodeData(v: JValue): Option[RankingData] = Count.decode(v)
 }

@@ -1,7 +1,9 @@
 package ranking
 
 import controllers.routes
-import ranking.common.{RankingElement, Ranking}
+import org.json4s.JValue
+import ranking.common.{RankingData, RankingElement, Ranking}
+import ranking.data.Count
 import scalikejdbc._
 import models.db._
 import scala.concurrent.duration._
@@ -40,4 +42,6 @@ case object ItemBookRanking extends Ranking {
         .limit(limit)
     }.map { rs => Admiral(a)(rs) -> rs.long("cnt") }.list().apply()
   }
+
+  override def decodeData(v: JValue): Option[RankingData] = Count.decode(v)
 }

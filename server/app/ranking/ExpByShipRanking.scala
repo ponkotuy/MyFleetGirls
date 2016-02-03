@@ -1,7 +1,9 @@
 package ranking
 
 import models.db._
-import ranking.common.{Ranking, RankingElement}
+import org.json4s.JValue
+import ranking.common.{RankingData, Ranking, RankingElement}
+import ranking.data.Count
 import scalikejdbc._
 
 /**
@@ -32,4 +34,6 @@ case object ExpByShipRanking extends Ranking {
     }.list().apply()
     ShipCommon.toRankingElement(expSum).take(limit)
   }
+
+  override def decodeData(v: JValue): Option[RankingData] = Count.decode(v)
 }

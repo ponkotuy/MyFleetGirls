@@ -1,9 +1,12 @@
 package ranking
 
 import controllers.routes
-import ranking.common.{RankingData, RankingElement, Ranking}
-import scalikejdbc._
 import models.db._
+import org.json4s._
+import ranking.common.{Ranking, RankingData, RankingElement}
+import ranking.data.Exp
+import scalikejdbc._
+
 import scala.concurrent.duration._
 
 /**
@@ -42,6 +45,6 @@ case object SumShipExpRanking extends Ranking {
       Admiral(a)(rs) -> rs.long("sum")
     }.list().apply()
   }
-}
 
-case class Exp(exp: Long) extends RankingData
+  override def decodeData(v: JValue): Option[RankingData] = Exp.decode(v)
+}

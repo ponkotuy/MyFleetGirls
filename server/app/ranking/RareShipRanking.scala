@@ -2,7 +2,9 @@ package ranking
 
 import com.github.nscala_time.time.Imports._
 import models.db.ShipBook
-import ranking.common.{EvolutionBase, Ranking, RankingElement}
+import org.json4s.JValue
+import ranking.common.{RankingData, EvolutionBase, Ranking, RankingElement}
+import ranking.data.Count
 import scalikejdbc._
 
 /**
@@ -40,4 +42,7 @@ object RareShipRanking extends Ranking {
       select(sqls.distinct(sb.memberId)).from(ShipBook as sb).where.gt(sb.updated, ago30)
     }.map(_.long(1)).list().apply()
   }
+
+  // JSONになったRankingDataをdeserializeする
+  override def decodeData(v: JValue): Option[RankingData] = Count.decode(v)
 }

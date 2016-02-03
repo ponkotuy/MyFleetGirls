@@ -3,7 +3,9 @@ package ranking
 import com.github.nscala_time.time.Imports._
 import controllers.routes
 import models.db.{Admiral, Ranking => dbRanking}
-import ranking.common.{Ranking, RankingElement}
+import org.json4s.JValue
+import ranking.common.{Ranking, RankingData, RankingElement}
+import ranking.data.Score
 
 object ScoreRanking extends Ranking {
   import Ranking._
@@ -29,4 +31,7 @@ object ScoreRanking extends Ranking {
       }
     }.take(limit)
   }
+
+  // JSONになったRankingDataをdeserializeする
+  override def decodeData(v: JValue): Option[RankingData] = Score.decode(v)
 }

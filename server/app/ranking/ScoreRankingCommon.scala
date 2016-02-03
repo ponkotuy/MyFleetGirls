@@ -35,5 +35,4 @@ object ScoreRankingCommon {
   }
   private def interval2MillisSyntax(column: SQLSyntax, interval: Interval): SQLSyntax =
     sqls.ge(column, interval.startMillis).and.le(column, interval.endMillis)
-
 }

@@ -1,7 +1,9 @@
 package ranking
 
 import controllers.routes
-import ranking.common.{RankingElement, Ranking}
+import org.json4s.JValue
+import ranking.common.{RankingData, RankingElement, Ranking}
+import ranking.data.Count
 import scalikejdbc._
 import models.db._
 import scala.concurrent.duration._
@@ -48,4 +50,7 @@ case object ShipBookRanking extends Ranking {
         .groupBy(sb.memberId)
     }.map { rs => Admiral(a)(rs) -> rs.long("cnt") }.list().apply()
   }
+
+  // JSONになったRankingDataをdeserializeする
+  override def decodeData(v: JValue): Option[RankingData] = Count.decode(v)
 }

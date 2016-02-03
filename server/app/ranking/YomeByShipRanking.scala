@@ -1,7 +1,9 @@
 package ranking
 
 import models.db.YomeShip
-import ranking.common.{Ranking, RankingElement}
+import org.json4s.JValue
+import ranking.common.{RankingData, Ranking, RankingElement}
+import ranking.data.Count
 
 /**
  *
@@ -20,4 +22,7 @@ case object YomeByShipRanking extends Ranking {
     val yomeCounts = YomeShip.countAllByShip().map { case (ship, count) => ship.id -> count }
     ShipCommon.toRankingElement(yomeCounts).take(limit)
   }
+
+  // JSONになったRankingDataをdeserializeする
+  override def decodeData(v: JValue): Option[RankingData] = Count.decode(v)
 }

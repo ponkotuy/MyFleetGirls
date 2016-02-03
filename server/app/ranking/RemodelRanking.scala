@@ -2,14 +2,17 @@ package ranking
 
 import controllers.routes
 import models.db.{Admiral, SlotItem}
-import ranking.common.{RankingElement, Ranking}
+import org.json4s.JValue
+import ranking.common.{RankingData, RankingElement, Ranking}
+import ranking.data.Count
 import scalikejdbc._
 import com.github.nscala_time.time.Imports._
 import scala.collection.breakOut
 
 /**
  * Date: 15/07/28.
- * @author ponkotuy
+  *
+  * @author ponkotuy
  */
 object RemodelRanking extends Ranking {
   import Ranking._
@@ -40,4 +43,5 @@ object RemodelRanking extends Ranking {
     }
   }
 
+  override def decodeData(v: JValue): Option[RankingData] = Count.decode(v)
 }
