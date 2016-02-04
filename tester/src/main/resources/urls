@@ -66,8 +66,9 @@
 /entire/sta/route_fleet/1/2/1/3?from=2015-01-01&to=2015-02-28&limit=10&offset=10
 /entire/sta/ranking
 /entire/sta/ranking/Admiral
-/entire/sta/ranking/Ship
-/entire/sta/rank/CachedRanking(MaterialRanking)
+/entire/sta/ranking/Ship?yyyymmddhh=2016020503
+/entire/sta/rank/MaterialRanking
+/entire/sta/rank/MaterialRanking?yyyymmddhh=2016020503
 /entire/sta/book
 /entire/sta/book/71
 /entire/sta/remodel_slot
