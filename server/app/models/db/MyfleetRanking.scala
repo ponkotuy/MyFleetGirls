@@ -23,13 +23,15 @@ case class MyfleetRanking(
 
   def toRankingElement: Option[RankingElement] = {
     for {
-      rank <- ranking.common.Ranking.fromId(rankingId)
+      rank <- ranking
       parsed <- parseOpt(data)
       decoded <- rank.decodeData(parsed)
     } yield {
       RankingElement(targetId, targetName, decoded, url, num)
     }
   }
+
+  lazy val ranking: Option[_root_.ranking.common.Ranking] = _root_.ranking.common.Ranking.fromId(rankingId)
 }
 
 
