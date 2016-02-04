@@ -1,7 +1,8 @@
 package honor
 
-import models.db.Admiral
-import ranking.common.{Ranking, RankingElement, RankingType}
+import models.db.MyfleetRanking
+import ranking.common.RankingType
+import scalikejdbc._
 
 import scala.collection.breakOut
 
@@ -14,15 +15,18 @@ object RankingTop extends HonorCategory {
   override def category: Int = 3
 
   override def approved(memberId: Long, db: HonorCache): List[String] = {
-    val rankings: Map[Ranking, Seq[RankingElement]] =
-      RankingType.Admiral.rankings.map(it => it -> it.rankingQuery(20))(breakOut)
-    val admiralName = Admiral.find(memberId).map(_.nickname)
-    val tops = rankings.filter { case (admiral, xs) =>
-      xs.headOption.exists(top => xs.takeWhile(_.num == top.num).exists(x => admiralName.contains(x.name)))
-    }.keys
-    val ins = rankings.filter { case (_, xs) => xs.exists(x => admiralName.contains(x.name)) }.keys
-    (tops.map(top => s"${top.title}トップ") ++ ins.map(in => s"${in.title}ランクイン")).toList
+    val rankings = findRankings(memberId)
+    val tops = rankings.filter(_.rank == 1)
+    val topHonors = tops.flatMap { top => top.ranking.map { t => s"${t.title}トップ" } }.distinct
+    val inHonors = rankings.flatMap { in => in.ranking.map { i => s"${i.title}ランクイン"} }.distinct
+    topHonors ++ inHonors
   }
 
   override val comment: String = "ランキングトップとランクイン"
+  def findRankings(memberId: Long)(implicit session: DBSession = AutoSession) = {
+    val all = MyfleetRanking.findAllBy(sqls.eq(MyfleetRanking.mr.targetId, memberId).and.le(MyfleetRanking.mr.rank, 20))
+    val ids: Set[Int] = RankingType.Admiral.rankings.map(_.id)(breakOut)
+    // targetIdは艦娘IDも含むので、ランキング対象が提督のランキングに絞る
+    all.filter { r => ids.contains(r.rankingId) }
+  }
 }

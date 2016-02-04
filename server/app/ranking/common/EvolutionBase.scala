@@ -1,4 +1,4 @@
-package ranking
+package ranking.common
 
 import com.ponkotuy.value.ShipIds
 import models.db.MasterShipAfter

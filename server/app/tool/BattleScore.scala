@@ -10,7 +10,6 @@ import scalikejdbc._
   * @author ponkotuy
   */
 case class BattleScore(monthlyExp: Int, yearlyExp: Int, eo: Int, lastEo: Int) {
-
   def pp: String = {
     s"${sum}(${toString})"
   }

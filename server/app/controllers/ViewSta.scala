@@ -9,6 +9,7 @@ import org.json4s.native.Serialization.write
 import play.api.mvc._
 import ranking.common.{RankingType, Ranking}
 import scalikejdbc._
+import util.{MFGDateUtil, Ymdh}
 
 import scala.util.Try
 
@@ -68,7 +69,7 @@ object ViewSta extends Controller {
     val sum = counts.map(_._2).sum.toDouble
     val withRate = counts.map { case (item, count) => (item.name, count, count/sum) }
     val countJsonRaw = counts.map { case (item, count) =>
-      val url = routes.ViewSta.fromShip().toString() + s"#query=${item.name}"
+      val url = routes.ViewSta.fromShip().toString + s"#query=${item.name}"
       Map("label" -> item.name, "data" -> count, "url" -> url)
     }
     Ok(views.html.sta.citem(citem, write(countJsonRaw), withRate, citems))
@@ -118,16 +119,25 @@ object ViewSta extends Controller {
 
   def ranking() = actionAsync(Redirect(routes.ViewSta.rankingWithType("Admiral")))
 
-  def rankingWithType(typ: String) = actionAsync {
+  def rankingWithType(typ: String, yyyymmddhh: Int) = actionAsync {
+    val ymdh = rankingYmdh(yyyymmddhh)
     RankingType.fromStr(typ).map { ranking =>
-      Ok(views.html.sta.ranking(ranking))
+      Ok(views.html.sta.ranking(ranking, ymdh))
     }.getOrElse(NotFound("Not found page type"))
   }
 
-  def rankingDetails(_ranking: String) = actionAsync {
+  def rankingDetails(_ranking: String, yyyymmddhh: Int) = actionAsync {
+    val ymdh = rankingYmdh(yyyymmddhh)
     Ranking.fromString(_ranking).map { ranking =>
-      Ok(views.html.sta.modal_ranking(ranking))
+      Ok(views.html.sta.modal_ranking(ranking, ymdh))
     }.getOrElse(NotFound("そのようなRankingは見つかりません"))
+  }
+
+  private def rankingYmdh(yyyymmddhh: Int)(implicit session: DBSession = AutoSession): Ymdh = {
+    import MFGDateUtil._
+    if(yyyymmddhh < 0) {
+      db.MyfleetRanking.findNewestTime().getOrElse(Ymdh.now(Tokyo))
+    } else Ymdh.fromInt(yyyymmddhh)
   }
 
   val StaBookURL = "/entire/sta/book/"

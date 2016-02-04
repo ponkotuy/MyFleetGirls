@@ -1,19 +1,23 @@
 package ranking
 
+import com.github.nscala_time.time.Imports._
 import controllers.routes
 import models.db.Admiral
+import org.json4s._
 import ranking.ScoreRankingCommon._
-import ranking.common.{RankingElement, Ranking}
-import com.github.nscala_time.time.Imports._
+import ranking.common.{Ranking, RankingData, RankingElement}
+import ranking.data.Score
 
 /**
   * Date: 2016/01/02
+ *
   * @author ponkotuy
   */
 object LastScoreRanking extends Ranking {
   import Ranking._
   import util.MFGDateUtil._
 
+  override val id = 10
   override val title: String = "先月戦果"
   override val comment: Seq[String] = Nil
   override val divClass: String = colmd3
@@ -28,8 +32,11 @@ object LastScoreRanking extends Ranking {
     merged.flatMap { case (memberId, score) =>
       Admiral.find(memberId).map { admiral =>
         val url = routes.UserView.user(memberId).toString
-        RankingElement(admiral.nickname, <span>{score}</span>, url, score)
+        RankingElement(admiral.id, admiral.nickname, Score(score), url, score)
       }
     }.take(limit)
   }
+
+  // JSONになったRankingDataをdeserializeする
+  override def decodeData(v: JValue): Option[RankingData] = Score.decode(v)
 }

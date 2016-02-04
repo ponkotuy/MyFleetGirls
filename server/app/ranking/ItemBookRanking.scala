@@ -1,7 +1,9 @@
 package ranking
 
 import controllers.routes
-import ranking.common.{RankingElement, Ranking}
+import org.json4s.JValue
+import ranking.common.{RankingData, RankingElement, Ranking}
+import ranking.data.Count
 import scalikejdbc._
 import models.db._
 import scala.concurrent.duration._
@@ -17,14 +19,15 @@ case object ItemBookRanking extends Ranking {
   def a = Admiral.a
   lazy val ib = ItemBook.syntax("ib")
 
+  override val id = 7
   override val title: String = "装備図鑑登録"
   override val comment: List[String] = List(comment30days)
   override val divClass: String = colmd3
 
   override def rankingQuery(limit: Int): List[RankingElement] = {
     findAllOrderByItemBookCount(limit, agoMillis(30.days)).map { case (admiral, count) =>
-      val url = routes.UserView.book(admiral.id).toString()
-      RankingElement(admiral.nickname, <span>{count}</span>, url, count)
+      val url = routes.UserView.book(admiral.id).toString
+      RankingElement(admiral.id, admiral.nickname, Count(count), url, count)
     }
   }
 
@@ -39,4 +42,6 @@ case object ItemBookRanking extends Ranking {
         .limit(limit)
     }.map { rs => Admiral(a)(rs) -> rs.long("cnt") }.list().apply()
   }
+
+  override def decodeData(v: JValue): Option[RankingData] = Count.decode(v)
 }

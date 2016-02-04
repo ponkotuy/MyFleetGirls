@@ -1,9 +1,12 @@
-@(typ: _root_.ranking.common.RankingType)
+@import util.MFGDateUtil
+@(typ: _root_.ranking.common.RankingType, ymdh: util.Ymdh)
 
 @import _root_.ranking.common.RankingType
+@import util.Ymdh
+@import MFGDateUtil.Tokyo
 
 @main {
-  <title>ランキング -MyFleetGirls-</title>
+  <title>ランキング(@ymdh.toEn) -MyFleetGirls-</title>
   <script src="@Js.Common"></script>
   <script src="@Js.Coffee("ranking")"></script>
   <style>
@@ -29,7 +32,7 @@
           <h2><a data-toggle="modal" href="@routes.ViewSta.rankingDetails(ranking.toString)" class="modal_link" data-target="#modal" data-name="@ranking">@ranking.title</a></h2>
           <table class="table table-striped table-condensed">
             <tbody>
-              @ranking.rankingQuery(20).map { case elem =>
+              @ranking.rankingDBCache(ymdh, 20).map { case elem =>
                 <tr>
                   <th>
                     @elem.url match {
@@ -37,7 +40,7 @@
                       case None => { @elem.name }
                     }
                   </th>
-                  <td>@elem.value</td>
+                  <td>@elem.data.toElem</td>
                 </tr>
               }
             </tbody>
@@ -54,6 +57,24 @@
         </ul>
       </div>
     </div>
+
+    <nav>
+      <ul class="pager">
+        <li class="previous"><a href="@routes.ViewSta.rankingWithType(typ.toString, ymdh.lastMonth.toInt)">先月</a></li>
+        <li class="previous"><a href="@routes.ViewSta.rankingWithType(typ.toString, ymdh.lastDay.toInt)">昨日</a></li>
+        <li class="previous"><a href="@routes.ViewSta.rankingWithType(typ.toString, ymdh.lastHour.toInt)">1時間前</a></li>
+        <li>@ymdh.toJp</li>
+        <li class="next @if(Ymdh.now(Tokyo) < ymdh.nextMonth){disabled}">
+          <a href="@routes.ViewSta.rankingWithType(typ.toString, ymdh.nextMonth.toInt)">来月</a>
+        </li>
+        <li class="next @if(Ymdh.now(Tokyo) < ymdh.nextDay){disabled}">
+          <a href="@routes.ViewSta.rankingWithType(typ.toString, ymdh.nextDay.toInt)">明日</a>
+        </li>
+        <li class="next @if(Ymdh.now(Tokyo) < ymdh.nextHour){disabled}">
+          <a href="@routes.ViewSta.rankingWithType(typ.toString, ymdh.nextHour.toInt)">1時間後</a>
+        </li>
+      </ul>
+    </nav>
 
     <div class="modal fade bs-example-modal-sm" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
       <div class="modal-dialog modal-sm">

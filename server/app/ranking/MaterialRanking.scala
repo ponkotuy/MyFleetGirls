@@ -2,7 +2,9 @@ package ranking
 
 import controllers.routes
 import models.db.{Admiral, Material}
-import ranking.common.{RankingElement, Ranking}
+import org.json4s.JValue
+import ranking.common.{RankingData, RankingElement, Ranking}
+import ranking.data.Count
 import scalikejdbc._
 import scala.concurrent.duration._
 
@@ -17,16 +19,15 @@ case object MaterialRanking extends Ranking {
   def a = Admiral.a
   lazy val m = Material.syntax("m")
 
+  override val id = 1
   override val title: String = "資源保有量"
-
   override val divClass: String = collg3
-
   override val comment: List[String] = List(comment7days)
 
   override def rankingQuery(limit: Int): List[RankingElement] = {
     findAllOrderByMaterial(limit, agoMillis(7.days)).map { case (admiral, count) =>
-      val url = routes.UserView.material(admiral.id).toString()
-      RankingElement(admiral.nickname, <span>{f"$count%,d"}</span>, url, count)
+      val url = routes.UserView.material(admiral.id).toString
+      RankingElement(admiral.id, admiral.nickname, Count(count), url, count)
     }
   }
 
@@ -44,4 +45,7 @@ case object MaterialRanking extends Ranking {
       Admiral(a)(rs) -> (mat.fuel + mat.ammo + mat.steel + mat.bauxite)
     }.list().apply()
   }
+
+  // JSONになったRankingDataをdeserializeする
+  override def decodeData(v: JValue): Option[RankingData] = Count.decode(v)
 }

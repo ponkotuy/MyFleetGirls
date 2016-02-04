@@ -2,21 +2,26 @@ package ranking
 
 import controllers.routes
 import models.db.{Admiral, SlotItem}
-import ranking.common.{RankingElement, Ranking}
+import org.json4s.JValue
+import ranking.common.{RankingData, RankingElement, Ranking}
+import ranking.data.Count
 import scalikejdbc._
 import com.github.nscala_time.time.Imports._
 import scala.collection.breakOut
 
 /**
  * Date: 15/07/28.
- * @author ponkotuy
+  *
+  * @author ponkotuy
  */
 object RemodelRanking extends Ranking {
   import Ranking._
   import util.MFGDateUtil._
 
-  // Titleとして使用
-  override def title: String = "装備改修"
+  override val id = 8
+  override val title: String = "装備改修"
+  override val comment: Seq[String] = List(comment7days, "装備改修は+の合計です")
+  override val divClass: String = colmd3
 
   // Rankingを生成するのに使用
   override def rankingQuery(limit: Int): Seq[RankingElement] = {
@@ -33,14 +38,10 @@ object RemodelRanking extends Ranking {
         count <- remodelCounts.get(id)
       } yield {
         val url = routes.UserView.slotitem(id).toString
-        RankingElement(name, <span>{count}</span>, url, count)
+        RankingElement(id, name, Count(count), url, count)
       }
     }
   }
 
-  // 注釈。同じコメントは1つに纏められます
-  override def comment: Seq[String] = List(comment7days, "装備改修は+の合計です")
-
-  // Ranking一覧で、Ranking毎のdivのclass設定に使用
-  override def divClass: String = colmd3
+  override def decodeData(v: JValue): Option[RankingData] = Count.decode(v)
 }

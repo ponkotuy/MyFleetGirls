@@ -1,9 +1,12 @@
 package ranking
 
 import controllers.routes
-import ranking.common.{RankingElement, Ranking}
-import scalikejdbc._
 import models.db._
+import org.json4s._
+import ranking.common.{Ranking, RankingData, RankingElement}
+import ranking.data.Exp
+import scalikejdbc._
+
 import scala.concurrent.duration._
 
 /**
@@ -17,14 +20,15 @@ case object SumShipExpRanking extends Ranking {
   def a = Admiral.a
   lazy val s = Ship.syntax("s")
 
+  override val id = 6
   override val title: String = "艦娘合計Exp"
   override val comment: List[String] = List(comment7days)
   override val divClass: String = collg3
 
   override def rankingQuery(limit: Int): List[RankingElement] = {
     findAllOrderByShipExpSum(limit, agoMillis(7.days)).map { case (admiral, exp) =>
-      val url = routes.UserView.ship(admiral.id).toString()
-      RankingElement(admiral.nickname, <span>{f"$exp%,d"}</span>, url, exp)
+      val url = routes.UserView.ship(admiral.id).toString
+      RankingElement(admiral.id, admiral.nickname, Exp(exp), url, exp)
     }
   }
 
@@ -41,4 +45,6 @@ case object SumShipExpRanking extends Ranking {
       Admiral(a)(rs) -> rs.long("sum")
     }.list().apply()
   }
+
+  override def decodeData(v: JValue): Option[RankingData] = Exp.decode(v)
 }

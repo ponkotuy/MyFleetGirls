@@ -1,15 +1,20 @@
 package ranking.common
 
-import models.join.ShipWithName
+import models.db.MyfleetRanking
+import org.json4s.JValue
+import scalikejdbc._
+import util.Ymdh
 
 import scala.concurrent.duration.Duration
-import scala.xml.Elem
 
 /**
  * @author ponkotuy
  * Date: 15/01/29.
  */
 trait Ranking {
+  // DBにおいてidとして使う
+  def id: Int
+
   // Titleとして使用
   def title: String
 
@@ -21,6 +26,16 @@ trait Ranking {
 
   // Rankingを生成するのに使用
   def rankingQuery(limit: Int): Seq[RankingElement]
+
+  def rankingDBCache(ymdh: Ymdh, limit: Int)(implicit session: DBSession = AutoSession): Seq[RankingElement] = {
+    val mr = MyfleetRanking.mr
+    val rankings = MyfleetRanking.findAllBy(sqls.eq(mr.yyyymmddhh, ymdh.toInt).and.eq(mr.rankingId, id).and.le(mr.rank, limit))
+    rankings.sortBy(_.rank)
+    rankings.flatMap(_.toRankingElement)
+  }
+
+  // JSONになったRankingDataをdeserializeする
+  def decodeData(v: JValue): Option[RankingData]
 }
 
 object Ranking {
@@ -32,7 +47,7 @@ object Ranking {
   def values = RankingType.values.flatMap(_.rankings)
 
   def fromString(str: String): Option[Ranking] = values.find(_.toString == str)
+  def fromId(id: Int): Option[Ranking] = values.find(_.id == id)
 
   def agoMillis(d: Duration): Long = System.currentTimeMillis() - d.toMillis
-  def toElem(ship: ShipWithName): Elem = <span>{ship.name}<small>{"Lv" + ship.lv}</small></span>
 }
