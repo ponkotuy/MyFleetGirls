@@ -4,6 +4,7 @@ import ranking.common.RankingElement
 import scalikejdbc._
 import org.json4s._
 import org.json4s.native.JsonMethods._
+import util.Ymdh
 
 case class MyfleetRanking(
   id: Long,
@@ -56,6 +57,12 @@ object MyfleetRanking extends SQLSyntaxSupport[MyfleetRanking] {
 
   def findAll()(implicit session: DBSession = autoSession): List[MyfleetRanking] = {
     withSQL(select.from(MyfleetRanking as mr)).map(MyfleetRanking(mr.resultName)).list.apply()
+  }
+
+  def findNewestTime()(implicit session: DBSession = autoSession): Option[Ymdh] = {
+    withSQL {
+      select(mr.yyyymmddhh).from(MyfleetRanking as mr).orderBy(mr.yyyymmddhh.desc).limit(1)
+    }.map { rs => Ymdh.fromInt(rs.int(1)) }.single().apply()
   }
 
   def countAll()(implicit session: DBSession = autoSession): Long = {

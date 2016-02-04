@@ -1,4 +1,4 @@
-@(ranking: _root_.ranking.common.Ranking)
+@(ranking: _root_.ranking.common.Ranking, ymdh: util.Ymdh)
 
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -7,7 +7,7 @@
 
 <table class="table table-striped table-condensed modal-body">
   <tbody>
-  @ranking.rankingQuery(200).zipWithIndex.map { case (elem, i) =>
+  @ranking.rankingDBCache(ymdh, 200).zipWithIndex.map { case (elem, i) =>
     <tr>
       <th style="text-align: right;">@{i + 1}</th>
       <th>
@@ -16,7 +16,7 @@
           case None => { @elem.name }
         }
       </th>
-      <td>@elem.value</td>
+      <td>@elem.data.toElem</td>
     </tr>
   }
   </tbody>
