@@ -17,7 +17,7 @@ object InitShip extends HonorCategory {
       base = EvolutionBase(ship.shipId)
       ms <- MasterShipBase.find(base)
     } yield {
-      s"初期艦${ms.name}" :: (if(ship.lv == 150) s"ずっと${ms.name}と一緒" :: Nil else Nil)
+      s"初期艦${ms.name}" :: (if(ship.lv >= 150) s"ずっと${ms.name}と一緒" :: Nil else Nil)
     }
     result.getOrElse(Nil)
   }
