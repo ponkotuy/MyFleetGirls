@@ -8,8 +8,8 @@ object ShipMaxLv extends HonorCategory {
   override def category: Int = 5
 
   override def approved(memberId: Long, db: HonorCache): List[String] = {
-    if(db.shipWithName.exists(_.lv == 150)) "最強の一隻" :: Nil else Nil
+    if(db.shipWithName.exists(_.lv >= 150)) "最強の一隻" :: Nil else Nil
   }
 
-  override val comment: String = "艦娘をLv150にする"
+  override val comment: String = "艦娘をLv150以上にする"
 }
