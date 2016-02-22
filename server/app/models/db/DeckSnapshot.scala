@@ -50,7 +50,7 @@ object DeckSnapshot extends SQLSyntaxSupport[DeckSnapshot] {
 
   def withItems(ship: ShipSnapshotWithName)(implicit session: DBSession = autoSession): ShipSnapshotWithItem = {
     val is = ItemSnapshot.is
-    val items = ItemSnapshot.findAllBy(sqls.eq(is.shipSnapshotId, ship.rest.id))
+    val items = ItemSnapshot.findAllBy(sqls.eq(is.shipSnapshotId, ship.rest.id)).sortBy(_.position)
     ship.withItem(items)
   }
 
