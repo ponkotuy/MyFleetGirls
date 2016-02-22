@@ -21,7 +21,7 @@ case class MasterShipAll(
   def yomi = base.yomi
 
   def hp = specs.hp
-  def karyoku = Array(specs.karyokuMin, specs.soukoMax)
+  def karyoku = Array(specs.karyokuMin, specs.karyokuMax)
   def raisou = Array(specs.raisouMin, specs.raisouMax)
   def taiku = Array(specs.taikuMin, specs.taikuMax)
   def souko = Array(specs.soukoMin, specs.soukoMax)
