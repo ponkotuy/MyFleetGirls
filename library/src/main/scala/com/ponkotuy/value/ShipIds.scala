@@ -47,6 +47,7 @@ object ShipIds {
   val Kiyoshimo = 410
   val Asagumo = 413
   val Nowaki = 415
+  val SatsukiMk2 = 418
   val AkidukiMk1 = 421
   val TerudukiMk1 = 422
   val Hatsuduki = 423

@@ -17,6 +17,7 @@ trait AntiAirCutin {
         .orElse(akidukiType)
         .orElse(isuzuMk2Cutin)
         .orElse(kasumiCutin)
+        .orElse(satsukiCutin)
         .orElse(battleshipCutin)
         .orElse(commonCutin)
 
@@ -56,6 +57,11 @@ trait AntiAirCutin {
     if(countGun > 0 && countCaliber > 0) {
       Some(if(hasAntiAirRadar) 4 else 2)
     } else None
+  }
+
+  private def satsukiCutin: Option[Int] = {
+    if(shipId != SatsukiMk2) return None
+    if(hasManyGun) Some(2) else None
   }
 
   private def commonCutin: Option[Int] = {
