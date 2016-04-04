@@ -19,7 +19,7 @@ import scala.collection.{mutable, breakOut}
  * @author ponkotuy
  * Date: 14/02/23
  */
-object Rest extends Controller {
+class Rest extends Controller {
   import controllers.Common._
 
   def searchUser(q: String) = {

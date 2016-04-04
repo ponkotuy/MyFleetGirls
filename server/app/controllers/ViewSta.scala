@@ -16,8 +16,9 @@ import scala.util.Try
 /**
  * Date: 14/06/11.
  */
-object ViewSta extends Controller {
+class ViewSta extends Controller {
   import controllers.Common._
+  import ViewSta._
 
   def activities = actionAsync { Ok(views.html.sta.activities()) }
 
@@ -140,19 +141,10 @@ object ViewSta extends Controller {
     } else Ymdh.fromInt(yyyymmddhh)
   }
 
-  val StaBookURL = "/entire/sta/book/"
   def shipList() = actionAsync {
     val ms = db.MasterShipBase.ms
     val ships = db.MasterShipBase.findAllWithStype(sqls.gt(ms.sortno, 0))
     Ok(views.html.sta.ship_list(ships, favCountTableByShip()))
-  }
-
-  def favCountTableByShip(): Map[Int, Long] = {
-    val f = db.Favorite.f
-    val favs = db.Favorite.countByURL(sqls.eq(f.first, "entire").and.eq(f.second, "sta").and.like(f.url, StaBookURL + "%"))
-    favs.flatMap { case (url, _, count) =>
-      Try { url.replace(StaBookURL, "").toInt }.map(_ -> count).toOption
-    }.toMap.withDefaultValue(0L)
   }
 
   def shipBook(sid: Int) = actionAsync {
@@ -186,6 +178,18 @@ object ViewSta extends Controller {
     val honors = db.Honor.findAllByWithAdmiral(sqls.eq(h.setBadge, true).and.eq(h.invisible, false))
     val withRates = HonorWithRate.fromWithAdmiral(honors).sortBy(-_.rate)
     Ok(views.html.sta.honor(withRates))
+  }
+}
+
+object ViewSta {
+  val StaBookURL = "/entire/sta/book/"
+
+  def favCountTableByShip(): Map[Int, Long] = {
+    val f = db.Favorite.f
+    val favs = db.Favorite.countByURL(sqls.eq(f.first, "entire").and.eq(f.second, "sta").and.like(f.url, StaBookURL + "%"))
+    favs.flatMap { case (url, _, count) =>
+      Try { url.replace(StaBookURL, "").toInt }.map(_ -> count).toOption
+    }.toMap.withDefaultValue(0L)
   }
 
   private def toP(d: Double): String = f"${d*100}%.1f"

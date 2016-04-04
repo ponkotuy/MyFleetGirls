@@ -9,7 +9,7 @@ import scalikejdbc._
  * @author ponkotuy
  * Date: 14/03/22.
  */
-object RestImage extends Controller {
+class RestImage extends Controller {
   import controllers.Common._
 
   def ship = shipCommon(_: Int, _: Int)

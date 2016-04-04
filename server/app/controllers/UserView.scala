@@ -20,7 +20,7 @@ import scala.concurrent.Future
  * @author ponkotuy
  * Date: 14/04/01.
  */
-object UserView extends Controller {
+class UserView extends Controller {
   import controllers.Common._
   import util.MFGDateUtil._
 

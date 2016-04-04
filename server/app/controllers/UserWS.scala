@@ -14,7 +14,7 @@ import models.db
  * @author ponkotuy
  * Date: 14/04/11.
  */
-object UserWS {
+class UserWS {
   implicit val formats = DefaultFormats
 
   def info(memberId: Long) = WebSocket.using { request =>

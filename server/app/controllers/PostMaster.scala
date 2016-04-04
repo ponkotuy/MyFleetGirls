@@ -10,7 +10,7 @@ import play.api.mvc._
  * @author ponkotuy
  * Date: 14/02/25
  */
-object PostMaster extends Controller {
+class PostMaster extends Controller {
   def ship = checkPonkotuAndParse[List[MasterShip]] { case ships =>
     db.MasterShipBase.deleteAll()
     ships.map(_.base).foreach { b => db.MasterShipBase.create(b) }

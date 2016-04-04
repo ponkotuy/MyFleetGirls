@@ -10,7 +10,7 @@ import models.db
  * @author ponkotuy
  * Date: 14/03/22.
  */
-object RestSound extends Controller {
+class RestSound extends Controller {
   import Common._
   def ship(shipId: Int, soundId: Int) = Action.async {
     Future {

@@ -9,7 +9,7 @@ import scala.concurrent.Future
  * @author ponkotuy
  * Date: 15/03/10.
  */
-object MyAssets extends Controller {
+class MyAssets extends Controller {
   def at(path: String, file: String, aggressiveCaching: Boolean = false) = Action.async { implicit req =>
     val accepts = req.headers.get(ACCEPT_ENCODING).map(_.split(",").map(_.stripMargin)).getOrElse(Array())
     if(accepts.contains("pack200-gzip")) {

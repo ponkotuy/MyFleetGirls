@@ -4,47 +4,47 @@
 
 # Post
 # 全てhttpsになったので、/passwdはdeprecated
-POST          /post/v1/basic                                                controllers.Post.basic
-POST          /post/v1/admiral_settings                                     controllers.Post.admiralSettings
-POST          /post/v1/material                                             controllers.Post.material
-POST          /post/v2/ship                                                 controllers.Post.ship2
-POST          /post/v1/update_ship                                          controllers.Post.updateShip
-POST          /post/v1/ndock                                                controllers.Post.ndock
+POST          /post/v1/basic                   controllers.Post.basic
+POST          /post/v1/admiral_settings        controllers.Post.admiralSettings
+POST          /post/v1/material                controllers.Post.material
+POST          /post/v2/ship                    controllers.Post.ship2
+POST          /post/v1/update_ship             controllers.Post.updateShip()
+POST          /post/v1/ndock                   controllers.Post.ndock
 # v1って言ってるけどv2と別物でしかも現役（ひどい
-POST          /post/v1/createship                                           controllers.Post.createShip
-POST          /post/v2/createship                                           controllers.Post.createShip2
-POST          /post/v1/createitem                                           controllers.Post.createItem
-POST          /post/v1/kdock                                                controllers.Post.kdock
-POST          /post/v1/delete_kdock                                         controllers.Post.deleteKDock
-POST          /post/v1/deckport                                             controllers.Post.deckPort
-POST          /post/v1/book/ship                                            controllers.Post.shipBook
-POST          /post/v1/book/item                                            controllers.Post.itemBook
-POST          /post/v1/mapinfo                                              controllers.Post.mapInfo
-POST          /post/v2/event_map_rank                                       controllers.Post.eventMapRank
-POST          /post/v1/slotitem                                             controllers.Post.slotItem
-POST          /post/v1/battle_result                                        controllers.Post.battleResult
-POST          /post/v1/map_start                                            controllers.Post.mapStart
-POST          /post/v1/map_route                                            controllers.Post.mapRoute
-POST          /post/v1/questlist                                            controllers.Post.questlist
-POST          /post/v1/remodel_slot                                         controllers.Post.remodelSlot
-POST          /post/v1/remodel                                              controllers.Post.remodel
-POST          /post/v1/master_remodel                                       controllers.Post.masterRemodel
-POST          /post/v1/ranking                                              controllers.Post.ranking
-POST          /passwd/post/v1/register_snap                                 controllers.WebPost.registerSnap
-POST          /passwd/post/v1/delete_snap                                   controllers.WebPost.deleteSnap
-POST          /passwd/post/v1/update_snap                                   controllers.WebPost.updateSnap
-POST          /post/v1/snapshot/set_order                                   controllers.WebPost.setOrder
-POST          /passwd/post/v1/settings                                      controllers.WebPost.settings
-DELETE        /passwd/post/v1/yome                                          controllers.WebPost.deleteYome
-POST          /passwd/post/v1/set_session                                   controllers.WebPost.setSession
-POST          /passwd/post/v1/set_honor                                     controllers.WebPost.setHonor
-PATCH         /post/v1/honor/invisible                                      controllers.WebPost.honorInvisible
-PATCH         /post/v1/quest/manual_flag                                    controllers.WebPost.questManual
-POST          /post/v1/master/ship                                          controllers.PostMaster.ship
-POST          /post/v1/master/mission                                       controllers.PostMaster.mission
-POST          /post/v1/master/slotitem                                      controllers.PostMaster.slotitem
-POST          /post/v1/master/stype                                         controllers.PostMaster.stype
-POST          /post/v2/swf/ship/:shipKey/:version                           controllers.PostFile.ship(shipKey: String, version: Int)
+POST          /post/v1/createship              controllers.Post.createShip
+POST          /post/v2/createship              controllers.Post.createShip2
+POST          /post/v1/createitem              controllers.Post.createItem
+POST          /post/v1/kdock                   controllers.Post.kdock
+POST          /post/v1/delete_kdock            controllers.Post.deleteKDock()
+POST          /post/v1/deckport                controllers.Post.deckPort
+POST          /post/v1/book/ship             controllers.Post.shipBook
+POST          /post/v1/book/item             controllers.Post.itemBook
+POST          /post/v1/mapinfo               controllers.Post.mapInfo
+POST          /post/v2/event_map_rank        controllers.Post.eventMapRank
+POST          /post/v1/slotitem              controllers.Post.slotItem
+POST          /post/v1/battle_result               controllers.Post.battleResult
+POST          /post/v1/map_start                   controllers.Post.mapStart
+POST          /post/v1/map_route                   controllers.Post.mapRoute
+POST          /post/v1/questlist                   controllers.Post.questlist
+POST          /post/v1/remodel_slot                controllers.Post.remodelSlot()
+POST          /post/v1/remodel                     controllers.Post.remodel()
+POST          /post/v1/master_remodel              controllers.Post.masterRemodel()
+POST          /post/v1/ranking                     controllers.Post.ranking()
+POST          /passwd/post/v1/register_snap        controllers.WebPost.registerSnap()
+POST          /passwd/post/v1/delete_snap          controllers.WebPost.deleteSnap()
+POST          /passwd/post/v1/update_snap          controllers.WebPost.updateSnap()
+POST          /post/v1/snapshot/set_order          controllers.WebPost.setOrder()
+POST          /passwd/post/v1/settings             controllers.WebPost.settings
+DELETE        /passwd/post/v1/yome                 controllers.WebPost.deleteYome()
+POST          /passwd/post/v1/set_session          controllers.WebPost.setSession()
+POST          /passwd/post/v1/set_honor            controllers.WebPost.setHonor()
+PATCH         /post/v1/honor/invisible             controllers.WebPost.honorInvisible()
+PATCH         /post/v1/quest/manual_flag           controllers.WebPost.questManual()
+POST          /post/v1/master/ship                 controllers.PostMaster.ship
+POST          /post/v1/master/mission              controllers.PostMaster.mission
+POST          /post/v1/master/slotitem             controllers.PostMaster.slotitem
+POST          /post/v1/master/stype                controllers.PostMaster.stype
+POST          /post/v2/swf/ship/:shipKey/:version        controllers.PostFile.ship(shipKey: String, version: Int)
 POST          /post/v2/swf/map/:areaId/:infoNo/:version                     controllers.PostFile.map(areaId: Int, infoNo: Int, version: Int)
 POST          /post/v2/mp3/kc/:shipKey/:soundId/:version                    controllers.PostFile.sound(shipKey: String, soundId: Int, version: Int)
 
@@ -65,18 +65,18 @@ GET           /rest/v1/cell_info                                            cont
 GET           /rest/v2/cell/position/:area/:info                            controllers.Rest.cellPosition(area: Int, info: Int)
 GET           /rest/v1/maps                                                 controllers.Rest.maps()
 GET           /rest/v1/drop_from_ship/:shipId                               controllers.Rest.dropFromShip(shipId: Int, from: String ?= "", to: String ?= "")
-GET           /rest/v1/activities                                           controllers.Rest.activities(from: Long ?= 0L, limit: Int ?= 20, offset: Int ?= 0)
-GET           /rest/v1/remodel/log/summary/:slotId                          controllers.Rest.remodelLogSummary(slotId: Int)
-GET           /rest/v1/remodel/master/:slotId                               controllers.Rest.masterRemodel(slotId: Int)
-GET           /rest/v1/book/ships                                           controllers.Rest.bookShips(q: String ?= "")
-GET           /rest/v2/master/mission/hash                                  controllers.Rest.missionHash
-GET           /rest/v2/master/slotitem/hash                                 controllers.Rest.slotitemHash
-GET           /rest/v2/master/stype/hash                                    controllers.Rest.stypeHash
-GET           /rest/v1/:userId/materials                                    controllers.RestUser.materials(userId: Long)
-GET           /rest/v1/:userId/basics                                       controllers.RestUser.basics(userId: Long)
-GET           /rest/v2/user/:userId/scores                                  controllers.RestUser.scores(userId: Long)
-GET           /rest/v2/user/:userId/calc_scores                             controllers.RestUser.calcScores(userId: Long)
-GET           /rest/v2/user/:userId/ship/:shipId/exp                        controllers.RestUser.shipExp(userId: Long, shipId: Int)
+GET           /rest/v1/activities                         controllers.Rest.activities(from: Long ?= 0L, limit: Int ?= 20, offset: Int ?= 0)
+GET           /rest/v1/remodel/log/summary/:slotId        controllers.Rest.remodelLogSummary(slotId: Int)
+GET           /rest/v1/remodel/master/:slotId             controllers.Rest.masterRemodel(slotId: Int)
+GET           /rest/v1/book/ships                         controllers.Rest.bookShips(q: String ?= "")
+GET           /rest/v2/master/mission/hash                controllers.Rest.missionHash()
+GET           /rest/v2/master/slotitem/hash               controllers.Rest.slotitemHash()
+GET           /rest/v2/master/stype/hash                  controllers.Rest.stypeHash()
+GET           /rest/v1/:userId/materials                  controllers.RestUser.materials(userId: Long)
+GET           /rest/v1/:userId/basics                     controllers.RestUser.basics(userId: Long)
+GET           /rest/v2/user/:userId/scores                controllers.RestUser.scores(userId: Long)
+GET           /rest/v2/user/:userId/calc_scores           controllers.RestUser.calcScores(userId: Long)
+GET           /rest/v2/user/:userId/ship/:shipId/exp        controllers.RestUser.shipExp(userId: Long, shipId: Int)
 GET           /rest/v1/:userId/ndocks                                       controllers.RestUser.ndocks(userId: Long)
 GET           /rest/v1/:userId/kdocks                                       controllers.RestUser.kdocks(userId: Long)
 GET           /rest/v1/:userId/missions                                     controllers.RestUser.missions(userId: Long)
@@ -161,22 +161,22 @@ GET           /user/:userId/route_log                                       cont
 GET           /user/:userId/mission                                         controllers.UserView.mission(userId: Long)
 GET           /user/:userId/quest                                           controllers.UserView.quest(userId: Long)
 GET           /user/:userId/statistics                                      controllers.UserView.statistics(userId: Long)
-GET           /user/:userId/honor                                           controllers.UserView.honor(userId: Long)
+GET           /user/:userId/honor                         controllers.UserView.honor(userId: Long)
 
 # WebSocket
-GET           /ws/v1/user/:userId                                           controllers.UserWS.info(userId: Long)
+GET           /ws/v1/user/:userId                         controllers.UserWS.info(userId: Long)
 
 # Atom
-GET           /atom/v1/activities.rdf                                       controllers.Atom.activities()
-GET           /atom/v1/user/:userId/activities.rdf                          controllers.Atom.userActivities(userId: Long)
+GET           /atom/v1/activities.rdf                     controllers.Atom.activities()
+GET           /atom/v1/user/:userId/activities.rdf        controllers.Atom.userActivities(userId: Long)
 
 # Fav
-PUT           /passwd/put/v1/fav                                            controllers.Fav.put
-GET           /rest/v1/fav_count/:url                                       controllers.Fav.getCount(url: String)
-GET           /rest/v1/is_faved/:url                                        controllers.Fav.isFaved(url: String)
-DELETE        /passwd/delete/v1/fav/:id                                     controllers.Fav.delete(id: Long)
+PUT           /passwd/put/v1/fav                          controllers.Fav.put()
+GET           /rest/v1/fav_count/:url                     controllers.Fav.getCount(url: String)
+GET           /rest/v1/is_faved/:url                      controllers.Fav.isFaved(url: String)
+DELETE        /passwd/delete/v1/fav/:id                   controllers.Fav.delete(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file                                                 controllers.MyAssets.at(path="/public", file)
+GET           /assets/*file                               controllers.MyAssets.at(path="/public", file)
 # To reverse routing
 GET           /assets/*file                                                 controllers.Assets.at(path="/public", file)

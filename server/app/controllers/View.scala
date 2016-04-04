@@ -12,7 +12,7 @@ import scala.concurrent.Future
  * @author ponkotuy
  * Date 14/02/24
  */
-object View extends Controller {
+class View extends Controller {
   import Common._
 
   def index = Action.async {

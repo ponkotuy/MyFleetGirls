@@ -9,7 +9,7 @@ object MyFleetGirlsBuild extends Build {
 
   val ver = "1.4.13"
 
-  val scalaVer = "2.11.7"
+  val scalaVer = "2.11.8"
 
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)

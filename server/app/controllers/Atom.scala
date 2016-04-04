@@ -10,7 +10,7 @@ import models.db
  * @author ponkotuy
  * Date: 14/12/08.
  */
-object Atom extends Controller {
+class Atom extends Controller {
   def activities() = actionAsync {
     val xs = Common.readActivities(0, 20, 0)
     val feed = ActivitiesFeed(xs).buildFeed()

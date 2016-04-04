@@ -19,7 +19,7 @@ import scala.collection.breakOut
 /**
  * Date: 14/06/12.
  */
-object RestUser extends Controller {
+class RestUser extends Controller {
   import controllers.Common._
 
   def materials(userId: Long) = returnJson(db.Material.findAllByUser(userId))

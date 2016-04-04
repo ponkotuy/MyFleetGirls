@@ -1,5 +1,5 @@
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
   "org.skinny-framework" %% "skinny-http-client" % "1.3.14",

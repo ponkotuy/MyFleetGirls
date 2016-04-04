@@ -17,7 +17,7 @@ import scala.util.Try
  * @author ponkotuy
  * Date: 14/03/22.
  */
-object PostFile extends Controller {
+class PostFile extends Controller {
   def ship(shipKey: String, version: Int) = Action.async(parse.multipartFormData) { request =>
     val form = request.body.asFormUrlEncoded
     authentication(form) { auth =>

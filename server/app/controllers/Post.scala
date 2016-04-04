@@ -13,7 +13,7 @@ import scalikejdbc.{AutoSession, DBSession}
  * @author ponkotuy
  * Date: 14/02/21.
  */
-object Post extends Controller {
+class Post extends Controller {
   def basic = authAndParse[Basic] { case (auth, basic) =>
     val isChange = !db.Basic.findByUser(auth.id).exists(_.diff(basic) < 0.01)
     if(isChange) {

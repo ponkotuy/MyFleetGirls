@@ -11,7 +11,7 @@ import scala.util.Try
 /**
  * Date: 14/11/07.
  */
-object Fav extends Controller {
+class Fav extends Controller {
   def put() = formAsync { implicit request =>
     val favput = FavPut.form.bindFromRequest.get
     val memberIdOpt = request.session.get("memberId").map(_.toLong)

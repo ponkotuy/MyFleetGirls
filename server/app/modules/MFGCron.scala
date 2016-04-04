@@ -1,21 +1,23 @@
+package modules
 
-import akka.actor.Props
+
+import javax.inject.{Inject, Singleton}
+
+import akka.actor.{ActorSystem, Props}
 import com.github.nscala_time.time.StaticDateTime
+import com.google.inject.AbstractModule
 import models.db._
 import org.joda.time.{DateTimeConstants, LocalDate}
 import org.json4s.NoTypeHints
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
 import play.api._
-import play.api.libs.concurrent.Execution.Implicits._
-import play.api.mvc._
-import play.libs.Akka
 import ranking.common.RankingType
 import scalikejdbc._
 import tool.BattleScore
 import util.{Cron, CronSchedule, CronScheduler, Ymdh}
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
 /**
@@ -23,12 +25,16 @@ import scala.concurrent.duration._
  * @author ponkotuy
  * Date: 14/05/12.
  */
-object Global extends WithFilters(Cors) with GlobalSettings {
+@Singleton
+class MFGCron @Inject()(system: ActorSystem, implicit val ec: ExecutionContext) {
   import util.Cron._
   import util.MFGDateUtil._
 
-  override def onStart(app: Application): Unit = {
-    val cron = Akka.system().actorOf(Props[CronScheduler], "cron")
+  onStart()
+
+  def onStart(): Unit = {
+    beforeStart()
+    val cron = system.actorOf(Props[CronScheduler], "cron")
     cron ! CronSchedule(Cron(0, 5, aster, aster, aster), _ => deleteDailyQuest())
     cron ! CronSchedule(Cron(0, 5, aster, aster, DateTimeConstants.MONDAY), _ => deleteWeeklyQuest())
     cron ! CronSchedule(Cron(0, 5, 1, aster, aster), _ => deleteMonthlyQuest())
@@ -39,10 +45,10 @@ object Global extends WithFilters(Cors) with GlobalSettings {
     cron ! CronSchedule(Cron(0, aster, aster, aster, aster), _ => insertRanking(Ymdh.now(Tokyo)))
     // 月末にだけやりたいのでとりあえず起動して内部でチェック
     cron ! CronSchedule(Cron(0, 22, aster, aster, aster), insertCalcScoreMonthly)
-    Akka.system().scheduler.schedule(0.seconds, 45.seconds, cron, "minutes")
+    system.scheduler.schedule(0.seconds, 45.seconds, cron, "minutes")
   }
 
-  override def beforeStart(app: Application): Unit = {
+  private def beforeStart(): Unit = {
     initRanking()
   }
 
@@ -129,11 +135,6 @@ object Global extends WithFilters(Cors) with GlobalSettings {
   }
 }
 
-object Cors extends Filter {
-  def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
-    val result = f(rh)
-    result.map { r =>
-      r.withHeaders("Access-Control-Allow-Origin" -> "http://ponkotuy.github.io")
-    }
-  }
+class MFGCronModule extends AbstractModule {
+  override def configure(): Unit = bind(classOf[MFGCron]).asEagerSingleton()
 }

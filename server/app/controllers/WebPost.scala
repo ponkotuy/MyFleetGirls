@@ -17,7 +17,7 @@ import tool.Authentication
  * @author ponkotuy
  * Date: 15/02/04.
  */
-object WebPost extends Controller {
+class WebPost extends Controller {
   import controllers.Common._
 
   def registerSnap() = formAsync { request =>
