@@ -1,13 +1,13 @@
 package controllers
 
 import java.util.UUID
+import javax.inject.Inject
 
 import controllers.form.SetSnapshotOrder
 import models.db
 import models.join.ShipWithName
 import models.req._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits.applicationMessages
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import scalikejdbc._
 import tool.Authentication
@@ -17,7 +17,7 @@ import tool.Authentication
  * @author ponkotuy
  * Date: 15/02/04.
  */
-class WebPost extends Controller {
+class WebPost @Inject()(val messagesApi: MessagesApi) extends Controller with I18nSupport {
   import controllers.Common._
 
   def registerSnap() = formAsync { request =>
@@ -189,7 +189,7 @@ class WebPost extends Controller {
         }
       } else Res.authFail
     }
-    SetHonor.form.bindFromRequest().fold(form => BadRequest(form.errorsAsJson(applicationMessages)), set)
+    SetHonor.form.bindFromRequest().fold(form => BadRequest(form.errorsAsJson), set)
   }
 
   def honorInvisible() = formAsync { implicit req =>
