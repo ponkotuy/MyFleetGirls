@@ -14,7 +14,7 @@ jdk:
   - oraclejdk8
 
 before_script:
-  - travis_wait sbt downLib
+  - travis_wait sbt ++$TRAVIS_SCALA_VERSION downLib
 
 script:
   - travis_wait sbt ++$TRAVIS_SCALA_VERSION test
