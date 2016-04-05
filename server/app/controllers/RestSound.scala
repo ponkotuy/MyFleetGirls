@@ -1,8 +1,10 @@
 package controllers
 
+import javax.inject.Inject
+
 import play.api.mvc._
-import play.api.libs.concurrent.Execution.Implicits._
-import scala.concurrent.Future
+
+import scala.concurrent.{ExecutionContext, Future}
 import models.db
 
 /**
@@ -10,7 +12,7 @@ import models.db
  * @author ponkotuy
  * Date: 14/03/22.
  */
-class RestSound extends Controller {
+class RestSound @Inject()(implicit val ec: ExecutionContext) extends Controller {
   import Common._
   def ship(shipId: Int, soundId: Int) = Action.async {
     Future {

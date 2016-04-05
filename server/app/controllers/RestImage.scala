@@ -1,15 +1,19 @@
 package controllers
 
+import javax.inject.Inject
+
 import models.db
 import play.api.mvc._
 import scalikejdbc._
+
+import scala.concurrent.ExecutionContext
 
 /**
  *
  * @author ponkotuy
  * Date: 14/03/22.
  */
-class RestImage extends Controller {
+class RestImage @Inject()(implicit val ec: ExecutionContext) extends Controller {
   import controllers.Common._
 
   def ship = shipCommon(_: Int, _: Int)

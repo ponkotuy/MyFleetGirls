@@ -1,18 +1,19 @@
 package controllers
 
+import javax.inject.Inject
+
 import build.BuildInfo
 import models.db
 import play.api.mvc._
 
-import scala.concurrent.ExecutionContext.Implicits._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  *
  * @author ponkotuy
  * Date 14/02/24
  */
-class View extends Controller {
+class View @Inject()(implicit val ec: ExecutionContext) extends Controller {
   import Common._
 
   def index = Action.async {

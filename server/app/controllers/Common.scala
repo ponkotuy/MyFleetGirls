@@ -3,13 +3,13 @@ package controllers
 import models.join.{Activity, User}
 import models.db
 import play.api.mvc._
-import play.api.libs.concurrent.Execution.Implicits._
 import org.json4s._
-import org.json4s.native.{ JsonMethods => J }
+import org.json4s.native.{JsonMethods => J}
 import org.json4s.native.Serialization.write
-import scala.concurrent.Future
+
+import scala.concurrent.{ExecutionContext, Future}
 import scalikejdbc._
-import com.ponkotuy.data.{MyFleetAuth, Auth}
+import com.ponkotuy.data.{Auth, MyFleetAuth}
 import tool.Authentication
 
 /**
@@ -21,7 +21,7 @@ object Common extends Controller {
   type Req = Map[String, Seq[String]]
   implicit val formats = DefaultFormats
 
-  def authAndParse[T](f: (db.Admiral, T) => Result)(implicit mf: Manifest[T]): Action[Req] = {
+  def authAndParse[T](f: (db.Admiral, T) => Result)(implicit mf: Manifest[T], ec: ExecutionContext): Action[Req] = {
     Action.async(parse.urlFormEncoded) { request =>
       authentication(request.body) { auth =>
         withData[T](request.body) { data =>
@@ -32,7 +32,7 @@ object Common extends Controller {
   }
 
   /** 実際はCheckしてないです */
-  def checkPonkotuAndParse[T](f: (T) => Result)(implicit mf: Manifest[T]): Action[Req] = {
+  def checkPonkotuAndParse[T](f: (T) => Result)(implicit mf: Manifest[T], ec: ExecutionContext): Action[Req] = {
     Action.async(parse.urlFormEncoded(1024*1024*2)) { request =>
       checkPonkotu(request.body) {
         withData[T](request.body) { data =>
@@ -46,7 +46,7 @@ object Common extends Controller {
    * 1. 旧ログイン系は必ず必要（さもないとデータが不足する）
    * 2. 新ログイン系は任意だが、一度でも認証させたら通さないと駄目
    */
-  def authentication(request: Req)(f: (db.Admiral) => Result): Future[Result] = {
+  def authentication(request: Req)(f: (db.Admiral) => Result)(implicit ec: ExecutionContext): Future[Result] = {
     Future {
       reqHeadParse[Auth](request)("auth") match {
         case Some(oldAuth) =>
@@ -68,7 +68,7 @@ object Common extends Controller {
   }
 
   /** Checkしなくなりました */
-  def checkPonkotu(request: Req)(f: => Result): Future[Result] = {
+  def checkPonkotu(request: Req)(f: => Result)(implicit ec: ExecutionContext): Future[Result] = {
     Future {
       f
       Ok("Success")
@@ -83,7 +83,7 @@ object Common extends Controller {
     result.getOrElse(BadRequest("Request Error(JSON Parse Error? Header?)"))
   }
 
-  def userView(memberId: Long)(f: User => Result): Action[AnyContent] = actionAsync { request =>
+  def userView(memberId: Long)(f: User => Result)(implicit ec: ExecutionContext): Action[AnyContent] = actionAsync { request =>
     getUser(memberId, uuidCheck(memberId, request.session.get("key"))) match {
       case Some(user) => f(user)
       case _ => NotFound("ユーザが見つかりませんでした")
@@ -128,9 +128,9 @@ object Common extends Controller {
     result.getOrElse(false)
   }
 
-  def returnJson[A <: AnyRef](f: => A): Action[AnyContent] = returnJsonReq(_ => f)
+  def returnJson[A <: AnyRef](f: => A)(implicit ec: ExecutionContext): Action[AnyContent] = returnJsonReq(_ => f)
 
-  def returnJsonReq[A <: AnyRef](f: Request[AnyContent] => A): Action[AnyContent] = Action.async { req =>
+  def returnJsonReq[A <: AnyRef](f: Request[AnyContent] => A)(implicit ec: ExecutionContext): Action[AnyContent] = Action.async { req =>
     Future {
       try {
         Ok(write(f(req))).as("application/json")
@@ -140,9 +140,9 @@ object Common extends Controller {
     }
   }
 
-  def returnString[A](f: => A) = actionAsync { Ok(f.toString) }
+  def returnString[A](f: => A)(implicit ec: ExecutionContext) = actionAsync { Ok(f.toString) }
 
-  def actionAsync(f: => Result) = Action.async { request =>
+  def actionAsync(f: => Result)(implicit ec: ExecutionContext) = Action.async { request =>
     Future {
       try {
         f
@@ -152,7 +152,7 @@ object Common extends Controller {
     }
   }
 
-  def actionAsync(f: (Request[AnyContent]) => Result) = Action.async { request =>
+  def actionAsync(f: (Request[AnyContent]) => Result)(implicit ec: ExecutionContext) = Action.async { request =>
     Future {
       try {
         f(request)
@@ -162,7 +162,7 @@ object Common extends Controller {
     }
   }
 
-  def formAsync(f: Request[Map[String, Seq[String]]] => Result) = Action.async(parse.urlFormEncoded) { request =>
+  def formAsync(f: Request[Map[String, Seq[String]]] => Result)(implicit ec: ExecutionContext) = Action.async(parse.urlFormEncoded) { request =>
     Future {
       try {
         f(request)

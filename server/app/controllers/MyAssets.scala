@@ -1,15 +1,16 @@
 package controllers
 
-import play.api.mvc.{Action, Controller}
-import play.api.libs.concurrent.Execution.Implicits._
+import javax.inject.Inject
 
-import scala.concurrent.Future
+import play.api.mvc.{Action, Controller}
+
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * @author ponkotuy
  * Date: 15/03/10.
  */
-class MyAssets extends Controller {
+class MyAssets @Inject()(implicit val ec: ExecutionContext) extends Controller {
   def at(path: String, file: String, aggressiveCaching: Boolean = false) = Action.async { implicit req =>
     val accepts = req.headers.get(ACCEPT_ENCODING).map(_.split(",").map(_.stripMargin)).getOrElse(Array())
     if(accepts.contains("pack200-gzip")) {

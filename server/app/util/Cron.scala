@@ -3,7 +3,6 @@ package util
 import play.api.Logger
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor.Actor
 import com.github.nscala_time.time.Imports._
 
@@ -61,6 +60,8 @@ case class CronSchedule(cron: Cron, f: Cron => Unit) {
   * 重複実行は許容されるが、取り零しが発生する可能性があるので、1分より短かめの間隔で"minutes"を送信する必要がある
   */
 class CronScheduler extends Actor {
+  import context.dispatcher
+
   var schedules: List[CronSchedule] = Nil
   var lastExec: Long = 0 // Original Minutes (SystemTime / (60 * 1000))
 

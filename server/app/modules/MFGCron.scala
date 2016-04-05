@@ -17,7 +17,6 @@ import scalikejdbc._
 import tool.BattleScore
 import util.{Cron, CronSchedule, CronScheduler, Ymdh}
 
-import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
 /**
@@ -26,9 +25,10 @@ import scala.concurrent.duration._
  * Date: 14/05/12.
  */
 @Singleton
-class MFGCron @Inject()(val system: ActorSystem, implicit val ec: ExecutionContext) {
+class MFGCron @Inject()(val system: ActorSystem) {
   import util.Cron._
   import util.MFGDateUtil._
+  import system.dispatcher
 
   onStart()
 

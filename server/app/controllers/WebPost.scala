@@ -12,12 +12,14 @@ import play.api.mvc._
 import scalikejdbc._
 import tool.Authentication
 
+import scala.concurrent.ExecutionContext
+
 /**
  *
  * @author ponkotuy
  * Date: 15/02/04.
  */
-class WebPost @Inject()(val messagesApi: MessagesApi) extends Controller with I18nSupport {
+class WebPost @Inject()(val messagesApi: MessagesApi, implicit val ec: ExecutionContext) extends Controller with I18nSupport {
   import controllers.Common._
 
   def registerSnap() = formAsync { request =>

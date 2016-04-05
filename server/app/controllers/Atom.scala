@@ -1,16 +1,20 @@
 package controllers
 
-import models.atom.{UserFeed, ActivitiesFeed}
+import javax.inject.Inject
+
+import models.atom.{ActivitiesFeed, UserFeed}
 import play.api.mvc._
 import Common._
 import models.db
+
+import scala.concurrent.ExecutionContext
 
 /**
  *
  * @author ponkotuy
  * Date: 14/12/08.
  */
-class Atom extends Controller {
+class Atom @Inject()(implicit val ec: ExecutionContext) extends Controller {
   def activities() = actionAsync {
     val xs = Common.readActivities(0, 20, 0)
     val feed = ActivitiesFeed(xs).buildFeed()

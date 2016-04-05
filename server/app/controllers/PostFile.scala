@@ -1,6 +1,7 @@
 package controllers
 
 import java.io.FileInputStream
+import javax.inject.Inject
 
 import com.ponkotuy.value.ShipIds
 import controllers.Common._
@@ -10,6 +11,7 @@ import play.api.mvc._
 import scalikejdbc._
 import tool.swf.{MapData, WrappedSWF}
 
+import scala.concurrent.ExecutionContext
 import scala.util.Try
 
 /**
@@ -17,7 +19,7 @@ import scala.util.Try
  * @author ponkotuy
  * Date: 14/03/22.
  */
-class PostFile extends Controller {
+class PostFile @Inject()(implicit val ec: ExecutionContext) extends Controller {
   def ship(shipKey: String, version: Int) = Action.async(parse.multipartFormData) { request =>
     val form = request.body.asFormUrlEncoded
     authentication(form) { auth =>

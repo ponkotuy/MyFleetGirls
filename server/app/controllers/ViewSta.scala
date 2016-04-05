@@ -1,5 +1,7 @@
 package controllers
 
+import javax.inject.Inject
+
 import models.db
 import models.join._
 import models.query.{Period, SnapshotSearch}
@@ -7,16 +9,17 @@ import models.view.{CItem, CShip}
 import org.json4s._
 import org.json4s.native.Serialization.write
 import play.api.mvc._
-import ranking.common.{RankingType, Ranking}
+import ranking.common.{Ranking, RankingType}
 import scalikejdbc._
 import util.{MFGDateUtil, Ymdh}
 
+import scala.concurrent.ExecutionContext
 import scala.util.Try
 
 /**
  * Date: 14/06/11.
  */
-class ViewSta extends Controller {
+class ViewSta @Inject()(implicit val ec: ExecutionContext) extends Controller {
   import controllers.Common._
   import ViewSta._
 

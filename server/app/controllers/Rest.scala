@@ -1,10 +1,12 @@
 package controllers
 
+import javax.inject.Inject
+
 import com.github.nscala_time.time.Imports._
 import com.ponkotuy.tool.Checksum
 import models.db
 import models.db.MapRank
-import models.join.{MasterRemodelJson, ItemMat, ShipDrop, ShipWithFav}
+import models.join.{ItemMat, MasterRemodelJson, ShipDrop, ShipWithFav}
 import models.query.Period
 import models.response.DropRate
 import org.json4s.JsonDSL._
@@ -12,14 +14,15 @@ import org.json4s._
 import play.api.mvc.Controller
 import scalikejdbc._
 
-import scala.collection.{mutable, breakOut}
+import scala.collection.{breakOut, mutable}
+import scala.concurrent.ExecutionContext
 
 /**
  *
  * @author ponkotuy
  * Date: 14/02/23
  */
-class Rest extends Controller {
+class Rest @Inject()(implicit val ec: ExecutionContext) extends Controller {
   import controllers.Common._
 
   def searchUser(q: String) = {

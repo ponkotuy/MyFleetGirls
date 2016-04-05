@@ -1,5 +1,7 @@
 package controllers
 
+import javax.inject.Inject
+
 import honor.Honors
 import models.db
 import models.join.ShipWithName
@@ -15,11 +17,12 @@ import tool.BattleScore
 
 import scala.concurrent.duration._
 import scala.collection.breakOut
+import scala.concurrent.ExecutionContext
 
 /**
  * Date: 14/06/12.
  */
-class RestUser extends Controller {
+class RestUser @Inject()(implicit val ec: ExecutionContext) extends Controller {
   import controllers.Common._
 
   def materials(userId: Long) = returnJson(db.Material.findAllByUser(userId))

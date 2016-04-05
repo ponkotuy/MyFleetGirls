@@ -1,26 +1,27 @@
 package controllers
 
+import javax.inject.Inject
+
 import com.github.nscala_time.time.Imports._
 import honor.Honors
-import models.db.{ItemSnapshot, DeckPort, CalcScore, AGOProgress}
-import models.join.User
-import models.req.{ScoreDays, MaterialDays}
-import org.json4s.native.Serialization.write
-import play.api.mvc._
-import play.api.libs.concurrent.Execution.Implicits._
-import scalikejdbc._
 import models.db
+import models.db.{AGOProgress, CalcScore, DeckPort, ItemSnapshot}
+import models.join.User
+import models.req.{MaterialDays, ScoreDays}
+import org.json4s.native.Serialization.write
+import play.api.mvc.{Action, Controller}
+import scalikejdbc._
 import tool.{BattleScore, BestShipExp, HistgramShipLv, STypeExp}
 import util.Ymdh
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  *
  * @author ponkotuy
  * Date: 14/04/01.
  */
-class UserView extends Controller {
+class UserView @Inject()(implicit val ec: ExecutionContext) extends Controller {
   import controllers.Common._
   import util.MFGDateUtil._
 
