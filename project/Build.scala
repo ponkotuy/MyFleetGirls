@@ -7,7 +7,7 @@ import sbtbuildinfo.BuildInfoPlugin
 
 object MyFleetGirlsBuild extends Build {
 
-  val ver = "1.4.14"
+  val ver = "1.4.15"
 
   val scalaVer = "2.11.8"
 
