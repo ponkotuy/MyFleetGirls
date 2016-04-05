@@ -4,9 +4,6 @@ import com.ponkotuy.parser.Query
 
 import scala.util.matching.Regex
 
-/**
-  * Created by yosuke on 16/04/06.
-  */
 case object RequireInfo extends ResType {
   import ResType._
 
