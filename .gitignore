@@ -32,9 +32,9 @@ newrelic.yml
 newrelic/
 
 # Settings
-application.conf
+/application.conf
+local.conf
 /myfleetgirls.keystore
-server/conf/application.conf
 project/scalikejdbc.properties
 
 # Others

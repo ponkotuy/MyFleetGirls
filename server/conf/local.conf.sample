@@ -1,0 +1,13 @@
+
+# Secret key
+# ~~~~~
+# The secret key is used to secure cryptographics functions.
+# If you deploy your application to several instances be sure to use the same key!
+play.crypto.secret=
+
+db.default.username=
+db.default.password=
+
+# Common Key for Atom ID
+# uniqueな任意の文字列を入れてください。自分の管理下にあるドメイン名か乱数で生成した文字列をお勧めします
+atom.common_key=

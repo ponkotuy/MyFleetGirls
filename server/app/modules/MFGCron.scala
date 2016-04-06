@@ -33,6 +33,7 @@ class MFGCron @Inject()(val system: ActorSystem) {
   onStart()
 
   def onStart(): Unit = {
+    Thread.sleep(1000L) // scalikejdbcの初期化待ち
     beforeStart()
     val cron = system.actorOf(Props[CronScheduler], "cron")
     cron ! CronSchedule(Cron(0, 5, aster, aster, aster), _ => deleteDailyQuest())
