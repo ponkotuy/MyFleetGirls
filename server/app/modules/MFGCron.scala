@@ -20,12 +20,14 @@ import util.{Cron, CronSchedule, CronScheduler, Ymdh}
 import scala.concurrent.duration._
 
 /**
- *
- * @author ponkotuy
- * Date: 14/05/12.
- */
+  *
+  * PlayInitializerのDI依存は起動順序制御のため
+  *
+  * @author ponkotuy
+  * Date: 14/05/12.
+  */
 @Singleton
-class MFGCron @Inject()(val system: ActorSystem) {
+class MFGCron @Inject()(val system: ActorSystem, _playInitializer: PlayInitializer) {
   import util.Cron._
   import util.MFGDateUtil._
   import system.dispatcher
@@ -33,7 +35,6 @@ class MFGCron @Inject()(val system: ActorSystem) {
   onStart()
 
   def onStart(): Unit = {
-    Thread.sleep(1000L) // scalikejdbcの初期化待ち
     beforeStart()
     val cron = system.actorOf(Props[CronScheduler], "cron")
     cron ! CronSchedule(Cron(0, 5, aster, aster, aster), _ => deleteDailyQuest())
