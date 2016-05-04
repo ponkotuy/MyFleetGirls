@@ -12,15 +12,16 @@ import scala.util.matching.Regex
  * Date: 15/04/12.
  */
 case object ShipSWF extends ResType {
+  val DefaultVer = 0
+
   override def regexp: Regex = """\A/kcs/resources/swf/ships/[a-z]+\.swf\z""".r
 
   override def postables(q: Query): Seq[Result] = {
-    q.uri.query.param("VERSION").map { ver =>
-      parseKey(q.toString).filterNot { q => MFGHttp.existsImage(q, ver.toInt) }.map { key =>
-        val swf = allRead(q.response.content)
-        FilePostable(s"/swf/ship/$key/$ver", "image", 2, swf, "swf")
-      }.toList
-    }.getOrElse(Nil)
+    val ver = q.uri.query.param("VERSION").map(_.toInt).getOrElse(DefaultVer)
+    parseKey(q.toString).filterNot { q => MFGHttp.existsImage(q, ver) }.map { key =>
+      val swf = allRead(q.response.content)
+      FilePostable(s"/swf/ship/$key/$ver", "image", 2, swf, "swf")
+    }.toList
   }
 
   private def parseKey(str: String): Option[String] =

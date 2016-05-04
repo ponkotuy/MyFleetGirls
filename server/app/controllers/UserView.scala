@@ -190,9 +190,13 @@ class UserView @Inject()(implicit val ec: ExecutionContext) extends Controller {
 
   def fleet(memberId: Long, deckId: Int) = userView(memberId) { user =>
     val fleet = db.DeckShip.findAllByDeck(memberId, deckId)
-    db.DeckPort.find(memberId, deckId) match {
-      case Some(deck) => Ok(views.html.user.modal_fleet(fleet, deck, user))
-      case _ => NotFound("艦隊が見つかりませんでした")
+    if(fleet.isEmpty) {
+      NotFound("所属艦が見つかりませんでした")
+    } else {
+      db.DeckPort.find(memberId, deckId) match {
+        case Some(deck) => Ok(views.html.user.modal_fleet(fleet, deck, user))
+        case _ => NotFound("艦隊が見つかりませんでした")
+      }
     }
   }
 
