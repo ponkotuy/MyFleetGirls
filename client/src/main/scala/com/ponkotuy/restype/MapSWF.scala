@@ -46,13 +46,6 @@ object ObfuscatedMapSWF extends ResType {
     }
     opt.toList
   }
-
-  private def parse(uri: Uri): Option[String] = {
-    uri.toString() match {
-      case regexp(name) => Some(name)
-      case _ => None
-    }
-  }
 }
 
 object CommonMapSWF {

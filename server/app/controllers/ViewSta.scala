@@ -82,8 +82,6 @@ class ViewSta @Inject()(implicit val ec: ExecutionContext) extends Controller {
 
   def fromShip() = actionAsync { Ok(views.html.sta.from_ship()) }
 
-  val countStageCache = new PeriodicalValue(1.hour, () => db.BattleResult.countAllByStage())
-
   def dropStage() = actionAsync {
     val stages = countStageCache.apply()
     Ok(views.html.sta.drop_stage(stages))
@@ -199,4 +197,7 @@ object ViewSta {
   }
 
   private def toP(d: Double): String = f"${d*100}%.1f"
+
+  val countStageCache = new PeriodicalValue(1.hour, () => db.BattleResult.countAllByStage())
+
 }
