@@ -11,17 +11,18 @@ import org.json4s.native.Serialization.write
 import play.api.mvc._
 import ranking.common.{Ranking, RankingType}
 import scalikejdbc._
-import util.{MFGDateUtil, Ymdh}
+import util.{MFGDateUtil, PeriodicalValue, Ymdh}
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
 import scala.util.Try
 
 /**
  * Date: 14/06/11.
  */
 class ViewSta @Inject()(implicit val ec: ExecutionContext) extends Controller {
-  import controllers.Common._
   import ViewSta._
+  import controllers.Common._
 
   def activities = actionAsync { Ok(views.html.sta.activities()) }
 
@@ -81,8 +82,10 @@ class ViewSta @Inject()(implicit val ec: ExecutionContext) extends Controller {
 
   def fromShip() = actionAsync { Ok(views.html.sta.from_ship()) }
 
+  val countStageCache = new PeriodicalValue(1.hour, () => db.BattleResult.countAllByStage())
+
   def dropStage() = actionAsync {
-    val stages = db.BattleResult.countAllByStage()
+    val stages = countStageCache.apply()
     Ok(views.html.sta.drop_stage(stages))
   }
 
