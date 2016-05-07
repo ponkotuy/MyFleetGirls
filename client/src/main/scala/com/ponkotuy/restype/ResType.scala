@@ -39,7 +39,7 @@ object ResType extends Log {
   val ReqRanking = s"$Api/api_req_ranking"
   val ReqCombined = s"$Api/api_req_combined_battle"
 
-  val values: Set[ResType] = Set(
+  val values: Vector[ResType] = Vector(
     ApiStart2,
     Basic,
     LoginCheck,
@@ -70,6 +70,7 @@ object ResType extends Log {
     MapStart,
     MapNext,
     MapSWF,
+    ObfuscatedMapSWF, // 判定順序の問題で必ずMapSWFの後でないといけない
     SortieBattleResult,
     CombinedBattleResult,
     RequireInfo

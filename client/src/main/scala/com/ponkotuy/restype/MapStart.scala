@@ -15,6 +15,8 @@ case object MapStart extends ResType {
 
   private[restype] var mapNext: Option[data.MapStart] = None
   private[restype] var startFleet: Int = 0
+  private[restype] def areaId: Option[Int] = mapNext.map(_.mapAreaId)
+  private[restype] def infoNo: Option[Int] = mapNext.map(_.mapInfoNo)
 
   override def regexp: Regex = s"\\A$ReqMap/start\\z".r
 
