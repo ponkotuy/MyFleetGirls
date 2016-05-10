@@ -1,7 +1,7 @@
 package com.ponkotuy.intercept
 
 import com.netaporter.uri.Uri
-import com.twitter.finagle.http.{Request, Response}
+import io.netty.buffer.ByteBuf
 
 /**
  *
@@ -9,5 +9,5 @@ import com.twitter.finagle.http.{Request, Response}
  * Date: 14/02/18.
  */
 trait Intercepter {
-  def input(req: Request, res: Response, uri: Uri): Unit
+  def input(uri: Uri, requestContent: ByteBuf, responseContent: ByteBuf): Unit
 }

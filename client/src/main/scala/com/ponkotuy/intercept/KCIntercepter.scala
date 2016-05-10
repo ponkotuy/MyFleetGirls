@@ -5,8 +5,7 @@ import com.netaporter.uri.Uri
 import com.ponkotuy.http.ControllerActor
 import com.ponkotuy.parser.Query
 import com.ponkotuy.util.Log
-import com.ponkotuy.value.KCServer
-import com.twitter.finagle.http.{Request, Response}
+import io.netty.buffer.ByteBuf
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
@@ -20,20 +19,21 @@ class KCIntercepter extends Intercepter with Log {
   val system = ActorSystem()
   val controller = system.actorOf(Props[ControllerActor], "controller")
 
-  override def input(req: Request, res: Response, uri: Uri): Unit = {
+  override def input(uri: Uri, requestContent: ByteBuf, responseContent: ByteBuf): Unit = {
+    requestContent.retain()
+    responseContent.retain()
     Future {
-      if(!valid(req)) return
       try {
-        val q = Query(req, res, uri)
-        if(q.parsable) controller ! q
+        val q = Query(uri, requestContent, responseContent)
+        if (q.parsable) {
+          controller ! q
+        } else {
+          q.release()
+        }
       } catch {
         case e: Throwable => error((e.getMessage +: e.getStackTrace).mkString("\n"))
       }
     }
   }
 
-  private def valid(req: Request): Boolean = {
-    val uri = Uri.parse(req.uri)
-    uri.host.map(KCServer.ips.contains).getOrElse(true)
-  }
 }

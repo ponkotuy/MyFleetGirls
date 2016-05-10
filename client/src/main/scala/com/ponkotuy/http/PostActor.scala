@@ -61,6 +61,8 @@ class ControllerActor extends Actor {
         typ.postables(q).foreach(poster ! _)
       } catch {
         case e: Exception => e.printStackTrace()
+      } finally {
+        q.release()
       }
   }
 }

@@ -49,7 +49,7 @@ object ObfuscatedMapSWF extends ResType {
 }
 
 object CommonMapSWF {
-  def readSWF(q: Query): Array[Byte] = ShipSWF.allRead(q.response.content)
+  def readSWF(q: Query): Array[Byte] = ShipSWF.allRead(q.responseContent)
   def parseVersion(q: Query): Option[Int] = q.uri.query.param("version").flatMap(extractNumber)
   def extractNumber(str: String): Option[Int] = Try {
     str.filter { c => '0' <= c && c <= '9' }.toInt
