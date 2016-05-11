@@ -1,14 +1,14 @@
 package com.ponkotuy.proxy
 
 import com.netaporter.uri.Uri
-import com.ponkotuy.intercept.Intercepter
+import com.ponkotuy.intercept.Interceptor
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.{HttpHeaders, HttpRequest}
 import org.littleshoot.proxy.{HttpFilters, HttpFiltersAdapter, HttpFiltersSourceAdapter}
 
 
-class KCFiltersSource(hosts: Set[String], interceptor: Intercepter) extends HttpFiltersSourceAdapter {
+class KCFiltersSource(hosts: Set[String], interceptor: Interceptor) extends HttpFiltersSourceAdapter {
 
   private val noopFilters = new HttpFiltersAdapter(null)
 

@@ -8,6 +8,6 @@ import io.netty.buffer.ByteBuf
  * @author ponkotuy
  * Date: 14/02/18.
  */
-trait Intercepter {
+trait Interceptor {
   def input(uri: Uri, requestContent: ByteBuf, responseContent: ByteBuf): Unit
 }

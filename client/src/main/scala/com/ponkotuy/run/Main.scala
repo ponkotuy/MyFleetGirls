@@ -3,7 +3,7 @@ package com.ponkotuy.run
 import com.ponkotuy.build.BuildInfo
 import com.ponkotuy.config.ClientConfig
 import com.ponkotuy.http.MFGHttp
-import com.ponkotuy.intercept.KCIntercepter
+import com.ponkotuy.intercept.KCInterceptor
 import com.ponkotuy.proxy.{KCFiltersSource, LittleProxy}
 import com.ponkotuy.value.KCServer
 
@@ -20,7 +20,7 @@ object Main extends App {
       ClientConfig.proxyHost,
       ClientConfig.proxyPort,
       ClientConfig.upstreamProxyHost,
-      new KCFiltersSource(KCServer.ips, new KCIntercepter())
+      new KCFiltersSource(KCServer.ips, new KCInterceptor())
     )
     proxy.start()
   } catch {

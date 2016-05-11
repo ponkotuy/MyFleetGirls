@@ -15,7 +15,7 @@ import scala.concurrent.Future
  * @author ponkotuy
  * Date 14/02/19.
  */
-class KCIntercepter extends Intercepter with Log {
+class KCInterceptor extends Interceptor with Log {
   val system = ActorSystem()
   val controller = system.actorOf(Props[ControllerActor], "controller")
 
