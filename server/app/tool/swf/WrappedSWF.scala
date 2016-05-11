@@ -1,5 +1,6 @@
 package tool.swf
 
+import java.awt.image.{BufferedImage, RenderedImage}
 import java.io._
 import javax.imageio.ImageIO
 
@@ -41,33 +42,27 @@ object WrappedSWF {
     WrappedSWF(new SWF(is, file.getAbsolutePath, file.getName, false))
   }
 
+  def tagToImage(image: ImageTag): BufferedImage = image.getImage.getBufferedImage
+
   def imageToBytes(image: ImageTag): Option[Array[Byte]] = {
-    image match {
-      case bits: DefineBitsTag => imageToIS(bits).map(readAll)
-      case bits: DefineBitsLossless2Tag =>
-        val baos = new ByteArrayOutputStream()
-        ImageIO.write(bits.getImage.getBufferedImage, "png", baos)
-        Some(baos.toByteArray)
-      case _ => Option(image.getImageData).map(readAll)
+    getExt(image).map { ext =>
+      val img = tagToImage(image)
+      ImageIOWrapper.toBytes(img, ext)
     }
   }
 
-  def imageToIS(image: ImageTag): Option[InputStream] = {
-    image match {
-      case bits: DefineBitsLossless2Tag =>
-        val baos = new ByteArrayOutputStream()
-        ImageIO.write(bits.getImage.getBufferedImage, "png", baos)
-        val bais = new ByteArrayInputStream(baos.toByteArray)
-        Option(bais)
-      case bits: DefineBitsTag =>
-        val errLen = if(ImageTag.hasErrorHeader(bits.jpegData)) 4 else 0
-        val bais = new ByteArrayInputStream(
-          bits.jpegData.getArray,
-          bits.jpegData.getPos + errLen,
-          bits.jpegData.getLength - errLen)
-        Some(bais)
-      case _ => None
+  def imageToInputStream(image: ImageTag): Option[InputStream] = {
+    getExt(image).map { ext =>
+      val img = tagToImage(image)
+      ImageIOWrapper.toInputStream(img, ext)
     }
+  }
+
+  def getExt(image: ImageTag): Option[String] = image match {
+    case _: DefineBitsJPEG3Tag => Some("jpg")
+    case _: DefineBitsTag => Some("jpg")
+    case _: DefineBitsLossless2Tag => Some("png")
+    case _ => None
   }
 
   def readAll(is: InputStream): Array[Byte] = {
@@ -79,5 +74,26 @@ object WrappedSWF {
       len = is.read(buffer)
     }
     bout.toByteArray
+  }
+}
+
+object ImageIOWrapper {
+  def toInputStream(image: RenderedImage, ext: String): InputStream = {
+    val bytes = toBytes(image, ext)
+    new ByteArrayInputStream(bytes)
+  }
+
+  def toBytes(image: RenderedImage, ext: String): Array[Byte] = {
+    val baos = new ByteArrayOutputStream()
+    println(ext, image.getWidth)
+    ImageIO.write(image, ext, baos)
+    baos.toByteArray
+  }
+
+  def deepCopy(image: BufferedImage): BufferedImage = {
+    val cm = image.getColorModel
+    val isAlphaPremultiplied = cm.isAlphaPremultiplied
+    val raster = image.copyData(null)
+    new BufferedImage(cm, raster, isAlphaPremultiplied, null)
   }
 }

@@ -1,5 +1,6 @@
 package tool.swf
 
+import java.awt.image.BufferedImage
 import java.io._
 import javax.imageio.ImageIO
 
@@ -19,16 +20,13 @@ object MapData {
     for {
       image <- getImage(swf)
       cells = getCells(swf)
-      bytes <- getCourse(swf, image.getRect).flatMap { course =>
-        // output png
-        val fos = new FileOutputStream("result.png")
-        fos.write(WrappedSWF.imageToBytes(course).get)
+      bytes <- getCourse(swf, image.getRect).map { course =>
+        val fos = new FileOutputStream("test.jpg")
+        fos.write(WrappedSWF.imageToBytes(image).get)
         fos.close()
 
-        WrappedSWF.imageToIS(course).map { is =>
-          composeImage(image.getImageData, is)
-        }
-
+        val result = ImageComposer.fromImage(WrappedSWF.tagToImage(image), WrappedSWF.tagToImage(course))
+        ImageIOWrapper.toBytes(result, "jpg")
       }.orElse(WrappedSWF.imageToBytes(image))
     } yield MapData(bytes, cells)
   }
@@ -53,17 +51,6 @@ object MapData {
     swf.getSprites.map { case (i, sprite) =>
       Cell.fromTag(sprite)
     }.flatMap(identity)(breakOut)
-  }
-
-  private def composeImage(img1: InputStream, img2: InputStream): Array[Byte] = {
-    val img1Io = ImageIO.read(img1)
-    val img2Io = ImageIO.read(img2)
-    val graphics = img1Io.createGraphics()
-    graphics.drawImage(img2Io, 0, 0, null)
-    graphics.dispose()
-    val baos = new ByteArrayOutputStream()
-    ImageIO.write(img1Io, "jpg", baos)
-    baos.toByteArray
   }
 
   def main(args: Array[String]) = {
@@ -98,5 +85,25 @@ object Cell {
           Cell(matcher.group(1).toInt, obj.matrix.translateX / 20, obj.matrix.translateY / 20)
         }
     }.flatten
+  }
+}
+
+object ImageComposer {
+  def fromIs(is1: InputStream, is2: InputStream): BufferedImage = {
+    val img1 = ImageIO.read(is1)
+    val img2 = ImageIO.read(is2)
+    fromImage(img1, img2)
+  }
+
+  def fromImage(img1: BufferedImage, img2: BufferedImage): BufferedImage = {
+    val img = ImageIOWrapper.deepCopy(img1)
+    fromImageWithoutCopy(img, img2)
+  }
+
+  private def fromImageWithoutCopy(img1: BufferedImage, img2: BufferedImage): BufferedImage = {
+    val graphics = img1.getGraphics
+    graphics.drawImage(img2, 0, 0, null)
+    graphics.dispose()
+    img1
   }
 }
