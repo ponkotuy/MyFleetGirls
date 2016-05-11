@@ -1,10 +1,11 @@
 package tool.swf
 
 import java.io._
+import javax.imageio.ImageIO
 
 import com.jpexs.decompiler.flash.SWF
 import com.jpexs.decompiler.flash.tags.base.ImageTag
-import com.jpexs.decompiler.flash.tags.{DefineBitsJPEG3Tag, DefineBitsTag, DefineSpriteTag}
+import com.jpexs.decompiler.flash.tags.{DefineBitsJPEG3Tag, DefineBitsLossless2Tag, DefineBitsTag, DefineSpriteTag}
 
 import scala.collection.JavaConverters._
 import scala.collection.breakOut
@@ -19,6 +20,10 @@ case class WrappedSWF(swf: SWF) {
 
   def getJPEG3s: Map[Int, DefineBitsJPEG3Tag] = getAllTags.collect {
     case (i, jpg: DefineBitsJPEG3Tag) => (i: Int, jpg)
+  }(breakOut)
+
+  def getLossLessImages: Map[Int, DefineBitsLossless2Tag] = getAllTags.collect {
+    case (i, png: DefineBitsLossless2Tag) => (i: Int, png)
   }(breakOut)
 
   def getImages: Map[Int, ImageTag] = getAllTags.collect {
@@ -38,14 +43,30 @@ object WrappedSWF {
 
   def imageToBytes(image: ImageTag): Option[Array[Byte]] = {
     image match {
+      case bits: DefineBitsTag => imageToIS(bits).map(readAll)
+      case bits: DefineBitsLossless2Tag =>
+        val baos = new ByteArrayOutputStream()
+        ImageIO.write(bits.getImage.getBufferedImage, "png", baos)
+        Some(baos.toByteArray)
+      case _ => Option(image.getImageData).map(readAll)
+    }
+  }
+
+  def imageToIS(image: ImageTag): Option[InputStream] = {
+    image match {
+      case bits: DefineBitsLossless2Tag =>
+        val baos = new ByteArrayOutputStream()
+        ImageIO.write(bits.getImage.getBufferedImage, "png", baos)
+        val bais = new ByteArrayInputStream(baos.toByteArray)
+        Option(bais)
       case bits: DefineBitsTag =>
         val errLen = if(ImageTag.hasErrorHeader(bits.jpegData)) 4 else 0
-        val is = new ByteArrayInputStream(
+        val bais = new ByteArrayInputStream(
           bits.jpegData.getArray,
           bits.jpegData.getPos + errLen,
           bits.jpegData.getLength - errLen)
-        Some(readAll(is))
-      case _ => Option(image.getImageData).map(readAll)
+        Some(bais)
+      case _ => None
     }
   }
 
