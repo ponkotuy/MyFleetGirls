@@ -36,7 +36,7 @@ class MFGCron @Inject()(val system: ActorSystem, _playInitializer: PlayInitializ
 
   def onStart(): Unit = {
     beforeStart()
-    val cron = system.actorOf(Props[CronScheduler], "cron")
+    val cron = system.actorOf(Props[CronScheduler])
     cron ! CronSchedule(Cron(0, 5, aster, aster, aster), _ => deleteDailyQuest())
     cron ! CronSchedule(Cron(0, 5, aster, aster, DateTimeConstants.MONDAY), _ => deleteWeeklyQuest())
     cron ! CronSchedule(Cron(0, 5, 1, aster, aster), _ => deleteMonthlyQuest())
