@@ -14,10 +14,11 @@ case object Port extends ResType {
   override def regexp: Regex = s"\\A$Api/api_port/port\\z".r
 
   override def postables(q: Query): Seq[Result] = {
-    Ship2.postablesFromObj(q.obj \ "api_ship") ++
-        Material.postablesFromObj(q.obj \ "api_material") ++
-        NDock.postablesFromObj(q.obj \ "api_ndock") ++
-        DeckPort.postablesFromObj(q.obj \ "api_deck_port") ++
-        Basic.postablesFromObj(q.obj \ "api_basic", q.uri)
+    val obj = q.obj
+    Ship2.postablesFromObj(obj \ "api_ship") ++
+      Material.postablesFromObj(obj \ "api_material") ++
+      NDock.postablesFromObj(obj \ "api_ndock") ++
+      DeckPort.postablesFromObj(obj \ "api_deck_port") ++
+      Basic.postablesFromObj(obj \ "api_basic", q.uri)
   }
 }

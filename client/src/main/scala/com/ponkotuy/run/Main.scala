@@ -3,8 +3,9 @@ package com.ponkotuy.run
 import com.ponkotuy.build.BuildInfo
 import com.ponkotuy.config.ClientConfig
 import com.ponkotuy.http.MFGHttp
-import com.ponkotuy.intercept.KCIntercepter
-import com.ponkotuy.proxy.FinagleProxy
+import com.ponkotuy.intercept.KCInterceptor
+import com.ponkotuy.proxy.{KCFiltersSource, LittleProxy}
+import com.ponkotuy.value.KCServer
 
 /**
  *
@@ -14,7 +15,14 @@ import com.ponkotuy.proxy.FinagleProxy
 object Main extends App {
   try {
     message()
-    new FinagleProxy(ClientConfig.proxyHost, ClientConfig.proxyPort, new KCIntercepter).start()
+
+    val proxy = new LittleProxy(
+      ClientConfig.proxyHost,
+      ClientConfig.proxyPort,
+      ClientConfig.upstreamProxyHost,
+      new KCFiltersSource(KCServer.ips, new KCInterceptor())
+    )
+    proxy.start()
   } catch {
     case e: ExceptionInInitializerError =>
       e.printStackTrace()

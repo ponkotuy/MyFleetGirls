@@ -18,7 +18,7 @@ case object SoundMP3 extends ResType {
     SoundUrlId.parseURL(q.uri.toString())
         .filterNot(MFGHttp.existsSound)
         .map { case SoundUrlId(shipKey, soundId, ver) =>
-      val sound = allRead(q.response.content)
+      val sound = allRead(q.responseContent)
       FilePostable(s"/mp3/kc/${shipKey}/${soundId}/${ver}", "sound", 2, sound, "mp3")
     }.toList
   }
