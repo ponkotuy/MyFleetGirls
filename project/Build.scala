@@ -12,7 +12,6 @@ object MyFleetGirlsBuild extends Build {
   val scalaVer = "2.11.8"
 
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
-    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)
     .aggregate(server, client, library)
 
   lazy val rootSettings = settings ++ Seq(
@@ -20,7 +19,6 @@ object MyFleetGirlsBuild extends Build {
   )
 
   lazy val server = project
-    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)
     .dependsOn(library)
     .enablePlugins(sbt.PlayScala).settings(
       scalaVersion := scalaVer
@@ -28,21 +26,17 @@ object MyFleetGirlsBuild extends Build {
     .enablePlugins(SbtWeb, BuildInfoPlugin)
 
   lazy val client = project
-    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)
     .settings(scalaVersion := scalaVer)
     .dependsOn(library)
     .enablePlugins(BuildInfoPlugin)
 
   lazy val library = project
-    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)
     .settings(scalaVersion := scalaVer)
 
   lazy val update = project
-    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)
     .settings(assemblyJarName in assembly := "update.jar")
 
   lazy val profiler = project
-    .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)
     .dependsOn(server)
 
   lazy val tester = project
