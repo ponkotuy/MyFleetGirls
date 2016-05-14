@@ -1,6 +1,4 @@
 
-scalaVersion := "2.11.7"
-
 libraryDependencies ++= Seq(
   "net.ceedubs" %% "ficus" % "1.1.2",
   "net.databinder.dispatch" %% "dispatch-core" % "0.11.0",

@@ -66,9 +66,11 @@ object MyFleetGirlsBuild extends Build {
     .settings(assemblyJarName in assembly := "update.jar")
 
   lazy val profiler = project
+    .settings(scalaVersion := scalaVer)
     .dependsOn(server)
 
   lazy val tester = project
+    .settings(scalaVersion := scalaVer)
 
   override lazy val settings = super.settings ++ Seq(
     version := ver,

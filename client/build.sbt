@@ -4,8 +4,6 @@ import com.typesafe.sbt.license.{LicenseInfo, DepModuleInfo}
 
 name := "MyFleetGirls"
 
-scalaVersion := "2.11.8"
-
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.3.0",
   "org.littleshoot" % "littleproxy" % "1.1.0-beta2",

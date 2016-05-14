@@ -1,8 +1,6 @@
 
 name := "MyFleetGirlsServer"
 
-scalaVersion := "2.11.8"
-
 val scalikeJdbcVer = "2.3.5"
 
 libraryDependencies ++= Seq(
