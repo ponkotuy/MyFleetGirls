@@ -13,9 +13,6 @@ cache:
 jdk:
   - oraclejdk8
 
-before_script:
-  - travis_wait sbt downLib
-
 script:
   - travis_wait sbt test
   - find $HOME/.sbt -name "*.lock" | xargs rm

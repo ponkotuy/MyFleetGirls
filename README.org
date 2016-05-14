@@ -39,7 +39,7 @@ $ sbt proxy
    - run :: サーバを立ち上げます。ただし開発モード
    - start :: 同上。ただし本番モード
    - proxy :: client立ち上げ
-   - assembl :: MyFleetGirls ClientのダウンローダとClient本体をone-packageのjarに固める
+   - assembly :: MyFleetGirls ClientのダウンローダとClient本体をone-packageのjarに固める
    - zip :: assemblyののちに、publicにそれらを配置する
    - prof :: profilerを立ち上げる（メンテされてないので動くか不明）
    - downLib :: 非maven管理下にあるjarをdownloadし適切に配置する
