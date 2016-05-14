@@ -1,6 +1,6 @@
 
 libraryDependencies ++= Seq(
-  "org.skinny-framework" %% "skinny-http-client" % "2.1.0",
+  "org.skinny-framework" %% "skinny-http-client" % "2.1.1",
   "pl.project13.scala" %% "rainbow" % "0.2"
 )
 

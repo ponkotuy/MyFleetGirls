@@ -7,12 +7,12 @@ name := "MyFleetGirls"
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.3.0",
   "org.littleshoot" % "littleproxy" % "1.1.0-beta2",
-  "com.netaporter" %% "scala-uri" % "0.4.10",
-  "org.apache.httpcomponents" % "httpclient" % "4.5.1",
-  "org.apache.httpcomponents" % "httpmime" % "4.5.1",
-  "com.typesafe.akka" %% "akka-actor" % "2.4.0",
+  "com.netaporter" %% "scala-uri" % "0.4.14",
+  "org.apache.httpcomponents" % "httpclient" % "4.5.2",
+  "org.apache.httpcomponents" % "httpmime" % "4.5.2",
+  "com.typesafe.akka" %% "akka-actor" % "2.4.6",
   "ch.qos.logback" % "logback-classic" % "1.1.7" % "runtime",
-  "org.scalatest" %% "scalatest" % "2.2.5" % "test"
+  "org.scalatest" %% "scalatest" % "2.2.6" % "test"
 )
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions")
