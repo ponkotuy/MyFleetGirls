@@ -1,7 +1,7 @@
 
 name := "MyFleetGirlsServer"
 
-val scalikeJdbcVer = "2.3.5"
+val scalikeJdbcVer = "2.4.1"
 
 libraryDependencies ++= Seq(
   "org.scalikejdbc" %% "scalikejdbc" % scalikeJdbcVer,

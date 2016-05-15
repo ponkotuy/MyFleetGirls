@@ -20,6 +20,6 @@ addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.6.1")
 
 libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.39" // Add SQLDriver
 
-addSbtPlugin("org.scalikejdbc" %% "scalikejdbc-mapper-generator" % "2.3.5")
+addSbtPlugin("org.scalikejdbc" %% "scalikejdbc-mapper-generator" % "2.4.1")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-license-report" % "1.2.0")
