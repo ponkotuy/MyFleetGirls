@@ -3,7 +3,7 @@ package modules
 
 import javax.inject.{Inject, Singleton}
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.{ActorSystem, InvalidActorNameException, Props}
 import com.github.nscala_time.time.StaticDateTime
 import com.google.inject.AbstractModule
 import models.db._
@@ -35,19 +35,25 @@ class MFGCron @Inject()(val system: ActorSystem, _playInitializer: PlayInitializ
   onStart()
 
   def onStart(): Unit = {
+    Logger.info("Start MFGCron")
     beforeStart()
-    val cron = system.actorOf(Props[CronScheduler])
-    cron ! CronSchedule(Cron(0, 5, aster, aster, aster), _ => deleteDailyQuest())
-    cron ! CronSchedule(Cron(0, 5, aster, aster, DateTimeConstants.MONDAY), _ => deleteWeeklyQuest())
-    cron ! CronSchedule(Cron(0, 5, 1, aster, aster), _ => deleteMonthlyQuest())
-    cron ! CronSchedule(Cron(17, 3, aster, aster, aster), _ => cutMaterialRecord())
-    cron ! CronSchedule(Cron(23, 3, aster, aster, aster), _ => cutBasicRecord())
-    cron ! CronSchedule(Cron(0, 2, aster, aster, aster), insertCalcScore)
-    cron ! CronSchedule(Cron(0, 14, aster, aster, aster), insertCalcScore)
-    cron ! CronSchedule(Cron(0, aster, aster, aster, aster), _ => insertRanking(Ymdh.now(Tokyo)))
-    // 月末にだけやりたいのでとりあえず起動して内部でチェック
-    cron ! CronSchedule(Cron(0, 22, aster, aster, aster), insertCalcScoreMonthly)
-    system.scheduler.schedule(0.seconds, 45.seconds, cron, "minutes")
+    try {
+      val cron = system.actorOf(Props[CronScheduler], "cron")
+      cron ! CronSchedule(Cron(0, 5, aster, aster, aster), _ => deleteDailyQuest())
+      cron ! CronSchedule(Cron(0, 5, aster, aster, DateTimeConstants.MONDAY), _ => deleteWeeklyQuest())
+      cron ! CronSchedule(Cron(0, 5, 1, aster, aster), _ => deleteMonthlyQuest())
+      cron ! CronSchedule(Cron(17, 3, aster, aster, aster), _ => cutMaterialRecord())
+      cron ! CronSchedule(Cron(23, 3, aster, aster, aster), _ => cutBasicRecord())
+      cron ! CronSchedule(Cron(0, 2, aster, aster, aster), insertCalcScore)
+      cron ! CronSchedule(Cron(0, 14, aster, aster, aster), insertCalcScore)
+      cron ! CronSchedule(Cron(0, aster, aster, aster, aster), _ => insertRanking(Ymdh.now(Tokyo)))
+      // 月末にだけやりたいのでとりあえず起動して内部でチェック
+      cron ! CronSchedule(Cron(0, 22, aster, aster, aster), insertCalcScoreMonthly)
+      system.scheduler.schedule(0.seconds, 45.seconds, cron, "minutes")
+    } catch {
+      case _: InvalidActorNameException =>
+        Logger.warn("Raised InvalidActorNameException. Not do anything this MFGCron.")
+    }
   }
 
   private def beforeStart(): Unit = {
