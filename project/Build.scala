@@ -1,9 +1,11 @@
+import com.typesafe.sbt.packager.Keys._
 import com.typesafe.sbt.web.SbtWeb
 import sbt.Keys._
 import sbt._
 import play._
 import sbtassembly.AssemblyPlugin.autoImport._
 import sbtbuildinfo.BuildInfoPlugin
+import scalikejdbc.mapper.SbtKeys._
 
 object MyFleetGirlsBuild extends Build {
 
@@ -14,14 +16,41 @@ object MyFleetGirlsBuild extends Build {
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
     .aggregate(server, client, library)
 
-  lazy val rootSettings = settings ++ Seq(
-    commands ++= Seq(proxy, assembl, run, stage, start, dist, genMapper, prof, runTester, runTester2, downLib)
+  val proxy = inputKey[Unit]("run proxy")
+  val prof = inputKey[Unit]("run profiler")
+  val runTester = inputKey[Unit]("run tester")
+  val runTesterEarth = taskKey[Unit]("run tester")
+  val downLib = taskKey[File]("download library")
+
+  lazy val rootSettings = settings ++ disableAggregates ++ Seq(
+    commands ++= Seq(start),
+    proxy <<= run in (client, Compile),
+    assembly := {
+      (assembly in update).value
+      (assembly in client).value
+    },
+    run <<= run in (server, Compile),
+    stage <<= stage in server,
+    dist <<= dist in server,
+    scalikejdbcGen <<= scalikejdbcGen in (server, Compile),
+    prof <<= run in (profiler, Compile),
+    runTester <<= run in (tester, Compile),
+    runTesterEarth <<= runTester.toTask(" https://myfleet.moe")
   )
+
+  lazy val disableAggregates = Seq(
+    assembly, stage, dist, scalikejdbcGen
+  ).map {
+    aggregate in _ := false
+  }
 
   lazy val server = project
     .dependsOn(library)
-    .enablePlugins(sbt.PlayScala).settings(
-      scalaVersion := scalaVer
+    .enablePlugins(sbt.PlayScala)
+    .settings(
+      scalaVersion := scalaVer,
+      downLib <<= downLibTask,
+      unmanagedJars in Compile <<= (unmanagedJars in Compile).dependsOn(downLib)
     )
     .enablePlugins(SbtWeb, BuildInfoPlugin)
 
@@ -55,81 +84,25 @@ object MyFleetGirlsBuild extends Build {
     fork in Test := true
   )
 
-  def proxy = Command.command("proxy") { state =>
-    val subState = Command.process("project client", state)
-    Command.process("run", subState)
-    state
-  }
-
-  def assembl = Command.command("assembly") { state =>
-    val updateState = Command.process("project update", state)
-    Command.process("assembly", updateState)
-    val clientState = Command.process("project client", state)
-    Command.process("assembly", clientState)
-    state
-  }
-
-  def run = Command.command("run") { state =>
-    val subState = Command.process("project server", state)
-    Command.process("run", subState)
-    state
-  }
-
-  def stage = Command.command("stage") { state =>
-    val subState = Command.process("project server", state)
-    Command.process("stage", subState)
-    state
-  }
-
   def start = Command.command("start") { state =>
     val subState = Command.process("project server", state)
-    Command.process("start", subState)
+    Command.process("testProd", subState)
     state
   }
 
-  def dist = Command.command("dist") { state =>
-    val subState = Command.process("project server", state)
-    Command.process("dist", subState)
-    state
-  }
-
-  def genMapper = Command.args("scalikejdbc-gen", "<arg>") { (state, args) =>
-    val subState = Command.process("project server", state)
-    Command.process("scalikejdbc-gen " + args.mkString(" "), subState)
-    state
-  }
-
-  def prof = Command.command("prof") { state =>
-    val subState = Command.process("project  profiler", state)
-    Command.process("run", subState)
-    state
-  }
-
-  def runTester2 = Command.command("runTester") { state =>
-    val subState = Command.process("project tester", state)
-    Command.process(s"run", subState)
-    state
-  }
-
-  def runTester = Command.command("runTesterEarth") { state =>
-    val subState = Command.process("project tester", state)
-    Command.process(s"run https://myfleet.moe", subState)
-    state
-  }
-
-  def downLib = Command.command("downLib") { state =>
+  def downLibTask = Def.task {
+    val s = streams.value
     val libName = "ffdec_5.3.0_lib.jar"
-    val libFile = file("server") / "lib" / libName
-    if (libFile.exists) {
-      state.log.info(s"$libName has already been downloaded")
-    } else {
+    val libFile = unmanagedBase.value / libName
+    if (!libFile.exists()) {
       IO.withTemporaryFile("ffdec-", ".tmp") { tmp =>
         val dlUrl = url(s"https://www.free-decompiler.com/flash/download/$libName")
-        state.log.info(s"downloading $dlUrl ...")
+        s.log.info(s"downloading $dlUrl ...")
         IO.download(dlUrl, tmp)
         IO.move(tmp, libFile)
       }
     }
-    state
+    libFile
   }
+
 }
