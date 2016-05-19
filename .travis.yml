@@ -13,10 +13,15 @@ cache:
 jdk:
   - oraclejdk8
 
-before_script:
-  - travis_wait sbt downLib
-
 script:
-  - travis_wait sbt test
+  - sbt ++$TRAVIS_SCALA_VERSION test
   - find $HOME/.sbt -name "*.lock" | xargs rm
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/b4de92855728c1158e47
+    on_success: change
+    on_failure: always
+    on_start: never
