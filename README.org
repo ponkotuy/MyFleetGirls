@@ -7,6 +7,8 @@
 #+LANGUAGE: ja
 
 * MyFleetGirls
+#+ATTR_HTML: title="Join the chat at https://gitter.im/ponkotuy/MyFleetGirls"
+  [[https://gitter.im/ponkotuy/MyFleetGirls?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge][file:https://badges.gitter.im/ponkotuy/MyFleetGirls.svg]]
   [[https://travis-ci.org/ponkotuy/MyFleetGirls][file:https://travis-ci.org/ponkotuy/MyFleetGirls.svg?branch=master]]
 
   艦これのデータをProxy経由で取得し、サーバに送って、
@@ -39,7 +41,7 @@ $ sbt proxy
    - run :: サーバを立ち上げます。ただし開発モード
    - start :: 同上。ただし本番モード
    - proxy :: client立ち上げ
-   - assembl :: MyFleetGirls ClientのダウンローダとClient本体をone-packageのjarに固める
+   - assembly :: MyFleetGirls ClientのダウンローダとClient本体をone-packageのjarに固める
    - zip :: assemblyののちに、publicにそれらを配置する
    - prof :: profilerを立ち上げる（メンテされてないので動くか不明）
    - downLib :: 非maven管理下にあるjarをdownloadし適切に配置する
