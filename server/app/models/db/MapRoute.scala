@@ -192,7 +192,7 @@ object MapRoute extends SQLSyntaxSupport[MapRoute] {
         column.infoNo -> entity.infoNo,
         column.dep -> entity.dep,
         column.dest -> entity.dest,
-        column.fleet -> entity.fleet,
+        column.fleet -> entity.fleet.mkString(","),
         column.created -> entity.created
       ).where.eq(column.id, entity.id)
     }.update().apply()

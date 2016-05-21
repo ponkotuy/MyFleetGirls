@@ -184,7 +184,7 @@ object MasterSlotItem extends SQLSyntaxSupport[MasterSlotItem] {
       update(MasterSlotItem).set(
         column.id -> entity.id,
         column.name -> entity.name,
-        column.typ -> entity.typ,
+        column.typ -> entity.typ.mkString(","),
         column.power -> entity.power,
         column.torpedo -> entity.torpedo,
         column.bomb -> entity.bomb,

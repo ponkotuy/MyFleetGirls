@@ -316,7 +316,7 @@ object DeckShipSnapshot extends SQLSyntaxSupport[DeckShipSnapshot] {
         column.lv -> entity.lv,
         column.exp -> entity.exp,
         column.nowhp -> entity.nowhp,
-        column.slot -> entity.slot,
+        column.slot -> entity.slot.mkString(","),
         column.fuel -> entity.fuel,
         column.bull -> entity.bull,
         column.dockTime -> entity.dockTime,
