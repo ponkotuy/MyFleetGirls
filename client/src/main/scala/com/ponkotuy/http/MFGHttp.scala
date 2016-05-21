@@ -156,8 +156,8 @@ object MFGHttp extends Log {
 
   private def alertResult(res: CloseableHttpResponse): Int = {
     val stCode = res.getStatusLine.getStatusCode
-    val content = allRead(res.getEntity.getContent)
     if(stCode >= 400) {
+      val content = allRead(res.getEntity.getContent)
       error(s"Error Response ${stCode}\n${res.getStatusLine}\n${content}")
     }
     stCode
