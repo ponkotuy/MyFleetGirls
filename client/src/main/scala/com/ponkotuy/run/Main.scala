@@ -6,6 +6,7 @@ import com.ponkotuy.http.MFGHttp
 import com.ponkotuy.intercept.KCInterceptor
 import com.ponkotuy.proxy.{KCFiltersSource, LittleProxy}
 import com.ponkotuy.value.KCServer
+import io.netty.util.ResourceLeakDetector
 
 /**
  *
@@ -13,6 +14,7 @@ import com.ponkotuy.value.KCServer
  * Date: 14/02/18.
  */
 object Main extends App {
+  ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED)
   try {
     message()
 
