@@ -146,12 +146,9 @@ class UserView @Inject()(implicit val ec: ExecutionContext) extends Controller {
     Ok(views.html.user.ship(user, ships, decks, deckports))
   }
 
-  val UnprocurableItemId = Set(49)
-
   def book(memberId: Long) = userView(memberId) { user =>
     val allShips = db.ShipBook.findAllUnique()
-    val allItems = db.MasterSlotItem.findAllBy(sqls"msi.id <= 500 and msi.id not in (${UnprocurableItemId})")
-      .map { msi => msi.id -> msi.name }
+    val allItems = db.MasterSlotItem.findAllBy(sqls"msi.id <= 500").map { msi => msi.id -> msi.name }
     val sBooks = db.ShipBook.findAllBy(sqls"member_id = ${memberId}").map(it => it.indexNo -> it).toMap
     val iBooks = db.ItemBook.findAllBy(sqls"member_id = ${memberId}").map(it => it.indexNo -> it).toMap
     Ok(views.html.user.book(user, allShips, sBooks, allItems, iBooks))
