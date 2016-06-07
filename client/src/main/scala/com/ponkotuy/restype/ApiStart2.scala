@@ -24,9 +24,9 @@ case object ApiStart2 extends ResType {
   override def postables(q: Query): Seq[HttpPostable] = postablesFromJValue(q.obj)
 
   private[restype] def postablesFromJValue(obj: JValue, locale: Locale = Locale.getDefault) = {
-    if(locale.getLanguage != "ja" || locale.getCountry != "JP") Nil
-    else {
-      println("OK")
+    if(locale.getLanguage != Locale.JAPANESE.getLanguage || locale.getCountry != Locale.JAPAN.getCountry) {
+      Nil
+    } else {
       (masterShip(obj) ::
           masterMission(obj) ::
           masterSlotitem(obj) ::
