@@ -1,5 +1,7 @@
 package com.ponkotuy.restype
 
+import java.util.Locale
+
 import com.ponkotuy.data.master._
 import com.ponkotuy.http.MFGHttp
 import com.ponkotuy.parser.Query
@@ -21,11 +23,16 @@ case object ApiStart2 extends ResType {
 
   override def postables(q: Query): Seq[HttpPostable] = postablesFromJValue(q.obj)
 
-  private[restype] def postablesFromJValue(obj: JValue) =
-    (masterShip(obj) ::
-        masterMission(obj) ::
-        masterSlotitem(obj) ::
-        masterSType(obj) :: Nil).flatten
+  private[restype] def postablesFromJValue(obj: JValue, locale: Locale = Locale.getDefault) = {
+    if(locale.getLanguage != "ja" || locale.getCountry != "JP") Nil
+    else {
+      println("OK")
+      (masterShip(obj) ::
+          masterMission(obj) ::
+          masterSlotitem(obj) ::
+          masterSType(obj) :: Nil).flatten
+    }
+  }
 
   private def masterShip(obj: JValue): Option[HttpPostable] = {
     val masterGraph = MasterShipGraph.fromJson(obj \ "api_mst_shipgraph")
