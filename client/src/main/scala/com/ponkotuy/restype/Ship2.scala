@@ -20,6 +20,9 @@ object Ship2 extends ResType {
 
   def postablesFromObj(obj: JValue): Seq[Result] = {
     val ship = Ship.fromJson(obj)
-    NormalPostable("/ship", write(ship), ver = 2, s"所持艦娘数 -> ${ship.size}") :: Nil
+    if (ship.isEmpty) Nil
+    else {
+      NormalPostable("/ship", write(ship), ver = 2, s"所持艦娘数 -> ${ship.size}") :: Nil
+    }
   }
 }

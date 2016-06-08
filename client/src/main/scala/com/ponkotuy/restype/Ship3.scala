@@ -18,6 +18,9 @@ case object Ship3 extends ResType {
 
   override def postables(q: Query): Seq[Result] = {
     val update = Ship.fromJson(q.obj \ "api_ship_data")
-    NormalPostable("/update_ship", write(update)) :: Nil
+    if (update.isEmpty) Nil
+    else {
+      NormalPostable("/update_ship", write(update)) :: Nil
+    }
   }
 }
