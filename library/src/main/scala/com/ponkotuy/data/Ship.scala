@@ -8,45 +8,96 @@ import org.json4s._
  * Date: 14/02/25.
  */
 case class Ship(
-    id: Int, shipId: Int,
-    lv: Int, exp: Int, nowhp: Int, maxhp: Int, slot: List[Int], kyouka: List[Int], back: Int,
-    fuel: Int, bull: Int, dockTime: Long, cond: Int,
-    karyoku: Int, raisou: Int, taiku: Int, soukou: Int, kaihi: Int, taisen: Int, sakuteki: Int, lucky: Int, locked: Boolean)
+    id: Int,
+    shipId: Int,
+    lv: Int,
+    exp: Int,
+    nowhp: Int,
+    maxhp: Int,
+    slot: List[Int],
+    kyouka: List[Int],
+    back: Int,
+    fuel: Int,
+    bull: Int,
+    dockTime: Long,
+    cond: Int,
+    karyoku: Int,
+    raisou: Int,
+    taiku: Int,
+    soukou: Int,
+    kaihi: Int,
+    taisen: Int,
+    sakuteki: Int,
+    lucky: Int,
+    locked: Boolean)
 
 object Ship {
   implicit val formats = DefaultFormats
   def fromJson(json: JValue): List[Ship] = {
-    val JArray(xs) = json
-    implicit def bigint2int(bigint: BigInt): Int = bigint.toInt
-    xs.map { x =>
-      val JInt(id) = x \ "api_id"
-      val JInt(shipId) = x \ "api_ship_id"
-      val JInt(lv) = x \ "api_lv"
-      val JArray(JInt(exp) :: _) = x \ "api_exp" // [TotalEXP, NextExp, Percentage]
-      val JInt(nowhp) = x \ "api_nowhp"
-      val JInt(maxhp) = x \ "api_maxhp"
-      val JArray(slot) = x \ "api_slot"
-      val slotList = slot.map { x => val JInt(s) = x; s.toInt }
-      val JArray(kyouka) = x \ "api_kyouka"
-      val kyoukaList = kyouka.map(_.extract[Int])
-      val JInt(back) = x \ "api_backs"
-      val JInt(fuel) = x \ "api_fuel"
-      val JInt(bull) = x \ "api_bull"
-      val JInt(ndockTime) = x \ "api_ndock_time"
-      val JInt(cond) = x \ "api_cond"
-      val JArray(JInt(karyoku) :: _) = x \ "api_karyoku"
-      val JArray(JInt(raisou) :: _) = x \ "api_raisou"
-      val JArray(JInt(taiku) :: _) = x \ "api_taiku"
-      val JArray(JInt(soukou) :: _) = x \ "api_soukou"
-      val JArray(JInt(kaihi) :: _) = x \ "api_kaihi"
-      val JArray(JInt(taisen) :: _) = x \ "api_taisen"
-      val JArray(JInt(sakuteki) :: _) = x \ "api_sakuteki"
-      val JArray(JInt(lucky) :: _) = x \ "api_lucky"
-      val JInt(locked) = x \ "api_locked"
-      Ship(id, shipId,
-        lv, exp, nowhp, maxhp, slotList, kyoukaList, back, fuel, bull, ndockTime.toLong, cond,
-        karyoku, raisou, taiku, soukou, kaihi, taisen, sakuteki, lucky,
-        locked != BigInt(0))
+    json.extractOrElse[List[RawShip]](Nil).flatMap(_.build)
+  }
+
+  private case class RawShip(
+      api_id: Int,
+      api_ship_id: Int,
+      api_lv: Int,
+      api_exp: List[Int],
+      api_nowhp: Int,
+      api_maxhp: Int,
+      api_slot: List[Int],
+      api_kyouka: List[Int],
+      api_backs: Int,
+      api_fuel: Int,
+      api_bull: Int,
+      api_ndock_time: Long,
+      api_cond: Int,
+      api_karyoku: List[Int],
+      api_raisou: List[Int],
+      api_taiku: List[Int],
+      api_soukou: List[Int],
+      api_kaihi: List[Int],
+      api_taisen: List[Int],
+      api_sakuteki: List[Int],
+      api_lucky: List[Int],
+      api_locked: Int
+  ) {
+    def build: Option[Ship] = {
+      for {
+        exp <- api_exp.headOption
+        karyoku <- api_karyoku.headOption
+        raisou <- api_raisou.headOption
+        taiku <- api_taiku.headOption
+        soukou <- api_soukou.headOption
+        kaihi <- api_kaihi.headOption
+        taisen <- api_taisen.headOption
+        sakuteki <- api_sakuteki.headOption
+        lucky <- api_lucky.headOption
+      } yield {
+        Ship(
+          id = api_id,
+          shipId = api_ship_id,
+          lv = api_lv,
+          exp = exp,
+          nowhp = api_nowhp,
+          maxhp = api_maxhp,
+          slot = api_slot,
+          kyouka = api_kyouka,
+          back = api_backs,
+          fuel = api_fuel,
+          bull = api_bull,
+          dockTime = api_ndock_time,
+          cond = api_cond,
+          karyoku = karyoku,
+          raisou = raisou,
+          taiku = taiku,
+          soukou = soukou,
+          kaihi = kaihi,
+          taisen = taisen,
+          sakuteki = sakuteki,
+          lucky = lucky,
+          locked = api_locked != 0
+        )
+      }
     }
   }
 }
