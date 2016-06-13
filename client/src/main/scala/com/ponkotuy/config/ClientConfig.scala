@@ -47,7 +47,10 @@ object ClientConfig {
   def proxyPort = config.getInt("proxy.port")
 
   // 接続可能範囲(デフォルトではlocalhostのみ受け付け
-  def proxyHost = Try { config.getString("proxy.host") }.getOrElse("localhost")
+  def proxyHost = Try {
+    val raw = config.getString("proxy.host").stripMargin
+    if (raw == "") None else Some(raw)
+  }.getOrElse(Some("localhost"))
 
   // MyFleetGirlsへの接続に使われるProxy設定
   lazy val clientProxyHost: Option[HttpHost] = {

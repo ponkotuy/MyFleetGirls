@@ -11,13 +11,17 @@ import org.littleshoot.proxy.{ChainedProxy, ChainedProxyAdapter, ChainedProxyMan
 import scala.util.control.NonFatal
 
 
-class LittleProxy(host: String, port: Int, upstreamProxy: Option[HttpHost], filtersSource: HttpFiltersSource) {
+class LittleProxy(host: Option[String], port: Int, upstreamProxy: Option[HttpHost], filtersSource: HttpFiltersSource) {
 
   import LittleProxy._
 
-  private val bootstrap = DefaultHttpProxyServer.bootstrap()
+  private[this] val inetSocketAddress = host.fold(new InetSocketAddress(port)) { address =>
+    new InetSocketAddress(address, port)
+  }
+
+  private[this] val bootstrap = DefaultHttpProxyServer.bootstrap()
     .withName("MyFleetGirlsProxy")
-    .withAddress(new InetSocketAddress(host, port))
+    .withAddress(inetSocketAddress)
     .withConnectTimeout(30000)
     .withUpstreamProxy(upstreamProxy)
     .withFiltersSource(filtersSource)
