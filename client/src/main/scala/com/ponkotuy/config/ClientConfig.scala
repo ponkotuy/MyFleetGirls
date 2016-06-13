@@ -42,8 +42,14 @@ object ClientConfig {
   lazy val post = config.getString("url.post")
   def postUrl(ver: Int = 1) = post + s"/post/v${ver}"
   def getUrl(ver: Int = 1) = config.getString("url.post") + s"/rest/v${ver}"
+
+  // 自身が待ち受けるport
   def proxyPort = config.getInt("proxy.port")
+
+  // 接続可能範囲(デフォルトではlocalhostのみ受け付け
   def proxyHost = Try { config.getString("proxy.host") }.getOrElse("localhost")
+
+  // MyFleetGirlsへの接続に使われるProxy設定
   lazy val clientProxyHost: Option[HttpHost] = {
     for {
       proxy <- Try { config.getConfig("url.proxy") }.toOption

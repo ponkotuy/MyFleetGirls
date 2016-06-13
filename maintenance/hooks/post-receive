@@ -50,6 +50,7 @@ if ! cmp -s $pub_jar $orig_jar ; then
     $nice pack200 --unknown-attribute=pass ${pub_jar}.pack.gz $pub_jar 2> /dev/null
 fi
 
+$nice $sbt -java-home $JAVA_HOME clean
 $nice $sbt -java-home $JAVA_HOME stage
 eval server/target/universal/stage/bin/myfleetgirlsserver $server_opt$port &
 
