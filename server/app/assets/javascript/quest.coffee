@@ -7,6 +7,7 @@ $(document).ready ->
       weekly_quests: []
       monthly_quests: []
       once_quests: []
+      others_quests: []
     methods:
       progressView: (state, progress, manual) ->
         if manual then return '達成'
@@ -22,10 +23,11 @@ $(document).ready ->
         [undefined, '編成', '出撃', '演習', '遠征', '補給/入渠', '工廠', '改装'][cat]
       getJson: () ->
         $.getJSON "/rest/v1/#{userid}/quest", {}, (data) =>
-          @daily_quests = data.filter (x) -> [2, 4, 5].indexOf(x.typ) >= 0
-          @weekly_quests = data.filter (x) -> x.typ == 3
-          @monthly_quests = data.filter (x) -> x.typ == 6
-          @once_quests = data.filter (x) -> x.typ == 1
+          @daily_quests = data.filter (x) -> x.typ == 1
+          @weekly_quests = data.filter (x) -> x.typ == 2
+          @monthly_quests = data.filter (x) -> x.typ == 3
+          @once_quests = data.filter (x) -> x.typ == 4
+          @others.quests = data.filter (x) -> x.typ == 5
       manualFlag: (id) ->
         $.ajax('/post/v1/quest/manual_flag', {type: 'PATCH', data: {userId: userid, id: id}})
           .success -> location.reload()

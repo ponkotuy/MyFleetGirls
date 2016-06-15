@@ -68,19 +68,19 @@ class MFGCron @Inject()(val system: ActorSystem, _playInitializer: PlayInitializ
 
   private def deleteDailyQuest(): Unit = {
     Logger.info("Delete Daily Quest")
-    Quest.deleteAllBy(sqls"typ in(2, 4, 5)")
+    Quest.deleteAllBy(sqls"typ = 1")
   }
 
   private def deleteWeeklyQuest(): Unit = {
     Logger.info("Delete Weekly Quest")
-    Quest.deleteAllBy(sqls"typ = 3")
+    Quest.deleteAllBy(sqls"typ = 2")
     Logger.info("Delete AGOProgress")
     AGOProgress.deleteAll()
   }
 
   private def deleteMonthlyQuest(): Unit = {
     Logger.info("Delete Monthly Quest")
-    Quest.deleteAllBy(sqls"typ = 6")
+    Quest.deleteAllBy(sqls"typ = 3")
   }
 
   private def cutMaterialRecord(): Unit = {
