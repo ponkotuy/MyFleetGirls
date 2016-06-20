@@ -81,27 +81,6 @@
           </table>
         </div>
 
-        <div id="once_quest" v-if="once_quests.length > 0">
-          <h3>単 Once</h3>
-          <table class="table table-hover table-condensed">
-            <thead>
-              <tr>
-                <th>ID</th><th>カテゴリ</th><th>名前</th><th>進行</th>
-                @if(user.isMine){<th>手動達成化</th>}
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-repeat="q: once_quests" v-class="text-muted: q.state == 3 || q.manualFlag, warning: q.state == 2 && !q.manualFlag" class="tltip" data-toggle="tooltip" data-placement="bottom" title="<p>{{q.detail}}</p> <p>[報酬]{{q.fuel}}/{{q.ammo}}/{{q.steel}}/{{q.bauxite}}</p>">
-                <td>{{q.id}}</td>
-                <td>{{catView(q.category)}}</td>
-                <td>{{q.title}}</td>
-                <td>{{progressView(q.state, q.progressFlag, q.manualFlag)}}</td>
-                @if(user.isMine){<td><button class="btn btn-default btn-xs" v-attr="disabled: q.state >= 3" v-on="click: manualFlag(q.id)">手動達成</button></td>}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
         <div id="others_quest" v-if="others_quests.length > 0">
           <h3>他 Others</h3>
           <table class="table table-hover table-condensed">
@@ -113,6 +92,27 @@
             </thead>
             <tbody>
               <tr v-repeat="q: others_quests" v-class="text-muted: q.state == 3 || q.manualFlag, warning: q.state == 2 && !q.manualFlag" class="tltip" data-toggle="tooltip" data-placement="bottom" title="<p>{{q.detail}}</p> <p>[報酬]{{q.fuel}}/{{q.ammo}}/{{q.steel}}/{{q.bauxite}}</p>">
+                <td>{{q.id}}</td>
+                <td>{{catView(q.category)}}</td>
+                <td>{{q.title}}</td>
+                <td>{{progressView(q.state, q.progressFlag, q.manualFlag)}}</td>
+                @if(user.isMine){<td><button class="btn btn-default btn-xs" v-attr="disabled: q.state >= 3" v-on="click: manualFlag(q.id)">手動達成</button></td>}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="once_quest" v-if="once_quests.length > 0">
+          <h3>単 Once</h3>
+          <table class="table table-hover table-condensed">
+            <thead>
+              <tr>
+                <th>ID</th><th>カテゴリ</th><th>名前</th><th>進行</th>
+                @if(user.isMine){<th>手動達成化</th>}
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-repeat="q: once_quests" v-class="text-muted: q.state == 3 || q.manualFlag, warning: q.state == 2 && !q.manualFlag" class="tltip" data-toggle="tooltip" data-placement="bottom" title="<p>{{q.detail}}</p> <p>[報酬]{{q.fuel}}/{{q.ammo}}/{{q.steel}}/{{q.bauxite}}</p>">
                 <td>{{q.id}}</td>
                 <td>{{catView(q.category)}}</td>
                 <td>{{q.title}}</td>
