@@ -157,7 +157,7 @@ class RestUser @Inject()(implicit val ec: ExecutionContext) extends Controller {
       .append(missionId.map(id => sqls" and mh.number = ${id}").getOrElse(sqls""))
 
   def quest(memberId: Long) = returnJson {
-    db.Quest.findAllBy(sqls"member_id = ${memberId}").sortBy { q => (q.manualFlag, q.state) }
+    db.Quest.findAllBy(sqls"member_id = ${memberId}").sortBy { q => (q.state, q.id) }
   }
 
   def snap(memberId: Long, snapId: Long) = returnJson {
