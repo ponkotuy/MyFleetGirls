@@ -20,7 +20,7 @@ $(document).ready ->
               when 2 then '80%以上達成'
               else '受注'
       catView: (cat) ->
-        [undefined, '編成', '出撃', '演習', '遠征', '補給/入渠', '工廠', '改装'][cat]
+        [undefined, '編成', '出撃', '演習', '遠征', '補給/入渠', '工廠', '改装', '出撃'][cat]
       getJson: () ->
         $.getJSON "/rest/v1/#{userid}/quest", {}, (data) =>
           @daily_quests = data.filter (x) -> x.typ == 1
