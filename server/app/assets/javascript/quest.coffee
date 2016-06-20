@@ -27,7 +27,7 @@ $(document).ready ->
           @weekly_quests = data.filter (x) -> x.typ == 2
           @monthly_quests = data.filter (x) -> x.typ == 3
           @once_quests = data.filter (x) -> x.typ == 4
-          @others.quests = data.filter (x) -> x.typ == 5
+          @others_quests = data.filter (x) -> x.typ == 5
       manualFlag: (id) ->
         $.ajax('/post/v1/quest/manual_flag', {type: 'PATCH', data: {userId: userid, id: id}})
           .success -> location.reload()
