@@ -48,6 +48,7 @@ object ResType extends Log {
     DeckPort,
     Deck,
     HenseiChange,
+    PresetSelect,
     PictureBook,
     NDock,
     KDock,
