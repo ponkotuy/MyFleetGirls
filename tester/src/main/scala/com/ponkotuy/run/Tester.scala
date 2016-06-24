@@ -16,6 +16,7 @@ object Tester extends App {
   val Host = args.headOption.getOrElse("http://localhost:9000")
   val urlFile = getClass.getResource("/urls")
   val br = new BufferedReader(new InputStreamReader(urlFile.openStream()))
+  HTTP.defaultReadTimeoutMillis = 10000
   Iterator.continually(br.readLine()).takeWhile(_ != null).foreach { line =>
     val url = Host + line
     Try {
