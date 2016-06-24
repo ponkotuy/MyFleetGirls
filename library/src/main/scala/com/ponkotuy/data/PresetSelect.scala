@@ -6,7 +6,6 @@ case class PresetSelect(
     memberId: Long,
     id: Int,
     name: String,
-    nameId: Long,
     mission: List[Int],
     flagship: Int,
     ship: List[Int])
@@ -19,11 +18,11 @@ object PresetSelect {
       api_member_id: Long,
       api_id: Int,
       api_name: String,
-      api_name_id: String,
+      api_name_id: String, // 空文字列の可能性がある。面倒くさいので使わないことにする
       api_mission: List[Int],
       api_flagship: String,
       api_ship: List[Int]) {
     def build: PresetSelect =
-      PresetSelect(api_member_id, api_id, api_name, api_name_id.toLong, api_mission, api_flagship.toInt, api_ship.filter(0 <= _))
+      PresetSelect(api_member_id, api_id, api_name, api_mission, api_flagship.toInt, api_ship.filter(0 <= _))
   }
 }
