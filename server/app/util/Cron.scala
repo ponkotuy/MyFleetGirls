@@ -1,10 +1,9 @@
 package util
 
+import akka.actor.{Actor, ActorRef, ActorSystem, InvalidActorNameException, Props}
 import play.api.Logger
 
-import scala.concurrent.Future
-import akka.actor.Actor
-import com.github.nscala_time.time.Imports._
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  *
@@ -13,6 +12,8 @@ import com.github.nscala_time.time.Imports._
  */
 case class Cron(minutes: Int, hour: Int, day: Int, month: Int, dayOfWeek: Int) {
   import Cron._
+  import com.github.nscala_time.time.Imports._
+
   def in(x: Cron): Boolean = {
     (x.minutes == aster || minutes == x.minutes) &&
       (x.hour == aster || hour == x.hour) &&
@@ -28,6 +29,7 @@ case class Cron(minutes: Int, hour: Int, day: Int, month: Int, dayOfWeek: Int) {
 }
 
 object Cron {
+  import com.github.nscala_time.time.Imports._
   val aster = -1
 
   def fromLong(millis: Long = System.currentTimeMillis()): Cron = {
@@ -55,6 +57,13 @@ case class CronSchedule(cron: Cron, f: Cron => Unit) {
   }
 }
 
+trait CronExecutor {
+  def exec(cron: Cron): Unit
+  def schedule(cron: Cron): CronSchedule = CronSchedule(cron, exec)
+  def schedule(minutes: Int, hour: Int, day: Int, month: Int, dayOfWeek: Int): CronSchedule =
+    schedule(Cron(minutes, hour, day, month, dayOfWeek))
+}
+
 /** 設定されたCronを実行するScheduler
   *
   * 重複実行は許容されるが、取り零しが発生する可能性があるので、1分より短かめの間隔で"minutes"を送信する必要がある
@@ -78,5 +87,26 @@ class CronScheduler extends Actor {
         lastExec = minutes
       }
     case x => Logger.warn("Not Received: " + x)
+  }
+}
+
+object CronScheduler {
+  import scala.concurrent.duration._
+
+  /**
+    * Create CronScheduler Actor
+    *
+    * {{{
+    * val system = ActorSystem()
+    * val cron = CronScheduler.create(system, "name")
+    * cron ! CronSchedule(Cron(0, 5, aster, aster, aster), func)
+    * }}}
+    *
+    * @throws InvalidActorNameException: if you use invalid actor name.
+    */
+  def create(system: ActorSystem, name: String)(implicit ec: ExecutionContext): ActorRef = {
+    val cron = system.actorOf(Props[CronScheduler], name)
+    system.scheduler.schedule(45.seconds, 45.seconds, cron, "minutes")
+    cron
   }
 }
