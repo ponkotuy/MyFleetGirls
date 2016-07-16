@@ -3,12 +3,7 @@ package com.ponkotuy.data
 import com.ponkotuy.tool.RankingDiff
 import org.json4s._
 
-/**
- *
- * @author ponkotuy
- * Date: 15/04/06.
- */
-case class Ranking(no: Int, memberId: Long, rate: Int) extends RankingDiff
+case class Ranking(no: Int, nickname: String, rate: Int) extends RankingDiff
 
 object Ranking {
   implicit val format = DefaultFormats
@@ -19,7 +14,7 @@ object Ranking {
     }
   }
 
-  private case class RawRanking(api_no: Int, api_member_id: Long, api_rate: Int) {
-    def build = Ranking(no = api_no, memberId = api_member_id, rate = api_rate)
+  private case class RawRanking(api_no: Int, api_nickname: String, api_rate: Int) {
+    def build = Ranking(no = api_no, nickname = api_nickname, rate = api_rate)
   }
 }

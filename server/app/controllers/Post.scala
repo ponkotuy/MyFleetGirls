@@ -188,11 +188,11 @@ class Post @Inject()(implicit val ec: ExecutionContext) extends Controller {
   }
 
   private def insertRanking(auth: db.Admiral, rank: Ranking)(implicit session: DBSession = AutoSession) = {
-    if(rank.memberId == auth.id) {
+    if(rank.nickname == auth.nickname) {
       db.Ranking.create(auth.id, rank.no, rank.rate, System.currentTimeMillis())
       Res.success
     } else {
-      BadRequest("member_id mismatch")
+      BadRequest("nickname mismatch")
     }
   }
 }

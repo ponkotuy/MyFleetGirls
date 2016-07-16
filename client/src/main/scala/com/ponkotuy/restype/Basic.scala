@@ -19,7 +19,8 @@ import scala.util.matching.Regex
 case object Basic extends ResType {
   import ResType._
 
-  private[restype] var memberId: Option[Long] = None
+  private[this] var memberId: Option[Long] = None
+  private[this] var nickname: Option[String] = None
   private[this] var initSending = false
 
   override def regexp: Regex = s"\\A$GetMember/basic\\z".r
@@ -33,6 +34,7 @@ case object Basic extends ResType {
       System.exit(1) // 例外が伝搬するか自信が無かったので問答無用で殺す
     }
     memberId = Some(auth.memberId)
+    nickname = Some(auth.nickname)
     val auth2 = ClientConfig.auth(auth.memberId)
 
     if(!initSending) postAdmiralSettings(uri)(Some(auth), auth2)
@@ -52,4 +54,7 @@ case object Basic extends ResType {
       initSending = true
     }
   }
+
+  def getMemberId: Option[Long] = memberId
+  def getNickname: Option[String] = nickname
 }

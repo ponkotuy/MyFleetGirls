@@ -16,8 +16,8 @@ case object RankingList extends ResType {
   override def regexp: Regex = s"\\A$ReqRanking/getlist\\z".r
 
   override def postables(q: Query): Seq[Result] = {
-    Basic.memberId.map { memberId =>
-      Ranking.fromJson(q.obj).filter(_.memberId == memberId).map { rank =>
+    Basic.getNickname.map { nickname =>
+      Ranking.fromJson(q.obj).filter(_.nickname == nickname).map { rank =>
         NormalPostable("/ranking", write(rank))
       }
     }.getOrElse(Nil)
