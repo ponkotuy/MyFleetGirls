@@ -102,7 +102,7 @@ object CronScheduler {
     * cron ! CronSchedule(Cron(0, 5, aster, aster, aster), func)
     * }}}
     *
-    * @throws InvalidActorNameException: if you use invalid actor name.
+    * @throws InvalidActorNameException : if you use invalid actor name.
     */
   def create(system: ActorSystem, name: String)(implicit ec: ExecutionContext): ActorRef = {
     val cron = system.actorOf(Props[CronScheduler], name)
