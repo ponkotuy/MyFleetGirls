@@ -12,29 +12,24 @@ import org.json4s.native.Serialization._
 
 import scala.util.matching.Regex
 
-/**
- * @author ponkotuy
- * Date: 15/04/12.
- */
-case object Basic extends ResType {
+class Basic extends ResType {
   import ResType._
-
-  private[this] var memberId: Option[Long] = None
-  private[this] var nickname: Option[String] = None
-  private[this] var initSending = false
 
   override def regexp: Regex = s"\\A$GetMember/basic\\z".r
 
   override def postables(q: Query): Seq[Result] = postablesFromObj(q.obj, q.uri)
 
+  private[this] var admiral = Admiral(None, None)
+
+  private[this] var initSending = false
+
   def postablesFromObj(obj: JValue, uri: Uri): Seq[Result] = {
     val auth = data.Auth.fromJSON(obj)
-    if(memberId.exists(_ != auth.memberId)) {
+    if(getAdmiral.memberId.exists(_ != auth.memberId)) {
       System.err.println("異なる艦これアカウントによる通信を検知しました。一旦終了します")
       System.exit(1) // 例外が伝搬するか自信が無かったので問答無用で殺す
     }
-    memberId = Some(auth.memberId)
-    nickname = Some(auth.nickname)
+    admiral = Admiral(memberId = Some(auth.memberId), nickname = Some(auth.nickname))
     val auth2 = ClientConfig.auth(auth.memberId)
 
     if(!initSending) postAdmiralSettings(uri)(Some(auth), auth2)
@@ -55,6 +50,7 @@ case object Basic extends ResType {
     }
   }
 
-  def getMemberId: Option[Long] = memberId
-  def getNickname: Option[String] = nickname
+  def getAdmiral = admiral
 }
+
+case class Admiral(memberId: Option[Long], nickname: Option[String])
