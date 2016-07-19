@@ -8,7 +8,6 @@ import com.ponkotuy.value.KCServer
 import controllers.Common._
 import models.db
 import play.api.mvc._
-import scalikejdbc.{AutoSession, DBSession}
 
 import scala.concurrent.ExecutionContext
 
@@ -179,20 +178,6 @@ class Post @Inject()(implicit val ec: ExecutionContext) extends Controller {
     Res.success
   }
 
-  def ranking() = authAndParse[Ranking] { case (auth, request) =>
-    db.Ranking.findNewest(auth.id) match {
-      case None => insertRanking(auth, request)
-      case Some(before) =>
-        if(before.diff(request) > 0.0) insertRanking(auth, request) else Res.noChange
-    }
-  }
-
-  private def insertRanking(auth: db.Admiral, rank: Ranking)(implicit session: DBSession = AutoSession) = {
-    if(rank.nickname == auth.nickname) {
-      db.Ranking.create(auth.id, rank.no, rank.rate, System.currentTimeMillis())
-      Res.success
-    } else {
-      BadRequest("nickname mismatch")
-    }
-  }
+  // 間違った値が送られてくるので一時的に更新を停止
+  def ranking() = Action { Res.success }
 }
