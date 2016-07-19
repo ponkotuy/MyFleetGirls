@@ -28,7 +28,7 @@ case object RankingList extends ResType {
     }
     val ranking = myRanking.flatMap { rank =>
       if(rank.rate == 0) Some(rank)
-      else calculator.calc.map { const => rank.copy(rate = rank.rate / const) }
+      else calculator.calc.map { const => rank.copy(rate = rank.rate / const / rank.no) }
     }
     if(ranking.isDefined) myRanking = None
     ranking.map { r => NormalPostable("/ranking", write(r), ver = 2, message = s"順位 -> ${r.no}, 戦果 -> ${r.rate}") }.toSeq
