@@ -179,7 +179,10 @@ class Post @Inject()(implicit val ec: ExecutionContext) extends Controller {
     Res.success
   }
 
-  def ranking() = authAndParse[Ranking] { case (auth, request) =>
+  def ranking = Action { Ok("v1 is deprecated. use latest client.") }
+
+  // rankingと変化は無いが、非対応clientがPOSTすると間違った値になるのでVerup
+  def ranking2() = authAndParse[Ranking] { case (auth, request) =>
     db.Ranking.findNewest(auth.id) match {
       case None => insertRanking(auth, request)
       case Some(before) =>

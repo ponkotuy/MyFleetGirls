@@ -29,7 +29,9 @@ POST          /post/v1/questlist                   controllers.Post.questlist
 POST          /post/v1/remodel_slot                controllers.Post.remodelSlot()
 POST          /post/v1/remodel                     controllers.Post.remodel()
 POST          /post/v1/master_remodel              controllers.Post.masterRemodel()
+# deprecated
 POST          /post/v1/ranking                     controllers.Post.ranking()
+POST          /post/v2/ranking                     controllers.Post.ranking2()
 POST          /passwd/post/v1/register_snap        controllers.WebPost.registerSnap()
 POST          /passwd/post/v1/delete_snap          controllers.WebPost.deleteSnap()
 POST          /passwd/post/v1/update_snap          controllers.WebPost.updateSnap()

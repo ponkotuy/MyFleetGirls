@@ -31,7 +31,7 @@ case object RankingList extends ResType {
       else calculator.calc.map { const => rank.copy(rate = rank.rate / const) }
     }
     if(ranking.isDefined) myRanking = None
-    ranking.map { r => NormalPostable("/ranking", write(r), message = s"順位 -> ${r.no}, 戦果 -> ${r.rate}") }.toSeq
+    ranking.map { r => NormalPostable("/ranking", write(r), ver = 2, message = s"順位 -> ${r.no}, 戦果 -> ${r.rate}") }.toSeq
   }
 }
 
