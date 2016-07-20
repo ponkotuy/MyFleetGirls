@@ -4,7 +4,11 @@ import com.ponkotuy.parser.Query
 
 import scala.util.matching.Regex
 
-class Port(basic: Basic) extends ResType {
+/**
+ * @author ponkotuy
+ * Date: 15/04/12.
+ */
+case object Port extends ResType {
   import ResType._
 
   override def regexp: Regex = s"\\A$Api/api_port/port\\z".r
@@ -15,6 +19,6 @@ class Port(basic: Basic) extends ResType {
       Material.postablesFromObj(obj \ "api_material") ++
       NDock.postablesFromObj(obj \ "api_ndock") ++
       DeckPort.postablesFromObj(obj \ "api_deck_port") ++
-      basic.postablesFromObj(obj \ "api_basic", q.uri)
+      Basic.postablesFromObj(obj \ "api_basic", q.uri)
   }
 }

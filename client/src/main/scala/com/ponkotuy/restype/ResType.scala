@@ -39,13 +39,11 @@ object ResType extends Log {
   val ReqRanking = s"$Api/api_req_ranking"
   val ReqCombined = s"$Api/api_req_combined_battle"
 
-  private[this] val basic = new Basic
-
   val values: Vector[ResType] = Vector(
     ApiStart2,
-    basic,
+    Basic,
     LoginCheck,
-    new Port(basic),
+    Port,
     Material,
     DeckPort,
     Deck,
@@ -63,7 +61,7 @@ object ResType extends Log {
     RemodelSlot,
     RemodelSlotlist,
     RemodelSlotlistDetail,
-    new RankingList(basic.getAdmiral),
+    RankingList,
     Ship2,
     Ship3,
     ShipDeck,

@@ -7,7 +7,7 @@ import org.json4s.native.Serialization.write
 import scala.collection.breakOut
 import scala.util.matching.Regex
 
-class RankingList(admiral: Admiral) extends ResType {
+case object RankingList extends ResType {
   import ResType._
 
   private[this] var calculator = new SecretConstCalculator()
@@ -22,7 +22,7 @@ class RankingList(admiral: Admiral) extends ResType {
     val ratesWithConst: Set[Int] = rankings.map { r => r.rate / r.no }(breakOut)
     calculator = calculator.add(ratesWithConst)
     myRanking = myRanking.orElse {
-      admiral.nickname.flatMap { nickname =>
+      Basic.getNickname.flatMap { nickname =>
         rankings.find(_.nickname == nickname)
       }
     }
@@ -32,5 +32,20 @@ class RankingList(admiral: Admiral) extends ResType {
     }
     if(ranking.isDefined) myRanking = None
     ranking.map { r => NormalPostable("/ranking", write(r), ver = 2, message = s"順位 -> ${r.no}, 戦果 -> ${r.rate}") }.toSeq
+  }
+}
+
+/**
+  * values = xs.map(_ * C) (1 <= C <= 9) のときのCを推定する
+  */
+class SecretConstCalculator(values: Set[Int] = Set.empty) {
+  def add(others: Set[Int]) = new SecretConstCalculator(values ++ others)
+  lazy val calc: Option[Int] = {
+    if(values.size < 2) None
+    else {
+      Range(9, 0, -1).find { i =>
+        values.forall(_ % i == 0)
+      }
+    }
   }
 }
