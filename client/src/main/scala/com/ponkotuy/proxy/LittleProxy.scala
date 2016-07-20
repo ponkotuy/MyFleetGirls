@@ -5,7 +5,7 @@ import java.util
 
 import io.netty.handler.codec.http.HttpRequest
 import org.apache.http.HttpHost
-import org.littleshoot.proxy.impl.DefaultHttpProxyServer
+import org.littleshoot.proxy.impl.{DefaultHttpProxyServer, ThreadPoolConfiguration}
 import org.littleshoot.proxy.{ChainedProxy, ChainedProxyAdapter, ChainedProxyManager, HttpFiltersSource, HttpProxyServerBootstrap}
 
 import scala.util.control.NonFatal
@@ -19,12 +19,19 @@ class LittleProxy(host: Option[String], port: Int, upstreamProxy: Option[HttpHos
     new InetSocketAddress(address, port)
   }
 
+  // 猫対策お試しでThreadを減らしている
+  val defaultThreadPoolConf = new ThreadPoolConfiguration()
+    .withAcceptorThreads(1)
+    .withClientToProxyWorkerThreads(2)
+    .withProxyToServerWorkerThreads(2)
+
   private[this] val bootstrap = DefaultHttpProxyServer.bootstrap()
     .withName("MyFleetGirlsProxy")
     .withAddress(inetSocketAddress)
     .withConnectTimeout(30000)
     .withUpstreamProxy(upstreamProxy)
     .withFiltersSource(filtersSource)
+    .withThreadPoolConfiguration(defaultThreadPoolConf)
 
   def start(): Unit = {
     try
