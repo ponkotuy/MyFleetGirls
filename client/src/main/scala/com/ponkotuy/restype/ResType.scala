@@ -80,6 +80,7 @@ object ResType extends Log {
   def fromUri(uri: String): Option[ResType] = {
     val path = Uri.parse(uri).pathRaw
     println(path)
+    logger.debug(path)
     values.find(_.regexp.findFirstIn(path).isDefined)
   }
 }
