@@ -61,7 +61,6 @@ object ResType extends Log {
     RemodelSlot,
     RemodelSlotlist,
     RemodelSlotlistDetail,
-    RankingList,
     Ship2,
     Ship3,
     ShipDeck,
