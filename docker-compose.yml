@@ -13,7 +13,7 @@ services:
       DB_HOST: db
       DB_PORT: 3306
   db:
-    image: mariadb:10
+    build: docker/db
     ports:
       - "3306:3306"
     environment:
