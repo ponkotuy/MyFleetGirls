@@ -100,7 +100,7 @@ object AntiAirCutin {
   import com.ponkotuy.value.ShipIds._
 
   val AkidukiType = Set(Akiduki, Teruduki, Hatsuduki, AkidukiMk1, TerudukiMk1, HatsudukiMk1) // 秋月型
-  val ManyAntiAirGun = Set(131) // 25mm三連装機銃 集中配備など
+  val ManyAntiAirGun = Set(131, 173, 191) // 25mm三連装機銃 集中配備など
   val AntiAirRadar = Set(27, 30, 32, 89, 106) // 対空電探
   val SystemWithGun = Set(122, 130, 135) // 高角砲 + 高射装置
   val AntiAirSystem = Set(120, 121, 122, 130, 135) // 高射装置を含む
