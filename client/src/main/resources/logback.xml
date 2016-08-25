@@ -21,7 +21,7 @@
     <!-- withJansi is enables ANSI color code interpretation by the Jansi library on Windows -->
     <withJansi>true</withJansi>
     <encoder>
-      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+      <pattern>%green(%d{HH:mm:ss}) [%thread] %highlight(%-5level) %cyan(%logger{5}) - %msg%n</pattern>
     </encoder>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>WARN</level>
