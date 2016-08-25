@@ -18,6 +18,8 @@
   </appender>
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- withJansi is enables ANSI color code interpretation by the Jansi library on Windows -->
+    <withJansi>true</withJansi>
     <encoder>
       <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
     </encoder>
