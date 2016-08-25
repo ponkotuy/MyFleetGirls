@@ -65,7 +65,6 @@ object EquipType {
   val Aircraft: Array[EquipType] = Array(
     Fighter, Bomber, TorpedoBomber, Scout, ScoutSeaplane, SeaBasedBomber, MaritimePartrolAircraft, SeaplaneFighter
   )
-  val CarrierBased: Array[EquipType] = Array(Fighter, Bomber, TorpedoBomber, SeaBasedBomber, SeaplaneFighter)
 }
 
 sealed abstract class EquipIconType(val v: Int)

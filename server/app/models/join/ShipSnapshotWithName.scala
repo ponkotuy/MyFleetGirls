@@ -44,8 +44,8 @@ case class ShipSnapshotWithItem(
   }
 
   override def slotAlvs: Seq[Int] =
-    if(items.isEmpty) Seq.fill(slotMaster.size)(1)
-    else items.map(_.alv.getOrElse(1))
+    if(items.isEmpty) Seq.fill(slotMaster.size)(0)
+    else items.map(_.alv.getOrElse(0))
 }
 
 trait ShipSnapshotParameter extends ShipParameter {
