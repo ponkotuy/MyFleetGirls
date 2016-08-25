@@ -51,7 +51,7 @@ $ sbt proxy
    - compile, test, clean :: sbtと同じことをする
 
 ** 実運用で必要なこと
-   - server/public/conf/application.confに必要な設定を書く（.sampleをコピーして書き足すと良い）
+   - server/public/conf/local.confに必要な設定を書く（.sampleをコピーして書き足すと良い）
    - server/public/MFGsTitle.pngにTitle画像を置く
    - server/public/feed-icon-28x28.pngを [[http://www.feedicons.com/]] から落として置く
    - server/public/clientディレクトリ以下にclientの自動ダウンロードに必要なファイルを置く
