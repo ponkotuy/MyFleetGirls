@@ -1,0 +1,32 @@
+@()
+
+@main {
+  <title>MyFleetGirls Admin Tools</title>
+  <script src="@Js.Vue"></script>
+  <script src="@Js.Coffee("admin")"></script>
+} {
+  <h1>Delete password</h1>
+  <form class="form-horizontal" role="form" id="deletePassword">
+    <div class="form-group">
+      <label for="userId" class="col-sm-2 control-label">ID</label>
+      <div class="col-sm-6">
+        <input type="number" class="form-control" id="userId" v-model="userId">
+      </div>
+      <div class="col-sm-4">
+        <p>{{userName}}</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-3">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default" v-on="click: getAdmiralName(userId)">CheckAdmiral</button>
+          <button type="button" class="btn btn-danger" v-on="click: deletePass(userId)">DeletePass</button>
+        </div>
+      </div>
+      <div class="col-sm-7">
+        <p>{{message}}</p>
+      </div>
+    </div>
+  </form>
+}

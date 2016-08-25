@@ -9,9 +9,10 @@ import models.other.ShipWithCondition
 import models.query.{ShipExpAggPattern, ShipExpGroup}
 import models.req.{AllCrawlAPI, SortType}
 import models.response.{Exp, ShipExps}
+import org.json4s.native.Serialization.write
 import org.json4s.JsonDSL._
 import org.json4s._
-import play.api.mvc.Controller
+import play.api.mvc.{Action, Controller}
 import scalikejdbc._
 import tool.BattleScore
 
@@ -19,11 +20,12 @@ import scala.concurrent.duration._
 import scala.collection.breakOut
 import scala.concurrent.ExecutionContext
 
-/**
- * Date: 14/06/12.
- */
 class RestUser @Inject()(implicit val ec: ExecutionContext) extends Controller {
   import controllers.Common._
+
+  def show(memberId: Long) = Action {
+    db.Admiral.find(memberId).fold(NotFound("Not found admiral.")) { admiral => Ok(write(admiral)) }
+  }
 
   def materials(userId: Long) = returnJson(db.Material.findAllByUser(userId))
 
@@ -35,6 +37,13 @@ class RestUser @Inject()(implicit val ec: ExecutionContext) extends Controller {
     val fromDb = db.CalcScore.findAllBy(sqls.eq(db.CalcScore.cs.memberId, memberId)).sortBy(_.yyyymmddhh).map(_.withSum)
     val now = BattleScore.calcFromMemberId(memberId).toCalcScore(memberId, 0, System.currentTimeMillis()).withSum
     returnJson(fromDb ++ List(now))
+  }
+
+  def deletePass(memberId: Long) = authPonkotu { _ =>
+    db.MyFleetAuth.find(memberId).fold(NotFound("Not found admiral.")) { auth =>
+      auth.destroy()
+      Ok("Success")
+    }
   }
 
   def shipExp(memberId: Long, shipId: Int) = returnJson {

@@ -29,7 +29,7 @@ trait AirSuperiorityWithoutSlot extends AirSuperiority {
       case (alv, sm, slotCount) if sm.category.exists(CarrierBased.contains) =>
         val fromAlv = for {
           b <- sm.category.collect {
-            case Fighter => 25
+            case Fighter | SeaplaneFighter => 25
             case Bomber | TorpedoBomber => 3
             case SeaBasedBomber => 9
           }

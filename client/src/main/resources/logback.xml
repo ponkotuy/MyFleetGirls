@@ -4,6 +4,7 @@
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>logs/application.log</file>
     <encoder>
+      <charset>UTF-8</charset>
       <pattern>%date [%level] from %logger in %thread - %message%n%xException</pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">

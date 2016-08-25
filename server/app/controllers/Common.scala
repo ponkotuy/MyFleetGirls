@@ -1,16 +1,16 @@
 package controllers
 
-import models.join.{Activity, User}
+import com.ponkotuy.data.{Auth, MyFleetAuth}
 import models.db
-import play.api.mvc._
+import models.join.{Activity, User}
 import org.json4s._
-import org.json4s.native.{JsonMethods => J}
 import org.json4s.native.Serialization.write
+import org.json4s.native.{JsonMethods => J}
+import play.api.mvc._
+import scalikejdbc._
+import tool.Authentication
 
 import scala.concurrent.{ExecutionContext, Future}
-import scalikejdbc._
-import com.ponkotuy.data.{Auth, MyFleetAuth}
-import tool.Authentication
 
 /**
  *
@@ -29,6 +29,12 @@ object Common extends Controller {
         }
       }
     }
+  }
+
+  def authPonkotu(f: (db.Admiral) => Result)(implicit ec: ExecutionContext) = Action { req =>
+    if(uuidCheck(10007732L, req.session.get("key"))) {
+      db.Admiral.find(10007732L).fold(NotFound("Not found ponkotuy"))(f(_))
+    } else Unauthorized("You are not ponkotuy")
   }
 
   /** 実際はCheckしてないです */

@@ -1,17 +1,22 @@
-play:
-  build: .
-  links:
-    - db
-  ports:
-    - "9003:9000"
-  volumes:
-    - ~/.ivy2:/root/.ivy2
-    - ~/.sbt:/root/.sbt
-db:
-  image: mariadb:10
-  ports:
-    - "3306:3306"
-  environment:
-    MYSQL_DATABASE: myfleet
-    MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-  command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+version: '2'
+services:
+  play:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "9003:9000"
+    volumes:
+      - ~/.ivy2:/root/.ivy2
+      - ~/.sbt:/root/.sbt
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+  db:
+    build: docker/db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: myfleet
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci

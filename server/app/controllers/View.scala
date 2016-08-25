@@ -37,4 +37,6 @@ class View @Inject()(implicit val ec: ExecutionContext) extends Controller {
 
   def modalMap(areaId: Int, infoNo: Int, cell: Int) = actionAsync(Ok(views.html.modal_map(areaId, infoNo, cell)))
   def modalMapLine(areaId: Int, infoNo: Int, dep: Int, dest: Int) = actionAsync(Ok(views.html.modal_map_line(areaId, infoNo, dep, dest)))
+
+  def admin() = authPonkotu(_ => Ok(views.html.admin.index()))
 }
