@@ -45,6 +45,10 @@ $ sbt proxy
    - zip :: assemblyののちに、publicにそれらを配置する
    - prof :: profilerを立ち上げる（メンテされてないので動くか不明）
    - downLib :: 非maven管理下にあるjarをdownloadし適切に配置する
+   - runTester :: Localに対してAPIのテストをする
+   - dumpLicenseReport :: 使用しているライブラリのLICENSE一覧を出す
+   - scalikeJdbcGen :: ScalikeJDBCのclassファイルを生成する
+   - compile, test, clean :: sbtと同じことをする
 
 ** 実運用で必要なこと
    - server/public/conf/application.confに必要な設定を書く（.sampleをコピーして書き足すと良い）
