@@ -35,8 +35,6 @@ case class SlotItemWithMaster(item: SlotItem, master: MasterSlotItem) {
 
   def alvStr: Option[String] = alv.map { alv => s"(${alv})" }
 
-  def airSuperiority: Int = alv.map { alv => (alv - 1) * 25 / 6 }.getOrElse(0)
-
   def itemSnapshot(shipSnapshotId: Long, position: Int, now: Long) = new ItemSnapshot(
     id = 0L,
     memberId = memberId,
