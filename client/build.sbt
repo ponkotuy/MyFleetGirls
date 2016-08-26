@@ -12,6 +12,7 @@ libraryDependencies ++= Seq(
   "org.apache.httpcomponents" % "httpmime" % "4.5.2",
   "com.typesafe.akka" %% "akka-actor" % "2.4.6",
   "ch.qos.logback" % "logback-classic" % "1.1.7" % "runtime",
+  "org.fusesource.jansi" % "jansi" % "1.13",
   "org.scalatest" %% "scalatest" % "2.2.6" % "test"
 )
 
