@@ -19,10 +19,10 @@ jdk:
   - oraclejdk8
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION compile
-  - sbt ++$TRAVIS_SCALA_VERSION "project library" test
-  - sbt ++$TRAVIS_SCALA_VERSION "project server" test
-  - sbt ++$TRAVIS_SCALA_VERSION "project client" test
+  - travis_wait sbt ++$TRAVIS_SCALA_VERSION compile
+  - sbt ++$TRAVIS_SCALA_VERSION 'project library' test
+  - sbt ++$TRAVIS_SCALA_VERSION 'project server' test
+  - sbt ++$TRAVIS_SCALA_VERSION 'project client' test
 
 notifications:
   webhooks:
