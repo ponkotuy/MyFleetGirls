@@ -14,7 +14,7 @@ case class ShipSnapshotWithName(
     spec: MasterShipSpecs,
     rest: ShipSnapshotRest
 ) extends ShipSnapshotParameter {
-  def withItem(items: Seq[ItemSnapshot]) = new ShipSnapshotWithItem(
+  def withItem(items: Seq[ItemSnapshot]) = ShipSnapshotWithItem(
     ship = ship,
     master = master,
     stype = stype,
@@ -37,14 +37,18 @@ case class ShipSnapshotWithItem(
     else {
       items.zip(slotMaster).map { case (snap, mas) =>
         val level = if (snap.level > 0) s"+${snap.level}" else ""
-        val alv = snap.alv.fold("") { a => s"(${a})" }
-        s"${mas.name}${level}${alv}"
+        val alv = snap.alv.fold("") { a => s"($a)" }
+        s"${mas.name}$level$alv"
       }
     }
   }
 
-  override def slotAlvs: Seq[Int] =
-    if(items.isEmpty) Seq.fill(slotMaster.size)(0)
+  override def slotLevels =
+    if (items.isEmpty) Seq.fill(slotMaster.size)(0)
+    else items.map(_.level)
+
+  override def slotAlvs =
+    if (items.isEmpty) Seq.fill(slotMaster.size)(0)
     else items.map(_.alv.getOrElse(0))
 }
 
