@@ -10,6 +10,8 @@ libraryDependencies ++= Seq(
   "com.netaporter" %% "scala-uri" % "0.4.14",
   "org.apache.httpcomponents" % "httpclient" % "4.5.2",
   "org.apache.httpcomponents" % "httpmime" % "4.5.2",
+  "org.slf4j" % "slf4j-api" % "1.7.21",
+  "org.slf4j" % "log4j-over-slf4j" % "1.7.21",
   "com.typesafe.akka" %% "akka-actor" % "2.4.6",
   "ch.qos.logback" % "logback-classic" % "1.1.7" % "runtime",
   "org.fusesource.jansi" % "jansi" % "1.13",
