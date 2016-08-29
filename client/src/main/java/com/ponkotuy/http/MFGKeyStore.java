@@ -5,10 +5,14 @@ import javax.net.ssl.TrustManagerFactory;
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MFGKeyStore {
     private static final String TrustStoreFile = "myfleetgirls.keystore";
     private static final String TrustStorePass = "myfleetgirls";
+
+    private static Logger logger = LoggerFactory.getLogger(MFGKeyStore.class);
 
     private SSLContext sslContext;
 
@@ -24,7 +28,7 @@ public class MFGKeyStore {
                 InputStream io = new FileInputStream(file);
                 trustStore.load(io, TrustStorePass.toCharArray());
             } catch (Throwable e2) {
-                e2.printStackTrace();
+                logger.error("Can't load trustStore by ClassLorder",e2);
             }
         }
 
