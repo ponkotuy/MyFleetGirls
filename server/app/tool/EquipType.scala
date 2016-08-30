@@ -6,7 +6,7 @@ package tool
  * Date: 14/10/22.
  */
 
-sealed abstract class EquipType(val v: Int)
+sealed abstract class EquipType(val v: Int) extends Product with Serializable
 object EquipType {
   case object MainGunS extends EquipType(1)
   case object MainGunM extends EquipType(2)
@@ -67,7 +67,7 @@ object EquipType {
   )
 }
 
-sealed abstract class EquipIconType(val v: Int)
+sealed abstract class EquipIconType(val v: Int) extends Product with Serializable
 object EquipIconType {
   case object MainGunS extends EquipIconType(1)
   case object MainGunM extends EquipIconType(2)

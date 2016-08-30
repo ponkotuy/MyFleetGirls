@@ -7,19 +7,93 @@ trait AirSuperiority {
   def airSuperiority: Int
 }
 
-object AirSuperiority {
+trait AirSuperiorityBase extends AirSuperiority {
+
+  def fighterPowers: Seq[Option[FighterPower]]
+
+  override def airSuperiority: Int = fighterPowers.flatten.map(_.value).sum
+
+}
+
+trait AirSuperiorityWithSlot extends AirSuperiorityBase {
+  def spec: MasterShipSpecs
+
+  def slot: Seq[SlotItemWithMaster]
+
+  override def fighterPowers: Seq[Option[FighterPower]] =
+    slot.zip(spec.maxeq).map {
+      case (s, count) => FighterPower.from(s, count)
+    }
+
+}
+
+trait AirSuperiorityWithoutSlot extends AirSuperiorityBase {
+  def spec: MasterShipSpecs
+
+  def slotMaster: Seq[MasterSlotItem]
+
+  def slotLevels: Seq[Int]
+
+  def slotAlvs: Seq[Int]
+
+  override def fighterPowers: Seq[Option[FighterPower]] =
+    (slotMaster, spec.maxeq, slotLevels.zip(slotAlvs)).zipped.map {
+      case (sm, count, (level, alv)) => FighterPower.from(sm, count, level, alv)
+    }
+
+}
+
+
+case class FighterPower(
+    category: EquipType,
+    antiAir: Int,
+    slotCount: Int,
+    level: Int,
+    alv: Int) {
+
+  import FighterPower._
+
+  def value: Int = {
+    val imp = improvementBonus(category, level).getOrElse(0.0)
+    val base = (antiAir + imp) * math.sqrt(slotCount)
+    val prof = proficiencyBonus(alv).getOrElse(0.0)
+    val cat = categoryBonus(category, alv).getOrElse(0)
+    (base + prof + cat).toInt
+  }
+
+}
+
+object FighterPower {
+
+  def from(master: MasterSlotItem, slotCount: Int, level: Int, alv: Int): Option[FighterPower] =
+    PartialFunction.condOpt(master.category) {
+      case Some(cat) if participants(cat) =>
+        FighterPower(cat, master.antiair, slotCount, level, alv)
+    }
+
+  def from(slot: SlotItemWithMaster, slotCount: Int): Option[FighterPower] =
+    from(slot.master, slotCount, slot.level, slot.alv.getOrElse(0))
+
 
   import EquipType._
 
   /** 航空戦参加機体 */
-  val participants: Set[EquipType] = Set(
+  private val participants: Set[EquipType] = Set(
     Fighter, Bomber, TorpedoBomber, SeaBasedBomber, SeaplaneFighter
   )
 
-  private val innerProf = Vector(0, 10, 25, 40, 55, 70, 85, 100).lift
+  private val improvementBonus = Map(
+    Fighter -> 0.2,
+    Bomber -> 0.25
+  )
 
-  def innerProficiencyBonus(alv: Int): Option[Double] =
-    innerProf(alv).map(p => Math.sqrt(p / 10.0))
+  def improvementBonus(category: EquipType, level: Int): Option[Double] =
+    improvementBonus.get(category).map(_ * level)
+
+  private val innerProficiency = Vector(0, 10, 25, 40, 55, 70, 85, 100).lift
+
+  def proficiencyBonus(alv: Int): Option[Double] =
+    innerProficiency(alv).map(p => Math.sqrt(p / 10.0))
 
   private val fighterBonus = Vector(0, 0, 2, 5, 9, 14, 14, 22).lift
   private val sBomberBonus = Vector(0, 0, 1, 1, 1, 3, 3, 6).lift
@@ -31,33 +105,4 @@ object AirSuperiority {
       case _ => None
     }
 
-}
-
-trait AirSuperiorityWithSlot extends AirSuperiorityWithoutSlot {
-  def spec: MasterShipSpecs
-
-  def slot: Seq[SlotItemWithMaster]
-  def slotMaster: Seq[MasterSlotItem]
-
-  def slotAlvs: Seq[Int] = slot.map { s => s.alv.getOrElse(0) }
-}
-
-trait AirSuperiorityWithoutSlot extends AirSuperiority {
-  def spec: MasterShipSpecs
-
-  def slotAlvs: Seq[Int]
-  def slotMaster: Seq[MasterSlotItem]
-
-  /** 制空値計算。大きく分けて艦載機性能とスロットに依る部分と、練度に依る部分に分かれる */
-  override def airSuperiority: Int = {
-    import AirSuperiority._
-    val airSups = (slotAlvs, slotMaster, spec.maxeq).zipped.collect {
-      case (alv, sm, slotCount) if sm.category.exists(participants) =>
-        val base = sm.antiair * math.sqrt(slotCount)
-        val profBonus = innerProficiencyBonus(alv).getOrElse(0.0)
-        val catBonus = sm.category.flatMap(categoryBonus(_, alv)).getOrElse(0)
-        (base + profBonus + catBonus).toInt
-    }
-    airSups.sum
-  }
 }
