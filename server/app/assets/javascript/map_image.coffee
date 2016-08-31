@@ -48,7 +48,10 @@ class @SeaMap
 
   runClick: (x, y) =>
     cell = _.findIndex @positions, (pos) ->
-      (pos.x - DefaultSize / 2) < x and x < (pos.x + DefaultSize / 2) and (pos.y - DefaultSize / 2) < y and y < (pos.y + DefaultSize / 2)
+      (pos.x - DefaultSize / 2) < x and
+        x < (pos.x + DefaultSize / 2) and
+        (pos.y - DefaultSize / 2) < y and
+        y < (pos.y + DefaultSize / 2)
     alpha = @toAlpha[cell]
     @onclick(alpha)
 

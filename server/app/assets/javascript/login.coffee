@@ -19,7 +19,7 @@ $(document).ready ->
           data = {userId: @userId, password: @password}
           href = if back then back else '/'
           $.post('/passwd/post/v1/set_session', data)
-            .done( => location.href = href)
+            .done( -> location.href = href)
             .fail((err) => @errorMsg = err)
       getNumber: () ->
         $('#base_select option:selected')[0].value

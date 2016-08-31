@@ -9,5 +9,5 @@ $(document).ready ->
       submit: () ->
         data = {userId: userId, snapId: snapId}
         $.post('/passwd/post/v1/delete_snap', data)
-        .done( => location.href = "/user/#{userId}/snapshot")
+        .done( -> location.href = "/user/#{userId}/snapshot")
         .fail((str) => @errorMsg = str)

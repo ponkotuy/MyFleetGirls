@@ -24,7 +24,7 @@ vueSettings =
   methods:
     searchShip: (that, q) ->
       () ->
-        $.getJSON '/rest/v1/search_master', {q: q}, (ret) =>
+        $.getJSON '/rest/v1/search_master', {q: q}, (ret) ->
           that.resetCounts()
           that.ships = ret.ships
           that.items = ret.items
@@ -85,9 +85,7 @@ vueSettings =
       url = base + @fromToURL('?')
       location.href = url
     clickDrop: (c) ->
-      base = "/entire/sta/drop/#{c.cell.area}/#{c.cell.info}#cell=#{c.cell.area}-#{c.cell.info}-#{c.cell.cell}&rank=#{c.cell.rank}"
-      url = base + @fromToURL('&')
-      location.href = url
+      location.href = dropUrl(c.cell) + @fromToURL('&')
     clickItem: (c) ->
       base = "/entire/sta/citem/#{c.mat.fuel}/#{c.mat.ammo}/#{c.mat.steel}/#{c.mat.bauxite}/#{c.mat.sTypeName}"
       url = base + @fromToURL('?')
@@ -136,3 +134,6 @@ vueSettings =
     period: ->
       clearTimeout(timeout)
       timeout = setTimeout(@getCounts, 500)
+
+dropUrl = (cell) ->
+  "/entire/sta/drop/#{cell.area}/#{cell.info}/#cell=#{cell.area}-#{cell.info}-#{cell.cell}&rank=#{cell.rank}"
