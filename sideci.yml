@@ -1,4 +1,0 @@
-linter:
-  coffeelint:
-    options:
-      config: 'project/coffeelint.json'
