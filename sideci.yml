@@ -1,0 +1,4 @@
+linter:
+  coffelint:
+    options:
+      config: 'package/coffeelint.json'
