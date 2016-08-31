@@ -1,4 +1,4 @@
 linter:
-  coffelint:
+  coffeelint:
     options:
-      config: 'package/coffeelint.json'
+      config: 'project/coffeelint.json'
