@@ -1,0 +1,16 @@
+machine:
+  java:
+    version: oraclejdk8
+  environment:
+    JVM_OPTS: "-Xmx2G -Xms256M -Xss2M"
+dependencies:
+  cache_directories:
+    - ~/.sbt
+  post:
+    - sbt test:compile
+test:
+  override:
+    - sbt test
+notify:
+  webhooks:
+    - url: https://webhooks.gitter.im/e/1d346a287a3abc3d81c1
