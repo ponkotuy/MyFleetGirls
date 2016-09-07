@@ -1,6 +1,7 @@
 package models.db
 
 import com.ponkotuy.data.master
+import play.api.Environment
 import scalikejdbc._
 import util.ehcache.TimeToLiveCache
 import util.scalikejdbc.BulkInsert._
@@ -62,7 +63,7 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
 
   override val autoSession = AutoSession
 
-  def find(id: Int)(implicit session: DBSession = autoSession): Option[MasterShipSpecs] = cache.get(id)
+  def find(id: Int)(implicit session: DBSession = autoSession, env: Environment): Option[MasterShipSpecs] = cache().get(id)
 
   private[db] def findDb(id: Int)(implicit session: DBSession = autoSession): Option[MasterShipSpecs] = withSQL {
     select.from(MasterShipSpecs as mss).where.eq(mss.id, id)
@@ -213,9 +214,22 @@ object MasterShipSpecs extends SQLSyntaxSupport[MasterShipSpecs] {
 
 }
 
-object MasterShipSpecsCache extends TimeToLiveCache[Int, MasterShipSpecs] {
+class MasterShipSpecsCache(cl: ClassLoader) extends TimeToLiveCache[Int, MasterShipSpecs] {
   override def cacheName: String = "masterShipSpecs"
   override def maxEntries: Int = 1000
   override def liveSeconds: Long = 60.minutes.toSeconds
   override protected def default(k: Int): Option[MasterShipSpecs] = MasterShipSpecs.findDb(k)
+  override val classLoader = Some(cl)
+}
+
+object MasterShipSpecsCache {
+  private[this] var cache: Option[MasterShipSpecsCache] = None
+  def apply()(implicit env: Environment) = {
+    if(cache.isEmpty) synchronized {
+      if(cache.isEmpty) {
+        cache = Some(new MasterShipSpecsCache(env.classLoader))
+      }
+    }
+    cache.get
+  }
 }

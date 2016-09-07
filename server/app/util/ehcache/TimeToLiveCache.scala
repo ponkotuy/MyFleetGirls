@@ -16,6 +16,7 @@ trait TimeToLiveCache[K, V] {
   def cacheName: String
   def liveSeconds: Long
   def maxEntries: Int
+  def classLoader: Option[ClassLoader] = None
   protected def default(k: K): Option[V]
 
   final lazy val cache = {
@@ -26,6 +27,7 @@ trait TimeToLiveCache[K, V] {
       val conf = new CacheConfiguration(cacheName, maxEntries)
         .eternal(false)
         .timeToLiveSeconds(liveSeconds)
+      classLoader.foreach(conf.setClassLoader)
       val x = new Cache(conf)
       manager.addCache(x)
       x
