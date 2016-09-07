@@ -1,0 +1,30 @@
+language: scala
+
+scala:
+  - 2.11.8
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot
+
+before_cache:
+  # Tricks to avoid unnecessary cache updates
+  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
+  - find $HOME/.sbt -name "*.lock" -delete
+
+jdk:
+  - oraclejdk8
+
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION test
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/b4de92855728c1158e47
+    on_success: change
+    on_failure: always
+    on_start: never
