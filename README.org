@@ -9,7 +9,6 @@
 * MyFleetGirls
 #+ATTR_HTML: title="Join the chat at https://gitter.im/ponkotuy/MyFleetGirls"
   [[https://gitter.im/ponkotuy/MyFleetGirls?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge][file:https://badges.gitter.im/ponkotuy/MyFleetGirls.svg]]
-  [[https://travis-ci.org/ponkotuy/MyFleetGirls][file:https://travis-ci.org/ponkotuy/MyFleetGirls.svg?branch=master]]
   [[https://circleci.com/gh/ponkotuy/MyFleetGirls][file:https://circleci.com/gh/ponkotuy/MyFleetGirls.svg?style=svg]]
 
   艦これのデータをProxy経由で取得し、サーバに送って、
