@@ -11,3 +11,6 @@ dependencies:
 test:
   override:
     - sbt test
+notify:
+  webhooks:
+    - url: https://webhooks.gitter.im/e/1d346a287a3abc3d81c1
