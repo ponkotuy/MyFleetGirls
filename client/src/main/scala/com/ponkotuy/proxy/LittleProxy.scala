@@ -8,12 +8,16 @@ import org.apache.http.HttpHost
 import org.littleshoot.proxy.impl.{DefaultHttpProxyServer, ThreadPoolConfiguration}
 import org.littleshoot.proxy.{ChainedProxy, ChainedProxyAdapter, ChainedProxyManager, HttpFiltersSource, HttpProxyServerBootstrap}
 
-import scala.util.control.NonFatal
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
+import scala.util.control.NonFatal
 
 class LittleProxy(host: Option[String], port: Int, upstreamProxy: Option[HttpHost], filtersSource: HttpFiltersSource) {
 
   import LittleProxy._
+
+  lazy val logger = LoggerFactory.getLogger(getClass)
 
   private[this] val inetSocketAddress = host.fold(new InetSocketAddress(port)) { address =>
     new InetSocketAddress(address, port)
@@ -38,7 +42,7 @@ class LittleProxy(host: Option[String], port: Int, upstreamProxy: Option[HttpHos
       bootstrap.start()
     catch {
       case NonFatal(e) =>
-        e.printStackTrace()
+        logger.error("Can't start proxy.")
         println("多重起動していないかどうか確認してください")
         sys.exit(1)
     }

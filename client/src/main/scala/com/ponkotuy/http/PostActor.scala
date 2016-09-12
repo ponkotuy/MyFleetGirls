@@ -4,6 +4,7 @@ import akka.actor.{Actor, Props}
 import com.ponkotuy.data.{Auth, MyFleetAuth}
 import com.ponkotuy.parser.Query
 import com.ponkotuy.restype.{Authentication, HttpPostable}
+import com.ponkotuy.util.Log
 
 import scala.collection.mutable
 
@@ -51,7 +52,7 @@ object PostActor {
   }
 }
 
-class ControllerActor extends Actor {
+class ControllerActor extends Actor with Log {
   lazy val poster = context.actorOf(Props[PostActor], "postActor")
 
   override def receive = {
@@ -60,7 +61,7 @@ class ControllerActor extends Actor {
         val typ = q.resType.get
         typ.postables(q).foreach(poster ! _)
       } catch {
-        case e: Exception => e.printStackTrace()
+        case e: Exception => logger.error("Poster Error",e)
       } finally {
         q.release()
       }
