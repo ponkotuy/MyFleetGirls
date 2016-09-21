@@ -12,10 +12,10 @@ $(document).ready ->
             show: true
             radius: 3/4
             formatter: (label, series) ->
-              '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">
+              """<div style="font-size:8pt;text-align:center;padding:2px;color:white;">
   #{label}<br/>
   #{Math.round(series.percent*10)/10.0}%
-</div>'
+</div>"""
             background:
               opacity: 0.5
               color: '#000'
