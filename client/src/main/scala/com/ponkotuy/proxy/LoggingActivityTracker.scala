@@ -4,6 +4,7 @@ import java.net.InetSocketAddress
 import javax.net.ssl.SSLSession
 
 import io.netty.handler.codec.http.{HttpRequest,HttpResponse}
+import io.netty.handler.codec.http.HttpHeaders
 
 import org.littleshoot.proxy._
 
@@ -23,15 +24,25 @@ class LoggingActivityTracker extends ActivityTrackerAdapter {
   }
 
   override def bytesReceivedFromServer(flowConext: FullFlowContext,numberOfBytes: Int): Unit = {
-    logger.trace("response received from server to proxy. {} bytes",numberOfBytes);
+    logger.trace("response received from server to proxy. {} bytes",numberOfBytes)
   }
 
   override def responseReceivedFromServer(flowContext: FullFlowContext,httpResponse: HttpResponse): Unit = {
-    logger.debug("response received from server to proxy. STATUS:{}",httpResponse.getStatus);
+    logger.debug(
+      "response received from server to proxy. Status:{}, Transfer:{}, Content:{}",
+      httpResponse.getStatus,
+      httpResponse.headers.get(HttpHeaders.Names.TRANSFER_ENCODING),
+      httpResponse.headers.get(HttpHeaders.Names.CONTENT_ENCODING)
+    )
   }
 
   override def responseSentToClient(flowContext: FlowContext,httpResponse: HttpResponse): Unit = {
-    logger.debug("response sent to client from proxy. STATUS:{}",httpResponse.getStatus);
+    logger.debug(
+      "response sent to client from proxy. Status:{}, Transfer:{}, Content:{}",
+      httpResponse.getStatus,
+      httpResponse.headers.get(HttpHeaders.Names.TRANSFER_ENCODING),
+      httpResponse.headers.get(HttpHeaders.Names.CONTENT_ENCODING)
+    )
   }
 
   override def clientConnected(clientAddress: InetSocketAddress): Unit = {
