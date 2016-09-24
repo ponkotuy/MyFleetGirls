@@ -6,6 +6,7 @@
     <encoder>
       <charset>UTF-8</charset>
       <pattern>%date [%level] from %logger in %thread - %message%n%xException</pattern>
+      <outputPatternAsHeader>true</outputPatternAsHeader>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
       <fileNamePattern>logs/application.log.%i.zip</fileNamePattern>
