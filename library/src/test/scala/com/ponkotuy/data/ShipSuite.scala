@@ -7,7 +7,11 @@ import org.scalatest.FunSuite
 class ShipSuite extends FunSuite {
   test("success pattern") {
     val stream = getClass.getResource("/ship.json").openStream()
-    val json = parse(stream)
+    val json = try {
+      parse(stream)
+    } finally {
+      stream.close()
+    }
     val result = Ship.fromJson(json)
     assert(result.size == 124)
     val first = result.head

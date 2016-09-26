@@ -6,7 +6,11 @@ import org.scalatest.FunSuite
 class PresetSelectSuite extends FunSuite {
   test("success pattern") {
     val stream = getClass.getResource("/preset_select.json").openStream()
-    val json = parse(stream)
+    val json = try {
+      parse(stream)
+    } finally {
+      stream.close()
+    }
     val result = PresetSelect.fromJson(json \ "api_data")
     assert(result.isDefined)
     val res = result.get

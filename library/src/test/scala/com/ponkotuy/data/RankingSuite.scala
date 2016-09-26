@@ -11,7 +11,11 @@ import org.scalatest.FunSuite
 class RankingSuite extends FunSuite {
   test("success pattern") {
     val stream = getClass.getResource("/ranking.json").openStream()
-    val json = parse(stream)
+    val json = try {
+      parse(stream)
+    } finally {
+      stream.close()
+    }
     val result = Ranking.fromJson(json \ "api_data")
     assert(result.nonEmpty)
     val ranking = result.head
