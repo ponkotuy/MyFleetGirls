@@ -46,11 +46,11 @@ class LoggingActivityTracker extends ActivityTrackerAdapter {
   }
 
   override def clientConnected(clientAddress: InetSocketAddress): Unit = {
-    logger.info("Client Connected from:{}",clientAddress.toString);
+    logger.info("Client Connected from:{}",clientAddress);
   }
 
   override def clientDisconnected(clientAddress: InetSocketAddress,sslSession: SSLSession): Unit = {
-    logger.info("Client DisConnected from:{}",clientAddress.toString)
+    logger.info("Client DisConnected from:{}",clientAddress)
   }
 }
 
