@@ -7,20 +7,23 @@ import org.apache.http.protocol.HttpContext
 
 import scala.util.Random
 
+import com.ponkotuy.util.Log
+
 /**
  * Retry時にwaitBase * 1.0 〜 1.5程度のWaitをかける
  * @author ponkotuy
  * Date: 15/04/13.
  */
-class RetryWithWait(val count: Int, val waitBase: Long) extends DefaultHttpRequestRetryHandler(count, true) {
+class RetryWithWait(val count: Int, val waitBase: Long) extends DefaultHttpRequestRetryHandler(count, true) with Log {
   val random = new Random()
   override def retryRequest(exception: IOException, execCount: Int, context: HttpContext): Boolean = {
     val retry = super.retryRequest(exception, execCount, context)
-    println("Connection failed.")
+    logger.debug("Connection failed.")
     if(retry) {
-      println("Retry...")
       val rate = random.nextDouble() * 0.5 + 1.0
-      Thread.sleep((waitBase * rate).toLong)
+      val waitMillis = (waitBase * rate).toLong
+      logger.debug("Retry... waiting {} milliseconds.",waitMillis)
+      Thread.sleep(waitMillis)
     }
     retry
   }

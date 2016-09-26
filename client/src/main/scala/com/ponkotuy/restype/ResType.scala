@@ -79,7 +79,7 @@ object ResType extends Log {
   def fromUri(uri: String): Option[ResType] = {
     val path = Uri.parse(uri).pathRaw
     println(path)
-    logger.debug(path)
+    logger.info("Parse KC Request. path:{}",path)
     values.find(_.regexp.findFirstIn(path).isDefined)
   }
 }

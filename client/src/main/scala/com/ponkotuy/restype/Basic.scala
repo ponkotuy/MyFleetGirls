@@ -7,6 +7,7 @@ import com.ponkotuy.data.{Auth, MyFleetAuth}
 import com.ponkotuy.http.MFGHttp
 import com.ponkotuy.parser.Query
 import com.ponkotuy.value.KCServer
+import com.ponkotuy.util.Log
 import org.json4s._
 import org.json4s.native.Serialization._
 
@@ -16,7 +17,7 @@ import scala.util.matching.Regex
  * @author ponkotuy
  * Date: 15/04/12.
  */
-case object Basic extends ResType {
+case object Basic extends ResType with Log {
   import ResType._
 
   private[this] var memberId: Option[Long] = None
@@ -30,6 +31,7 @@ case object Basic extends ResType {
   def postablesFromObj(obj: JValue, uri: Uri): Seq[Result] = {
     val auth = data.Auth.fromJSON(obj)
     if(memberId.exists(_ != auth.memberId)) {
+      logger.error("Invalid KC User connection. authed:{}, request:{}",auth.memberId,memberId)
       System.err.println("異なる艦これアカウントによる通信を検知しました。一旦終了します")
       System.exit(1) // 例外が伝搬するか自信が無かったので問答無用で殺す
     }

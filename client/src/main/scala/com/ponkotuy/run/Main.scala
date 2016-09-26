@@ -15,8 +15,10 @@ import io.netty.util.ResourceLeakDetector
  * Date: 14/02/18.
  */
 object Main extends App with Log {
+  logger.info("MyFleetGirls Proxy Starting...")
   ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED)
   try {
+    logger.debug("information messeage printing.");
     message()
 
     val proxy = new LittleProxy(
@@ -25,10 +27,11 @@ object Main extends App with Log {
       ClientConfig.upstreamProxyHost,
       new KCFiltersSource(KCServer.ips, new KCInterceptor())
     )
+    logger.debug("proxy threads starting.")
     proxy.start()
   } catch {
     case e: ExceptionInInitializerError =>
-      logger.info("proxy初期化エラー", e)
+      logger.info("Proxy Initializer Error", e)
       println("application.confが存在しないか設定が無効です。application.conf.sampleをコピーして設定しましょう")
   }
 
@@ -44,7 +47,7 @@ object Main extends App with Log {
         str.lines.foreach(println)
       }
     } catch {
-      case e: Throwable =>
+      case e: Throwable => logger.error("Can't get information message.",e)
     }
     println()
   }

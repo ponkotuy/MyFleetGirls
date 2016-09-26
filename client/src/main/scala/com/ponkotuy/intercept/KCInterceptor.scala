@@ -31,7 +31,7 @@ class KCInterceptor extends Interceptor with Log {
           q.release()
         }
       } catch {
-        case e: Throwable => error((e.getMessage +: e.getStackTrace).mkString("\n"))
+        case e: Throwable => logger.error("Query error!",e)
       }
     }
   }

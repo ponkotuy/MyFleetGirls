@@ -26,6 +26,7 @@ trait Log {
     prettyJson(json).getOrElse("JSONParseError")
   }
   protected def error(obj: Any): Unit = logger.error(obj.toString)
+  protected def error(obj: Any,e: Throwable): Unit = logger.error(obj.toString,e)
 
   private def prettyJson(json: JValue): Try[String] = Try { pretty(render(json)) }
 }
