@@ -8,12 +8,9 @@ import io.netty.handler.codec.http.HttpHeaders
 
 import org.littleshoot.proxy._
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import com.ponkotuy.util.Log
 
-class LoggingActivityTracker extends ActivityTrackerAdapter {
-
-  lazy val logger = LoggerFactory.getLogger(getClass)
+class LoggingActivityTracker extends ActivityTrackerAdapter with Log {
 
   override def requestReceivedFromClient(flowContext: FlowContext,httpRequest: HttpRequest): Unit = {
     logger.debug("request received from client to proxy. URL:{}",httpRequest.getUri)
