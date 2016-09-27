@@ -35,6 +35,7 @@ class LittleProxy(host: Option[String], port: Int, upstreamProxy: Option[HttpHos
     .withConnectTimeout(30000)
     .withUpstreamProxy(upstreamProxy)
     .withFiltersSource(filtersSource)
+    .plusActivityTracker(new LoggingActivityTracker)
     .withThreadPoolConfiguration(defaultThreadPoolConf)
 
   def start(): Unit = {
