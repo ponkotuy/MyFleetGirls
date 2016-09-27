@@ -12,7 +12,7 @@ import scala.collection.mutable
  * @author ponkotuy
  * Date: 15/04/11.
  */
-class PostActor extends Actor {
+class PostActor extends Actor with Log {
   import PostActor._
 
   val WaitTime = 100L // 送信後のWaitTime
@@ -36,6 +36,10 @@ class PostActor extends Actor {
         isAuth = true
         queue.dequeueAll(_ => true).foreach(self ! _)
         printAuthMessage()
+        if(auth2.isEmpty)
+          logger.info("Connect without authentication. memberId:{}",auth.get.memberId)
+        else
+          logger.info("Connect with authentication. memberId:{}",auth.get.memberId)
       }
   }
 }

@@ -6,6 +6,7 @@ import java.nio.file.{Files, Path}
 import java.util.stream.Collectors
 
 import com.ponkotuy.data.MyFleetAuth
+import com.ponkotuy.util.Log
 import com.typesafe.config.{Config, ConfigFactory, ConfigParseOptions}
 import org.apache.http.HttpHost
 
@@ -16,10 +17,12 @@ import scala.util.Try
  * @author ponkotuy
  * Date: 14/02/23
  */
-object ClientConfig {
+object ClientConfig extends Log {
   lazy val config = {
+    logger.info("config file loading.")
     val file = new File("application.conf")
     if (!file.exists()) {
+      logger.info("application.conf not exists. create default config.")
       createDefaultAppConfig(file.toPath)
     }
     ConfigFactory.parseFile(file).withFallback(defaultConfig)

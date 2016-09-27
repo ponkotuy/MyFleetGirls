@@ -67,7 +67,7 @@ object MFGHttp extends Log {
       Some(allRead(res.getEntity.getContent))
     } catch {
       case e: Throwable =>
-        error(e.getStackTrace.mkString("\n"))
+        logger.error("GET Reqest fail.",e)
         None
     } finally {
       HttpClientUtils.closeQuietly(res)
@@ -101,11 +101,12 @@ object MFGHttp extends Log {
       val status = res.getStatusLine.getStatusCode
       if(300 <= status && status < 400) {
         val location = res.getFirstHeader("Location").getValue
+        logger.info("Receive redirect statuscode. code:{}, location:{}",status,location)
         postOrig(location, data)
       }
       alertResult(res)
     } catch {
-      case e: Exception => error(e.getStackTrace.mkString("\n")); 1
+      case e: Exception => logger.error("POST Request fail.",e); 1
     } finally {
       HttpClientUtils.closeQuietly(res)
     }
@@ -120,7 +121,7 @@ object MFGHttp extends Log {
       res = http.execute(post)
       alertResult(res)
     } catch {
-      case e: Exception => error(e.getStackTrace.mkString("\n")); 1
+      case e: Exception => logger.error("Master Data POST request",e); 1
     } finally {
       HttpClientUtils.closeQuietly(res)
     }
@@ -148,7 +149,7 @@ object MFGHttp extends Log {
       res = http.execute(post)
       alertResult(res)
     } catch {
-      case e: Exception => error((e.getMessage :+ e.getStackTrace).mkString("\n")); 600
+      case e: Exception => logger.error("POST file fail.",e); 600
     } finally {
       HttpClientUtils.closeQuietly(res)
     }
@@ -157,8 +158,7 @@ object MFGHttp extends Log {
   private def alertResult(res: CloseableHttpResponse): Int = {
     val stCode = res.getStatusLine.getStatusCode
     if(stCode >= 400) {
-      val content = allRead(res.getEntity.getContent)
-      error(s"Error Response ${stCode}\n${res.getStatusLine}\n${content}")
+      logger.error("Error Response code:{}, status:{}",stCode,res.getStatusLine.getReasonPhrase)
     }
     stCode
   }
@@ -177,6 +177,8 @@ object MFGHttp extends Log {
     var res:CloseableHttpResponse = null
     try {
       res = http.execute(head)
+    } catch {
+      case e: Exception => logger.error("HEAD Request fail.",e)
     } finally {
       HttpClientUtils.closeQuietly(res)
     }

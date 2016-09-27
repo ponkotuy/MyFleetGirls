@@ -6,6 +6,7 @@ import java.util.zip.GZIPInputStream
 import com.netaporter.uri.Uri
 import com.ponkotuy.restype.ResType
 import com.ponkotuy.tool.PostQueryParser
+import com.ponkotuy.util.Log
 import io.netty.buffer.{ByteBuf, ByteBufInputStream}
 import org.json4s._
 
@@ -36,7 +37,7 @@ case class Query(uri: Uri, requestContent: ByteBuf, responseContent: ByteBuf) {
   }
 }
 
-object Query {
+object Query extends Log {
 
   implicit val codec: Codec = Codec(StandardCharsets.UTF_8)
 
@@ -44,6 +45,7 @@ object Query {
 
   private def toString(buf: ByteBuf): String =
     if (buf.getUnsignedShort(buf.readerIndex()) == GzipMagic) {
+      logger.trace("Decompress gziped stream.");
       val is = new GZIPInputStream(new ByteBufInputStream(buf.duplicate()))
       Source.fromInputStream(is).mkString
     } else {
