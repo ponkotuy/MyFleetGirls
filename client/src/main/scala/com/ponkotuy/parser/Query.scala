@@ -21,15 +21,12 @@ case class Query(uri: Uri, requestContent: ByteBuf, responseContent: ByteBuf) {
   def host = uri.host
   lazy val resType = ResType.fromUri(uri.toString())
   def resCont: String = Query.toString(responseContent)
-  def resJson: Either[JValue, String] = KCJson.toAst(resCont)
+  def resJson: Either[Exception, JValue] = KCJson.toAst(resCont)
   def reqCont: String = Query.toString(requestContent)
   def reqMap: Map[String, String] = PostQueryParser.parse(reqCont)
   def parsable: Boolean = resType.isDefined
   def req = reqMap
-  def obj = resJson match {
-    case Left(value) => value
-    case Right(message) => JObject()
-  }
+  def obj: JValue = resJson.right.getOrElse(JObject())
 
   def release(): Unit = {
     requestContent.release()
@@ -45,7 +42,7 @@ object Query extends Log {
 
   private def toString(buf: ByteBuf): String =
     if (buf.getUnsignedShort(buf.readerIndex()) == GzipMagic) {
-      logger.trace("Decompress gziped stream.");
+      logger.trace("Decompress gziped stream.")
       val is = new GZIPInputStream(new ByteBufInputStream(buf.duplicate()))
       Source.fromInputStream(is).mkString
     } else {
