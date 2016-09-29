@@ -102,25 +102,27 @@
             </table>
           </div>
 
-          <table class="table table-hover table-condensed" v-show="iCounts.length > 0">
+          <div v-show="iCounts.length > 0">
             <h3>開発レシピ</h3>
-            <thead>
-              <tr>
-                <th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>艦種</th><th>回数</th><th>比率</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="c in iCounts" @@click="clickItem(c)" class="clickable">
-                <td>{{c.mat.fuel}}</td>
-                <td>{{c.mat.ammo}}</td>
-                <td>{{c.mat.steel}}</td>
-                <td>{{c.mat.bauxite}}</td>
-                <td>{{c.mat.sTypeName}}</td>
-                <td><strong>{{c.count}}</strong> / {{c.sum}}</td>
-                <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
-              </tr>
-            </tbody>
-          </table>
+            <table class="table table-hover table-condensed">
+              <thead>
+                <tr>
+                  <th>燃料</th><th>弾薬</th><th>鉄鋼</th><th>ボーキ</th><th>艦種</th><th>回数</th><th>比率</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="c in iCounts" @@click="clickItem(c)" class="clickable">
+                  <td>{{c.mat.fuel}}</td>
+                  <td>{{c.mat.ammo}}</td>
+                  <td>{{c.mat.steel}}</td>
+                  <td>{{c.mat.bauxite}}</td>
+                  <td>{{c.mat.sTypeName}}</td>
+                  <td><strong>{{c.count}}</strong> / {{c.sum}}</td>
+                  <td>{{(c.count / c.sum * 100).toFixed(1)}}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
