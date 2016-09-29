@@ -155,6 +155,10 @@ object CreateItem extends SQLSyntaxSupport[CreateItem] {
       ItemMat(ci, mst)(rs) -> rs.long(7)
     }.list().apply()
 
+  def existsItem(itemId: Int)(implicit session: DBSession = autoSession): Boolean = withSQL {
+    select(ci.slotitemId).from(CreateItem as ci).where.eq(ci.slotitemId, itemId).limit(1)
+  }.map(_ => true).single().apply().isDefined
+
   def create(ci: data.CreateItem, memberId: Long)(implicit session: DBSession = autoSession): CreateItem = {
     val now = System.currentTimeMillis()
     createOrig(

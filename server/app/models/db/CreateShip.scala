@@ -99,6 +99,10 @@ object CreateShip extends SQLSyntaxSupport[CreateShip] {
       .orderBy(sqls"count").desc
   }.map(rs => (Mat(cs)(rs), rs.long(6))).toList().apply()
 
+  def existsShip(shipId: Int)(implicit session: DBSession = autoSession): Boolean = withSQL {
+    select(cs.resultShip).from(CreateShip as cs).where.eq(cs.resultShip, shipId).limit(1)
+  }.map(_ => true).single().apply().isDefined
+
   def createFromKDock(cs: data.CreateShip, kd: data.KDock, memberId: Long)(
       implicit session: DBSession = CreateShip.autoSession): Unit = {
     require(cs.equalKDock(kd))

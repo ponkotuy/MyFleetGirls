@@ -43,16 +43,18 @@ class Rest @Inject()(implicit val ec: ExecutionContext) extends Controller {
 
   /** Createされた記録のあるMasterShipとMasterSlotItemを検索 */
   def searchMaster(q: String) = returnJson {
-    val ships = db.CreateShip.findAllShipByNameLike(s"%$q%") ++
-      db.BattleResult.findAllShipByNameLike(s"%$q%")
-    val items = db.CreateItem.findAllItemByNameLike(sqls"mi.name like ${s"%$q%"}")
+    val masterShips = db.MasterShipBase.findAllByLike(s"%$q%")
+    val ships = masterShips.filter { ship => db.CreateShip.existsShip(ship.id) || db.BattleResult.existsShip(ship.id) }
+    val msi = db.MasterSlotItem.msi
+    val masterItems = db.MasterSlotItem.findAllBy(sqls.like(msi.name, s"%$q%"))
+    val items = masterItems.filter { item => db.CreateItem.existsItem(item.id) }
     Map("ships" -> ships.distinct, "items" -> items)
   }
 
   /** Createされた記録のあるMasterShipを検索 */
   def searchMasterShip(q: String) = returnJson {
-    db.CreateShip.findAllShipByNameLike(s"%$q%") ++
-      db.BattleResult.findAllShipByNameLike(s"%$q%")
+    val masterShips = db.MasterShipBase.findAllByLike(s"%$q%")
+    masterShips.filter { ship => db.CreateShip.existsShip(ship.id) || db.BattleResult.existsShip(ship.id) }
   }
 
   def masterShipCount() = returnString { db.MasterShipBase.count() }

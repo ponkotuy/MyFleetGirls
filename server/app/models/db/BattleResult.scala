@@ -254,6 +254,10 @@ object BattleResult extends SQLSyntaxSupport[BattleResult] {
     }.map(CellInfo(ci)).list().apply()
   }
 
+  def existsShip(shipId: Int)(implicit session: DBSession = autoSession): Boolean = withSQL {
+    select(br.getShipId).from(BattleResult as br).where.eq(br.getShipId, shipId).limit(1)
+  }.map(_ => true).single().apply().isDefined
+
   def create(result: data.BattleResult, map: data.MapStart, memberId: Long)(
       implicit session: DBSession = autoSession): Unit = {
     val created = System.currentTimeMillis()
