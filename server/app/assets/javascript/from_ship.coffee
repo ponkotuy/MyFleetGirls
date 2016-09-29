@@ -91,8 +91,10 @@ vueSettings =
       url = base + @fromToURL('?')
       location.href = url
     fromToURL: (head) -> if @period then "#{head}from=#{@start_period}&to=#{@end_period}" else ''
+    submit: ->
+      @searchShip(this, @query)()
 
-  attached: ->
+  ready: ->
     @restoreHash()
     if @shipId != -1
       @getSCounts(@shipId)
@@ -101,13 +103,9 @@ vueSettings =
       @getICounts(@itemId)
       clearTimeout(timeout)
     else if @query != ''
-      timout = @searchShip(this, @query)()
+      timeout = @searchShip(this, @query)()
 
   watch:
-    query: (q) ->
-      if q != ''
-        clearTimeout(timeout)
-        timeout = setTimeout(@searchShip(this, q), 500)
     shipId: (sid) ->
       if sid != -1
         @itemId = -1
@@ -122,15 +120,6 @@ vueSettings =
         @getICounts(iid)
       else
         @items = []
-    start_period: ->
-      if @period
-        console.log("OK")
-        clearTimeout(timeout)
-        timeout = setTimeout(@getCounts, 500)
-    end_period: ->
-      if @period
-        clearTimeout(timeout)
-        timeout = setTimeout(@getCounts, 500)
     period: ->
       clearTimeout(timeout)
       timeout = setTimeout(@getCounts, 500)

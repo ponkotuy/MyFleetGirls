@@ -9,6 +9,8 @@ package views
 object Js {
   val MomentLocales = "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment-with-locales.min.js"
   val Vue = "//cdnjs.cloudflare.com/ajax/libs/vue/0.11.10/vue.min.js"
+  // Vue1.0系は非互換なので選択には注意
+  val Vue1 = "//cdnjs.cloudflare.com/ajax/libs/vue/1.0.27/vue.min.js"
   val Lodash = "//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.9.2/lodash.min.js"
   val D3 = "//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"
   val BootstrapSwitch = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"
