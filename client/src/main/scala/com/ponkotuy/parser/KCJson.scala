@@ -20,6 +20,7 @@ object KCJson extends Log {
       if((ast \ "api_result").extract[Int] == 1) Right(ast \ "api_data")
       else {
         val JString(message) = ast \ "api_message"
+        error(s"Returned error from KanColle server. message=${message}")
         Left(new KanColleAPIException(message))
       }
     } catch {
