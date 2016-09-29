@@ -1,0 +1,24 @@
+@()
+
+<link rel="stylesheet" href="@routes.Assets.at("stylesheet/loading.css")" />
+<div id="loading">
+  <div class="cssload-whirlpool" style="z-index: 999"></div>
+</div>
+<script>
+  var Loading = function(selector) {
+    this.element = $(selector)
+  };
+  Loading.prototype = {
+    show: function() {
+      this.element.show()
+    },
+    hide: function() {
+      this.element.hide()
+    }
+  };
+
+  var loading = new Loading('#loading');
+  $(window).load(function(){
+    loading.hide();
+  });
+</script>

@@ -28,27 +28,37 @@ vueSettings =
           that.resetCounts()
           that.ships = ret.ships
           that.items = ret.items
-          if ret.ships.length == 1
-            that.shipId = ret.ships[0].id
-          else if ret.items.length == 1
-            that.itemId = ret.items[0].id
+          if ret.ships.length == 1 and ret.items.length == 0
+            that.selectShip(ret.ships[0].id)
+          else if ret.items.length == 1 and ret.ships.length == 0
+            that.selectItem(ret.items[0].id)
           else
             that.shipId = -1
             that.itemId = -1
     selectShip: (sid) ->
       @shipId = sid
+      @getSCounts(sid)
     selectItem: (iid) ->
       @itemId = iid
+      @getICounts(iid)
     getSCounts: (sid) ->
       @resetCounts()
+      finishCount = 0
+      loading.show()
       $.getJSON "/rest/v1/recipe/from_ship/#{sid}", @getFromTo(), (ret) =>
+        finishCount += 1
+        if finishCount == 2 then loading.hide()
         @sCounts = ret
       $.getJSON "/rest/v1/drop_from_ship/#{sid}", @getFromTo(), (ret) =>
+        finishCount += 1
+        if finishCount == 2 then loading.hide()
         @dropCounts = ret.slice(0, @DropSizeMax)
         @isDropOver = ret.length > @DropSizeMax
     getICounts: (iid) ->
       @resetCounts()
+      loading.show()
       $.getJSON "/rest/v1/recipe/from_item/#{iid}", @getFromTo(), (ret) =>
+        loading.hide()
         @iCounts = ret
     getCounts: ->
       if @shipId != -1 then @getSCounts(@shipId)
@@ -104,25 +114,6 @@ vueSettings =
       clearTimeout(timeout)
     else if @query != ''
       timeout = @searchShip(this, @query)()
-
-  watch:
-    shipId: (sid) ->
-      if sid != -1
-        @itemId = -1
-        clearTimeout(timeout) # 起動時にquery発行されてscountが消されるのを抑制
-        @getSCounts(sid)
-      else
-        @ships = []
-    itemId: (iid) ->
-      if iid != -1
-        @shipId = -1
-        clearTimeout(timeout)
-        @getICounts(iid)
-      else
-        @items = []
-    period: ->
-      clearTimeout(timeout)
-      timeout = setTimeout(@getCounts, 500)
 
 dropUrl = (cell) ->
   "/entire/sta/drop/#{cell.area}/#{cell.info}/#cell=#{cell.area}-#{cell.info}-#{cell.cell}&rank=#{cell.rank}"
