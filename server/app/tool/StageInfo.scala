@@ -17,6 +17,7 @@ object StageInfo {
     StageInfo(Stage(2, 5), 100, 4, boss = true),
     StageInfo(Stage(3, 5), 150, 4, boss = true),
     StageInfo(Stage(4, 5), 180, 5, boss = true),
-    StageInfo(Stage(5, 5), 200, 5, boss = true)
+    StageInfo(Stage(5, 5), 200, 5, boss = true),
+    StageInfo(Stage(6, 5), 250, 6, boss = true)
   )
 }
