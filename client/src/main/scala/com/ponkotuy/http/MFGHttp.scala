@@ -13,7 +13,7 @@ import com.ponkotuy.tool.TempFileTool
 import com.ponkotuy.util.Log
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.entity.UrlEncodedFormEntity
-import org.apache.http.client.methods.{CloseableHttpResponse, HttpGet, HttpHead, HttpPost}
+import org.apache.http.client.methods._
 import org.apache.http.client.utils.HttpClientUtils
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import org.apache.http.entity.ContentType
@@ -27,6 +27,7 @@ import org.json4s.native.Serialization.write
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.util.{Failure, Success, Try}
 
 /** Access To MyFleetGirls
  *
@@ -61,17 +62,13 @@ object MFGHttp extends Log {
 
   def getOrig(url: String): Option[String] = {
     val get = new HttpGet(url)
-    var res:CloseableHttpResponse = null
-    try {
-      res = http.execute(get)
-      Some(allRead(res.getEntity.getContent))
-    } catch {
+    executeRequest(get) { res =>
+      allRead(res.getEntity.getContent)
+    }.recoverWith {
       case e: Throwable =>
         logger.error("GET Reqest fail.",e)
-        None
-    } finally {
-      HttpClientUtils.closeQuietly(res)
-    }
+        Failure(e)
+    }.toOption
   }
 
   def post(p: HttpPostable)(implicit auth: Option[Auth], auth2: Option[MyFleetAuth]): Int = {
@@ -95,9 +92,7 @@ object MFGHttp extends Log {
   def postOrig(url: String, data: Map[String, String]): Int = {
     val post = new HttpPost(url)
     post.setEntity(createEntity(data))
-    var res:CloseableHttpResponse = null
-    try {
-      res = http.execute(post)
+    executeRequest(post) { res =>
       val status = res.getStatusLine.getStatusCode
       if(300 <= status && status < 400) {
         val location = res.getFirstHeader("Location").getValue
@@ -105,25 +100,35 @@ object MFGHttp extends Log {
         postOrig(location, data)
       }
       alertResult(res)
-    } catch {
-      case e: Exception => logger.error("POST Request fail.",e); 1
-    } finally {
-      HttpClientUtils.closeQuietly(res)
-    }
+    }.recover {
+      case e: Exception =>
+        logger.error("POST Request fail.", e)
+        1
+    }.get
   }
 
   def masterPost(uStr: String, data: String, ver: Int = 1)(implicit auth2: Option[MyFleetAuth]): Int = {
     val post = new HttpPost(ClientConfig.postUrl(ver) + uStr)
     val entity = createEntity(Map("auth2" -> write(auth2), "data" -> data))
     post.setEntity(entity)
-    var res:CloseableHttpResponse = null
-    try {
-      res = http.execute(post)
+    executeRequest(post) { res =>
       alertResult(res)
-    } catch {
-      case e: Exception => logger.error("Master Data POST request",e); 1
-    } finally {
-      HttpClientUtils.closeQuietly(res)
+    }.recover {
+      case e: Exception =>
+        logger.error("Master Data POST request",e)
+        1
+    }.get
+  }
+
+  private def executeRequest[A](req: HttpUriRequest)(f: CloseableHttpResponse => A): Try[A] = {
+    Try { http.execute(req) }.flatMap { res =>
+      try {
+        Success(f(res))
+      } catch {
+        case e: Exception => Failure(e)
+      } finally {
+        HttpClientUtils.closeQuietly(res)
+      }
     }
   }
 
