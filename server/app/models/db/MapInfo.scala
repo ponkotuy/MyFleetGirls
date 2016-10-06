@@ -121,6 +121,7 @@ object MapInfo extends SQLSyntaxSupport[MapInfo] {
   }
 
   def bulkInsert(xs: Seq[data.MapInfo], memberId: Long)(implicit session: DBSession = autoSession): Unit = {
+    assert(xs.nonEmpty)
     val es = xs.map(_.eventMap)
     val hps: Seq[Option[Hp]] = es.map(_.flatMap(_.hp))
     val now = System.currentTimeMillis()

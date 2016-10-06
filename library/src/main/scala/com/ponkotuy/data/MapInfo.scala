@@ -12,8 +12,11 @@ case class MapInfo(id: Int, cleared: Boolean, exbossFlag: Boolean, defeatedCount
 object MapInfo {
   implicit val formats = DefaultFormats
 
-  def fromJson(obj: JValue): List[MapInfo] =
-    obj.extractOpt[List[RawMapInfo]].getOrElse(Nil).map(_.build)
+  def fromJson(obj: JValue): List[MapInfo] = {
+    val res = (obj \ "api_map_info").extractOpt[List[RawMapInfo]].getOrElse(Nil).map(_.build)
+    assert(res.nonEmpty, "Empty mapinfo")
+    res
+  }
 }
 
 case class RawMapInfo(

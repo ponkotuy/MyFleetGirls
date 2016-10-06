@@ -120,9 +120,12 @@ class Post @Inject()(implicit val ec: ExecutionContext) extends Controller {
   }
 
   def mapInfo = authAndParse[List[MapInfo]] { case (auth, maps) =>
-    db.MapInfo.deleteAllByUser(auth.id)
-    db.MapInfo.bulkInsert(maps, auth.id)
-    Res.success
+    if(maps.isEmpty) Res.noChange
+    else {
+      db.MapInfo.deleteAllByUser(auth.id)
+      db.MapInfo.bulkInsert(maps, auth.id)
+      Res.success
+    }
   }
 
   def eventMapRank = authAndParse[EventMapRank] { case (auth, rank) =>
