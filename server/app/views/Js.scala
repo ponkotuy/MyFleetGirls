@@ -16,6 +16,7 @@ object Js {
   val BootstrapSwitch = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"
   val Common = Coffee("common")
   val JQueryUI = Lib("jquery-ui.min")
+  val Analytics = Assets("javascript/analytics.js")
 
   def ScriptFlot(adds: String*) = {
     <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.min.js"></script> ++
