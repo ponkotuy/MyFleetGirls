@@ -11,3 +11,7 @@ db.default.password=
 # Common Key for Atom ID
 # uniqueな任意の文字列を入れてください。自分の管理下にあるドメイン名か乱数で生成した文字列をお勧めします
 atom.common_key=
+
+# GoogleAnalyticsID
+# UA-01234567-8みたいな
+analytics.google.id=
