@@ -11,4 +11,5 @@ import play.api.Configuration
 object Settings {
   val config = Configuration(ConfigFactory.load())
   val atomCommonKey = config.getString("atom.common_key").getOrElse("")
+  val googleAnalyticsId = config.getString("analytics.google.id")
 }

@@ -111,6 +111,7 @@ HEAD          /rest/v2/image/map/:areaId/:infoNo/:version.jpg               cont
 HEAD          /rest/v1/sound/ship/:shipId/:soundId.mp3                      controllers.RestSound.shipHead(shipId: Int, soundId: Int)
 HEAD          /rest/v2/sound/ship_obf/:shipKey/:soundId/:version.mp3        controllers.RestSound.shipKeyHead(shipKey: String, soundId: Int, version: Int)
 GET           /rest/v1/sound/random                                         controllers.RestSound.random()
+GET           /rest/v2/analytics/id                                         controllers.Analytics.getId()
 
 # View
 GET           /                                                             controllers.View.index
