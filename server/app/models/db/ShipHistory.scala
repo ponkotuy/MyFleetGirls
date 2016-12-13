@@ -164,4 +164,7 @@ object ShipHistory extends SQLSyntaxSupport[ShipHistory] {
             .and.eq(column.created, entity.created)
     }
 
+  def destroyBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = applyUpdate {
+    delete.from(ShipHistory).where(where)
+  }
 }

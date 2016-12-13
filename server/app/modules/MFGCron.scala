@@ -49,6 +49,7 @@ class MFGCron @Inject()(val system: ActorSystem, _playInitializer: PlayInitializ
     cron ! RankingInserter.schedule(0, aster, aster, aster, aster)
     // 月末にだけやりたいのでとりあえず起動して内部でチェック
     cron ! MonthlyCalcScoreInserter.schedule(0, 22, aster, aster, aster)
+    cron ! ShipHistoryCutter.schedule(0, 6, aster, aster, aster)
   }
 
   private def beforeStart(): Unit = {
