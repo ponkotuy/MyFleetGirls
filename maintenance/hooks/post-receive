@@ -44,10 +44,8 @@ $nice $sbt -java-home $JAVA_HOME assembly
 $nice $sbt -java-home $JAVA_HOME dumpLicenseReport
 if ! cmp -s $pub_jar $orig_jar ; then
     mv $pub_zip/MyFleetGirls.zip $pub_zip/MyFleetGirls.zip.old
-    mv ${pub_jar}.pack.gz ${pub_jar}.pack.gz.old
     eval $nice zip -j $pub_zip/MyFleetGirls.zip $pub_files
     eval cp $orig_jar $pub_files $pub_client/
-    $nice pack200 --unknown-attribute=pass ${pub_jar}.pack.gz $pub_jar 2> /dev/null
 fi
 
 $nice $sbt -java-home $JAVA_HOME clean

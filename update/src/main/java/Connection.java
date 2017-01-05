@@ -27,7 +27,7 @@ public class Connection {
         USER_AGENT = String.format("MyFleetGirls Updater w/%s (%s)", System.getProperty("java.vm.version"), System.getProperty("os.name"));
     }
 
-    public static URLConnection withRedirect(URL url, long lastModified) throws IOException,GeneralSecurityException {
+    static URLConnection withRedirect(URL url, long lastModified) throws IOException,GeneralSecurityException {
         URLConnection conn = url.openConnection();
         conn.setRequestProperty("Accept-Encoding", "pack200-gzip, gzip");
         conn.setRequestProperty("User-Agent", USER_AGENT);
@@ -51,7 +51,7 @@ public class Connection {
         }
     }
 
-    public static void download(URLConnection conn, Path dst) throws IOException {
+    static void download(URLConnection conn, Path dst) throws IOException {
         String content = conn.getHeaderField("Content-Encoding");
         Path tempFile = Files.createTempFile("myfleetgirls",null);
         tempFile.toFile().deleteOnExit();
@@ -84,7 +84,7 @@ public class Connection {
         }
     }
 
-    public static void pack20ODownload(URLConnection conn, Path dst) throws IOException {
+    private static void pack20ODownload(URLConnection conn, Path dst) throws IOException {
         try(InputStream is = conn.getInputStream();
             GZIPInputStream gzipIs = new GZIPInputStream(is);
             OutputStream os = Files.newOutputStream(dst, WRITE, CREATE, TRUNCATE_EXISTING);
