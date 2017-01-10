@@ -28,6 +28,26 @@
         <h1>艦隊スナップショット</h1>
       </div>
 
+      @if(user.isMine) {
+        <form class="form-inline">
+          <button type="button" class="btn btn-default" @if(!user.isMine){disabled="disabled"} onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 1) ';return false">
+            第一艦隊を登録
+          </button>
+          <button type="button" class="btn btn-default" @if(!user.isMine){disabled="disabled"} onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 2) ';return false">
+            第二艦隊を登録
+          </button>
+          <button type="button" class="btn btn-default" @if(!user.isMine){disabled="disabled"} onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 3) ';return false">
+            第三艦隊を登録
+          </button>
+          <button type="button" class="btn btn-default" @if(!user.isMine){disabled="disabled"} onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 4) ';return false">
+            第四艦隊を登録
+          </button>
+          <button type="button" class="btn btn-default" @if(!user.isMine){disabled="disabled"} onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 12) ';return false">
+            連合艦隊を登録
+          </button>
+        </form>
+      }
+
       @snaps.zipWithIndex.map { case (snap, idx) =>
         <div class="panel panel-default" id="snap@snap.id">
           <div class="panel-heading">
@@ -100,27 +120,6 @@
               削除</button>
           </div>
         </div>
-
-      }
-
-      @if(user.logined.isEmpty || user.isMine) {
-        <form class="form-inline">
-          <button type="button" class="btn btn-default" @if(!user.isMine){disabled="disabled"} onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 1) ';return false">
-            第一艦隊を登録
-          </button>
-          <button type="button" class="btn btn-default" @if(!user.isMine){disabled="disabled"} onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 2) ';return false">
-            第二艦隊を登録
-          </button>
-          <button type="button" class="btn btn-default" @if(!user.isMine){disabled="disabled"} onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 3) ';return false">
-            第三艦隊を登録
-          </button>
-          <button type="button" class="btn btn-default" @if(!user.isMine){disabled="disabled"} onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 4) ';return false">
-            第四艦隊を登録
-          </button>
-          <button type="button" class="btn btn-default" @if(!user.isMine){disabled="disabled"} onclick="location.href = ' @routes.UserView.registerSnap(user.admiral.id, 12) ';return false">
-            連合艦隊を登録
-          </button>
-        </form>
       }
 
       <div class="modal fade bs-example-modal-lg" aria-hidden="true" role="dialog" aria-labelledby="modalLabel" id="modal">
