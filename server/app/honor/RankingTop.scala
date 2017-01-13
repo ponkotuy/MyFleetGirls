@@ -1,6 +1,6 @@
 package honor
 
-import models.db.MyfleetRanking
+import models.db.{MinimumRanking, MyfleetRanking}
 import ranking.common.RankingType
 import scalikejdbc._
 
@@ -23,10 +23,10 @@ object RankingTop extends HonorCategory {
   }
 
   override val comment: String = "ランキングトップとランクイン"
-  def findRankings(memberId: Long)(implicit session: DBSession = AutoSession) = {
-    val all = MyfleetRanking.findAllBy(sqls.eq(MyfleetRanking.mr.targetId, memberId).and.le(MyfleetRanking.mr.rank, 20))
-    val ids: Set[Int] = RankingType.Admiral.rankings.map(_.id)(breakOut)
-    // targetIdは艦娘IDも含むので、ランキング対象が提督のランキングに絞る
-    all.filter { r => ids.contains(r.rankingId) }
+  def findRankings(memberId: Long)(implicit session: DBSession = AutoSession): List[MinimumRanking] = {
+    val rankingIds: Set[Int] = RankingType.Admiral.rankings.map(_.id)(breakOut)
+    def mr = MyfleetRanking.mr
+    val where = sqls.eq(mr.targetId, memberId).and.le(mr.rank, 20).and.in(mr.rankingId, rankingIds.toSeq)
+    MyfleetRanking.findAllByMininum(where)
   }
 }

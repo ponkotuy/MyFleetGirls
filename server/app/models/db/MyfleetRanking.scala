@@ -16,7 +16,7 @@ case class MyfleetRanking(
   data: String,
   url: Option[String] = None,
   num: Long,
-  created: Long) {
+  created: Long) extends MinimumRanking {
 
   def save()(implicit session: DBSession = MyfleetRanking.autoSession): MyfleetRanking = MyfleetRanking.save(this)(session)
 
@@ -31,8 +31,6 @@ case class MyfleetRanking(
       RankingElement(targetId, targetName, decoded, url, num)
     }
   }
-
-  lazy val ranking: Option[_root_.ranking.common.Ranking] = _root_.ranking.common.Ranking.fromId(rankingId)
 }
 
 
@@ -79,6 +77,12 @@ object MyfleetRanking extends SQLSyntaxSupport[MyfleetRanking] {
     withSQL {
       select.from(MyfleetRanking as mr).where.append(where)
     }.map(MyfleetRanking(mr.resultName)).list.apply()
+  }
+
+  def findAllByMininum(where: SQLSyntax)(implicit session: DBSession =autoSession): List[MinimumRanking] = {
+    withSQL {
+      select.from(MyfleetRanking as mr).where(where)
+    }.map(MinimumRanking(mr)).list().apply()
   }
 
   def countBy(where: SQLSyntax)(implicit session: DBSession = autoSession): Long = {
@@ -191,4 +195,21 @@ object MyfleetRanking extends SQLSyntaxSupport[MyfleetRanking] {
     withSQL { delete.from(MyfleetRanking).where.eq(column.id, entity.id) }.update.apply()
   }
 
+}
+
+trait MinimumRanking {
+  def rankingId: Int
+  def rank: Int
+
+  lazy val ranking: Option[_root_.ranking.common.Ranking] = _root_.ranking.common.Ranking.fromId(rankingId)
+}
+
+case class MinimumRankingImpl(rankingId: Int, rank: Int) extends MinimumRanking
+
+object MinimumRanking {
+  def apply(mr: SyntaxProvider[MyfleetRanking])(rs: WrappedResultSet): MinimumRanking = apply(mr.resultName)(rs)
+  def apply(mr: ResultName[MyfleetRanking])(rs: WrappedResultSet): MinimumRanking = new MinimumRankingImpl(
+    rankingId = rs.int(mr.rankingId),
+    rank = rs.int(mr.rank)
+  )
 }
