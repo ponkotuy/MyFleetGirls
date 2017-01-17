@@ -33,7 +33,7 @@ class MFGCron @Inject()(val system: ActorSystem, _playInitializer: PlayInitializ
     Logger.info("Start MFGCron")
     beforeStart()
     val cron = try {
-      CronScheduler.create(system, "cron")
+      CronScheduler.create(system, "cron") // Actor名を固定したので、二重に起動したとき例外が飛ぶ(一種のロック
     } catch {
       case _: InvalidActorNameException =>
         Logger.warn("Raised InvalidActorNameException. Not do anything this MFGCron.")
