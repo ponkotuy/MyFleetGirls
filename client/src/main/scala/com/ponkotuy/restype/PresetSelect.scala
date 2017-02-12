@@ -13,7 +13,7 @@ object PresetSelect extends ResType {
   override def postables(q: Query): Seq[Result] = {
     data.PresetSelect.fromJson(q.obj).foreach { preset =>
       if(preset.id == 1) {
-        DeckPort.firstFleet = preset.ship
+        FleetsState.firstFleet.foreach(_.replace(preset.ship))
       }
     }
     Nil

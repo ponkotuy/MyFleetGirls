@@ -26,6 +26,12 @@ class FleetStateSuite extends FunSuite {
     assert(fleet.toSeq === Vector(1, 2, 3, 4))
   }
 
+  test("replace") {
+    val fleet = createFleet()
+    fleet.replace(Seq(5, 6, 7, 8))
+    assert(fleet.toSeq === Vector(5, 6, 7, 8))
+  }
+
   test("get") {
     val fleet = createFleet()
     assert(fleet.getShip(1) === Some(2))

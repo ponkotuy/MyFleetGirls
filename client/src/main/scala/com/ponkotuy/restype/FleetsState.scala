@@ -33,6 +33,10 @@ class FleetState(fleet: mutable.Buffer[Int]) {
   }
   def removeShip(idx: Int): Option[Int] = synchronized { Try { fleet.remove(idx) }.toOption }
   def addShip(ship: Int): Unit = synchronized { fleet.append(ship) }
+  def replace(ships: Seq[Int]): Unit = synchronized {
+    fleet.clear()
+    fleet ++= ships
+  }
 
   def getShip(idx: Int): Option[Int] = fleet.lift(idx)
   def firstShip: Option[Int] = getShip(0)
