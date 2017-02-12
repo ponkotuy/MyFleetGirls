@@ -4,7 +4,7 @@ import org.json4s.{DefaultFormats, JValue}
 
 case class PresetSelect(
     memberId: Long,
-    id: Int,
+    id: Int, // 0-indexed fleet No.
     name: String,
     mission: List[Int],
     flagship: Int,
@@ -23,6 +23,6 @@ object PresetSelect {
       api_flagship: String,
       api_ship: List[Int]) {
     def build: PresetSelect =
-      PresetSelect(api_member_id, api_id, api_name, api_mission, api_flagship.toInt, api_ship.filter(0 <= _))
+      PresetSelect(api_member_id, api_id - 1, api_name, api_mission, api_flagship.toInt, api_ship.filter(0 <= _))
   }
 }
