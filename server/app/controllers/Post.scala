@@ -66,7 +66,7 @@ class Post @Inject()(implicit val ec: ExecutionContext) extends Controller {
     try {
       db.CreateShip.createFromKDock(ship, dock, auth.id)
     } catch {
-      case e: Throwable =>
+      case _: Throwable =>
         Ok("Duplicate Entry")
     }
     Res.success
@@ -144,7 +144,7 @@ class Post @Inject()(implicit val ec: ExecutionContext) extends Controller {
     Res.success
   }
 
-  def mapStart = authAndParse[MapStart] { case (auth, mapStart) =>
+  def mapStart = authAndParse[MapStart] { case (auth, _) =>
     db.AGOProgress.incSortie(auth.id)
     Res.success
   }
