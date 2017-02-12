@@ -15,7 +15,10 @@ case class Remodel(
     afterSlot: Option[RemodelAfterSlot],
     useSlotIds: List[Int],
     certain: Boolean,
-    slotId: Int)
+    slotId: Int,
+    firstShip: Option[Int],
+    secondShip: Option[Int]
+)
 
 object Remodel {
   implicit val format = DefaultFormats
@@ -26,7 +29,7 @@ object Remodel {
       api_voice_id: String,
       api_after_slot: Option[RawRemodelAfterSlot],
       api_use_slot_id: List[Int]) {
-    def build(certain: Boolean, slotId: Int): Remodel = {
+    def build(certain: Boolean, slotId: Int, firstShip: Int, secondShip: Option[Int]): Remodel = {
       val List(beforeItem, afterItem) = api_remodel_id
       Remodel(
         api_remodel_flag != 0,
@@ -36,7 +39,9 @@ object Remodel {
         api_after_slot.map(_.build),
         api_use_slot_id,
         certain,
-        slotId
+        slotId,
+        Some(firstShip),
+        secondShip
       )
     }
   }
@@ -45,12 +50,12 @@ object Remodel {
     def build: RemodelAfterSlot = RemodelAfterSlot(api_id, api_slotitem_id, api_locked != 0, api_level)
   }
 
-  def fromJson(obj: JValue, req: Map[String, String]): Option[Remodel] = {
+  def fromJson(obj: JValue, req: Map[String, String], firstShip: Int, secondShip: Option[Int]): Option[Remodel] = {
     for {
       raw <- obj.extractOpt[RawRemodel]
       certain <- req.get("api_certain_flag")
       slotId <- req.get("api_slot_id")
-    } yield raw.build(certain != "0", slotId.toInt)
+    } yield raw.build(certain != "0", slotId.toInt, firstShip, secondShip)
   }
 }
 
