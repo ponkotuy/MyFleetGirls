@@ -2,9 +2,7 @@ package com.ponkotuy.restype
 
 import com.ponkotuy.data
 import com.ponkotuy.parser.Query
-import com.ponkotuy.restype.{DeckPort => DP}
 
-import scala.util.Try
 import scala.util.matching.Regex
 
 /**
@@ -19,21 +17,22 @@ case object HenseiChange extends ResType {
 
   override def postables(q: Query): Seq[Result] = {
     val change = data.HenseiChange.fromMap(q.req)
-    if(change.id == 1) {
-      if(change.shipId == -1)
-        DP.firstFleet = DP.firstFleet.filterNot(_ == DP.firstFleet(change.shipIdx))
-      else {
-        DP.firstFleet = Try {
-          // 入れ替えの場合、元いた奴を先に移しておく
-          val sourceIdx = DP.firstFleet.indexOf(change.shipId)
-          if(sourceIdx >= 0) DP.firstFleet = DP.firstFleet.updated(sourceIdx, DP.firstFleet(change.shipIdx))
-          // update
-          DP.firstFleet.updated(change.shipIdx, change.shipId)
-        }.getOrElse {
-          // 例外が来たら追記
-          DP.firstFleet = DP.firstFleet.filterNot(_ == change.shipId)
-          DP.firstFleet :+ change.shipId
+    if (change.shipId == -1) // 純粋な削除
+      FleetsState.getFleet(change.id).foreach(_.removeShip(change.shipIdx))
+    else {
+      // 入れ替えの場合、元いた奴を先に移しておく
+      FleetsState.getFleet(change.id).foreach { updatedFleet =>
+        for {
+          sourceIdx <- FleetsState.findShipIdx(change.shipId)
+          sourceFleet <- FleetsState.getFleet(sourceIdx._1)
+        } {
+          updatedFleet.getShip(change.shipIdx) match {
+            case Some(updatedShipId) => sourceFleet.updateShip(sourceIdx._2, updatedShipId)
+            case None => sourceFleet.removeShip(sourceIdx._2)
+          }
         }
+        if(!updatedFleet.updateShip(change.shipIdx, change.shipId))
+          updatedFleet.addShip(change.shipId)
       }
     }
     Nil

@@ -16,8 +16,13 @@ case object RemodelSlotlistDetail extends ResType {
   override def regexp: Regex = s"\\A$ReqKousyou/remodel_slotlist_detail\\z".r
 
   override def postables(q: Query): Seq[Result] = {
-    MasterRemodel.fromJson(q.obj, q.req, DeckPort.firstFleet).map { remodel =>
+    val opt = for {
+      first <- FleetsState.firstFleet
+      secondShip <- first.secondShip
+      remodel <- MasterRemodel.fromJson(q.obj, q.req, secondShip)
+    } yield {
       NormalPostable("/master_remodel", write(remodel))
-    }.toList
+    }
+    opt.toList
   }
 }

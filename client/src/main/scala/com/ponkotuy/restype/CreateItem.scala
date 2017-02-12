@@ -16,7 +16,7 @@ case object CreateItem extends ResType {
   override def regexp: Regex = s"\\A$ReqKousyou/createitem\\z".r
 
   override def postables(q: Query): Seq[Result] = {
-    DeckPort.firstFleet.lift(0).map { flag =>
+    FleetsState.firstFleet.flatMap(_.firstShip).map { flag =>
       val createItem = data.CreateItem.from(q.req, q.obj, flag)
       NormalPostable("/createitem", write(createItem), 1, createItem.summary)
     }.toList

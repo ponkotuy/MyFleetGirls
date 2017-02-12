@@ -19,8 +19,10 @@ case object CreateShip extends ResType {
   override def regexp: Regex = s"\\A$ReqKousyou/createship\\z".r
 
   override def postables(q: Query): Seq[Result] = {
-    val createShip = data.CreateShip.fromMap(q.req, DeckPort.firstFleet.head)
-    createShips(createShip.kDock) = createShip
+    FleetsState.firstFleet.flatMap(_.firstShip).foreach { flagShip =>
+      val createShip = data.CreateShip.fromMap(q.req, flagShip)
+      createShips(createShip.kDock) = createShip
+    }
     Nil
   }
 }

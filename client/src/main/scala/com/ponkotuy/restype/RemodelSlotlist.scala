@@ -16,7 +16,8 @@ case object RemodelSlotlist extends ResType {
   override def regexp: Regex = s"\\A$ReqKousyou/remodel_slotlist\\z".r
 
   override def postables(q: Query): Seq[Result] = {
-    val result = data.RemodelSlotlist.fromJson(q.obj, DeckPort.firstFleet.lift(1))
+    val secondShip = FleetsState.firstFleet.flatMap(_.secondShip)
+    val result = data.RemodelSlotlist.fromJson(q.obj, secondShip)
     NormalPostable("/remodel_slot", write(result)) :: Nil
   }
 }

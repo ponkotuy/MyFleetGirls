@@ -1,11 +1,10 @@
 package com.ponkotuy.data
 
 /**
- *
- * @param shipIdx : 0-indexed
- * @author ponkotuy
- * Date: 14/04/26.
- */
+  *
+  * @param shipIdx : 0-indexed
+  * @param id : 0-indexed fleet No
+  */
 case class HenseiChange(shipIdx: Int, verno: Int, shipId: Int, id: Int)
 
 object HenseiChange {
@@ -14,7 +13,7 @@ object HenseiChange {
       shipIdx = obj("api_ship_idx").toInt,
       verno = obj("api_verno").toInt,
       shipId = obj("api_ship_id").toInt,
-      id = obj("api_id").toInt
+      id = obj("api_id").toInt - 1
     )
   }
 }

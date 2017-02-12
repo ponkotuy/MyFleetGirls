@@ -44,12 +44,12 @@ object MasterRemodel {
         secondShipId)
   }
 
-  def fromJson(obj: JValue, req: Map[String, String], shipIds: Seq[Int]): Option[MasterRemodel] = {
+  def fromJson(obj: JValue, req: Map[String, String], secondShipId: Int): Option[MasterRemodel] = {
     for {
       raw <- obj.extractOpt[RawMasterRemodel]
       slotId <- req.get("api_slot_id")
     } yield {
-      raw.build(slotId.toInt, shipIds(1))
+      raw.build(slotId.toInt, secondShipId)
     }
   }
 }

@@ -18,8 +18,11 @@ case object MapNext extends ResType {
 
   override def postables(q: Query): Seq[Result] = {
     val next = data.MapStart.fromJson(q.obj)
-    val result = MapStart.mapNext.map { dep =>
-      val route = MapRoute.fromMapNext(dep, next, DeckPort.fleets(MapStart.startFleet - 1))
+    val result = for {
+      dep <- MapStart.mapNext
+      fleet <- FleetsState.getFleet(MapStart.startFleet - 1)
+    } yield {
+      val route = MapRoute.fromMapNext(dep, next, fleet.toSeq)
       NormalPostable("/map_route", write(route), 1, route.summary)
     }
     MapStart.mapNext = Some(next)
