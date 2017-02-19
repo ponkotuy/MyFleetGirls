@@ -23,7 +23,7 @@ $(document).ready ->
       bossOnly: false
       dropOnly: false
       stage: 'ALL'
-      ranks: {S: true, A: true, B: true, C: false, D: false, E: false}
+      ranks: {S: true, A: true, B: true, C: false, D: false, E: false, N: false}
     methods:
       setPage: (page) ->
         @page = page

@@ -41,6 +41,7 @@ vueConf = (elem, id, cell) ->
     rank_s: true
     rank_a: true
     rank_b: true
+    rank_n: false
     map_rank_all: true
     map_rank_ko: true
     map_rank_otsu: true
@@ -54,7 +55,8 @@ vueConf = (elem, id, cell) ->
     rank: ->
       (if @rank_s then 'S' else '') +
         (if @rank_a then 'A' else '') +
-        (if @rank_b then 'B' else '')
+        (if @rank_b then 'B' else '') +
+        (if @rank_n then 'N' else '')
     mapRank: ->
       if @map_rank_all then ''
       else
@@ -109,6 +111,7 @@ vueConf = (elem, id, cell) ->
         @rank_s = obj.rank.indexOf('S') != -1
         @rank_a = obj.rank.indexOf('A') != -1
         @rank_b = obj.rank.indexOf('B') != -1
+        @rank_n = obj.rank.indexOf('N') != -1
       if obj.from?
         @period = true
         @from = obj.from
@@ -134,6 +137,7 @@ vueConf = (elem, id, cell) ->
     rank_s: -> @getJSON()
     rank_a: -> @getJSON()
     rank_b: -> @getJSON()
+    rank_n: -> @getJSON()
     map_rank_all: -> @getJSON()
     map_rank_ko: -> @getJSON()
     map_rank_otsu: -> @getJSON()

@@ -30,7 +30,7 @@ object BattleResult {
 
   def fromJson(obj: JValue): BattleResult = {
     val enemies = toIntList(obj \ "api_ship_id").drop(1)
-    val JString(winRank) = obj \ "api_win_rank"
+    val winRank = (obj \ "api_win_rank").extractOrElse("N")
     val exp = (obj \ "api_get_exp").extract[Int]
     val mvp = (obj \ "api_mvp").extract[Int]
     val baseExp = (obj \ "api_get_base_exp").extract[Int]
