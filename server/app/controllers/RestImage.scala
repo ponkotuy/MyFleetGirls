@@ -2,6 +2,7 @@ package controllers
 
 import javax.inject.Inject
 
+import com.ponkotuy.value.ShipIds
 import models.db
 import play.api.mvc._
 import scalikejdbc._
@@ -37,15 +38,7 @@ class RestImage @Inject()(implicit val ec: ExecutionContext) extends Controller 
 
   // swfId 5 => 通常画像 7 => 中破画像 1 => 通常画像(small) 3 => 中破画像(small)
   private def shipCommon(shipId: Int, _swfId: Int) = actionAsync {
-    val swfId = shipId match {
-      case sid if sid > 900 => _swfId match {
-        case 5 => 1
-        case 7 => 3
-        case _ => 1
-      }
-      case sid if sid > 500 => 1
-      case _ => _swfId
-    }
+    val swfId = if(ShipIds.isEnemy(shipId)) 1 else _swfId
     db.ShipImage.find(shipId, swfId) match {
       case Some(record) => Ok(record.image).as("image/jpeg")
       case _ =>
