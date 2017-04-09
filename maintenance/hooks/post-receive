@@ -2,7 +2,7 @@
 
 set -u
 
-lockfile=/tmp/myflet_deploy_lock
+lockfile=/tmp/myfleet_deploy_lock
 
 exec 9>$lockfile
 
