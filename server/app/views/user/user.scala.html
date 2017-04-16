@@ -134,6 +134,7 @@
             <th>引継戦果(経験値)</th>
             <th>EO</th>
             <th>引継戦果(EO)</th>
+            <th>任務</th>
           </tr>
         </thead>
         <tbody>
@@ -145,6 +146,7 @@
             <td>@x.yearlyExp</td>
             @x.eo.cell()
             <td>@x.lastEo</td>
+            @x.quest.cell()
           </tr>
           }
         </tbody>

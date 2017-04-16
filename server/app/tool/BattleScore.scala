@@ -9,7 +9,7 @@ import scalikejdbc._
   * Date: 2015/12/23
   * @author ponkotuy
   */
-case class BattleScore(monthlyExp: Int, yearlyExp: Int, eo: Int, lastEo: Int) {
+case class BattleScore(monthlyExp: Int, yearlyExp: Int, eo: Int, lastEo: Int, quest: Int) {
   def pp: String = {
     s"${sum}(${toString})"
   }
@@ -17,11 +17,12 @@ case class BattleScore(monthlyExp: Int, yearlyExp: Int, eo: Int, lastEo: Int) {
   def sum: Int = monthlyExp + yearlyExp + eo + lastEo
 
   def toCalcScore(memberId: Long, yyyymmddhh: Int, created: Long) =
-    CalcScore(memberId, monthlyExp, yearlyExp, eo, lastEo, yyyymmddhh, created)
+    CalcScore(memberId, monthlyExp, yearlyExp, eo, lastEo, quest, yyyymmddhh, created)
 }
 
 object BattleScore {
   import util.MFGDateUtil._
+  val ZMissionFormer = 854
   case class FromExp(monthly: Int, yearly: Int)
 
   object FromExp {
@@ -34,7 +35,8 @@ object BattleScore {
     val mHead = monthHead(now)
     val eo = calcNowEo(memberId, new Interval(mHead, now))
     val lastEo = if(now.getMonthOfYear == 1) 0 else calcEo(memberId, new Interval(monthHead(now - 1.month), mHead)) / 35
-    BattleScore(exp.monthly, exp.yearly, eo, lastEo)
+    val quest = calcQuset(memberId)
+    BattleScore(exp.monthly, exp.yearly, eo, lastEo, quest)
   }
 
   private def fromExp(memberId: Long): FromExp = {
@@ -68,6 +70,14 @@ object BattleScore {
       }
       if (info.clear <= count) info.score else 0
     }.sum
+  }
+
+  private def calcQuset(memberId: Long): Int = {
+    val nowMonth = DateTime.now(Tokyo).getMonthOfYear
+    Quest.find(ZMissionFormer, memberId).fold(0) { quest =>
+      val created = new DateTime(quest.created)
+      if(quest.isClear && created.getMonthOfYear == nowMonth) 350 else 0
+    }
   }
 
   /**

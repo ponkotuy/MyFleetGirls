@@ -7,5 +7,6 @@ case class ScoreWithSum(
     yearlyExp: Int,
     eo: Int,
     lastEo: Int,
+    quest: Int,
     yyyymmmddhh: Int,
     created: Long)

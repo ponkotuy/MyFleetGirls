@@ -10,7 +10,7 @@ import util.scalikejdbc.BulkInsert._
  * @param memberId: 他のデータにもあるUserIdみたいな
  * @param id: 3桁のQuestID（もしmasterがあったらmasterに紐付く奴）
  * @param category: 1編成 2出撃 3演習 4遠征 5補給/入渠 6工廠 7改装 8出撃
- * @param typ: 1Daily 2Weekly 3Monthly 4Once 5Quarterly
+ * @param typ: 1Daily 2Weekly 3Monthly 4Once 5Quarterlyなど
  * @param state: 1未選択 2選択済み 3達成
  * @param progressFlag: 1 50%以上達成 2 80%以上達成
  * @param manualFlag: trueで手動で達成にした
@@ -37,6 +37,7 @@ case class Quest(
 
   def destroy()(implicit session: DBSession = Quest.autoSession): Unit = Quest.destroy(this)(session)
 
+  def isClear: Boolean = state == 3 || manualFlag
 }
 
 

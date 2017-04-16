@@ -6,21 +6,22 @@ import com.github.nscala_time.time.Imports._
 import util.Ymdh
 
 case class CalcScore(
-  memberId: Long,
-  monthlyExp: Int,
-  yearlyExp: Int,
-  eo: Int,
-  lastEo: Int,
-  yyyymmddhh: Int,
-  created: Long) {
+    memberId: Long,
+    monthlyExp: Int,
+    yearlyExp: Int,
+    eo: Int,
+    lastEo: Int,
+    quest: Int,
+    yyyymmddhh: Int,
+    created: Long) {
 
   def save()(implicit session: DBSession = CalcScore.autoSession): CalcScore = CalcScore.save(this)(session)
 
   def destroy()(implicit session: DBSession = CalcScore.autoSession): Unit = CalcScore.destroy(this)(session)
 
-  def sum: Int = monthlyExp + yearlyExp + eo + lastEo
+  def sum: Int = monthlyExp + yearlyExp + eo + lastEo + quest
 
-  def withSum: ScoreWithSum = ScoreWithSum(memberId, sum, monthlyExp, yearlyExp, eo, lastEo, yyyymmddhh, created)
+  def withSum: ScoreWithSum = ScoreWithSum(memberId, sum, monthlyExp, yearlyExp, eo, lastEo, quest, yyyymmddhh, created)
 
   def ymdh: Ymdh = Ymdh.fromInt(yyyymmddhh)
 
@@ -32,7 +33,7 @@ object CalcScore extends SQLSyntaxSupport[CalcScore] {
 
   override val tableName = "calc_score"
 
-  override val columns = Seq("member_id", "monthly_exp", "yearly_exp", "eo", "last_eo", "yyyymmddhh", "created")
+  override val columns = Seq("member_id", "monthly_exp", "yearly_exp", "eo", "last_eo", "quest", "yyyymmddhh", "created")
 
   def apply(cs: SyntaxProvider[CalcScore])(rs: WrappedResultSet): CalcScore = autoConstruct(rs, cs)
   def apply(cs: ResultName[CalcScore])(rs: WrappedResultSet): CalcScore = autoConstruct(rs, cs)
@@ -74,13 +75,14 @@ object CalcScore extends SQLSyntaxSupport[CalcScore] {
   }
 
   def create(
-    memberId: Long,
-    monthlyExp: Int,
-    yearlyExp: Int,
-    eo: Int,
-    lastEo: Int,
-    yyyymmddhh: Int,
-    created: Long)(implicit session: DBSession = autoSession): CalcScore = {
+      memberId: Long,
+      monthlyExp: Int,
+      yearlyExp: Int,
+      eo: Int,
+      lastEo: Int,
+      quest: Int,
+      yyyymmddhh: Int,
+      created: Long)(implicit session: DBSession = autoSession): CalcScore = {
     withSQL {
       insert.into(CalcScore).columns(
         column.memberId,
@@ -88,6 +90,7 @@ object CalcScore extends SQLSyntaxSupport[CalcScore] {
         column.yearlyExp,
         column.eo,
         column.lastEo,
+        column.quest,
         column.yyyymmddhh,
         column.created
       ).values(
@@ -96,6 +99,7 @@ object CalcScore extends SQLSyntaxSupport[CalcScore] {
         yearlyExp,
         eo,
         lastEo,
+        quest,
         yyyymmddhh,
         created
       )
@@ -107,6 +111,7 @@ object CalcScore extends SQLSyntaxSupport[CalcScore] {
       yearlyExp = yearlyExp,
       eo = eo,
       lastEo = lastEo,
+      quest = quest,
       yyyymmddhh = yyyymmddhh,
       created = created)
   }
@@ -119,6 +124,7 @@ object CalcScore extends SQLSyntaxSupport[CalcScore] {
         'yearlyExp -> entity.yearlyExp,
         'eo -> entity.eo,
         'lastEo -> entity.lastEo,
+        'quest -> entity.quest,
         'yyyymmddhh -> entity.yyyymmddhh,
         'created -> entity.created))
         SQL("""insert into calc_score(
@@ -127,6 +133,7 @@ object CalcScore extends SQLSyntaxSupport[CalcScore] {
         yearly_exp,
         eo,
         last_eo,
+        quest,
         yyyymmddhh,
         created
       ) values (
@@ -135,6 +142,7 @@ object CalcScore extends SQLSyntaxSupport[CalcScore] {
         {yearlyExp},
         {eo},
         {lastEo},
+        {quest},
         {yyyymmddhh},
         {created}
       )""").batchByName(params: _*).apply()
@@ -148,6 +156,7 @@ object CalcScore extends SQLSyntaxSupport[CalcScore] {
         column.yearlyExp -> entity.yearlyExp,
         column.eo -> entity.eo,
         column.lastEo -> entity.lastEo,
+        column.quest -> entity.quest,
         column.yyyymmddhh -> entity.yyyymmddhh,
         column.created -> entity.created
       ).where.eq(column.memberId, entity.memberId).and.eq(column.yyyymmddhh, entity.yyyymmddhh)
@@ -156,9 +165,11 @@ object CalcScore extends SQLSyntaxSupport[CalcScore] {
   }
 
   def destroy(entity: CalcScore)(implicit session: DBSession = autoSession): Unit = {
-    withSQL { delete.from(CalcScore).where.eq(column.memberId, entity.memberId).and.eq(column.yyyymmddhh, entity.yyyymmddhh) }.update.apply()
+    withSQL {
+      delete.from(CalcScore).where.eq(column.memberId, entity.memberId).and.eq(column.yyyymmddhh, entity.yyyymmddhh)
+    }.update.apply()
   }
 
-  val zero = CalcScore(0L, 0, 0, 0, 0, 0, 0L)
+  val zero = CalcScore(0L, 0, 0, 0, 0, 0, 0, 0L)
 
 }
