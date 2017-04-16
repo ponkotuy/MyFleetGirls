@@ -42,6 +42,9 @@ class MFGCron @Inject()(val system: ActorSystem, _playInitializer: PlayInitializ
     cron ! DailyQuestEraser.schedule(0, 5, aster, aster, aster)
     cron ! WeeklyQuestEraser.schedule(0, 5, aster, aster, DateTimeConstants.MONDAY)
     cron ! MonthlyQuestEraser.schedule(0, 5, 1, aster, aster)
+    Iterator(3, 6, 9, 12).foreach { month =>
+      cron ! QuarterlyQuestEraser.schedule(0, 5, 1, month, aster)
+    }
     cron ! MaterialRecordCutter.schedule(17, 3, aster, aster, aster)
     cron ! BasicRecordCutter.schedule(23, 3, aster, aster, aster)
     cron ! CalcScoreInserter.schedule(0, 2, aster, aster, aster)

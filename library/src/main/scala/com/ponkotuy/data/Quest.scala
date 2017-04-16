@@ -5,7 +5,7 @@ import org.json4s._
 /**
  *
  * @param category: 1編成 2出撃 3演習 4遠征 5補給/入渠 6工廠 7改装
- * @param typ: 1Daily 2Weekly 3Monthly 4Once 5Others
+ * @param typ: 1Daily 2Weekly 3Monthly 4Once 5Quarterly
  * @param state: 1未選択 2選択済み 3達成
  * @param progressFlag: 1 50%以上達成 2 80%以上達成
  * @author ponkotuy
