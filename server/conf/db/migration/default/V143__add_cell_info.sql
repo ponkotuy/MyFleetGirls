@@ -69,7 +69,7 @@ insert into cell_info values
     (38, 3, 26, 'Q', false, false),
     (38, 3, 27, 'Q', false, false),
     (38, 3, 28, 'T', false, false),
-    (38, 3, 29, 'W', false, true)
+    (38, 3, 29, 'W', false, true),
     (38, 4, 1, 'A', true, false),
     (38, 4, 2, 'B', false, false),
     (38, 4, 3, 'C', false, false),
