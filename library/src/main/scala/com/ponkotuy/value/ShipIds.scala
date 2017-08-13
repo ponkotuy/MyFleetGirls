@@ -60,6 +60,7 @@ object ShipIds {
   val Italia = 446
   val Okinami = 452
   val KasumiMk2Otsu = 470
+  val Amagiri = 479
 
   def isEnemy(id: Int): Boolean = 1500 < id
 }
