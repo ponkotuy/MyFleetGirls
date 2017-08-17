@@ -12,7 +12,7 @@ object Fetishism extends HonorCategory {
   override def comment: String = "対象艦娘の合計Lvを一定以上"
 
   val groups = Vector(
-    FetiGroup("メガネフェチ", Set(Mochizuki, Chokai, Kirishima, I8, Makigumo, Musashi, Katori, Ooyodo, Roma, Okinami), 500)
+    FetiGroup("メガネフェチ", Set(Mochizuki, Chokai, Kirishima, I8, Makigumo, Musashi, Katori, Ooyodo, Roma, Okinami, Amagiri), 550)
   )
 
   override def approved(memberId: Long, db: HonorCache): List[String] = {
