@@ -18,6 +18,9 @@ trait AntiAirCutin {
         .orElse(isuzuMk2Cutin)
         .orElse(kasumiCutin)
         .orElse(satsukiCutin)
+        .orElse(kinuCutin)
+        .orElse(yuraCutin)
+        .orElse(fumidukiCutin)
         .orElse(battleshipCutin)
         .orElse(commonCutin)
 
@@ -64,6 +67,23 @@ trait AntiAirCutin {
     if(hasManyGun) Some(2) else None
   }
 
+  private def kinuCutin: Option[Int] = {
+    if(shipId != KinuMk2) return None
+    if(hasManyGun) {
+      Some(if(countGun > 0 && !hasWithGun) 5 else 3)
+    } else None
+  }
+
+  private def yuraCutin: Option[Int] = {
+    if(shipId != YuraMk2) return None
+    if(countGun > 0 && hasAntiAirRadar) Some(5) else None
+  }
+
+  private def fumidukiCutin: Option[Int] = {
+    if(shipId != FumidukiMk2) return None
+    if(hasManyGun) Some(2) else None
+  }
+
   private def commonCutin: Option[Int] = {
     if(hasWithGun && hasAntiAirRadar) Some(4)
     else if(countGun > 0 && hasSystem && hasAntiAirRadar) Some(3)
@@ -102,7 +122,7 @@ object AntiAirCutin {
   val AkidukiType = Set(Akiduki, Teruduki, Hatsuduki, AkidukiMk1, TerudukiMk1, HatsudukiMk1) // 秋月型
   val ManyAntiAirGun = Set(131, 173, 191) // 25mm三連装機銃 集中配備など
   val AntiAirRadar = Set(27, 30, 32, 89, 106) // 対空電探
-  val SystemWithGun = Set(122, 130, 135) // 高角砲 + 高射装置
+  val SystemWithGun = Set(122, 130, 135, 172) // 高角砲 + 高射装置
   val AntiAirSystem = Set(120, 121, 122, 130, 135) // 高射装置を含む
   val Battleship = Set("戦艦", "航空戦艦")
 }
