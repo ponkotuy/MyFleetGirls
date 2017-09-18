@@ -35,3 +35,7 @@ TwirlKeys.templateImports ++= Seq("views._", "models.db._", "models.join._")
 licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.html"))
 
 homepage := Some(url("https://myfleet.moe"))
+
+// docker
+dockerRepository := Some("ponkotuy")
+dockerUpdateLatest := true
