@@ -1,22 +1,19 @@
 package models.query
 
-import org.joda.time.LocalDate
+import com.github.nscala_time.time.Imports._
 import org.joda.time.format.ISODateTimeFormat
 import scalikejdbc._
 
 import scala.util.Try
 
-/**
- * Date: 14/11/27.
- */
 case class Period(from: Option[LocalDate], to: Option[LocalDate], default: Boolean) {
   import Period._
   import util.MFGDateUtil._
 
   def where(target: SQLSyntax): SQLSyntax = whereOpt(target).getOrElse(sqls"true")
   def whereOpt(target: SQLSyntax): Option[SQLSyntax] = {
-    val x = from.map { it => sqls.gt(target, it.toDate.getTime) }
-    val y = to.map { it => sqls.lt(target, it.toDate.getTime) }
+    val x = from.map { it => sqls.ge(target, it.toDate.getTime) }
+    val y = to.map { it => sqls.lt(target, it.plusDays(1).toDate.getTime) }
     sqls.toAndConditionOpt(x, y)
   }
 

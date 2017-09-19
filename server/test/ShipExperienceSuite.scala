@@ -1,11 +1,6 @@
 import org.scalatest.FunSuite
 import tool.ShipExperience
 
-/**
- *
- * @author
- * Date: 14/04/14.
- */
 class ShipExperienceSuite extends FunSuite {
   test("Lv1 Experience") {
     assert(ShipExperience.diff(1) === 0)
