@@ -3,6 +3,7 @@ package models.query
 import com.github.nscala_time.time.Imports._
 import org.joda.time.format.ISODateTimeFormat
 import scalikejdbc._
+import util.MFGDateUtil
 
 import scala.util.Try
 
@@ -12,8 +13,8 @@ case class Period(from: Option[LocalDate], to: Option[LocalDate], default: Boole
 
   def where(target: SQLSyntax): SQLSyntax = whereOpt(target).getOrElse(sqls"true")
   def whereOpt(target: SQLSyntax): Option[SQLSyntax] = {
-    val x = from.map { it => sqls.ge(target, it.toDate.getTime) }
-    val y = to.map { it => sqls.lt(target, it.plusDays(1).toDate.getTime) }
+    val x = from.map { it => sqls.ge(target, it.toDateTimeAtStartOfDay(MFGDateUtil.Tokyo).getMillis) }
+    val y = to.map { it => sqls.lt(target, it.toDateTimeAtStartOfDay(MFGDateUtil.Tokyo).plusDays(1).getMillis) }
     sqls.toAndConditionOpt(x, y)
   }
 
