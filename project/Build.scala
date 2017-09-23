@@ -9,9 +9,9 @@ import scalikejdbc.mapper.SbtKeys._
 
 object MyFleetGirlsBuild extends Build {
 
-  val ver = "1.5.19"
+  val ver = "1.5.20"
 
-  val scalaVer = "2.11.8"
+  val scalaVer = "2.11.11"
 
   lazy val root = Project(id = "my-fleet-girls", base = file("."), settings = rootSettings)
     .aggregate(server, client, library)
