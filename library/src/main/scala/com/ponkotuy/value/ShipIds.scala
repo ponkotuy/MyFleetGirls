@@ -65,5 +65,6 @@ object ShipIds {
   val YuraMk2 = 488
   val FumidukiMk2 = 548
 
+  def isSpecialShipId(id: Int): Boolean = 750 < id && id <= 1500
   def isEnemy(id: Int): Boolean = 1500 < id
 }

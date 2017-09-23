@@ -53,7 +53,7 @@ object MasterShipBase {
   import MasterShip._
   def fromJson(x: JValue, filenames: Int => String): Option[MasterShipBase] = {
     val id = toInt(x \ "api_id")
-    if(ShipIds.isEnemy(id)) None
+    if(ShipIds.isEnemy(id) || ShipIds.isSpecialShipId(id)) None
     else {
       val sortno = toInt(x \ "api_sortno")
       val JString(name) = x \ "api_name"
