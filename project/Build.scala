@@ -9,7 +9,7 @@ import scalikejdbc.mapper.SbtKeys._
 
 object MyFleetGirlsBuild extends Build {
 
-  val ver = "1.5.20"
+  val ver = "1.5.21"
 
   val scalaVer = "2.11.11"
 
