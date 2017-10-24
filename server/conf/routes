@@ -180,7 +180,8 @@ GET           /rest/v1/is_faved/:url                      controllers.Fav.isFave
 DELETE        /passwd/delete/v1/fav/:id                   controllers.Fav.delete(id: Long)
 
 # access to  proxy.pac by template
-GET           /assets/proxy.pac                           controllers.MyAssets.pacDynamicScript
+GET           /assets/proxy.pac                           controllers.MyAssets.pacDynamicScript(port: Int = 8080)
+GET           /assets/:port/proxy.pac                     controllers.MyAssets.pacDynamicScript(port: Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                               controllers.MyAssets.at(path="/public", file)
