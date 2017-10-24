@@ -13,7 +13,7 @@ object KCServer {
   val configName = "kc-server"
   lazy val logger: Logger = LoggerFactory.getLogger(getClass)
   lazy val config: Config = {
-    logger.info("config file loading. resource:{}",configName)
+    logger.info(s"config file loading. resource: ${configName}")
     ConfigFactory.load(configName);
   }
 
@@ -24,7 +24,7 @@ object KCServer {
       val number = config.getInt("number")
       val ip = config.getString("ip")
       val name = config.getString("name")
-      logger.debug("add server. number: {}, ip: {}, name: {}",number.toString,ip,name)
+      logger.debug(s"add server. number: ${number}, ip: ${ip}, name: ${name}")
       KCServer(number,ip,name)
     }
     serverList
