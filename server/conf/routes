@@ -187,4 +187,3 @@ GET           /assets/*file                               controllers.MyAssets.a
 # To reverse routing
 GET           /assets/*file                                                 controllers.Assets.at(path="/public", file)
 
-
