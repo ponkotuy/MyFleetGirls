@@ -179,7 +179,11 @@ GET           /rest/v1/fav_count/:url                     controllers.Fav.getCou
 GET           /rest/v1/is_faved/:url                      controllers.Fav.isFaved(url: String)
 DELETE        /passwd/delete/v1/fav/:id                   controllers.Fav.delete(id: Long)
 
+# access to  proxy.pac by template
+GET           /assets/proxy.pac                           controllers.MyAssets.pacDynamicScript
+
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                               controllers.MyAssets.at(path="/public", file)
 # To reverse routing
 GET           /assets/*file                                                 controllers.Assets.at(path="/public", file)
+
