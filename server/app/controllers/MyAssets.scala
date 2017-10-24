@@ -22,4 +22,8 @@ class MyAssets @Inject()(implicit val ec: ExecutionContext) extends Controller {
       controllers.Assets.at(path, file, aggressiveCaching).apply(req)
     }
   }
+
+  def pacDynamicScript = Action {
+    Ok(views.html.proxy.render()).as("application/x-ns-proxy-autoconfig")
+  }
 }
