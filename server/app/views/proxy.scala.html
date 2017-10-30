@@ -1,11 +1,11 @@
 @import com.ponkotuy.value.KCServer
-@(servers: List[KCServer])
+@(servers: List[KCServer],port: Int)
 
 function FindProxyForURL(url, host) {
 
   @for(server <- servers) {
     if ( isInNet(host, "@(server.ip)","255.255.255.255") ) {
-       return "PROXY 127.0.0.1:8080";
+      return "PROXY 127.0.0.1:@{port}";
     }
   }
 
