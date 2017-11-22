@@ -98,6 +98,7 @@ insert into cell_info values
     (40, 4, 27, 'H', false, false),
     (40, 4, 28, 'J', false, false),
     (40, 4, 29, 'L', false, false),
+    (40, 4, 30, 'S', false, false),
     (40, 4, 31, 'S', false, false),
     (40, 4, 32, 'T', false, false),
     (40, 4, 33, 'V', false, false),
