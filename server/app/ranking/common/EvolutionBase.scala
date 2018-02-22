@@ -15,9 +15,10 @@ import scala.concurrent.duration._
 object EvolutionBase {
   import ShipIds._
 
-  def apply(shipId: Int): Int = {
+  def apply(shipId: Int, count: Int = 10): Int = {
+    if(count == 0) return shipId
     Afters.get(shipId) match {
-      case Some(afterId) => apply(afterId)
+      case Some(afterId) => apply(afterId, count - 1)
       case None => shipId
     }
   }
