@@ -88,6 +88,7 @@
               <th>装備2</th>
               <th>装備3</th>
               <th>装備4</th>
+              <th>装備5</th>
             </tr>
           </thead>
           <tbody>
@@ -101,7 +102,7 @@
                 <td style="@if(ship.expRate > 0){background-color:#D9EDF7;display:block;width:@{(ship.expRate*100).toInt}%}">@ship.lv</td>
                 <td style="padding:0px;"><div style="background-color:@ship.hpRGB.toString;width:@{(ship.hpRate*100).toInt}%;padding:5px;">@ship.nowhp/@ship.maxhp</div></td>
                 @ship.slotNames.map { slot => <td>@slot</td> }
-                @{(0 until (4 - ship.slotNames.size)).map { _ => <td></td> }}
+                @{(0 until (5 - ship.slotNames.size)).map { _ => <td></td> }}
               </tr>
             }
           </tbody>
