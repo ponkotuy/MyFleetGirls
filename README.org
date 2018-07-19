@@ -6,6 +6,9 @@
 #+STYLE: <link rel="stylesheet" type="text/css" href="org.css"></link>
 #+LANGUAGE: ja
 
+* This project is deprecated.
+このプロジェクトの開発は終了しています。継続したい場合はPRやissueではなくforkで勝手にやってください。
+
 * MyFleetGirls
 #+ATTR_HTML: title="Join the chat at https://gitter.im/ponkotuy/MyFleetGirls"
   [[https://gitter.im/ponkotuy/MyFleetGirls?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge][file:https://badges.gitter.im/ponkotuy/MyFleetGirls.svg]]
